@@ -17,12 +17,13 @@ ProjectU 是一个现代化的 Pixiv 客户端，支持 Android 和 Desktop (Win
 
 ### 核心功能
 
+- ✅ **Pixiv API 集成** - 完整的 Pixiv Web API 支持
 - ✅ 作品浏览和搜索
 - ✅ 用户关注和收藏管理
 - ✅ 排行榜查看
 - ✅ 作品详情展示
 - ✅ Ugoira 动图播放
-- ✅ 离线缓存
+- ⏳ 离线缓存（计划中）
 
 ## 技术栈
 
@@ -41,6 +42,7 @@ ProjectU 是一个现代化的 Pixiv 客户端，支持 Android 和 Desktop (Win
 ### 网络和数据
 
 - **Ktor 3.3.1** - HTTP 客户端
+- **Pixiv Web API** - 基于 Ktor 的 Pixiv API 客户端
 - **kotlinx-serialization 1.9.0** - JSON 序列化
 - **Room 2.8.2** - 本地数据库
 - **DataStore 1.1.7** - 键值对存储
@@ -200,13 +202,32 @@ composeApp/src/commonMain/resources/MR/
 - [x] 多语言系统集成
 - [x] Koin 依赖注入配置
 - [x] Ugoira 动图播放器
-- [ ] Pixiv Web API 集成
+- [x] **Pixiv Web API 集成** ✨ 新完成
 - [ ] 登录认证实现
 - [ ] 作品浏览功能
 - [ ] 搜索和发现功能
 - [ ] 排行榜功能
 - [ ] 用户个人资料
 - [ ] 离线缓存优化
+
+## 📖 Pixiv API 文档
+
+已成功集成 Pixiv Web API，提供完整的作品、用户、收藏、排行榜等功能支持。
+
+- **快速开始**: 查看 [PIXIV_API_QUICKSTART.md](PIXIV_API_QUICKSTART.md)
+- **完整文档**: 查看 [PIXIV_API_INTEGRATION.md](PIXIV_API_INTEGRATION.md)
+- **集成报告**: 查看 [INTEGRATION_SUMMARY.md](INTEGRATION_SUMMARY.md)
+
+### API 功能概览
+
+| 模块 | 功能 | 状态 |
+|------|------|------|
+| 插画 API | 详情、搜索、推荐、发现 | ✅ 完成 |
+| 用户 API | 信息、关注、作品列表 | ✅ 完成 |
+| 收藏 API | 添加、删除、批量操作 | ✅ 完成 |
+| 排行榜 API | 日榜、周榜、月榜等 | ✅ 完成 |
+| 评论 API | - | ⏳ 计划中 |
+| 小说 API | - | ⏳ 计划中 |
 
 ## 许可证
 

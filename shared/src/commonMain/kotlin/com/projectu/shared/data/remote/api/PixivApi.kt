@@ -1,0 +1,65 @@
+package com.projectu.shared.data.remote.api
+
+import io.ktor.client.HttpClient
+
+/**
+ * Pixiv API 统一门面
+ * 提供对所有 Pixiv API 的访问入口
+ * 
+ * @property client Pixiv API 客户端
+ * @property illustApi 插画 API
+ * @property userApi 用户 API
+ * @property bookmarkApi 收藏 API
+ * @property rankingApi 排行榜 API
+ */
+class PixivApi(
+    val client: PixivApiClient
+) {
+    /**
+     * 插画API
+     */
+    val illustApi: IllustApi = IllustApi(client)
+
+    /**
+     * 用户API
+     */
+    val userApi: UserApi = UserApi(client)
+
+    /**
+     * 收藏API
+     */
+    val bookmarkApi: BookmarkApi = BookmarkApi(client)
+
+    /**
+     * 排行榜API
+     */
+    val rankingApi: RankingApi = RankingApi(client)
+
+    companion object {
+        /**
+         * 创建 Pixiv API 实例
+         * @param httpClient Ktor HttpClient
+         * @param phpSessionId PHPSESSID cookie值
+         * @param token CSRF token（可选，会自动获取）
+         * @param host API主机地址
+         * @param lang 语言设置
+         */
+        fun create(
+            httpClient: HttpClient,
+            phpSessionId: String,
+            token: String? = null,
+            host: String = PixivApiClient.DEFAULT_HOST,
+            lang: String = PixivApiClient.DEFAULT_LANG
+        ): PixivApi {
+            val client = PixivApiClient(
+                httpClient = httpClient,
+                phpSessionId = phpSessionId,
+                token = token,
+                host = host,
+                lang = lang
+            )
+            return PixivApi(client)
+        }
+    }
+}
+
