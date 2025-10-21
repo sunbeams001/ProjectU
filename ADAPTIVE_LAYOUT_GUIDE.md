@@ -1,0 +1,413 @@
+# ProjectU - 自适应布局开发指南
+
+## 概述
+
+ProjectU 采用自适应布局设计，确保在不同尺寸设备上都有良好的用户体验：
+- **手机**：底部导航栏，2列网格
+- **平板**：侧边导航栏，3-4列网格
+- **桌面**：侧边导航栏，4列网格（与平板共享布局）
+
+## 窗口尺寸分类
+
+基于 Material Design 3 的自适应布局指南：
+
+| 分类 | 宽度范围 | 典型设备 | 布局特点 |
+|-----|---------|---------|---------|
+| **COMPACT** | < 600dp | 手机竖屏 | 单列，底部导航 |
+| **MEDIUM** | 600dp - 840dp | 手机横屏，小平板 | 2-3列，侧边导航 |
+| **EXPANDED** | > 840dp | 大平板，桌面 | 3-4列，侧边导航 |
+
+## 核心组件
+
+### 1. WindowSize
+
+定义在 `composeApp/src/commonMain/kotlin/com/projectu/ui/util/WindowSizeClass.kt`
+
+```kotlin
+data class WindowSize(
+    val width: Dp,                      // 窗口宽度
+    val height: Dp,                     // 窗口高度
+    val widthSizeClass: WindowSizeClass,  // 宽度分类
+    val heightSizeClass: WindowSizeClass, // 高度分类
+    val deviceType: DeviceType          // 设备类型
+)
+```
+
+### 2. rememberWindowSize()
+
+跨平台获取窗口尺寸：
+
+```kotlin
+@Composable
+fun MyScreen() {
+    val windowSize = rememberWindowSize()
+    
+    // 根据窗口尺寸调整布局
+    when (windowSize.widthSizeClass) {
+        WindowSizeClass.COMPACT -> { /* 紧凑布局 */ }
+        WindowSizeClass.MEDIUM -> { /* 中等布局 */ }
+        WindowSizeClass.EXPANDED -> { /* 扩展布局 */ }
+    }
+}
+```
+
+### 3. AdaptiveLayout
+
+自适应布局容器：
+
+```kotlin
+@Composable
+fun MyScreen() {
+    AdaptiveLayout(
+        phoneContent = { windowSize ->
+            // 手机布局
+            PhoneLayout()
+        },
+        tabletContent = { windowSize ->
+            // 平板/桌面布局
+            TabletLayout()
+        }
+    )
+}
+```
+
+### 4. SimpleAdaptiveLayout
+
+简化版（平板和桌面使用相同布局）：
+
+```kotlin
+@Composable
+fun MyScreen() {
+    SimpleAdaptiveLayout(
+        phoneContent = { windowSize ->
+            // 手机布局
+        },
+        tabletContent = { windowSize ->
+            // 平板+桌面布局
+        }
+    )
+}
+```
+
+## 开发规范
+
+### 1. Screen 结构
+
+每个 Screen 应该包含：
+
+```
+screens/myscreen/
+├── MyScreen.kt              # Screen 定义和自适应逻辑
+├── MyScreenPhone.kt         # 手机布局（私有）
+├── MyScreenTablet.kt        # 平板/桌面布局（私有）
+└── MyScreenViewModel.kt     # ViewModel（共享）
+```
+
+### 2. Screen 实现模板
+
+```kotlin
+// MyScreen.kt
+class MyScreen : Screen {
+    @Composable
+    override fun Content() {
+        SimpleAdaptiveLayout(
+            phoneContent = { windowSize -> MyScreenPhone(windowSize) },
+            tabletContent = { windowSize -> MyScreenTablet(windowSize) }
+        )
+    }
+}
+
+// MyScreenPhone.kt（私有）
+@Composable
+private fun MyScreenPhone(windowSize: WindowSize) {
+    // 手机布局：单列，底部操作栏
+    Column(modifier = Modifier.fillMaxSize()) {
+        // 内容
+    }
+}
+
+// MyScreenTablet.kt（私有）
+@Composable
+private fun MyScreenTablet(windowSize: WindowSize) {
+    // 平板布局：多列，侧边操作栏
+    Row(modifier = Modifier.fillMaxSize()) {
+        // 左侧：导航或列表
+        // 右侧：详情
+    }
+}
+```
+
+### 3. 使用 WindowSize 工具函数
+
+```kotlin
+@Composable
+fun MyContent() {
+    val windowSize = rememberWindowSize()
+    
+    // 获取自适应的列数
+    val columns = windowSize.getGridColumns()
+    
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(columns),
+        contentPadding = PaddingValues(windowSize.getScreenPadding())
+    ) {
+        // 网格内容
+    }
+}
+```
+
+### 4. 判断布局类型
+
+```kotlin
+@Composable
+fun MyComponent() {
+    val windowSize = rememberWindowSize()
+    
+    when {
+        windowSize.isPhoneLayout() -> {
+            // 手机特有UI
+            BottomSheet { /* ... */ }
+        }
+        windowSize.isTabletLayout() -> {
+            // 平板特有UI
+            Dialog { /* ... */ }
+        }
+    }
+}
+```
+
+## 布局模式
+
+### 手机布局（COMPACT）
+
+#### 导航
+- 底部导航栏（NavigationBar）
+- 4-5个主要Tab
+
+#### 列表
+- 2列瀑布流
+- 全宽详情页
+
+#### 对话框
+- BottomSheet 或全屏 Dialog
+
+```kotlin
+@Composable
+private fun PhoneLayout() {
+    Scaffold(
+        bottomBar = { NavigationBar { /* tabs */ } }
+    ) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2)
+        ) {
+            // 内容
+        }
+    }
+}
+```
+
+### 平板/桌面布局（MEDIUM/EXPANDED）
+
+#### 导航
+- 侧边导航栏（NavigationRail）
+- 固定在左侧
+
+#### 列表
+- 3-4列瀑布流
+- Master-Detail 双列布局
+
+#### 对话框
+- 居中 Dialog
+- 更大的尺寸
+
+```kotlin
+@Composable
+private fun TabletLayout() {
+    Row(modifier = Modifier.fillMaxSize()) {
+        // 侧边导航
+        NavigationRail {
+            // navigation items
+        }
+        
+        // 主内容区
+        Row(modifier = Modifier.weight(1f)) {
+            // 左：列表
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.weight(0.4f)
+            ) {
+                // 列表项
+            }
+            
+            // 右：详情
+            DetailPanel(
+                modifier = Modifier.weight(0.6f)
+            )
+        }
+    }
+}
+```
+
+## 实际示例
+
+### 1. 首页（已实现）
+
+**手机布局**：
+- 底部导航栏
+- 单列内容区
+
+**平板布局**：
+- 左侧导航栏（NavigationRail）
+- 更宽的内容区
+
+### 2. 作品列表（示例）
+
+```kotlin
+@Composable
+fun ArtworkListScreen() {
+    val windowSize = rememberWindowSize()
+    val columns = windowSize.getGridColumns()
+    
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(columns),
+        contentPadding = PaddingValues(windowSize.getScreenPadding())
+    ) {
+        items(artworks) { artwork ->
+            ArtworkCard(artwork)
+        }
+    }
+}
+```
+
+### 3. 作品详情（示例）
+
+**手机布局**：
+```kotlin
+@Composable
+private fun ArtworkDetailPhone(artwork: Artwork) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        // 图片（全宽）
+        ArtworkImage(artwork)
+        
+        // 信息（垂直排列）
+        ArtworkInfo(artwork)
+        UserInfo(artwork.user)
+        CommentsList(artwork)
+    }
+}
+```
+
+**平板布局**：
+```kotlin
+@Composable
+private fun ArtworkDetailTablet(artwork: Artwork) {
+    Row(modifier = Modifier.fillMaxSize()) {
+        // 左侧：图片（60%）
+        ArtworkImage(
+            artwork,
+            modifier = Modifier.weight(0.6f)
+        )
+        
+        // 右侧：信息（40%）
+        Column(modifier = Modifier.weight(0.4f)) {
+            ArtworkInfo(artwork)
+            UserInfo(artwork.user)
+            CommentsList(artwork)
+        }
+    }
+}
+```
+
+## 最佳实践
+
+### 1. 响应式间距
+
+```kotlin
+val padding = windowSize.getScreenPadding()
+val spacing = if (windowSize.isPhoneLayout()) 8.dp else 16.dp
+```
+
+### 2. 响应式字体
+
+```kotlin
+val titleStyle = if (windowSize.isPhoneLayout()) {
+    MaterialTheme.typography.titleMedium
+} else {
+    MaterialTheme.typography.titleLarge
+}
+```
+
+### 3. 条件渲染
+
+```kotlin
+// 只在平板上显示辅助面板
+if (windowSize.isTabletLayout()) {
+    SidePanel()
+}
+```
+
+### 4. 动画过渡
+
+```kotlin
+AnimatedContent(
+    targetState = windowSize.widthSizeClass,
+    transitionSpec = {
+        fadeIn() + slideInVertically() togetherWith
+        fadeOut() + slideOutVertically()
+    }
+) { sizeClass ->
+    when (sizeClass) {
+        WindowSizeClass.COMPACT -> PhoneLayout()
+        else -> TabletLayout()
+    }
+}
+```
+
+## 测试指南
+
+### Android 测试
+
+1. **手机模拟器**：Pixel 5 (1080x2340, 393dp x 851dp)
+2. **平板模拟器**：Pixel Tablet (1600x2560, 800dp x 1280dp)
+3. **折叠屏测试**：Galaxy Fold
+
+### Desktop 测试
+
+调整窗口大小测试不同断点：
+- 小窗口：800x600
+- 中等窗口：1280x800
+- 大窗口：1920x1080
+
+### 旋转测试
+
+确保横竖屏切换流畅：
+- 手机横屏应该变成 MEDIUM 布局
+- 状态应该保持
+
+## 常见问题
+
+### Q: 何时使用 AdaptiveLayout vs SimpleAdaptiveLayout？
+
+**A**: 
+- 如果桌面需要特殊布局 → `AdaptiveLayout`
+- 如果桌面和平板相同 → `SimpleAdaptiveLayout`（推荐）
+
+### Q: 如何处理横竖屏切换？
+
+**A**: `WindowSize` 会自动更新，使用 `remember` 保存状态：
+
+```kotlin
+var selectedItem by rememberSaveable { mutableStateOf<Item?>(null) }
+```
+
+### Q: 如何测试不同尺寸？
+
+**A**: 
+1. Android Studio：使用不同的 AVD
+2. Desktop：调整窗口大小
+3. 代码中可以 mock WindowSize
+
+---
+
+**提示**：始终优先考虑手机布局，然后扩展到平板和桌面！
+

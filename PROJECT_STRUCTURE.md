@@ -13,25 +13,41 @@
 ```
 composeApp/
 ├── src/
-│   ├── commonMain/              # 共享 UI 代码
+│   ├── commonMain/              # 共享 UI 代码（Android + Desktop）
 │   │   ├── kotlin/com/projectu/
 │   │   │   ├── App.kt           # 应用入口
 │   │   │   ├── ui/
-│   │   │   │   ├── screens/     # 页面
+│   │   │   │   ├── screens/     # 页面（共享逻辑）
 │   │   │   │   │   ├── home/
-│   │   │   │   │   │   ├── HomeScreen.kt     # 主页面（包含底部导航）
-│   │   │   │   │   │   └── tabs/             # 各个Tab页面
-│   │   │   │   │   ├── discovery/           # 发现页面
-│   │   │   │   │   ├── ranking/             # 排行榜页面
-│   │   │   │   │   ├── user/                # 用户页面
-│   │   │   │   │   ├── artwork/             # 作品详情页面
-│   │   │   │   │   └── login/               # 登录页面
+│   │   │   │   │   │   ├── HomeScreen.kt           # 主页面（共享逻辑）
+│   │   │   │   │   │   ├── HomeScreenPhone.kt      # 手机布局
+│   │   │   │   │   │   ├── HomeScreenTablet.kt     # 平板布局
+│   │   │   │   │   │   ├── HomeViewModel.kt        # ViewModel
+│   │   │   │   │   │   └── tabs/                   # 各个Tab页面
+│   │   │   │   │   ├── discovery/                 # 发现页面
+│   │   │   │   │   │   ├── DiscoveryScreen.kt
+│   │   │   │   │   │   ├── DiscoveryScreenPhone.kt
+│   │   │   │   │   │   ├── DiscoveryScreenTablet.kt
+│   │   │   │   │   │   └── DiscoveryViewModel.kt
+│   │   │   │   │   ├── ranking/                   # 排行榜页面
+│   │   │   │   │   ├── user/                      # 用户页面
+│   │   │   │   │   ├── artwork/                   # 作品详情页面
+│   │   │   │   │   │   ├── ArtworkDetailScreen.kt
+│   │   │   │   │   │   ├── ArtworkDetailPhone.kt
+│   │   │   │   │   │   ├── ArtworkDetailTablet.kt
+│   │   │   │   │   │   └── ArtworkDetailViewModel.kt
+│   │   │   │   │   └── login/                     # 登录页面
 │   │   │   │   ├── components/  # 可复用组件
-│   │   │   │   │   └── UgoiraPlayer.kt      # Ugoira 播放器
+│   │   │   │   │   ├── UgoiraPlayer.kt            # Ugoira 播放器
+│   │   │   │   │   ├── AdaptiveLayout.kt          # 自适应布局组件
+│   │   │   │   │   └── ResponsiveGrid.kt          # 响应式网格
 │   │   │   │   ├── navigation/  # 导航定义
-│   │   │   │   └── theme/       # 主题配置
-│   │   │   │       ├── Theme.kt
-│   │   │   │       └── Type.kt
+│   │   │   │   ├── theme/       # 主题配置
+│   │   │   │   │   ├── Theme.kt
+│   │   │   │   │   └── Type.kt
+│   │   │   │   └── util/        # UI 工具类
+│   │   │   │       ├── WindowSizeClass.kt         # 窗口尺寸分类
+│   │   │   │       └── DeviceType.kt              # 设备类型判断
 │   │   │   └── di/              # Koin 模块定义
 │   │   │       └── AppModule.kt
 │   │   └── resources/MR/        # 多语言资源
@@ -40,18 +56,22 @@ composeApp/
 │   │       ├── zh-rTW/          # 繁体中文
 │   │       ├── ja/              # 日文
 │   │       └── ko/              # 韩文
-│   ├── androidMain/             # Android 特定
+│   ├── androidMain/             # Android 特定（仅平台配置）
 │   │   ├── kotlin/
 │   │   │   └── com/projectu/
-│   │   │       ├── MainActivity.kt
-│   │   │       ├── PixivApplication.kt
+│   │   │       ├── MainActivity.kt               # Activity 入口
+│   │   │       ├── PixivApplication.kt           # Application
+│   │   │       ├── util/
+│   │   │       │   └── WindowSizeCalculator.kt   # 窗口尺寸计算
 │   │   │       └── di/
 │   │   │           └── PlatformModule.android.kt
 │   │   └── AndroidManifest.xml
-│   └── desktopMain/             # Desktop 特定
+│   └── desktopMain/             # Desktop 特定（仅平台配置）
 │       └── kotlin/
 │           └── com/projectu/
-│               ├── main.kt
+│               ├── main.kt                       # Desktop 入口
+│               ├── util/
+│               │   └── WindowSizeCalculator.kt   # 窗口尺寸计算
 │               └── di/
 │                   └── PlatformModule.desktop.kt
 └── build.gradle.kts

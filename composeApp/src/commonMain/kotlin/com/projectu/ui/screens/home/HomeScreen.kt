@@ -11,33 +11,96 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import com.projectu.ui.screens.home.tabs.*
+import com.projectu.ui.components.SimpleAdaptiveLayout
+import com.projectu.ui.util.WindowSize
 
 /**
  * 主屏幕 - 包含底部导航栏的容器
+ * 使用自适应布局支持手机和平板
  */
 class HomeScreen : Screen {
     
     @Composable
     override fun Content() {
-        TabNavigator(HomeTab) {
-            Scaffold(
-                bottomBar = {
-                    NavigationBar {
-                        TabNavigationItem(HomeTab)
-                        TabNavigationItem(DiscoveryTab)
-                        TabNavigationItem(RankingTab)
-                        TabNavigationItem(ProfileTab)
-                    }
+        SimpleAdaptiveLayout(
+            phoneContent = { windowSize -> HomeScreenPhone(windowSize) },
+            tabletContent = { windowSize -> HomeScreenTablet(windowSize) }
+        )
+    }
+}
+
+/**
+ * 手机布局 - 底部导航栏
+ */
+@Composable
+private fun HomeScreenPhone(windowSize: WindowSize) {
+    TabNavigator(HomeTab) {
+        Scaffold(
+            bottomBar = {
+                NavigationBar {
+                    TabNavigationItem(HomeTab)
+                    TabNavigationItem(DiscoveryTab)
+                    TabNavigationItem(RankingTab)
+                    TabNavigationItem(ProfileTab)
                 }
-            ) { paddingValues ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    it.current.Content()
-                }
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                it.current.Content()
+            }
+        }
+    }
+}
+
+/**
+ * 平板/桌面布局 - 侧边导航栏
+ */
+@Composable
+private fun HomeScreenTablet(windowSize: WindowSize) {
+    TabNavigator(HomeTab) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            // 侧边导航栏
+            NavigationRail(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Spacer(Modifier.height(16.dp))
+                NavigationRailItem(
+                    selected = it.current == HomeTab,
+                    onClick = { it.current = HomeTab },
+                    icon = { Icon(HomeTab.options.icon!!, contentDescription = null) },
+                    label = { Text(HomeTab.options.title) }
+                )
+                NavigationRailItem(
+                    selected = it.current == DiscoveryTab,
+                    onClick = { it.current = DiscoveryTab },
+                    icon = { Icon(DiscoveryTab.options.icon!!, contentDescription = null) },
+                    label = { Text(DiscoveryTab.options.title) }
+                )
+                NavigationRailItem(
+                    selected = it.current == RankingTab,
+                    onClick = { it.current = RankingTab },
+                    icon = { Icon(RankingTab.options.icon!!, contentDescription = null) },
+                    label = { Text(RankingTab.options.title) }
+                )
+                NavigationRailItem(
+                    selected = it.current == ProfileTab,
+                    onClick = { it.current = ProfileTab },
+                    icon = { Icon(ProfileTab.options.icon!!, contentDescription = null) },
+                    label = { Text(ProfileTab.options.title) }
+                )
+            }
+            
+            // 内容区域
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                it.current.Content()
             }
         }
     }
