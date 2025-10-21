@@ -1,0 +1,63 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+
+# Android
+*.apk
+*.ap_
+*.aab
+*.dex
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+google-services.json
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Kotlin
+*.kotlin_module
+
+# Compose
+*.compose
+
+# Room
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+
+# Cache
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.bak
+
+# Keystore
+*.jks
+*.keystore
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
