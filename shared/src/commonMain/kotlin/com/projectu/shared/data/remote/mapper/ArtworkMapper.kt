@@ -2,7 +2,6 @@ package com.projectu.shared.data.remote.mapper
 
 import com.projectu.shared.data.remote.dto.*
 import com.projectu.shared.domain.model.*
-import kotlinx.datetime.Instant
 
 /**
  * DTO到Domain模型的映射器
@@ -10,28 +9,35 @@ import kotlinx.datetime.Instant
 object ArtworkMapper {
     
     fun toDomain(dto: ArtworkDto): Artwork {
+        val userDto = dto.user
+        val imageUrlsDto = dto.imageUrls
         return Artwork(
             id = dto.id,
             title = dto.title,
             description = dto.description,
-            imageUrls = dto.imageUrls.toDomain(),
-            user = dto.user.toDomain(),
-            tags = dto.tags.map { it.toDomain() },
-            createDate = Instant.parse(dto.createDate),
-            pageCount = dto.pageCount,
-            width = dto.width,
-            height = dto.height,
-            viewCount = dto.viewCount,
-            bookmarkCount = dto.bookmarkCount,
-            likeCount = dto.likeCount,
-            commentCount = dto.commentCount,
-            isBookmarked = dto.isBookmarked,
             type = when (dto.type.lowercase()) {
-                "illust" -> ArtworkType.ILLUST
+                "illust", "illustration" -> ArtworkType.ILLUSTRATION
                 "manga" -> ArtworkType.MANGA
                 "ugoira" -> ArtworkType.UGOIRA
-                else -> ArtworkType.ILLUST
+                else -> ArtworkType.ILLUSTRATION
             },
+            imageUrls = listOf(imageUrlsDto.original),
+            width = dto.width,
+            height = dto.height,
+            pageCount = dto.pageCount,
+            userId = userDto.id,
+            userName = userDto.name,
+            userProfileImageUrl = userDto.profileImageUrls.medium,
+            tags = dto.tags.map { it.name },
+            viewCount = dto.viewCount,
+            likeCount = dto.likeCount,
+            bookmarkCount = dto.bookmarkCount,
+            commentCount = dto.commentCount,
+            createdTime = dto.createDate,
+            isBookmarked = dto.isBookmarked,
+            isMuted = false,
+            totalView = dto.viewCount,
+            totalBookmarks = dto.bookmarkCount,
             ageLimit = when (dto.xRestrict) {
                 0 -> AgeLimit.ALL_AGE
                 1 -> AgeLimit.R18

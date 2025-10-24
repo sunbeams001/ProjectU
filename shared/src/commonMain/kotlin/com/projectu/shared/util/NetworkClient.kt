@@ -38,8 +38,8 @@ object NetworkClient {
             
             // 默认请求配置
             install(DefaultRequest) {
-                header(HttpHeaders.ContentType, ContentType.Application.Json)
-                header(HttpHeaders.UserAgent, "ProjectU/1.0.0")
+                headers.append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                headers.append(HttpHeaders.UserAgent, "ProjectU/1.0.0")
             }
             
             // 超时配置

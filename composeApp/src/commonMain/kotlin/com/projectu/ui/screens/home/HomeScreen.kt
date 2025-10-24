@@ -7,12 +7,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
+import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.projectu.ui.components.SimpleAdaptiveLayout
 import com.projectu.ui.screens.settings.SettingsScreen
 import com.projectu.ui.util.WindowSize
@@ -74,26 +76,26 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                 NavigationRailItem(
                     selected = it.current == HomeTab,
                     onClick = { it.current = HomeTab },
-                    icon = { Icon(HomeTab.options.icon!!, contentDescription = null) },
-                    label = { Text(HomeTab.options.title) }
+                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                    label = { Text("首页") }
                 )
                 NavigationRailItem(
                     selected = it.current == DiscoveryTab,
                     onClick = { it.current = DiscoveryTab },
-                    icon = { Icon(DiscoveryTab.options.icon!!, contentDescription = null) },
-                    label = { Text(DiscoveryTab.options.title) }
+                    icon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    label = { Text("发现") }
                 )
                 NavigationRailItem(
                     selected = it.current == RankingTab,
                     onClick = { it.current = RankingTab },
-                    icon = { Icon(RankingTab.options.icon!!, contentDescription = null) },
-                    label = { Text(RankingTab.options.title) }
+                    icon = { Icon(Icons.Default.Star, contentDescription = null) },
+                    label = { Text("排行") }
                 )
                 NavigationRailItem(
                     selected = it.current == ProfileTab,
                     onClick = { it.current = ProfileTab },
-                    icon = { Icon(ProfileTab.options.icon!!, contentDescription = null) },
-                    label = { Text(ProfileTab.options.title) }
+                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    label = { Text("我的") }
                 )
             }
             
@@ -112,12 +114,26 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
 @Composable
 private fun RowScope.TabNavigationItem(tab: Tab) {
     val tabNavigator = cafe.adriel.voyager.navigator.tab.LocalTabNavigator.current
+    val title = when (tab) {
+        HomeTab -> "首页"
+        DiscoveryTab -> "发现"
+        RankingTab -> "排行"
+        ProfileTab -> "我的"
+        else -> ""
+    }
+    val icon = when (tab) {
+        HomeTab -> Icons.Default.Home
+        DiscoveryTab -> Icons.Default.Search
+        RankingTab -> Icons.Default.Star
+        ProfileTab -> Icons.Default.Person
+        else -> Icons.Default.Home
+    }
     
     NavigationBarItem(
         selected = tabNavigator.current == tab,
         onClick = { tabNavigator.current = tab },
-        icon = { Icon(tab.options.icon!!, contentDescription = tab.options.title) },
-        label = { Text(tab.options.title) }
+        icon = { Icon(icon, contentDescription = title) },
+        label = { Text(title) }
     )
 }
 
@@ -125,11 +141,16 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
 object HomeTab : Tab {
     override val options: TabOptions
         @Composable
-        get() = TabOptions(
-            index = 0u,
-            title = "首页",
-            icon = Icons.Default.Home
-        )
+        get() {
+            val icon = rememberVectorPainter(Icons.Default.Home)
+            return remember {
+                TabOptions(
+                    index = 0u,
+                    title = "首页",
+                    icon = icon
+                )
+            }
+        }
     
     @Composable
     override fun Content() {
@@ -170,11 +191,16 @@ fun HomeTabContent() {
 object DiscoveryTab : Tab {
     override val options: TabOptions
         @Composable
-        get() = TabOptions(
-            index = 1u,
-            title = "发现",
-            icon = Icons.Default.Search
-        )
+        get() {
+            val icon = rememberVectorPainter(Icons.Default.Search)
+            return remember {
+                TabOptions(
+                    index = 1u,
+                    title = "发现",
+                    icon = icon
+                )
+            }
+        }
     
     @Composable
     override fun Content() {
@@ -205,11 +231,16 @@ object DiscoveryTab : Tab {
 object RankingTab : Tab {
     override val options: TabOptions
         @Composable
-        get() = TabOptions(
-            index = 2u,
-            title = "排行",
-            icon = Icons.Default.Star
-        )
+        get() {
+            val icon = rememberVectorPainter(Icons.Default.Star)
+            return remember {
+                TabOptions(
+                    index = 2u,
+                    title = "排行",
+                    icon = icon
+                )
+            }
+        }
     
     @Composable
     override fun Content() {
@@ -240,11 +271,16 @@ object RankingTab : Tab {
 object ProfileTab : Tab {
     override val options: TabOptions
         @Composable
-        get() = TabOptions(
-            index = 3u,
-            title = "我的",
-            icon = Icons.Default.Person
-        )
+        get() {
+            val icon = rememberVectorPainter(Icons.Default.Person)
+            return remember {
+                TabOptions(
+                    index = 3u,
+                    title = "我的",
+                    icon = icon
+                )
+            }
+        }
     
     @Composable
     override fun Content() {

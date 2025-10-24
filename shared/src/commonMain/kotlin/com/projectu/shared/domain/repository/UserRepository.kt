@@ -11,7 +11,7 @@ interface UserRepository {
     /**
      * 登录
      */
-    suspend fun login(username: String, password: String): Result<String>
+    suspend fun login(username: String, password: String): Result<User>
     
     /**
      * 登出
@@ -21,7 +21,7 @@ interface UserRepository {
     /**
      * 获取当前登录用户信息
      */
-    suspend fun getCurrentUser(): Result<User?>
+    suspend fun getCurrentUser(): Result<User>
     
     /**
      * 根据ID获取用户信息
@@ -39,13 +39,8 @@ interface UserRepository {
     suspend fun unfollowUser(userId: String): Result<Unit>
     
     /**
-     * 获取关注列表
+     * 观察当前用户（Flow版本）
      */
-    fun getFollowingUsers(): Flow<Result<List<User>>>
-    
-    /**
-     * 检查是否已登录
-     */
-    suspend fun isLoggedIn(): Boolean
+    fun observeCurrentUser(): Flow<User?>
 }
 

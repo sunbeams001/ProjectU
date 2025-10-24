@@ -26,18 +26,21 @@ import kotlinx.serialization.json.encodeToJsonElement
  * @property lang 语言设置，默认为中文
  */
 class PixivApiClient(
-    private val httpClient: HttpClient,
+    @PublishedApi
+    internal val httpClient: HttpClient,
     private val phpSessionId: String,
     private val token: String? = null,
-    private val host: String = DEFAULT_HOST,
-    private val lang: String = DEFAULT_LANG
+    @PublishedApi
+    internal val host: String = DEFAULT_HOST,
+    @PublishedApi
+    internal val lang: String = DEFAULT_LANG
 ) {
     companion object {
         const val DEFAULT_HOST = "https://www.pixiv.net"
         const val DEFAULT_LANG = "zh"
-        private const val HEADER_REFERER = "Referer"
-        private const val HEADER_COOKIE = "Cookie"
-        private const val HEADER_CSRF_TOKEN = "x-csrf-token"
+        const val HEADER_REFERER = "Referer"
+        const val HEADER_COOKIE = "Cookie"
+        const val HEADER_CSRF_TOKEN = "x-csrf-token"
     }
 
     /**
@@ -45,8 +48,11 @@ class PixivApiClient(
      */
     val userId: Long = phpSessionId.split("_")[0].toLong()
 
-    private val cookie: String = "PHPSESSID=$phpSessionId"
-    private var csrfToken: String? = token
+    @PublishedApi
+    internal val cookie: String = "PHPSESSID=$phpSessionId"
+    
+    @PublishedApi
+    internal var csrfToken: String? = token
 
     /**
      * 执行GET请求
@@ -132,7 +138,8 @@ class PixivApiClient(
     /**
      * 从服务器获取CSRF Token
      */
-    private suspend fun fetchToken(): String {
+    @PublishedApi
+    internal suspend fun fetchToken(): String {
         val html = httpClient.get("$host/setting_user.php") {
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)

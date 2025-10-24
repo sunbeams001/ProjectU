@@ -27,6 +27,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -67,11 +68,13 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.ktor.client.cio)
         }
         
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.cio)
         }
     }
 }
