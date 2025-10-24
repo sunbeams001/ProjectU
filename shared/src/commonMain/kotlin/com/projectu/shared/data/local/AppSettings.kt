@@ -1,0 +1,82 @@
+package com.projectu.shared.data.local
+
+/**
+ * 应用设置数据模型
+ * 存储应用的各项配置信息
+ */
+data class AppSettings(
+    /**
+     * 应用界面语言
+     * 支持：zh-CN(简体中文), zh-TW(繁体中文), en(英文), ja(日文), ko(韩文)
+     */
+    val appLanguage: AppLanguage = AppLanguage.SIMPLIFIED_CHINESE,
+    
+    /**
+     * Pixiv API 语言偏好
+     * 用于从 Pixiv 获取数据时的语言设置
+     */
+    val pixivLanguage: PixivLanguage = PixivLanguage.SIMPLIFIED_CHINESE,
+    
+    /**
+     * 主题设置
+     * 支持：LIGHT(浅色), DARK(深色), SYSTEM(跟随系统)
+     */
+    val themeMode: ThemeMode = ThemeMode.SYSTEM
+) {
+    companion object {
+        /**
+         * 默认设置
+         */
+        val DEFAULT = AppSettings()
+    }
+}
+
+/**
+ * 应用界面语言枚举
+ */
+enum class AppLanguage(val code: String, val displayName: String) {
+    SIMPLIFIED_CHINESE("zh-CN", "简体中文"),
+    TRADITIONAL_CHINESE("zh-TW", "繁體中文"),
+    ENGLISH("en", "English"),
+    JAPANESE("ja", "日本語"),
+    KOREAN("ko", "한국어");
+    
+    companion object {
+        /**
+         * 从语言代码获取枚举
+         */
+        fun fromCode(code: String): AppLanguage {
+            return values().find { it.code == code } ?: SIMPLIFIED_CHINESE
+        }
+    }
+}
+
+/**
+ * Pixiv API 语言枚举
+ */
+enum class PixivLanguage(val code: String, val displayName: String) {
+    SIMPLIFIED_CHINESE("zh", "简体中文"),
+    TRADITIONAL_CHINESE("zh_tw", "繁體中文"),
+    ENGLISH("en", "English"),
+    JAPANESE("ja", "日本語"),
+    KOREAN("ko", "한국어");
+    
+    companion object {
+        /**
+         * 从语言代码获取枚举
+         */
+        fun fromCode(code: String): PixivLanguage {
+            return values().find { it.code == code } ?: SIMPLIFIED_CHINESE
+        }
+    }
+}
+
+/**
+ * 主题模式枚举
+ */
+enum class ThemeMode {
+    LIGHT,      // 浅色主题
+    DARK,       // 深色主题
+    SYSTEM      // 跟随系统
+}
+

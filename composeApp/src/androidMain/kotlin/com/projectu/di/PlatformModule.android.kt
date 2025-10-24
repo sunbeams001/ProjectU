@@ -1,7 +1,12 @@
 package com.projectu.di
 
+import com.projectu.shared.data.local.SettingsStore
+import com.projectu.shared.data.repository.SettingsRepositoryImpl
+import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
+import com.projectu.ui.screens.settings.SettingsViewModel
 import io.ktor.client.engine.cio.*
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -10,11 +15,13 @@ actual val networkModule: Module = module {
 }
 
 actual val databaseModule: Module = module {
-    // TODO: 配置Android数据库
+    // 设置存储
+    single { SettingsStore() }
 }
 
 actual val repositoryModule: Module = module {
-    // TODO: Repository实现
+    // 设置仓储
+    single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 }
 
 actual val useCaseModule: Module = module {
@@ -22,6 +29,7 @@ actual val useCaseModule: Module = module {
 }
 
 actual val viewModelModule: Module = module {
-    // TODO: ViewModel实现
+    // 设置 ViewModel
+    viewModel { SettingsViewModel(get()) }
 }
 

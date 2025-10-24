@@ -58,6 +58,15 @@
     
     <!-- Settings -->
     <string name="settings_title">设置</string>
+    <string name="settings_general">通用设置</string>
+    <string name="settings_pixiv">Pixiv 设置</string>
+    <string name="settings_app_language">应用语言</string>
+    <string name="settings_pixiv_language">Pixiv 语言偏好</string>
+    <string name="settings_pixiv_language_desc">获取 Pixiv 数据时的语言设置</string>
+    <string name="settings_theme_mode">主题模式</string>
+    <string name="settings_select_app_language">选择应用语言</string>
+    <string name="settings_select_pixiv_language">选择 Pixiv 语言</string>
+    <string name="settings_select_theme">选择主题</string>
     <string name="settings_language">语言</string>
     <string name="settings_theme">主题</string>
     <string name="settings_cache">缓存</string>

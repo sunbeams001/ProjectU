@@ -44,6 +44,21 @@ class PixivConfigStore {
     }
     
     /**
+     * 设置语言
+     * @param language Pixiv 语言代码
+     */
+    fun setLanguage(language: String) {
+        _config.value = _config.value.copy(language = language)
+    }
+    
+    /**
+     * 从应用设置同步 Pixiv 语言
+     */
+    fun syncLanguageFromSettings(pixivLanguage: PixivLanguage) {
+        _config.value = _config.value.copy(language = pixivLanguage.code)
+    }
+    
+    /**
      * 清除配置（登出）
      */
     fun clear() {

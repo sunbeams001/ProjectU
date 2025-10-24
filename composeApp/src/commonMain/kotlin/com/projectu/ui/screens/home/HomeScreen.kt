@@ -9,9 +9,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.projectu.ui.components.SimpleAdaptiveLayout
+import com.projectu.ui.screens.settings.SettingsScreen
 import com.projectu.ui.util.WindowSize
 
 /**
@@ -245,6 +248,8 @@ object ProfileTab : Tab {
     
     @Composable
     override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -263,6 +268,20 @@ object ProfileTab : Tab {
                     text = "我的",
                     style = MaterialTheme.typography.headlineMedium
                 )
+                
+                // 设置按钮
+                Button(
+                    onClick = { navigator.push(SettingsScreen()) },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("设置")
+                }
             }
         }
     }
