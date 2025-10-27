@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.compose)
-    alias(libs.plugins.moko.resources)
 }
 
 kotlin {
@@ -50,9 +49,8 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
             
-            // Moko Resources多语言
-            implementation(libs.moko.resources)
-            implementation(libs.moko.resources.compose)
+            // Compose Resources多语言 (内置支持)
+            implementation(compose.components.resources)
             
             // Kotlinx库
             implementation(libs.kotlinx.coroutines.core)
@@ -131,7 +129,4 @@ compose.desktop {
     }
 }
 
-multiplatformResources {
-    resourcesPackage.set("com.projectu.resources")
-}
 

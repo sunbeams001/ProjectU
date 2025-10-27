@@ -17,6 +17,22 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.Res
+import projectu.composeapp.generated.resources.settings_title
+import projectu.composeapp.generated.resources.settings_general
+import projectu.composeapp.generated.resources.settings_pixiv
+import projectu.composeapp.generated.resources.settings_app_language
+import projectu.composeapp.generated.resources.settings_pixiv_language
+import projectu.composeapp.generated.resources.settings_pixiv_language_desc
+import projectu.composeapp.generated.resources.settings_theme_mode
+import projectu.composeapp.generated.resources.settings_select_app_language
+import projectu.composeapp.generated.resources.settings_select_pixiv_language
+import projectu.composeapp.generated.resources.settings_select_theme
+import projectu.composeapp.generated.resources.theme_light
+import projectu.composeapp.generated.resources.theme_dark
+import projectu.composeapp.generated.resources.theme_system
+import projectu.composeapp.generated.resources.common_cancel
 import org.koin.compose.koinInject
 
 /**
@@ -61,10 +77,10 @@ private fun SettingsScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("设置") },
+                title = { Text(stringResource(Res.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.settings_title))
                     }
                 }
             )
@@ -78,13 +94,13 @@ private fun SettingsScreenContent(
         ) {
             // 通用设置分组
             item {
-                SettingsGroupHeader(title = "通用设置")
+                SettingsGroupHeader(title = stringResource(Res.string.settings_general))
             }
             
             // 应用语言设置
             item {
                 SettingsItem(
-                    title = "应用语言",
+                    title = stringResource(Res.string.settings_app_language),
                     subtitle = currentAppLanguage.displayName,
                     onClick = { showAppLanguageDialog = true }
                 )
@@ -93,11 +109,11 @@ private fun SettingsScreenContent(
             // 主题设置
             item {
                 SettingsItem(
-                    title = "主题模式",
+                    title = stringResource(Res.string.settings_theme_mode),
                     subtitle = when (currentThemeMode) {
-                        ThemeMode.LIGHT -> "浅色"
-                        ThemeMode.DARK -> "深色"
-                        ThemeMode.SYSTEM -> "跟随系统"
+                        ThemeMode.LIGHT -> stringResource(Res.string.theme_light)
+                        ThemeMode.DARK -> stringResource(Res.string.theme_dark)
+                        ThemeMode.SYSTEM -> stringResource(Res.string.theme_system)
                     },
                     onClick = { showThemeDialog = true }
                 )
@@ -105,15 +121,15 @@ private fun SettingsScreenContent(
             
             // Pixiv 设置分组
             item {
-                SettingsGroupHeader(title = "Pixiv 设置")
+                SettingsGroupHeader(title = stringResource(Res.string.settings_pixiv))
             }
             
             // Pixiv 语言设置
             item {
                 SettingsItem(
-                    title = "Pixiv 语言偏好",
+                    title = stringResource(Res.string.settings_pixiv_language),
                     subtitle = currentPixivLanguage.displayName,
-                    description = "获取 Pixiv 数据时的语言设置",
+                    description = stringResource(Res.string.settings_pixiv_language_desc),
                     onClick = { showPixivLanguageDialog = true }
                 )
             }
@@ -123,7 +139,7 @@ private fun SettingsScreenContent(
     // 应用语言选择对话框
     if (showAppLanguageDialog) {
         LanguageSelectionDialog(
-            title = "选择应用语言",
+            title = stringResource(Res.string.settings_select_app_language),
             languages = AppLanguage.values().map { it.displayName },
             selectedIndex = AppLanguage.values().indexOf(currentAppLanguage),
             onSelect = { index ->
@@ -137,7 +153,7 @@ private fun SettingsScreenContent(
     // Pixiv 语言选择对话框
     if (showPixivLanguageDialog) {
         LanguageSelectionDialog(
-            title = "选择 Pixiv 语言",
+            title = stringResource(Res.string.settings_select_pixiv_language),
             languages = PixivLanguage.values().map { it.displayName },
             selectedIndex = PixivLanguage.values().indexOf(currentPixivLanguage),
             onSelect = { index ->
@@ -268,7 +284,7 @@ private fun LanguageSelectionDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(Res.string.common_cancel))
             }
         }
     )
@@ -284,14 +300,14 @@ private fun ThemeSelectionDialog(
     onDismiss: () -> Unit
 ) {
     val themes = listOf(
-        ThemeMode.LIGHT to "浅色",
-        ThemeMode.DARK to "深色",
-        ThemeMode.SYSTEM to "跟随系统"
+        ThemeMode.LIGHT to stringResource(Res.string.theme_light),
+        ThemeMode.DARK to stringResource(Res.string.theme_dark),
+        ThemeMode.SYSTEM to stringResource(Res.string.theme_system)
     )
     
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("选择主题") },
+        title = { Text(stringResource(Res.string.settings_select_theme)) },
         text = {
             Column {
                 themes.forEach { (mode, name) ->
@@ -322,7 +338,7 @@ private fun ThemeSelectionDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(Res.string.common_cancel))
             }
         }
     )

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">ProjectU</string>
+    
+    <!-- Bottom Navigation -->
+    <string name="nav_home">首頁</string>
+    <string name="nav_discovery">發現</string>
+    <string name="nav_ranking">排行榜</string>
+    <string name="nav_profile">我的</string>
+    
+    <!-- Home Screen -->
+    <string name="home_recommended">推薦</string>
+    <string name="home_following">關注</string>
+    <string name="home_framework_complete">專案框架搭建完成</string>
+    
+    <!-- Discovery Screen -->
+    <string name="discovery_search_hint">搜尋作品、用戶...</string>
+    <string name="discovery_trending_tags">熱門標籤</string>
+    <string name="discovery_recent_searches">最近搜尋</string>
+    
+    <!-- Ranking Screen -->
+    <string name="ranking_daily">日榜</string>
+    <string name="ranking_weekly">週榜</string>
+    <string name="ranking_monthly">月榜</string>
+    <string name="ranking_rookie">新人</string>
+    <string name="ranking_original">原創</string>
+    <string name="ranking_male">男性向</string>
+    <string name="ranking_female">女性向</string>
+    
+    <!-- Profile Screen -->
+    <string name="profile_bookmarks">收藏</string>
+    <string name="profile_following">關注</string>
+    <string name="profile_history">歷史記錄</string>
+    <string name="profile_settings">設定</string>
+    
+    <!-- Artwork Detail -->
+    <string name="artwork_views">瀏覽</string>
+    <string name="artwork_bookmarks">收藏</string>
+    <string name="artwork_comments">評論</string>
+    <string name="artwork_share">分享</string>
+    <string name="artwork_download">下載</string>
+    
+    <!-- User Profile -->
+    <string name="user_follow">關注</string>
+    <string name="user_unfollow">取消關注</string>
+    <string name="user_followers">粉絲</string>
+    <string name="user_works">作品</string>
+    <string name="user_bookmarks">收藏</string>
+    
+    <!-- Login -->
+    <string name="login_title">登入 Pixiv</string>
+    <string name="login_username">用戶名或郵箱</string>
+    <string name="login_password">密碼</string>
+    <string name="login_button">登入</string>
+    <string name="login_forgot_password">忘記密碼？</string>
+    <string name="login_register">建立帳號</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">設定</string>
+    <string name="settings_general">通用設定</string>
+    <string name="settings_pixiv">Pixiv 設定</string>
+    <string name="settings_app_language">應用程式語言</string>
+    <string name="settings_pixiv_language">Pixiv 語言偏好</string>
+    <string name="settings_pixiv_language_desc">獲取 Pixiv 資料時的語言設定</string>
+    <string name="settings_theme_mode">主題模式</string>
+    <string name="settings_select_app_language">選擇應用程式語言</string>
+    <string name="settings_select_pixiv_language">選擇 Pixiv 語言</string>
+    <string name="settings_select_theme">選擇主題</string>
+    <string name="settings_language">語言</string>
+    <string name="settings_theme">主題</string>
+    <string name="settings_cache">快取</string>
+    <string name="settings_clear_cache">清除快取</string>
+    <string name="settings_about">關於</string>
+    <string name="settings_logout">登出</string>
+    
+    <!-- Languages -->
+    <string name="language_en">English</string>
+    <string name="language_zh_cn">简体中文</string>
+    <string name="language_zh_tw">繁體中文</string>
+    <string name="language_ja">日本語</string>
+    <string name="language_ko">한국어</string>
+    
+    <!-- Theme -->
+    <string name="theme_light">淺色</string>
+    <string name="theme_dark">深色</string>
+    <string name="theme_system">跟隨系統</string>
+    
+    <!-- Common -->
+    <string name="common_loading">載入中...</string>
+    <string name="common_error">發生錯誤</string>
+    <string name="common_retry">重試</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_confirm">確認</string>
+    <string name="common_save">儲存</string>
+    <string name="common_delete">刪除</string>
+    <string name="common_edit">編輯</string>
+    <string name="common_done">完成</string>
+    
+    <!-- Ugoira -->
+    <string name="ugoira_play">播放</string>
+    <string name="ugoira_pause">暫停</string>
+    <string name="ugoira_speed">速度</string>
+    <string name="ugoira_downloading">正在下載動圖...</string>
+</resources>
+

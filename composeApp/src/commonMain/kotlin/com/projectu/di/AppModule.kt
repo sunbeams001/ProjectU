@@ -1,8 +1,10 @@
 package com.projectu.di
 
+import com.projectu.ui.localization.LocaleManager
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
+import org.koin.dsl.module
 
 /**
  * 初始化Koin依赖注入
@@ -10,6 +12,7 @@ import org.koin.dsl.KoinAppDeclaration
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     appDeclaration()
     modules(
+        commonModule,
         networkModule,
         databaseModule,
         repositoryModule,
@@ -42,4 +45,12 @@ expect val useCaseModule: Module
  * ViewModel模块
  */
 expect val viewModelModule: Module
+
+/**
+ * 通用模块 - 跨平台共享的组件
+ */
+val commonModule: Module = module {
+    // 语言管理器 - 现在是纯 Kotlin 实现，无需平台特定代码
+    single { LocaleManager() }
+}
 

@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.jetbrains.compose) apply false
-    alias(libs.plugins.moko.resources) apply false
     alias(libs.plugins.room) apply false
     alias(libs.plugins.ksp) apply false
 }

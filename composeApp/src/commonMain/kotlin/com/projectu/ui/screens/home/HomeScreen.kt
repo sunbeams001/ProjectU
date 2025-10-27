@@ -18,6 +18,14 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.projectu.ui.components.SimpleAdaptiveLayout
 import com.projectu.ui.screens.settings.SettingsScreen
 import com.projectu.ui.util.WindowSize
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.Res
+import projectu.composeapp.generated.resources.nav_home
+import projectu.composeapp.generated.resources.nav_discovery
+import projectu.composeapp.generated.resources.nav_ranking
+import projectu.composeapp.generated.resources.nav_profile
+import projectu.composeapp.generated.resources.home_framework_complete
+import projectu.composeapp.generated.resources.settings_title
 
 /**
  * 主屏幕 - 包含底部导航栏的容器
@@ -77,25 +85,25 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                     selected = it.current == HomeTab,
                     onClick = { it.current = HomeTab },
                     icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                    label = { Text("首页") }
+                    label = { Text(stringResource(Res.string.nav_home)) }
                 )
                 NavigationRailItem(
                     selected = it.current == DiscoveryTab,
                     onClick = { it.current = DiscoveryTab },
                     icon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    label = { Text("发现") }
+                    label = { Text(stringResource(Res.string.nav_discovery)) }
                 )
                 NavigationRailItem(
                     selected = it.current == RankingTab,
                     onClick = { it.current = RankingTab },
                     icon = { Icon(Icons.Default.Star, contentDescription = null) },
-                    label = { Text("排行") }
+                    label = { Text(stringResource(Res.string.nav_ranking)) }
                 )
                 NavigationRailItem(
                     selected = it.current == ProfileTab,
                     onClick = { it.current = ProfileTab },
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
-                    label = { Text("我的") }
+                    label = { Text(stringResource(Res.string.nav_profile)) }
                 )
             }
             
@@ -115,10 +123,10 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
 private fun RowScope.TabNavigationItem(tab: Tab) {
     val tabNavigator = cafe.adriel.voyager.navigator.tab.LocalTabNavigator.current
     val title = when (tab) {
-        HomeTab -> "首页"
-        DiscoveryTab -> "发现"
-        RankingTab -> "排行"
-        ProfileTab -> "我的"
+        HomeTab -> stringResource(Res.string.nav_home)
+        DiscoveryTab -> stringResource(Res.string.nav_discovery)
+        RankingTab -> stringResource(Res.string.nav_ranking)
+        ProfileTab -> stringResource(Res.string.nav_profile)
         else -> ""
     }
     val icon = when (tab) {
@@ -143,10 +151,11 @@ object HomeTab : Tab {
         @Composable
         get() {
             val icon = rememberVectorPainter(Icons.Default.Home)
-            return remember {
+            val title = stringResource(Res.string.nav_home)
+            return remember(title) {
                 TabOptions(
                     index = 0u,
-                    title = "首页",
+                    title = title,
                     icon = icon
                 )
             }
@@ -175,11 +184,11 @@ fun HomeTabContent() {
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "首页",
+                text = stringResource(Res.string.nav_home),
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "项目框架搭建完成",
+                text = stringResource(Res.string.home_framework_complete),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -193,10 +202,11 @@ object DiscoveryTab : Tab {
         @Composable
         get() {
             val icon = rememberVectorPainter(Icons.Default.Search)
-            return remember {
+            val title = stringResource(Res.string.nav_discovery)
+            return remember(title) {
                 TabOptions(
                     index = 1u,
-                    title = "发现",
+                    title = title,
                     icon = icon
                 )
             }
@@ -219,7 +229,7 @@ object DiscoveryTab : Tab {
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "发现",
+                    text = stringResource(Res.string.nav_discovery),
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
@@ -233,10 +243,11 @@ object RankingTab : Tab {
         @Composable
         get() {
             val icon = rememberVectorPainter(Icons.Default.Star)
-            return remember {
+            val title = stringResource(Res.string.nav_ranking)
+            return remember(title) {
                 TabOptions(
                     index = 2u,
-                    title = "排行",
+                    title = title,
                     icon = icon
                 )
             }
@@ -259,7 +270,7 @@ object RankingTab : Tab {
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "排行榜",
+                    text = stringResource(Res.string.nav_ranking),
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
@@ -273,10 +284,11 @@ object ProfileTab : Tab {
         @Composable
         get() {
             val icon = rememberVectorPainter(Icons.Default.Person)
-            return remember {
+            val title = stringResource(Res.string.nav_profile)
+            return remember(title) {
                 TabOptions(
                     index = 3u,
-                    title = "我的",
+                    title = title,
                     icon = icon
                 )
             }
@@ -301,7 +313,7 @@ object ProfileTab : Tab {
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "我的",
+                    text = stringResource(Res.string.nav_profile),
                     style = MaterialTheme.typography.headlineMedium
                 )
                 
@@ -316,7 +328,7 @@ object ProfileTab : Tab {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("设置")
+                    Text(stringResource(Res.string.settings_title))
                 }
             }
         }
