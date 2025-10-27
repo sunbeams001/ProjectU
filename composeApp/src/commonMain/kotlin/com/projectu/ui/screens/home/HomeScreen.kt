@@ -307,7 +307,7 @@ object ProfileTab : Tab {
                 
                 // 设置按钮
                 Button(
-                    onClick = { navigator.push(SettingsScreen()) },
+                    onClick = { navigator.parent?.push(SettingsScreen()) },
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
                     Icon(
