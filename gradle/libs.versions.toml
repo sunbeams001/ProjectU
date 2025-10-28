@@ -6,6 +6,7 @@ agp = "8.13.0"
 koin = "4.1.1"
 ktor = "3.3.1"
 room = "2.8.3"
+sqlite = "2.6.1"
 datastore = "1.1.7"
 voyager = "1.1.0-beta03"
 coil = "3.3.0"
@@ -38,6 +39,7 @@ ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 # Room
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+sqlite-driver-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 # DataStore
 datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }

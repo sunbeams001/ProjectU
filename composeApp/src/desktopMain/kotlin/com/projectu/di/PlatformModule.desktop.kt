@@ -2,6 +2,10 @@ package com.projectu.di
 
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.projectu.shared.data.local.SettingsStore
+import com.projectu.shared.data.local.dao.SettingsDao
+import com.projectu.shared.data.local.database.AppDatabase
+import com.projectu.shared.data.local.database.getDatabaseBuilder
+import com.projectu.shared.data.local.database.getRoomDatabase
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
@@ -15,8 +19,17 @@ actual val networkModule: Module = module {
 }
 
 actual val databaseModule: Module = module {
+    // 数据库实例 - 按照官方文档标准实现
+    single {
+        val builder = getDatabaseBuilder()
+        getRoomDatabase(builder)
+    }
+    
+    // DAO
+    single<SettingsDao> { get<AppDatabase>().settingsDao() }
+    
     // 设置存储
-    single { SettingsStore() }
+    single { SettingsStore(get()) }
 }
 
 actual val repositoryModule: Module = module {

@@ -33,6 +33,7 @@ kotlin {
             
             // Room数据库
             implementation(libs.room.runtime)
+            implementation(libs.sqlite.driver.bundled)
             
             // DataStore
             implementation(libs.datastore.preferences)

@@ -2,18 +2,47 @@ package com.projectu.ui.localization
 
 import androidx.compose.runtime.*
 import com.projectu.shared.data.local.AppLanguage
+import com.projectu.shared.domain.repository.SettingsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * 语言配置管理器
- * 管理应用的当前语言设置，支持运行时切换
+ * 管理应用的当前语言设置，支持运行时切换和持久化存储
  * 使用 Compose Resources 自动处理多语言
  */
-class LocaleManager {
+class LocaleManager(
+    private val settingsRepository: SettingsRepository,
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+) {
     private val _currentLanguage = MutableStateFlow(AppLanguage.SIMPLIFIED_CHINESE)
     val currentLanguage: StateFlow<AppLanguage> = _currentLanguage.asStateFlow()
+    
+    init {
+        // 应用启动时从数据库加载语言设置
+        loadLanguageFromDatabase()
+    }
+    
+    /**
+     * 从数据库加载语言设置
+     */
+    private fun loadLanguageFromDatabase() {
+        coroutineScope.launch {
+            try {
+                val settings = settingsRepository.getCurrentSettings()
+                _currentLanguage.value = settings.appLanguage
+                setSystemLocale(settings.appLanguage)
+            } catch (e: Exception) {
+                // 如果加载失败，使用默认语言
+                _currentLanguage.value = AppLanguage.SIMPLIFIED_CHINESE
+                setSystemLocale(AppLanguage.SIMPLIFIED_CHINESE)
+            }
+        }
+    }
     
     /**
      * 设置当前语言
@@ -21,8 +50,17 @@ class LocaleManager {
      */
     fun setLanguage(language: AppLanguage) {
         _currentLanguage.value = language
-        // 设置系统默认 Locale，Compose Resources 会自动使用
         setSystemLocale(language)
+        
+        // 保存到数据库
+        coroutineScope.launch {
+            try {
+                settingsRepository.updateAppLanguage(language)
+            } catch (e: Exception) {
+                // 如果保存失败，记录错误但不影响UI更新
+                println("Failed to save language setting: ${e.message}")
+            }
+        }
     }
     
     /**

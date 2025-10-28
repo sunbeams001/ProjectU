@@ -1,11 +1,17 @@
 package com.projectu.di
 
 import com.projectu.shared.data.local.SettingsStore
+import com.projectu.shared.data.local.dao.SettingsDao
+import com.projectu.shared.data.local.database.AppDatabase
+import com.projectu.shared.data.local.database.ContextHolder
+import com.projectu.shared.data.local.database.getDatabaseBuilder
+import com.projectu.shared.data.local.database.getRoomDatabase
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
 import com.projectu.ui.screens.settings.SettingsViewModel
 import io.ktor.client.engine.cio.*
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -15,8 +21,17 @@ actual val networkModule: Module = module {
 }
 
 actual val databaseModule: Module = module {
+    // 数据库实例 - 按照官方文档标准实现
+    single {
+        val builder = getDatabaseBuilder()
+        getRoomDatabase(builder)
+    }
+    
+    // DAO
+    single<SettingsDao> { get<AppDatabase>().settingsDao() }
+    
     // 设置存储
-    single { SettingsStore() }
+    single { SettingsStore(get()) }
 }
 
 actual val repositoryModule: Module = module {

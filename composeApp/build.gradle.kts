@@ -67,12 +67,18 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.cio)
+            
+            // Room数据库依赖 - Android平台需要
+            implementation(libs.room.runtime)
         }
         
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
+            
+            // Room数据库依赖 - Desktop平台需要
+            implementation(libs.room.runtime)
         }
     }
 }

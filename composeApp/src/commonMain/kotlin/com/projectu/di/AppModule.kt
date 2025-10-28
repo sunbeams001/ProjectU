@@ -50,7 +50,7 @@ expect val viewModelModule: Module
  * 通用模块 - 跨平台共享的组件
  */
 val commonModule: Module = module {
-    // 语言管理器 - 现在是纯 Kotlin 实现，无需平台特定代码
-    single { LocaleManager() }
+    // 语言管理器 - 需要 SettingsRepository 依赖
+    single { LocaleManager(get()) }
 }
 
