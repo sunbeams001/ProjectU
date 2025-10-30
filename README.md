@@ -1,241 +1,356 @@
 # ProjectU - Pixiv Kotlin Multiplatform Client
 
-一个使用 Kotlin Compose Multiplatform 开发的跨平台 Pixiv 客户端应用。
+> 📅 最后更新: 2025-10-30  
+> 🚀 当前版本: v0.1.0-alpha  
+> 📱 支持平台: Android (API 24+) | Desktop (Windows/Mac/Linux)
 
-## 项目简介
+一个使用 Kotlin Compose Multiplatform 开发的现代化跨平台 Pixiv 客户端。
 
-ProjectU 是一个现代化的 Pixiv 客户端，支持 Android 和 Desktop (Windows/Mac/Linux) 平台，采用最新的技术栈和架构设计。
+---
 
-### 主要特性
+## 🎯 项目简介
 
-- 🎨 **跨平台支持**: Android 和 Desktop 平台
-- 🌍 **多语言支持**: 简体中文、繁体中文、英文、日文、韩文
-- 🎭 **Material Design 3**: 现代化的 UI 设计，支持浅色/深色主题
-- 🏗️ **Clean Architecture**: MVI 架构 + 分层设计
-- 🎬 **Ugoira 支持**: 完整的 Pixiv 动图播放支持
-- 📱 **响应式设计**: 适配不同屏幕尺寸
+ProjectU 是一个功能完整的 Pixiv 客户端应用，采用最新的跨平台技术栈和最佳架构实践。
 
-### 核心功能
+### ✨ 核心特性
 
-- ✅ **Pixiv API 集成** - 完整的 Pixiv Web API 支持
-- ✅ 作品浏览和搜索
-- ✅ 用户关注和收藏管理
-- ✅ 排行榜查看
-- ✅ 作品详情展示
-- ✅ Ugoira 动图播放
-- ⏳ 离线缓存（计划中）
+- 🎨 **真正的跨平台** - 一套代码，支持 Android 和 Desktop
+- �️ **Clean Architecture** - MVI 模式 + 三层架构设计
+- 🎭 **Material Design 3** - 现代化 UI，深色/浅色主题
+- 🌍 **完整多语言** - 简中/繁中/英文/日文/韩文
+- � **Pixiv Web API** - 完整集成官方 Web API
+- 🎬 **Ugoira 支持** - Pixiv 动图下载和播放
+- 📱 **响应式设计** - 手机/平板/桌面自适应布局
+- 💾 **数据持久化** - Room 数据库 + DataStore 配置
 
-## 技术栈
+## 🛠️ 技术栈
 
-### 核心框架
+> 完整技术栈请查看: [docs/shared/TECH_STACK.md](docs/shared/TECH_STACK.md)
 
-- **Kotlin 2.2.20** - 编程语言
-- **Compose Multiplatform 1.9.1** - UI 框架
-- **Kotlin Coroutines 1.10.2** - 异步编程
+### 核心技术
 
-### 架构和依赖注入
+| 技术 | 版本 | 用途 |
+|-----|------|------|
+| Kotlin | 2.2.20 | 编程语言 |
+| Compose Multiplatform | 1.9.1 | UI 框架 |
+| Koin | 4.1.1 | 依赖注入 |
+| Ktor | 3.3.1 | HTTP 客户端 |
+| Room | 2.8.3 | 本地数据库 |
+| Voyager | 1.1.0-beta03 | 导航框架 |
+| Coil | 3.3.0 | 图片加载 |
 
-- **MVI Architecture** - 单向数据流架构
-- **Clean Architecture** - 分层架构设计
-- **Koin 4.1.1** - 依赖注入框架
+### 架构模式
 
-### 网络和数据
+- **Clean Architecture** - Domain / Data / Presentation 三层分离
+- **MVI** - Model-View-Intent 单向数据流
+- **Repository Pattern** - 数据访问抽象层
+- **Dependency Injection** - Koin 跨平台 DI
 
-- **Ktor 3.3.1** - HTTP 客户端
-- **Pixiv Web API** - 基于 Ktor 的 Pixiv API 客户端
-- **kotlinx-serialization 1.9.0** - JSON 序列化
-- **Room 2.8.2** - 本地数据库
-- **DataStore 1.1.7** - 键值对存储
-- **Okio 3.16.2** - 文件和 ZIP 处理
-
-### UI 和导航
-
-- **Voyager 1.1.0-beta03** - 导航框架
-- **Coil 3.3.0** - 图片加载
-- **Moko Resources 0.25.1** - 多语言资源管理
-
-## 项目结构
+## 📁 项目结构
 
 ```
 ProjectU/
-├── composeApp/              # Compose UI 代码
+├── composeApp/                  # 表现层 (Presentation Layer)
 │   ├── src/
-│   │   ├── commonMain/      # 共享 UI 代码
-│   │   │   ├── kotlin/
-│   │   │   │   ├── ui/      # UI 层
-│   │   │   │   │   ├── screens/     # 页面
-│   │   │   │   │   ├── components/  # 组件
-│   │   │   │   │   ├── theme/       # 主题
-│   │   │   │   │   └── navigation/  # 导航
-│   │   │   │   └── di/      # 依赖注入
-│   │   │   └── resources/   # 多语言资源
-│   │   ├── androidMain/     # Android 特定代码
-│   │   └── desktopMain/     # Desktop 特定代码
+│   │   ├── commonMain/          # 跨平台 UI 代码
+│   │   │   ├── kotlin/com/projectu/
+│   │   │   │   ├── ui/
+│   │   │   │   │   ├── screens/         # 页面 (MVI)
+│   │   │   │   │   ├── components/      # 可复用组件
+│   │   │   │   │   ├── theme/           # Material 3 主题
+│   │   │   │   │   └── localization/    # 多语言管理
+│   │   │   │   └── di/                  # Koin DI
+│   │   │   └── composeResources/        # 多语言资源
+│   │   ├── androidMain/         # Android 平台
+│   │   └── desktopMain/         # Desktop 平台
 │   └── build.gradle.kts
 │
-├── shared/                  # 共享业务逻辑
+├── shared/                      # 业务逻辑层 (Domain + Data)
 │   ├── src/
 │   │   ├── commonMain/
-│   │   │   ├── kotlin/
-│   │   │   │   ├── domain/      # 领域层
-│   │   │   │   │   ├── model/       # 数据模型
-│   │   │   │   │   ├── repository/  # Repository 接口
-│   │   │   │   │   └── usecase/     # 业务用例
-│   │   │   │   ├── data/        # 数据层
-│   │   │   │   │   ├── repository/  # Repository 实现
-│   │   │   │   │   ├── remote/      # 网络 API
-│   │   │   │   │   ├── local/       # 本地数据库
-│   │   │   │   │   └── cache/       # 缓存策略
-│   │   │   │   └── util/        # 工具类
-│   │   ├── androidMain/
-│   │   └── desktopMain/
+│   │   │   ├── kotlin/com/projectu/shared/
+│   │   │   │   ├── domain/          # 领域层
+│   │   │   │   │   ├── model/           # 领域模型
+│   │   │   │   │   ├── repository/      # Repository 接口
+│   │   │   │   │   └── usecase/         # 业务用例
+│   │   │   │   ├── data/            # 数据层
+│   │   │   │   │   ├── repository/      # Repository 实现
+│   │   │   │   │   ├── remote/          # Pixiv Web API
+│   │   │   │   │   ├── local/           # Room 数据库
+│   │   │   │   │   └── cache/           # 文件缓存
+│   │   │   │   └── util/            # 工具类
+│   │   ├── androidMain/         # Android 平台
+│   │   └── desktopMain/         # Desktop 平台
 │   └── build.gradle.kts
+│
+├── docs/                        # 项目文档
+│   ├── project/                 # 架构文档
+│   ├── pixiv/                   # API 文档
+│   ├── shared/                  # 共用文档片段
+│   └── guides/                  # 开发指南
+│
+├── gradle/
+│   └── libs.versions.toml       # 依赖版本管理
 │
 ├── build.gradle.kts
 ├── settings.gradle.kts
-└── gradle.properties
+└── README.md
 ```
 
-## 开始使用
+> 📖 详细架构说明: [docs/project/项目架构参考文档.md](docs/project/项目架构参考文档.md)
+
+## 🚀 快速开始
 
 ### 环境要求
 
-- JDK 11 或更高版本
-- Android Studio Ladybug | 2024.2.1 或更高版本
-- Kotlin 2.0.21
+| 工具 | 版本要求 |
+|-----|---------|
+| JDK | 11+ |
+| Android Studio | Ladybug 2024.2.1+ |
+| Gradle | 8.x (自动下载) |
 
-### 构建项目
+### 克隆项目
+
+```bash
+git clone https://github.com/yourusername/ProjectU.git
+cd ProjectU
+```
+
+### 构建和运行
 
 #### Android
 
 ```bash
+# 方式 1: 使用脚本
+./build-android.sh    # Linux/Mac
+build-android.bat     # Windows
+
+# 方式 2: 使用 Gradle
 ./gradlew :composeApp:assembleDebug
+./gradlew :composeApp:installDebug
+
+# 方式 3: Android Studio
+# 打开项目后，点击 Run 按钮
 ```
 
 #### Desktop
 
 ```bash
+# 方式 1: 使用脚本
+./build-desktop.sh    # Linux/Mac
+build-desktop.bat     # Windows
+
+# 方式 2: 使用 Gradle
 ./gradlew :composeApp:run
+
+# 打包为可分发应用
+./gradlew :composeApp:createDistributable
 ```
 
-### 运行项目
+### 配置 Pixiv API
 
-#### Android
+1. 在浏览器中登录 [Pixiv](https://www.pixiv.net/)
+2. 打开开发者工具 → Application/Storage → Cookies
+3. 复制 `PHPSESSID` 的值
+4. 在应用设置中填入 PHPSESSID
 
-在 Android Studio 中打开项目，选择 Android 运行配置并运行。
+> 📖 详细配置: [docs/pixiv/PIXIV_API_集成指南.md](docs/pixiv/PIXIV_API_集成指南.md)
 
-#### Desktop
+## 🏗️ 架构设计
 
-```bash
-./gradlew :composeApp:runDistributable
+### Clean Architecture 三层架构
+
+```
+┌─────────────────────────────────────┐
+│   Presentation Layer (composeApp)  │  ← UI、ViewModel、导航
+│   • Screens (Composable)           │
+│   • ViewModels (MVI)               │
+└─────────────────────────────────────┘
+                 ↓ 依赖
+┌─────────────────────────────────────┐
+│   Domain Layer (shared/domain)     │  ← 纯业务逻辑
+│   • Models (领域模型)               │
+│   • Repository Interfaces          │
+│   • UseCases (业务用例)            │
+└─────────────────────────────────────┘
+                 ↑ 实现
+┌─────────────────────────────────────┐
+│   Data Layer (shared/data)         │  ← 数据访问
+│   • Repository Implementations     │
+│   • Remote: Pixiv Web API (Ktor)  │
+│   • Local: Room Database           │
+│   • Cache: File System (Okio)     │
+└─────────────────────────────────────┘
 ```
 
-## 架构设计
-
-### MVI 架构
-
-每个 Screen 遵循 MVI (Model-View-Intent) 模式：
+### MVI (Model-View-Intent) 模式
 
 ```kotlin
 // State - 屏幕状态
-data class HomeScreenState(
+data class XxxScreenState(
+    val data: List<Item> = emptyList(),
     val isLoading: Boolean = false,
-    val artworks: List<Artwork> = emptyList(),
     val error: String? = null
 )
 
-// Intent - 用户意图
-sealed interface HomeScreenIntent {
-    data object LoadArtworks : HomeScreenIntent
-    data class OnArtworkClick(val id: String) : HomeScreenIntent
+// Intent - 用户操作
+sealed interface XxxIntent {
+    data object LoadData : XxxIntent
+    data class OnItemClick(val id: String) : XxxIntent
 }
 
 // ViewModel - 状态管理
-class HomeViewModel : ViewModel() {
-    private val _state = MutableStateFlow(HomeScreenState())
-    val state = _state.asStateFlow()
-    
-    fun handleIntent(intent: HomeScreenIntent) { ... }
+class XxxViewModel(repo: Repository) : ViewModel() {
+    val state: StateFlow<XxxScreenState>
+    fun handleIntent(intent: XxxIntent)
 }
 ```
 
-### 数据流
+> 📖 详细架构文档: [docs/project/项目架构参考文档.md](docs/project/项目架构参考文档.md)
 
+## 🎬 核心功能
+
+### Ugoira 动图支持
+
+Pixiv 的 Ugoira (うごイラ) 是一种特殊的动图格式，本项目提供完整支持：
+
+1. **获取元数据** - 从 API 获取 ZIP URL 和帧延迟时间
+2. **下载和解压** - 下载 ZIP 文件并解压所有帧图片
+3. **缓存管理** - 智能缓存，避免重复下载
+4. **流畅播放** - 使用 `UgoiraPlayer` 组件按时序播放
+
+### 多语言系统
+
+使用 Compose Resources 官方多语言方案：
+
+| 语言 | 代码 | 状态 |
+|-----|------|------|
+| 简体中文 | zh-rCN | ✅ |
+| 繁体中文 | zh-rTW | ✅ |
+| English | en | ✅ |
+| 日本語 | ja | ✅ |
+| 한국어 | ko | ✅ |
+
+- **应用界面语言** 和 **Pixiv API 语言** 独立配置
+- 支持运行时动态切换，无需重启应用
+- 所有字符串统一管理，便于维护
+
+## 📊 开发进度
+
+> 完整开发状态: [docs/shared/DEVELOPMENT_STATUS.md](docs/shared/DEVELOPMENT_STATUS.md)
+
+### 已完成 ✅
+
+- ✅ 基础架构 (Clean Architecture + MVI)
+- ✅ UI 框架 (Material 3 + 响应式布局)
+- ✅ Pixiv Web API 完整集成
+- ✅ 数据持久化 (Room + DataStore)
+- ✅ 多语言系统 (5 种语言)
+- ✅ Ugoira 动图播放器
+
+### 开发中 🚧
+
+- 🚧 登录认证系统 (高优先级)
+- 🚧 作品列表页面 (高优先级)
+- 🚧 作品详情页面 (高优先级)
+
+### 计划中 📋
+
+- 📋 搜索功能
+- 📋 用户主页
+- 📋 排行榜页面
+- 📋 离线缓存优化
+
+---
+
+## 🌐 Pixiv API 集成
+
+> API 详细状态: [docs/shared/API_STATUS.md](docs/shared/API_STATUS.md)
+
+### 已集成 API ✅
+
+| API 模块 | 功能 | 完成度 |
+|---------|------|--------|
+| **IllustApi** | 作品详情、搜索、推荐、发现、Ugoira | 100% |
+| **UserApi** | 用户信息、关注、作品列表、收藏列表 | 100% |
+| **BookmarkApi** | 添加/删除收藏、批量操作 | 100% |
+| **RankingApi** | 各类排行榜 (日/周/月/新人/R18) | 100% |
+| **CommentApi** | 评论功能 | 0% |
+| **NovelApi** | 小说功能 | 0% |
+
+### 使用方法
+
+```kotlin
+// 1. 配置 PHPSESSID
+val pixivApi = PixivApi.create(
+    httpClient = httpClient,
+    phpSessionId = "从浏览器获取的 PHPSESSID"
+)
+
+// 2. 调用 API
+val artwork = pixivApi.illustApi.getIllustDetail("123456")
+val search = pixivApi.illustApi.searchArtworks("初音ミク")
+val ranking = pixivApi.rankingApi.getRanking(mode = "daily")
 ```
-UI (Compose) 
-  ↓ emit Intent
-ViewModel 
-  ↓ call UseCase
-UseCase (Business Logic)
-  ↓ fetch from Repository
-Repository 
-  ↓ Remote API / Local DB
-Data Sources
-```
 
-## Ugoira 动图支持
+> 📖 完整 API 文档: [docs/pixiv/PIXIV_API_集成指南.md](docs/pixiv/PIXIV_API_集成指南.md)
 
-Pixiv 的 Ugoira (うごイラ) 是一种特殊的动图格式：
+## 📚 项目文档
 
-1. 从 API 获取动图元数据（ZIP URL + 帧延迟时间）
-2. 下载 ZIP 文件并解压获取所有帧图片
-3. 使用 `UgoiraPlayer` 组件按时序播放
-4. 支持播放/暂停、速度调节等控制
+| 文档 | 说明 |
+|-----|------|
+| [项目架构参考文档](docs/project/项目架构参考文档.md) | 完整的架构设计和技术细节 ⭐⭐⭐ |
+| [AI 助手协作提示词](docs/AI_ASSISTANT_PROMPT.md) | 用于新 AI 对话的完整上下文 ⭐⭐ |
+| [Pixiv API 集成指南](docs/pixiv/PIXIV_API_集成指南.md) | API 使用文档和示例 ⭐⭐ |
+| [开发进度](docs/shared/DEVELOPMENT_STATUS.md) | 功能完成状态和待办事项 |
+| [技术栈](docs/shared/TECH_STACK.md) | 依赖版本和技术选型 |
+| [API 状态](docs/shared/API_STATUS.md) | Pixiv API 集成状态 |
+| [设置系统架构](docs/settings/设置系统架构.md) | 设置功能设计文档 |
+| [自适应布局指南](docs/guides/自适应布局指南.md) | 响应式布局实现 |
 
-## 多语言支持
+---
 
-使用 Moko Resources 实现多语言支持，资源文件位于：
+## 🤝 参与贡献
 
-```
-composeApp/src/commonMain/resources/MR/
-├── base/           # 英文（默认）
-├── zh-rCN/        # 简体中文
-├── zh-rTW/        # 繁体中文
-├── ja/            # 日文
-└── ko/            # 韩文
-```
+欢迎提交 Issue 和 Pull Request！
 
-## 开发路线图
+### 开发流程
 
-- [x] 项目框架搭建
-- [x] 基础 UI 组件和主题
-- [x] 多语言系统集成
-- [x] Koin 依赖注入配置
-- [x] Ugoira 动图播放器
-- [x] **Pixiv Web API 集成** ✨ 新完成
-- [ ] 登录认证实现
-- [ ] 作品浏览功能
-- [ ] 搜索和发现功能
-- [ ] 排行榜功能
-- [ ] 用户个人资料
-- [ ] 离线缓存优化
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
 
-## 📖 Pixiv API 文档
+### 代码规范
 
-已成功集成 Pixiv Web API，提供完整的作品、用户、收藏、排行榜等功能支持。
+- 遵循 Kotlin 官方代码风格
+- 使用 MVI 架构模式
+- 所有功能必须支持 Android 和 Desktop 双平台
+- 添加新功能时更新相关文档
 
-- **快速开始**: 查看 [PIXIV_API_QUICKSTART.md](PIXIV_API_QUICKSTART.md)
-- **完整文档**: 查看 [PIXIV_API_INTEGRATION.md](PIXIV_API_INTEGRATION.md)
-- **集成报告**: 查看 [INTEGRATION_SUMMARY.md](INTEGRATION_SUMMARY.md)
+---
 
-### API 功能概览
+## 📄 许可证
 
-| 模块 | 功能 | 状态 |
-|------|------|------|
-| 插画 API | 详情、搜索、推荐、发现 | ✅ 完成 |
-| 用户 API | 信息、关注、作品列表 | ✅ 完成 |
-| 收藏 API | 添加、删除、批量操作 | ✅ 完成 |
-| 排行榜 API | 日榜、周榜、月榜等 | ✅ 完成 |
-| 评论 API | - | ⏳ 计划中 |
-| 小说 API | - | ⏳ 计划中 |
+本项目仅供学习和研究使用。请遵守 Pixiv 的使用条款。
 
-## 许可证
+---
 
-本项目仅供学习和研究使用。
-
-## 致谢
+## 🙏 致谢
 
 - [Pixiv](https://www.pixiv.net/) - 提供优秀的创作平台
-- [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) - 跨平台技术
-- [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) - UI 框架
+- [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) - 强大的跨平台技术
+- [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) - 现代化的 UI 框架
+- [Koin](https://insert-koin.io/) - 简洁的依赖注入框架
+
+---
+
+<div align="center">
+
+**[⬆ 回到顶部](#projectu---pixiv-kotlin-multiplatform-client)**
+
+Made with ❤️ using Kotlin Multiplatform
+
+</div>
 
