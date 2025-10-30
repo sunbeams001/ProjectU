@@ -6,9 +6,9 @@
 
 | 技术 | 版本 | 说明 |
 |-----|------|------|
-| **Kotlin** | 2.2.20 | 编程语言 |
+| **Kotlin** | 2.2.21 | 编程语言 |
 | **Compose Multiplatform** | 1.9.1 | UI 框架 |
-| **Compose Plugin** | 1.7.1 | Compose 编译器 |
+| **Compose Plugin** | 1.9.2 | Compose 编译器 |
 | **Android Gradle Plugin** | 8.13.0 | Android 构建工具 |
 | **KSP** | 2.2.20-2.0.4 | Kotlin 符号处理 |
 

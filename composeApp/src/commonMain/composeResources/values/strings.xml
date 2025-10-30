@@ -103,5 +103,35 @@
     <string name="ugoira_pause">Pause</string>
     <string name="ugoira_speed">Speed</string>
     <string name="ugoira_downloading">Downloading animation...</string>
+    
+    <!-- Login Screen (New) -->
+    <string name="login_subtitle">Login to Pixiv to access your personalized content</string>
+    <string name="login_phpsessid_title">PHPSESSID Login</string>
+    <string name="login_phpsessid_description">Enter your PHPSESSID from browser cookies</string>
+    <string name="login_phpsessid_label">PHPSESSID</string>
+    <string name="login_logging_in">Logging in...</string>
+    <string name="login_help">How to get PHPSESSID?</string>
+    <string name="login_help_step1">1. Open https://www.pixiv.net/ in your browser and login</string>
+    <string name="login_help_step2">2. Open Developer Tools (F12)</string>
+    <string name="login_help_step3">3. Go to Application/Storage → Cookies → https://www.pixiv.net</string>
+    <string name="login_help_step4">4. Copy the value of \'PHPSESSID\' (format: 12345678_xxxx)</string>
+    <string name="login_help_warning">⚠️ Warning: Never share your PHPSESSID with others!</string>
+    <string name="login_error_invalid_format">Invalid PHPSESSID format. Expected: userid_xxxxx</string>
+    <string name="login_error_empty">Please enter PHPSESSID</string>
+    <string name="login_session_expired">Login session expired. Please login again.</string>
+    <string name="common_ok">OK</string>
+    
+    <!-- Settings - Account Management -->
+    <string name="settings_account">Account</string>
+    <string name="settings_user_id">User ID</string>
+    <string name="settings_phpsessid">PHPSESSID</string>
+    <string name="settings_phpsessid_desc">Login credential for Pixiv API</string>
+    <string name="settings_not_logged_in">Not logged in</string>
+    <string name="settings_unknown">Unknown</string>
+    <string name="settings_edit_phpsessid">Edit PHPSESSID</string>
+    <string name="settings_phpsessid_input_hint">Enter your PHPSESSID from browser cookies</string>
+    <string name="settings_phpsessid_warning">⚠️ Changing PHPSESSID will update your login credentials</string>
+    <string name="settings_logout_confirm_title">Logout</string>
+    <string name="settings_logout_confirm_message">Are you sure you want to logout? You will need to login again.</string>
 </resources>
 

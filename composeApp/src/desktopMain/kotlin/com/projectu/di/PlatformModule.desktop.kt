@@ -43,6 +43,9 @@ actual val useCaseModule: Module = module {
 
 actual val viewModelModule: Module = module {
     // 设置 ViewModel
-    single { SettingsViewModel(get()) }
+    single { SettingsViewModel(get(), get()) }
+    
+    // 登录 ViewModel
+    single { com.projectu.ui.screens.login.LoginViewModel(get()) }
 }
 

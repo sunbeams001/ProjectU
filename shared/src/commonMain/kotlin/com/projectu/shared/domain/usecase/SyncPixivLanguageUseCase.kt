@@ -2,8 +2,7 @@ package com.projectu.shared.domain.usecase
 
 import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.domain.repository.SettingsRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * 同步 Pixiv 语言设置的用例
@@ -16,8 +15,8 @@ class SyncPixivLanguageUseCase(
     /**
      * 监听设置变化并自动同步 Pixiv 语言
      */
-    fun observeAndSync(): Flow<Unit> {
-        return settingsRepository.getSettings().map { settings ->
+    suspend fun observeAndSync() {
+        settingsRepository.getSettings().collectLatest { settings ->
             pixivConfigStore.syncLanguageFromSettings(settings.pixivLanguage)
         }
     }

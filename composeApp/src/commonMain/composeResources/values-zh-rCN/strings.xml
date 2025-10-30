@@ -101,6 +101,36 @@
     <string name="ugoira_play">播放</string>
     <string name="ugoira_pause">暂停</string>
     <string name="ugoira_speed">速度</string>
-    <string name="ugoira_downloading">正在下载动图...</string>
+    <string name="ugoira_downloading">正在下载动画...</string>
+    
+    <!-- Login Screen (New) -->
+    <string name="login_subtitle">登录 Pixiv 以访问您的个性化内容</string>
+    <string name="login_phpsessid_title">PHPSESSID 登录</string>
+    <string name="login_phpsessid_description">从浏览器 Cookie 中输入您的 PHPSESSID</string>
+    <string name="login_phpsessid_label">PHPSESSID</string>
+    <string name="login_logging_in">登录中...</string>
+    <string name="login_help">如何获取 PHPSESSID？</string>
+    <string name="login_help_step1">1. 在浏览器中打开 https://www.pixiv.net/ 并登录</string>
+    <string name="login_help_step2">2. 打开开发者工具 (F12)</string>
+    <string name="login_help_step3">3. 前往 应用/存储 → Cookies → https://www.pixiv.net</string>
+    <string name="login_help_step4">4. 复制 \'PHPSESSID\' 的值（格式：12345678_xxxx）</string>
+    <string name="login_help_warning">⚠️ 警告：切勿将您的 PHPSESSID 分享给他人！</string>
+    <string name="login_error_invalid_format">PHPSESSID 格式无效。预期格式：userid_xxxxx</string>
+    <string name="login_error_empty">请输入 PHPSESSID</string>
+    <string name="login_session_expired">登录会话已过期，请重新登录。</string>
+    <string name="common_ok">确定</string>
+    
+    <!-- Settings - Account Management -->
+    <string name="settings_account">账号管理</string>
+    <string name="settings_user_id">用户 ID</string>
+    <string name="settings_phpsessid">PHPSESSID</string>
+    <string name="settings_phpsessid_desc">用于 Pixiv API 认证的会话凭据</string>
+    <string name="settings_not_logged_in">未登录</string>
+    <string name="settings_unknown">未知</string>
+    <string name="settings_edit_phpsessid">编辑 PHPSESSID</string>
+    <string name="settings_phpsessid_input_hint">输入从浏览器获取的 PHPSESSID</string>
+    <string name="settings_phpsessid_warning">⚠️ 修改后将立即生效，请确保输入正确</string>
+    <string name="settings_logout_confirm_title">确认退出登录</string>
+    <string name="settings_logout_confirm_message">退出后需要重新输入 PHPSESSID 才能使用 Pixiv 功能</string>
 </resources>
 

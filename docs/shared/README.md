@@ -68,7 +68,7 @@ docs/
 
 ### 场景 1: 升级依赖版本
 
-**示例**: Kotlin 从 2.2.20 升级到 2.2.30
+**示例**: Kotlin 从 2.2.20 升级到 2.2.21
 
 ```bash
 # 1. 更新 gradle 配置
@@ -76,11 +76,11 @@ vim gradle/libs.versions.toml
 
 # 2. 更新文档
 vim docs/shared/TECH_STACK.md
-# 修改: kotlin = "2.2.30"
+# 修改: kotlin = "2.2.21"
 
 # 3. 提交
 git add .
-git commit -m "chore: upgrade Kotlin to 2.2.30"
+git commit -m "chore: upgrade Kotlin to 2.2.21"
 ```
 
 **影响**: 所有引用 `TECH_STACK.md` 的文档自动获取最新版本信息

@@ -1,75 +1,106 @@
 package com.projectu.shared.data.local
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 /**
  * Pixiv 配置存储
- * 用于在运行时管理 Pixiv 配置
- * 
- * 注意：这是一个简单的内存存储实现
- * 在实际应用中，应该使用 DataStore 等持久化存储
+ * 使用 DataStore 进行持久化存储
  */
-class PixivConfigStore {
-    private val _config = MutableStateFlow(PixivConfig.DEFAULT)
-    val config: Flow<PixivConfig> = _config.asStateFlow()
+class PixivConfigStore(
+    private val dataStore: DataStore<Preferences>
+) {
+    companion object {
+        private val KEY_PHP_SESSION_ID = stringPreferencesKey("php_session_id")
+        private val KEY_CSRF_TOKEN = stringPreferencesKey("csrf_token")
+        private val KEY_LANGUAGE = stringPreferencesKey("language")
+    }
+    
+    /**
+     * 配置流
+     */
+    val config: Flow<PixivConfig> = dataStore.data.map { preferences ->
+        PixivConfig(
+            phpSessionId = preferences[KEY_PHP_SESSION_ID] ?: "",
+            csrfToken = preferences[KEY_CSRF_TOKEN],
+            language = preferences[KEY_LANGUAGE] ?: "zh"
+        )
+    }
     
     /**
      * 获取当前配置
      */
-    fun getCurrentConfig(): PixivConfig {
-        return _config.value
+    suspend fun getCurrentConfig(): PixivConfig {
+        return config.first()
     }
     
     /**
      * 更新配置
      */
-    fun updateConfig(config: PixivConfig) {
-        _config.value = config
+    suspend fun updateConfig(config: PixivConfig) {
+        dataStore.edit { preferences ->
+            preferences[KEY_PHP_SESSION_ID] = config.phpSessionId
+            config.csrfToken?.let { preferences[KEY_CSRF_TOKEN] = it }
+            preferences[KEY_LANGUAGE] = config.language
+        }
     }
     
     /**
      * 设置 PHPSESSID
      */
-    fun setPhpSessionId(phpSessionId: String) {
-        _config.value = _config.value.copy(phpSessionId = phpSessionId)
+    suspend fun setPhpSessionId(phpSessionId: String) {
+        dataStore.edit { preferences ->
+            preferences[KEY_PHP_SESSION_ID] = phpSessionId
+        }
     }
     
     /**
      * 设置 CSRF Token
      */
-    fun setCsrfToken(token: String) {
-        _config.value = _config.value.copy(csrfToken = token)
+    suspend fun setCsrfToken(token: String) {
+        dataStore.edit { preferences ->
+            preferences[KEY_CSRF_TOKEN] = token
+        }
     }
     
     /**
      * 设置语言
      * @param language Pixiv 语言代码
      */
-    fun setLanguage(language: String) {
-        _config.value = _config.value.copy(language = language)
+    suspend fun setLanguage(language: String) {
+        dataStore.edit { preferences ->
+            preferences[KEY_LANGUAGE] = language
+        }
     }
     
     /**
      * 从应用设置同步 Pixiv 语言
      */
-    fun syncLanguageFromSettings(pixivLanguage: PixivLanguage) {
-        _config.value = _config.value.copy(language = pixivLanguage.code)
+    suspend fun syncLanguageFromSettings(pixivLanguage: PixivLanguage) {
+        setLanguage(pixivLanguage.code)
     }
     
     /**
      * 清除配置（登出）
      */
-    fun clear() {
-        _config.value = PixivConfig.DEFAULT
+    suspend fun clear() {
+        dataStore.edit { preferences ->
+            preferences.remove(KEY_PHP_SESSION_ID)
+            preferences.remove(KEY_CSRF_TOKEN)
+            preferences[KEY_LANGUAGE] = "zh"  // 保留语言设置
+        }
     }
     
     /**
      * 检查是否已登录
      */
-    fun isLoggedIn(): Boolean {
-        return _config.value.isValid()
+    suspend fun isLoggedIn(): Boolean {
+        return getCurrentConfig().isValid()
     }
 }
 
