@@ -26,17 +26,17 @@ interface UserRepository {
     /**
      * 根据ID获取用户信息
      */
-    suspend fun getUserById(userId: String): Result<User>
+    suspend fun getUserById(userId: Long): Result<User>
     
     /**
      * 关注用户
      */
-    suspend fun followUser(userId: String): Result<Unit>
+    suspend fun followUser(userId: Long): Result<Unit>
     
     /**
      * 取消关注
      */
-    suspend fun unfollowUser(userId: String): Result<Unit>
+    suspend fun unfollowUser(userId: Long): Result<Unit>
     
     /**
      * 观察当前用户（Flow版本）

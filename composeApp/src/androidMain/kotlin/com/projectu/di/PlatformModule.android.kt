@@ -8,6 +8,7 @@ import com.projectu.shared.data.local.database.getRoomDatabase
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
+import com.projectu.ui.screens.apitest.ApiTestViewModel
 import com.projectu.ui.screens.settings.SettingsViewModel
 import io.ktor.client.engine.cio.*
 import org.koin.core.module.dsl.*
@@ -47,5 +48,8 @@ actual val viewModelModule: Module = module {
     
     // 登录 ViewModel
     viewModel { com.projectu.ui.screens.login.LoginViewModel(get()) }
+    
+    // API 测试 ViewModel
+    viewModel { ApiTestViewModel(get(), get()) }
 }
 

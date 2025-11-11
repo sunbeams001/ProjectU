@@ -12,7 +12,7 @@ object ArtworkMapper {
         val userDto = dto.user
         val imageUrlsDto = dto.imageUrls
         return Artwork(
-            id = dto.id,
+            id = dto.id.toString(),
             title = dto.title,
             description = dto.description,
             type = when (dto.type.lowercase()) {
@@ -25,7 +25,7 @@ object ArtworkMapper {
             width = dto.width,
             height = dto.height,
             pageCount = dto.pageCount,
-            userId = userDto.id,
+            userId = userDto.id.toString(),
             userName = userDto.name,
             userProfileImageUrl = userDto.profileImageUrls.medium,
             tags = dto.tags.map { it.name },
@@ -55,7 +55,7 @@ object ArtworkMapper {
     )
     
     fun UserDto.toDomain() = User(
-        id = id,
+        id = id.toString(),
         name = name,
         account = account,
         profileImageUrl = profileImageUrls.medium,

@@ -12,7 +12,7 @@ interface ArtworkRepository {
     /**
      * 获取作品详情
      */
-    suspend fun getArtworkDetail(artworkId: String): Result<Artwork>
+    suspend fun getArtworkDetail(artworkId: Long): Result<Artwork>
     
     /**
      * 获取推荐作品
@@ -47,7 +47,7 @@ interface ArtworkRepository {
      * 添加收藏
      */
     suspend fun addBookmark(
-        artworkId: String,
+        artworkId: Long,
         isPrivate: Boolean = false,
         tags: List<String> = emptyList()
     ): Result<Unit>
@@ -55,16 +55,16 @@ interface ArtworkRepository {
     /**
      * 移除收藏
      */
-    suspend fun removeBookmark(artworkId: String): Result<Unit>
+    suspend fun removeBookmark(artworkId: Long): Result<Unit>
     
     /**
      * 获取Ugoira动图元数据
      */
-    suspend fun getUgoiraMetadata(artworkId: String): Result<UgoiraMetadata>
+    suspend fun getUgoiraMetadata(artworkId: Long): Result<UgoiraMetadata>
     
     /**
      * 观察作品详情（Flow版本）
      */
-    fun observeArtworkDetail(artworkId: String): Flow<Artwork>
+    fun observeArtworkDetail(artworkId: Long): Flow<Artwork>
 }
 

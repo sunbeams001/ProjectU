@@ -1,6 +1,7 @@
 package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.pixiv.PixivResponse
+import com.projectu.shared.data.remote.dto.pixiv.PixivResponseWithRaw
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.submitForm
@@ -9,6 +10,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
@@ -41,6 +43,16 @@ class PixivApiClient(
         const val HEADER_REFERER = "Referer"
         const val HEADER_COOKIE = "Cookie"
         const val HEADER_CSRF_TOKEN = "x-csrf-token"
+        
+        /**
+         * 用于解析原始JSON的Json实例（需要忽略未知字段）
+         * @suppress - Internal use only for inline functions
+         */
+        @PublishedApi
+        internal val jsonParser = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
     }
 
     /**
@@ -85,6 +97,39 @@ class PixivApiClient(
     }
 
     /**
+     * 执行GET请求（带原始JSON）- 用于API测试
+     */
+    suspend inline fun <reified T> getWithRaw(
+        url: String,
+        queryParams: Map<String, Any?>? = null
+    ): PixivResponseWithRaw<T> {
+        val httpResponse = httpClient.get("$host$url") {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            parameter("lang", lang)
+            queryParams?.forEach { (key, value) ->
+                when (value) {
+                    is Collection<*> -> {
+                        // 处理数组参数
+                        value.forEach { item ->
+                            parameter(key, item.toString())
+                        }
+                    }
+                    null -> {
+                        // 忽略null值
+                    }
+                    else -> {
+                        parameter(key, value.toString())
+                    }
+                }
+            }
+        }
+        val rawJson = httpResponse.bodyAsText()
+        val response = jsonParser.decodeFromString<PixivResponse<T>>(rawJson)
+        return PixivResponseWithRaw(response, rawJson)
+    }
+
+    /**
      * 执行POST请求（JSON body）
      */
     suspend inline fun <reified T> postJson(
@@ -106,6 +151,33 @@ class PixivApiClient(
                 setBody(it)
             }
         }.body()
+    }
+
+    /**
+     * 执行POST请求（JSON body，带原始JSON）- 用于API测试
+     */
+    suspend inline fun <reified T> postJsonWithRaw(
+        url: String,
+        body: Any? = null
+    ): PixivResponseWithRaw<T> {
+        // 确保有token
+        if (csrfToken == null) {
+            csrfToken = fetchToken()
+        }
+
+        val httpResponse = httpClient.post("$host$url") {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            header(HEADER_CSRF_TOKEN, csrfToken)
+            parameter("lang", lang)
+            contentType(ContentType.Application.Json)
+            body?.let {
+                setBody(it)
+            }
+        }
+        val rawJson = httpResponse.bodyAsText()
+        val response = jsonParser.decodeFromString<PixivResponse<T>>(rawJson)
+        return PixivResponseWithRaw(response, rawJson)
     }
 
     /**
@@ -133,6 +205,36 @@ class PixivApiClient(
             header(HEADER_COOKIE, cookie)
             header(HEADER_CSRF_TOKEN, csrfToken)
         }.body()
+    }
+
+    /**
+     * 执行POST请求（Form body，带原始JSON）- 用于API测试
+     */
+    suspend inline fun <reified T> postFormWithRaw(
+        url: String,
+        formParams: Map<String, String>? = null
+    ): PixivResponseWithRaw<T> {
+        // 确保有token
+        if (csrfToken == null) {
+            csrfToken = fetchToken()
+        }
+
+        val httpResponse = httpClient.submitForm(
+            url = "$host$url",
+            formParameters = Parameters.build {
+                append("lang", lang)
+                formParams?.forEach { (key, value) ->
+                    append(key, value)
+                }
+            }
+        ) {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            header(HEADER_CSRF_TOKEN, csrfToken)
+        }
+        val rawJson = httpResponse.bodyAsText()
+        val response = jsonParser.decodeFromString<PixivResponse<T>>(rawJson)
+        return PixivResponseWithRaw(response, rawJson)
     }
 
     /**

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class UserInfoBody(
-    val userId: String,
+    val userId: Long,
     val name: String,
     val image: String,
     val imageBig: String,
@@ -39,14 +39,26 @@ data class ProfileAllBody(
     val manga: Map<String, String?>? = null,
     val novels: Map<String, String?>? = null,
     val mangaSeries: List<MangaSeriesInfo>? = null,
-    val novelSeries: List<String>? = null,
-    val pickup: List<String>? = null,
+    val novelSeries: List<NovelSeriesInfo>? = null,
+    val pickup: List<PickupInfo>? = null,
     val bookmarkCount: ProfileBookmarkCount? = null
 )
 
 @Serializable
 data class MangaSeriesInfo(
-    val id: String,
+    val id: Long,
+    val title: String
+)
+
+@Serializable
+data class NovelSeriesInfo(
+    val id: Long,
+    val userId: Long
+)
+
+@Serializable
+data class PickupInfo(
+    val id: Long,
     val title: String
 )
 
@@ -83,7 +95,7 @@ data class UserRecommendBody(
 
 @Serializable
 data class RecommendUser(
-    val userId: String,
+    val userId: Long,
     val userName: String,
     val profileImg: String,
     val userComment: String? = null,
@@ -94,7 +106,7 @@ data class RecommendUser(
 
 @Serializable
 data class RecommendUserIllust(
-    val id: String,
+    val id: Long,
     val title: String,
     val illustType: Int,
     val xRestrict: Int,
@@ -103,7 +115,7 @@ data class RecommendUserIllust(
     val url: String,
     val description: String,
     val tags: List<String>,
-    val userId: String,
+    val userId: Long,
     val userName: String,
     val width: Int,
     val height: Int,

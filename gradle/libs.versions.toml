@@ -1,9 +1,9 @@
 [versions]
 kotlin = "2.2.21"
-compose-plugin = "1.9.2"
-agp = "8.13.0"
+compose-plugin = "1.9.3"
+agp = "8.13.1"
 koin = "4.1.1"
-ktor = "3.3.1"
+ktor = "3.3.2"
 room = "2.8.3"
 sqlite = "2.6.1"
 datastore = "1.1.7"

@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
  */
 suspend fun example1GetArtworkDetail(
     artworkRepository: ArtworkRepository,
-    artworkId: String = "102814610"
+    artworkId: Long = 102814610L
 ) {
     artworkRepository.getArtworkDetail(artworkId)
         .onSuccess { artwork ->
@@ -119,7 +119,7 @@ suspend fun example5GetRanking(
  */
 suspend fun example6BookmarkArtwork(
     artworkRepository: ArtworkRepository,
-    artworkId: String
+    artworkId: Long
 ) {
     // 添加收藏
     artworkRepository.addBookmark(
@@ -138,7 +138,7 @@ suspend fun example6BookmarkArtwork(
  */
 suspend fun example7GetUserInfo(
     userRepository: UserRepository,
-    userId: String
+    userId: Long
 ) {
     userRepository.getUserById(userId)
         .onSuccess { user ->
@@ -155,7 +155,7 @@ suspend fun example7GetUserInfo(
  */
 suspend fun example8FollowUser(
     userRepository: UserRepository,
-    userId: String
+    userId: Long
 ) {
     // 关注用户
     userRepository.followUser(userId)
@@ -201,7 +201,7 @@ suspend fun example9DirectApiUsage(pixivApi: PixivApi) {
  */
 suspend fun example10GetUgoiraMetadata(
     artworkRepository: ArtworkRepository,
-    ugoiraId: String = "102814610"
+    ugoiraId: Long = 102814610L
 ) {
     artworkRepository.getUgoiraMetadata(ugoiraId)
         .onSuccess { metadata ->

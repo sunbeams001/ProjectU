@@ -9,7 +9,7 @@ import com.projectu.shared.domain.repository.ArtworkRepository
 class GetUgoiraUseCase(
     private val artworkRepository: ArtworkRepository
 ) {
-    suspend operator fun invoke(artworkId: String): Result<UgoiraMetadata> {
+    suspend operator fun invoke(artworkId: Long): Result<UgoiraMetadata> {
         return artworkRepository.getUgoiraMetadata(artworkId)
     }
 }

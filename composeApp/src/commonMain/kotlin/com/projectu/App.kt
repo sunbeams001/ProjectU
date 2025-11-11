@@ -16,8 +16,20 @@ fun App() {
     val settingsRepository: SettingsRepository = koinInject()
     val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
 
-    // 检查登录状态
-    val isLoggedIn by authRepository.observeLoginState().collectAsState(initial = false)
+    // 等待登录状态加载完成
+    var isLoadingLoginState by remember { mutableStateOf(true) }
+    var isLoggedIn by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(Unit) {
+        // 先获取初始登录状态
+        isLoggedIn = authRepository.isLoggedIn()
+        isLoadingLoginState = false
+        
+        // 然后持续监听状态变化
+        authRepository.observeLoginState().collect { loggedIn ->
+            isLoggedIn = loggedIn
+        }
+    }
 
     // 监听设置变化，同步语言到 LocaleManager
     LaunchedEffect(Unit) {
@@ -28,6 +40,11 @@ fun App() {
 
     // 获取当前语言，用于触发重组
     val currentLanguage by localeManager.currentLanguage.collectAsState()
+
+    // 在加载登录状态时显示空白（或可以显示启动画面）
+    if (isLoadingLoginState) {
+        return
+    }
 
     // 使用 key 来强制在语言变化时重新创建整个 UI 树
     key(currentLanguage) {

@@ -35,9 +35,9 @@ class UserRepositoryImpl(
         val body = response.body ?: throw IllegalStateException("用户信息为空")
         
         User(
-            id = body.userId,
+            id = body.userId.toString(),
             name = body.name,
-            account = body.userId,
+            account = body.userId.toString(),
             profileImageUrl = body.imageBig,
             isFollowed = false,
             isMuted = false,
@@ -46,17 +46,17 @@ class UserRepositoryImpl(
         )
     }
 
-    override suspend fun getUserById(userId: String): Result<User> = runCatching {
-        val response = pixivApi.userApi.getUserInfo(userId.toLong())
+    override suspend fun getUserById(userId: Long): Result<User> = runCatching {
+        val response = pixivApi.userApi.getUserInfo(userId)
         if (response.error) {
             throw IllegalStateException(response.message)
         }
         val body = response.body ?: throw IllegalStateException("用户信息为空")
         
         User(
-            id = body.userId,
+            id = body.userId.toString(),
             name = body.name,
-            account = body.userId,
+            account = body.userId.toString(),
             profileImageUrl = body.imageBig,
             isFollowed = body.isFollowed,
             isMuted = body.isBlocking,
@@ -65,15 +65,15 @@ class UserRepositoryImpl(
         )
     }
 
-    override suspend fun followUser(userId: String): Result<Unit> = runCatching {
-        val response = pixivApi.userApi.followUser(userId.toLong())
+    override suspend fun followUser(userId: Long): Result<Unit> = runCatching {
+        val response = pixivApi.userApi.followUser(userId)
         if (response.error) {
             throw IllegalStateException(response.message)
         }
     }
 
-    override suspend fun unfollowUser(userId: String): Result<Unit> = runCatching {
-        val response = pixivApi.userApi.unfollowUser(userId.toLong())
+    override suspend fun unfollowUser(userId: Long): Result<Unit> = runCatching {
+        val response = pixivApi.userApi.unfollowUser(userId)
         if (response.error) {
             throw IllegalStateException(response.message)
         }

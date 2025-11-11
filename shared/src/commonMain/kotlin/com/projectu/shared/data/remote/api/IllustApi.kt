@@ -1,6 +1,7 @@
 package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.pixiv.*
+import io.ktor.http.encodeURLPath
 
 /**
  * 插画作品 API
@@ -51,7 +52,11 @@ class IllustApi(private val client: PixivApiClient) {
         scd: String? = null,
         ecd: String? = null
     ): PixivResponse<IllustSearchBody> {
+        // URL 编码关键词
+        val encodedKeyword = keyword.encodeURLPath()
+        
         val params = mutableMapOf<String, Any?>(
+            "word" to keyword,
             "s_mode" to searchMode,
             "order" to order,
             "mode" to mode,
@@ -60,7 +65,7 @@ class IllustApi(private val client: PixivApiClient) {
         scd?.let { params["scd"] = it }
         ecd?.let { params["ecd"] = it }
 
-        return client.get("/ajax/search/artworks/$keyword", params)
+        return client.get("/ajax/search/artworks/$encodedKeyword", params)
     }
 
     /**

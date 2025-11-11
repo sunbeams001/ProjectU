@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ArtworkDto(
     @SerialName("id")
-    val id: String,
+    val id: Long,
     
     @SerialName("title")
     val title: String,
@@ -78,7 +78,7 @@ data class ImageUrlsDto(
 @Serializable
 data class UserDto(
     @SerialName("id")
-    val id: String,
+    val id: Long,
     
     @SerialName("name")
     val name: String,

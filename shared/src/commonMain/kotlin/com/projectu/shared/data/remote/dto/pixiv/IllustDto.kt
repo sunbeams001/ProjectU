@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class IllustDetailBody(
-    val illustId: String,
+    val illustId: String,  // 注意：这里是字符串类型，不是Long
     val illustTitle: String,
     val illustComment: String,
-    val id: String,
+    val id: String,  // 注意：这里也是字符串类型
     val title: String,
     val description: String,
     val illustType: Int,
@@ -24,7 +24,7 @@ data class IllustDetailBody(
     val tags: IllustTags,
     val alt: String,
     val storableTags: List<String>? = null,
-    val userId: String,
+    val userId: String,  // 字符串类型
     val userName: String,
     val userAccount: String,
     val userIllusts: Map<String, IllustSimple?>? = null,
@@ -37,7 +37,7 @@ data class IllustDetailBody(
     val commentCount: Int,
     val responseCount: Int,
     val viewCount: Int,
-    val bookStyle: String? = null,
+    val bookStyle: Int = 0,
     val isHowto: Boolean = false,
     val isOriginal: Boolean = false,
     val imageResponseOutData: List<String>? = null,
@@ -59,7 +59,11 @@ data class IllustDetailBody(
     val isUnlisted: Boolean = false,
     val request: String? = null,
     val commentOff: Int = 0,
-    val aiType: Int = 0
+    val aiType: Int = 0,
+    val reuploadDate: String? = null,
+    val locationMask: Boolean = false,
+    val commissionLinkHidden: Boolean = false,
+    val isLoginOnly: Boolean = false
 )
 
 @Serializable
@@ -73,7 +77,7 @@ data class IllustUrls(
 
 @Serializable
 data class IllustTags(
-    val authorId: String? = null,
+    val authorId: String? = null,  // 字符串类型
     val isLocked: Boolean = false,
     val tags: List<IllustTag>,
     val writable: Boolean = true
@@ -84,7 +88,7 @@ data class IllustTag(
     val tag: String,
     val locked: Boolean = false,
     val deletable: Boolean = false,
-    val userId: String? = null,
+    val userId: String? = null,  // 字符串类型
     val userName: String? = null,
     val translation: Map<String, String>? = null,
     val romaji: String? = null
@@ -92,7 +96,7 @@ data class IllustTag(
 
 @Serializable
 data class IllustSimple(
-    val id: String,
+    val id: String,  // 字符串类型
     val title: String,
     val illustType: Int,
     val xRestrict: Int,
@@ -101,7 +105,7 @@ data class IllustSimple(
     val url: String,
     val description: String,
     val tags: List<String>,
-    val userId: String,
+    val userId: String,  // 字符串类型
     val userName: String,
     val width: Int,
     val height: Int,
@@ -115,20 +119,31 @@ data class IllustSimple(
     val isUnlisted: Boolean = false,
     val isMasked: Boolean = false,
     val aiType: Int = 0,
-    val profileImageUrl: String? = null
+    val visibilityScope: Int = 0,  // 可见性范围
+    val profileImageUrl: String? = null,
+    val type: String? = null,  // 作品类型，如 "illust", "manga" 等
+    val urls: Map<String, String>? = null  // 不同尺寸的缩略图 URL，如 "250x250", "360x360", "540x540", "1200x1200"
 )
 
 @Serializable
 data class BookmarkData(
-    val id: String? = null,
+    val id: String? = null,  // 字符串类型
     val private: Boolean = false
 )
 
 @Serializable
 data class ZoneConfig(
+    val responsive: ZoneConfigItem? = null,
+    val rectangle: ZoneConfigItem? = null,
+    @SerialName("500x500")
+    val size500x500: ZoneConfigItem? = null,
     val header: ZoneConfigItem? = null,
     val footer: ZoneConfigItem? = null,
-    val logo: ZoneConfigItem? = null
+    val expandedFooter: ZoneConfigItem? = null,
+    val logo: ZoneConfigItem? = null,
+    @SerialName("ad_logo")
+    val adLogo: ZoneConfigItem? = null,
+    val relatedworks: ZoneConfigItem? = null
 )
 
 @Serializable
@@ -208,13 +223,14 @@ data class IllustSearchBody(
 data class IllustMangaData(
     val data: List<IllustSimple>,
     val total: Int,
+    val lastPage: Int? = null,
     val bookmarkRanges: List<BookmarkRange>? = null
 )
 
 @Serializable
 data class BookmarkRange(
-    val min: Int,
-    val max: Int
+    val min: Int?,
+    val max: Int?
 )
 
 @Serializable
@@ -228,6 +244,7 @@ data class PopularData(
  */
 @Serializable
 data class DiscoveryBody(
+    val tagTranslation: Map<String, Map<String, String>>? = null,  // 标签翻译映射，key为标签名，value为各语言翻译（en, ko, zh, zh_tw, romaji）
     val thumbnails: Thumbnails,
     val users: List<String>? = null,
     val nextIds: List<Long>? = null
@@ -242,22 +259,33 @@ data class Thumbnails(
 )
 
 /**
- * 推荐作品响应体
+ * 推荐作品响应体（用于 getRecommendIllusts）
  */
 @Serializable
 data class IllustRecommendBody(
-    val illusts: List<IllustSimple>,
-    val nextIds: List<Long>
+    val illusts: List<IllustSimple>
 )
 
 /**
- * 推荐初始化响应体
+ * 推荐元数据
+ */
+@Serializable
+data class RecommendMetadata(
+    val methods: List<String>,
+    val score: Double,
+    val seedIllustIds: List<Long>,
+    val banditInfo: String,
+    val recommendListId: String
+)
+
+/**
+ * 推荐初始化响应体（用于 getRecommendInit）
  */
 @Serializable
 data class IllustRecommendInitBody(
     val illusts: List<IllustSimple>,
     val nextIds: List<Long>,
-    val details: Map<String, IllustDetailBody>? = null
+    val details: Map<String, RecommendMetadata>? = null
 )
 
 /**

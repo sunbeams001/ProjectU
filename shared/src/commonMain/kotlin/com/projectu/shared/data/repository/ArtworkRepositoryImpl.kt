@@ -17,8 +17,8 @@ class ArtworkRepositoryImpl(
     private val pixivApi: PixivApi
 ) : ArtworkRepository {
 
-    override suspend fun getArtworkDetail(artworkId: String): Result<Artwork> = runCatching {
-        val response = pixivApi.illustApi.getDetail(artworkId.toLong())
+    override suspend fun getArtworkDetail(artworkId: Long): Result<Artwork> = runCatching {
+        val response = pixivApi.illustApi.getDetail(artworkId)
         if (response.error) {
             throw IllegalStateException(response.message)
         }
@@ -82,7 +82,7 @@ class ArtworkRepositoryImpl(
         )
         response.contents.map { content ->
             Artwork(
-                id = content.illust_id,
+                id = content.illust_id.toString(),
                 title = content.title,
                 description = "",
                 type = when (content.illust_type) {
@@ -95,7 +95,7 @@ class ArtworkRepositoryImpl(
                 width = content.width,
                 height = content.height,
                 pageCount = content.illust_page_count.toIntOrNull() ?: 1,
-                userId = content.user_id,
+                userId = content.user_id.toString(),
                 userName = content.user_name,
                 userProfileImageUrl = content.profile_img,
                 tags = content.tags,
@@ -115,12 +115,12 @@ class ArtworkRepositoryImpl(
     }
 
     override suspend fun addBookmark(
-        artworkId: String,
+        artworkId: Long,
         isPrivate: Boolean,
         tags: List<String>
     ): Result<Unit> = runCatching {
         val response = pixivApi.bookmarkApi.addIllust(
-            illustId = artworkId.toLong(),
+            illustId = artworkId,
             restrict = if (isPrivate) 1 else 0,
             tags = tags
         )
@@ -129,23 +129,23 @@ class ArtworkRepositoryImpl(
         }
     }
 
-    override suspend fun removeBookmark(artworkId: String): Result<Unit> = runCatching {
+    override suspend fun removeBookmark(artworkId: Long): Result<Unit> = runCatching {
         // 需要先获取作品详情来获取bookmarkId
-        val detailResponse = pixivApi.illustApi.getDetail(artworkId.toLong())
+        val detailResponse = pixivApi.illustApi.getDetail(artworkId)
         if (detailResponse.error) {
             throw IllegalStateException(detailResponse.message)
         }
         val bookmarkId = detailResponse.body?.bookmarkData?.id
             ?: throw IllegalStateException("作品未收藏")
         
-        val response = pixivApi.bookmarkApi.deleteIllust(bookmarkId)
+        val response = pixivApi.bookmarkApi.deleteIllust(bookmarkId.toString())
         if (response.error) {
             throw IllegalStateException(response.message)
         }
     }
 
-    override suspend fun getUgoiraMetadata(artworkId: String): Result<UgoiraMetadata> = runCatching {
-        val response = pixivApi.illustApi.getUgoiraMeta(artworkId.toLong())
+    override suspend fun getUgoiraMetadata(artworkId: Long): Result<UgoiraMetadata> = runCatching {
+        val response = pixivApi.illustApi.getUgoiraMeta(artworkId)
         if (response.error) {
             throw IllegalStateException(response.message)
         }
@@ -162,7 +162,7 @@ class ArtworkRepositoryImpl(
         )
     }
 
-    override fun observeArtworkDetail(artworkId: String): Flow<Artwork> = flow {
+    override fun observeArtworkDetail(artworkId: Long): Flow<Artwork> = flow {
         val result = getArtworkDetail(artworkId)
         result.getOrNull()?.let { emit(it) }
     }

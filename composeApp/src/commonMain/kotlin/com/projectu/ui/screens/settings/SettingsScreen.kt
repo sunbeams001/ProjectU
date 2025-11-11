@@ -83,7 +83,8 @@ class SettingsScreen : Screen {
             onThemeModeChange = { viewModel.updateThemeMode(it) },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
-            onNavigateBack = { navigator.pop() }
+            onNavigateBack = { navigator.pop() },
+            onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) }
         )
     }
 }
@@ -102,7 +103,8 @@ private fun SettingsScreenContent(
     onThemeModeChange: (ThemeMode) -> Unit,
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToApiTest: () -> Unit = {}
 ) {
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
@@ -167,6 +169,16 @@ private fun SettingsScreenContent(
                     subtitle = currentPixivLanguage.displayName,
                     description = stringResource(Res.string.settings_pixiv_language_desc),
                     onClick = { showPixivLanguageDialog = true }
+                )
+            }
+            
+            // API 测试工具 (开发者选项)
+            item {
+                SettingsItem(
+                    title = "API 测试工具 🛠️",
+                    subtitle = "调试 Pixiv API 接口",
+                    description = "系统化测试所有已集成的 Pixiv API",
+                    onClick = onNavigateToApiTest
                 )
             }
             
