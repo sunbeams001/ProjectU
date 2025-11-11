@@ -153,6 +153,18 @@ sealed class ApiMethod(
         priority = 2
     )
     
+    object GetUserFollowers : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getUserFollowers",
+        displayName = "粉丝列表",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "11", required = true),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "24", required = false)
+        ),
+        priority = 2
+    )
+    
     // ==================== BookmarkApi ====================
     
     object AddBookmark : ApiMethod(
@@ -289,7 +301,7 @@ sealed class ApiMethod(
             GetRecommendIllusts, GetDiscoveryIllust, GetUgoiraMetadata,
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, 
-            GetUserBookmarks, GetUserFollowing,
+            GetUserBookmarks, GetUserFollowing, GetUserFollowers,
             // BookmarkApi
             AddBookmark, DeleteBookmark, GetBookmarkTags,
             // RankingApi

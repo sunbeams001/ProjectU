@@ -35,9 +35,9 @@ class UserRepositoryImpl(
         val body = response.body ?: throw IllegalStateException("用户信息为空")
         
         User(
-            id = body.userId.toString(),
+            id = body.userId,  // userId 现在是 String 类型，无需转换
             name = body.name,
-            account = body.userId.toString(),
+            account = body.userId,  // userId 现在是 String 类型，无需转换
             profileImageUrl = body.imageBig,
             isFollowed = false,
             isMuted = false,
@@ -54,9 +54,9 @@ class UserRepositoryImpl(
         val body = response.body ?: throw IllegalStateException("用户信息为空")
         
         User(
-            id = body.userId.toString(),
+            id = body.userId,  // userId 现在是 String 类型，无需转换
             name = body.name,
-            account = body.userId.toString(),
+            account = body.userId,  // userId 现在是 String 类型，无需转换
             profileImageUrl = body.imageBig,
             isFollowed = body.isFollowed,
             isMuted = body.isBlocking,

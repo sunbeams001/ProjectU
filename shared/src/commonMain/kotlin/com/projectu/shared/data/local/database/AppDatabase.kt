@@ -1,8 +1,10 @@
 package com.projectu.shared.data.local.database
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import com.projectu.shared.data.local.dao.ArtworkDao
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.dao.UgoiraCacheDao
@@ -23,6 +25,7 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
     version = 2, // 增加版本号以支持新添加的SettingsEntity
     exportSchema = true
 )
+@ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     
     /**
@@ -39,4 +42,13 @@ abstract class AppDatabase : RoomDatabase() {
      * 设置数据访问对象
      */
     abstract fun settingsDao(): SettingsDao
+}
+
+/**
+ * 数据库构造器
+ * Room 在非Android平台需要使用此构造器
+ */
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
+    override fun initialize(): AppDatabase
 }

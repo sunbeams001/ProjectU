@@ -143,6 +143,10 @@ data class ZoneConfig(
     val logo: ZoneConfigItem? = null,
     @SerialName("ad_logo")
     val adLogo: ZoneConfigItem? = null,
+    @SerialName("t_responsive_320_50")
+    val tResponsive320x50: ZoneConfigItem? = null,
+    @SerialName("t_responsive_300_250")
+    val tResponsive300x250: ZoneConfigItem? = null,
     val relatedworks: ZoneConfigItem? = null
 )
 

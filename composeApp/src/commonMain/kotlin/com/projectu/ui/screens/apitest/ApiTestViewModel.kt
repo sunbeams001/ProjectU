@@ -155,6 +155,7 @@ class ApiTestViewModel(
                         ApiMethod.GetUserIllusts -> testGetUserIllusts()
                         ApiMethod.GetUserBookmarks -> testGetUserBookmarks()
                         ApiMethod.GetUserFollowing -> testGetUserFollowing()
+                        ApiMethod.GetUserFollowers -> testGetUserFollowers()
                         
                         // ==================== BookmarkApi ====================
                         ApiMethod.AddBookmark -> testAddBookmark()
@@ -445,24 +446,29 @@ class ApiTestViewModel(
     private suspend fun testGetUserBookmarks() {
         val userId = getParam("userId").toLongOrNull() ?: 11L
         val tag = getParam("tag")
-        val rest = getParam("rest")
+        val rest = getParam("rest").ifBlank { "show" }
         val offset = getParam("offset").toIntOrNull() ?: 0
         val limit = getParam("limit").toIntOrNull() ?: 48
         
-        val params = mutableMapOf<String, Any?>(
-            "offset" to offset,
-            "limit" to limit,
-            "rest" to rest
+        // 使用 UserApi 的方法
+        val response = pixivApi.userApi.getUserBookmarkIllusts(
+            uid = userId,
+            tag = tag,
+            offset = offset,
+            limit = limit,
+            rest = rest
         )
-        if (tag.isNotBlank()) {
-            params["tag"] = tag
-        }
         
+        // 获取带原始JSON的响应用于显示
         val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserBookmarkBody>(
             "/ajax/user/$userId/illusts/bookmarks",
-            params
+            mapOf(
+                "tag" to tag,
+                "offset" to offset,
+                "limit" to limit,
+                "rest" to rest
+            )
         )
-        val response = responseWithRaw.response
         
         val summary = buildString {
             appendLine("✅ 用户收藏获取成功")
@@ -470,6 +476,8 @@ class ApiTestViewModel(
             appendLine("用户ID: $userId")
             appendLine("标签: ${tag.ifBlank { "全部" }}")
             appendLine("公开性: $rest")
+            appendLine("偏移: $offset")
+            appendLine("限制: $limit")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
@@ -481,22 +489,90 @@ class ApiTestViewModel(
     
     private suspend fun testGetUserFollowing() {
         val userId = getParam("userId").toLongOrNull() ?: 11L
+        val rest = getParam("rest").ifBlank { "show" }
+        val tag = getParam("tag")
+        val acceptingRequests = getParam("acceptingRequests").toIntOrNull() ?: 0
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 24
         
-        // 使用推荐用户 API 作为替代
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserRecommendBody>(
-            "/ajax/user/$userId/recommends",
-            mapOf("userNum" to 20, "workNum" to 3, "isR18" to true)
+        // 使用真实的用户关注列表接口
+        val response = pixivApi.userApi.getUserFollowing(
+            uid = userId,
+            offset = offset,
+            limit = limit,
+            rest = rest,
+            tag = tag,
+            acceptingRequests = acceptingRequests
         )
-        val response = responseWithRaw.response
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserFollowingBody>(
+            "/ajax/user/$userId/following",
+            mapOf(
+                "offset" to offset,
+                "limit" to limit,
+                "rest" to rest,
+                "tag" to tag,
+                "acceptingRequests" to acceptingRequests
+            )
+        )
         
         val summary = buildString {
-            appendLine("✅ 推荐用户获取成功")
+            appendLine("✅ 用户关注列表获取成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("用户ID: $userId")
+            appendLine("公开状态: $rest")
+            appendLine("标签过滤: ${if (tag.isBlank()) "无" else tag}")
+            appendLine("仅接稿用户: ${if (acceptingRequests == 1) "是" else "否"}")
+            appendLine("偏移量: $offset")
+            appendLine("数量限制: $limit")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("注意: 使用推荐用户 API 代替关注列表")
+            val body = response.body
+            if (body != null) {
+                appendLine("关注用户总数: ${body.total}")
+                appendLine("当前返回数量: ${body.users.size}")
+            }
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetUserFollowers() {
+        val userId = getParam("userId").toLongOrNull() ?: 11L
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 24
+        
+        // 使用真实的用户粉丝列表接口
+        val response = pixivApi.userApi.getUserFollowers(
+            uid = userId,
+            offset = offset,
+            limit = limit
+        )
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserFollowingBody>(
+            "/ajax/user/$userId/followers",
+            mapOf(
+                "offset" to offset,
+                "limit" to limit
+            )
+        )
+        
+        val summary = buildString {
+            appendLine("✅ 用户粉丝列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("偏移量: $offset")
+            appendLine("数量限制: $limit")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            val body = response.body
+            if (body != null) {
+                appendLine("粉丝总数: ${body.total}")
+                appendLine("当前返回数量: ${body.users.size}")
+            }
             appendLine("请查看 JSON 标签页查看完整结果")
         }
         

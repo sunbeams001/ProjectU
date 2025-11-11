@@ -53,26 +53,67 @@ class UserApi(private val client: PixivApiClient) {
     /**
      * 查询用户收藏的插画
      * @param uid 用户ID
-     * @param tag 标签过滤（可选）
+     * @param tag 标签过滤（空字符串表示不过滤）
      * @param offset 偏移量
      * @param limit 返回数量（最大100）
      * @param rest 公开状态：show(公开), hide(私密)
      */
     suspend fun getUserBookmarkIllusts(
         uid: Long,
-        tag: String? = null,
+        tag: String = "",
         offset: Int = 0,
         limit: Int = 48,
         rest: String = "show"
     ): PixivResponse<UserBookmarkBody> {
-        val params = mutableMapOf<String, Any?>(
+        return client.get("/ajax/user/$uid/illusts/bookmarks", mapOf(
+            "tag" to tag,
             "offset" to offset,
             "limit" to limit,
             "rest" to rest
-        )
-        tag?.let { params["tag"] = it }
+        ))
+    }
 
-        return client.get("/ajax/user/$uid/illusts/bookmarks", params)
+    /**
+     * 获取用户关注列表
+     * @param uid 用户ID
+     * @param offset 偏移量
+     * @param limit 返回数量（最大100）
+     * @param rest 公开状态：show(公开), hide(私密)
+     * @param tag 标签过滤（空字符串表示不过滤）
+     * @param acceptingRequests 是否只显示正在接稿的用户（0=否，1=是）
+     */
+    suspend fun getUserFollowing(
+        uid: Long,
+        offset: Int = 0,
+        limit: Int = 24,
+        rest: String = "show",
+        tag: String = "",
+        acceptingRequests: Int = 0
+    ): PixivResponse<UserFollowingBody> {
+        return client.get("/ajax/user/$uid/following", mapOf(
+            "offset" to offset,
+            "limit" to limit,
+            "rest" to rest,
+            "tag" to tag,
+            "acceptingRequests" to acceptingRequests
+        ))
+    }
+
+    /**
+     * 获取用户粉丝列表
+     * @param uid 用户ID
+     * @param offset 偏移量
+     * @param limit 返回数量（最大100）
+     */
+    suspend fun getUserFollowers(
+        uid: Long,
+        offset: Int = 0,
+        limit: Int = 24
+    ): PixivResponse<UserFollowingBody> {
+        return client.get("/ajax/user/$uid/followers", mapOf(
+            "offset" to offset,
+            "limit" to limit
+        ))
     }
 
     /**
