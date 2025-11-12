@@ -28,16 +28,16 @@
 ### IllustApi - 插画相关 API
 
 > 📁 文件: `shared/data/remote/api/IllustApi.kt`  
-> ✅ 状态: 已集成，待测试
+> ✅ 状态: 已集成，已测试
 
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
-| `getIllustDetail` | `/ajax/illust/{illustId}` | P0 | ⏳ | 测试作品ID: `102814610` |
-| `searchIllust` | `/ajax/search/artworks/{keyword}` | P0 | ⏳ | 测试关键词: `初音ミク` |
-| `getRecommendedIllust` | `/ajax/illust/recommend/init` | P1 | ⏳ | 需要登录 |
-| `getRelatedIllust` | `/ajax/illust/{illustId}/recommend` | P1 | ⏳ | 相关作品推荐 |
-| `getDiscoveryIllust` | `/ajax/discovery/artworks` | P1 | ⏳ | 发现页作品 |
-| `getUgoiraMetadata` | `/ajax/illust/{illustId}/ugoira_meta` | P2 | ⏳ | 动图元数据 |
+| `getIllustDetail` | `/ajax/illust/{illustId}` | P0 | ✅ | 测试作品ID: `102814610` |
+| `searchIllust` | `/ajax/search/artworks/{keyword}` | P0 | ✅ | 测试关键词: `初音ミク` |
+| `getRecommendedIllust` | `/ajax/illust/recommend/init` | P1 | ✅ | 需要登录 |
+| `getRelatedIllust` | `/ajax/illust/{illustId}/recommend` | P1 | ✅ | 相关作品推荐 |
+| `getDiscoveryIllust` | `/ajax/discovery/artworks` | P1 | ✅ | 发现页作品 |
+| `getUgoiraMetadata` | `/ajax/illust/{illustId}/ugoira_meta` | P2 | ✅ | 动图元数据 |
 
 #### 测试用例示例
 
@@ -92,15 +92,17 @@ suspend fun testSearchIllust(pixivApi: PixivApi) {
 ### UserApi - 用户相关 API
 
 > 📁 文件: `shared/data/remote/api/UserApi.kt`  
-> ✅ 状态: 已集成，待测试
+> ✅ 状态: 已集成，已测试
 
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
-| `getUserInfo` | `/ajax/user/{userId}` | P0 | ⏳ | 获取用户基本信息 |
-| `getUserFullInfo` | `/ajax/user/{userId}/profile/all` | P0 | ⏳ | 完整信息+统计 |
-| `getUserIllusts` | `/ajax/user/{userId}/profile/illusts` | P1 | ⏳ | 用户作品列表 |
-| `getUserBookmarks` | `/ajax/user/{userId}/illusts/bookmarks` | P1 | ⏳ | 用户收藏 |
-| `getUserFollowing` | `/ajax/user/{userId}/following` | P2 | ⏳ | 关注列表 |
+| `getUserInfo` | `/ajax/user/{userId}` | P0 | ✅ | 获取用户基本信息 |
+| `getProfileAll` | `/ajax/user/{userId}/profile/all` | P0 | ✅ | 用户作品概况（作品ID列表） |
+| `getProfileIllusts` | `/ajax/user/{userId}/profile/illusts` | P1 | ✅ | 用户作品详细信息 |
+| `getUserBookmarkIllusts` | `/ajax/user/{userId}/illusts/bookmarks` | P1 | ✅ | 用户收藏的插画 |
+| `getUserFollowing` | `/ajax/user/{userId}/following` | P2 | ✅ | 用户关注列表 |
+| `getUserFollowers` | `/ajax/user/{userId}/followers` | P2 | ✅ | 用户粉丝列表 |
+| `getRecommendUsers` | `/ajax/user/{userId}/recommends` | P2 | ✅ | 推荐用户 |
 
 #### 测试用例示例
 
@@ -125,15 +127,30 @@ suspend fun testGetUserInfo(pixivApi: PixivApi) {
 ### BookmarkApi - 收藏相关 API
 
 > 📁 文件: `shared/data/remote/api/BookmarkApi.kt`  
-> ✅ 状态: 已集成，待测试
+> ✅ 状态: 已集成，已测试
+
+#### 插画收藏 API
 
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
-| `addBookmark` | `/ajax/illusts/bookmarks/add` | P0 | ⏳ | 添加收藏 |
-| `deleteBookmark` | `/rpc/index.php` (delete) | P0 | ⏳ | 删除收藏 |
-| `getBookmarkTags` | `/ajax/user/{userId}/illusts/bookmark/tags` | P2 | ⏳ | 收藏标签 |
+| `addIllust` | `POST /bookmark_add.php` | P0 | ✅ | 添加插画收藏，返回 BookmarkAddResponse |
+| `deleteIllust` | `POST /ajax/illusts/bookmarks/delete` | P0 | ✅ | 删除单个插画收藏，返回空数组 |
+| `deleteIllusts` | `POST /ajax/illusts/bookmarks/delete` | P1 | ✅ | 批量删除插画收藏 |
+| `getIllustBookmarkTags` | `GET /ajax/user/{userId}/illusts/bookmark/tags` | P2 | ✅ | 获取插画收藏标签 |
 
-⚠️ **注意**: 收藏操作会修改数据，测试时请谨慎！
+#### 小说收藏 API
+
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `addNovel` | `POST /novel/bookmark_add.php` | P0 | ✅ | 添加小说收藏，返回 bookmark_id 字符串 |
+| `deleteNovel` | `POST /ajax/novels/bookmarks/delete` | P0 | ✅ | 删除单个小说收藏，返回空数组 |
+| `deleteNovels` | `POST /ajax/novels/bookmarks/delete` | P1 | ✅ | 批量删除小说收藏 |
+| `getNovelBookmarkTags` | `GET /ajax/user/{userId}/novels/bookmark/tags` | P2 | ✅ | 获取小说收藏标签 |
+
+⚠️ **注意**: 
+- 收藏操作会修改实际数据，测试时请谨慎！
+- 插画和小说的添加接口返回类型不同：插画返回对象，小说返回字符串 bookmark_id
+- 删除接口统一返回空数组 `[]`，需使用 `EmptyArrayResponse` 或 `List<String>` 处理
 
 ---
 
@@ -378,11 +395,11 @@ runBlocking {
 
 | 模块 | 总方法数 | 已测试 | 通过 | 失败 | 进度 |
 |------|---------|--------|------|------|------|
-| IllustApi | 6 | 0 | 0 | 0 | 0% |
-| UserApi | 5 | 0 | 0 | 0 | 0% |
-| BookmarkApi | 3 | 0 | 0 | 0 | 0% |
-| RankingApi | 8 | 0 | 0 | 0 | 0% |
-| **总计** | **22** | **0** | **0** | **0** | **0%** |
+| IllustApi | 6 | 6 | 6 | 0 | 100% |
+| UserApi | 7 | 7 | 7 | 0 | 100% |
+| BookmarkApi | 8 | 8 | 8 | 0 | 100% |
+| RankingApi | 7 | 0 | 0 | 0 | 0% |
+| **总计** | **28** | **21** | **21** | **0** | **75%** |
 
 ---
 

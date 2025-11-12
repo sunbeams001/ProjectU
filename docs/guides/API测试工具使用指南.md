@@ -10,14 +10,14 @@
 ### 1. 创建了完整的 API 测试工具
 
 **文件清单**:
-- `ApiTestModels.kt` - 定义了所有 22 个 API 方法和参数
+- `ApiTestModels.kt` - 定义了所有 27 个 API 方法和参数
 - `ApiTestContract.kt` - 状态管理和意图定义
 - `ApiTestViewModel.kt` - 实现了所有 API 的调用逻辑
 - `ApiTestScreen.kt` - 完整的测试界面 UI
 
 **功能特性**:
 - ✅ 支持 4 个模块: IllustApi, UserApi, BookmarkApi, RankingApi
-- ✅ 支持 22 个 API 方法测试
+- ✅ 支持 27 个 API 方法测试
 - ✅ 按优先级分类 (P0/P1/P2)
 - ✅ 动态参数输入（文本框/下拉选择）
 - ✅ 实时结果展示（摘要 + 原始 JSON）
@@ -113,13 +113,35 @@
   - 验证: 作品数、收藏数
 
 #### BookmarkApi (收藏)
-- [ ] **addBookmark** - 添加收藏 ⚠️
+- [x] **addIllust** - 添加插画收藏 ⚠️
   - **注意**: 会实际添加收藏，测试后需要删除
-  - 验证: 返回成功状态
+  - 验证: 返回 BookmarkAddResponse 对象
   
-- [ ] **deleteBookmark** - 删除收藏 ⚠️
-  - **注意**: 需要先有收藏 ID
-  - 验证: 返回成功状态
+- [x] **deleteIllust** - 删除插画收藏 ⚠️
+  - **注意**: 需要先有 bookmark_id
+  - 验证: 返回空数组 `[]`
+  
+- [x] **deleteIllusts** - 批量删除插画收藏 ⚠️
+  - **注意**: 需要多个 bookmark_id（逗号分隔）
+  - 验证: 返回空数组 `[]`
+  
+- [x] **getIllustBookmarkTags** - 获取插画收藏标签
+  - 验证: 返回 public 和 private 标签列表
+
+- [x] **addNovel** - 添加小说收藏 ⚠️
+  - **注意**: 会实际添加收藏，测试后需要删除
+  - 验证: 返回 bookmark_id 字符串（非对象）
+  
+- [x] **deleteNovel** - 删除小说收藏 ⚠️
+  - **注意**: 需要先有 book_id
+  - 验证: 返回空数组 `[]`
+  
+- [x] **deleteNovels** - 批量删除小说收藏 ⚠️
+  - **注意**: 需要多个 bookmark_id（逗号分隔）
+  - 验证: 返回空数组 `[]`
+  
+- [x] **getNovelBookmarkTags** - 获取小说收藏标签
+  - 验证: 返回 public 和 private 标签列表
 
 #### RankingApi (排行榜)
 - [ ] **getDailyRanking** - 日榜
@@ -155,7 +177,8 @@
 - [ ] **getUserFollowing** - 关注列表
 
 #### BookmarkApi
-- [ ] **getBookmarkTags** - 收藏标签
+- [x] **getIllustBookmarkTags** - 插画收藏标签
+- [x] **getNovelBookmarkTags** - 小说收藏标签
 
 #### RankingApi
 - [ ] **getRookieRanking** - 新人榜
