@@ -167,10 +167,11 @@ sealed class ApiMethod(
     
     // ==================== BookmarkApi ====================
     
+    // 插画收藏
     object AddBookmark : ApiMethod(
         module = ApiModule.BOOKMARK,
         methodName = "addBookmark",
-        displayName = "添加收藏 ⚠️",
+        displayName = "添加插画收藏 ⚠️",
         parameters = listOf(
             ApiParameter("illustId", "作品ID", "102814610", required = true),
             ApiParameter("restrict", "公开性", "0", required = false,
@@ -184,17 +185,72 @@ sealed class ApiMethod(
     object DeleteBookmark : ApiMethod(
         module = ApiModule.BOOKMARK,
         methodName = "deleteBookmark",
-        displayName = "删除收藏 ⚠️",
+        displayName = "删除插画收藏 ⚠️",
         parameters = listOf(
             ApiParameter("bookmarkId", "收藏ID", "", required = true)
         ),
         priority = 0
     )
     
-    object GetBookmarkTags : ApiMethod(
+    object DeleteBookmarks : ApiMethod(
         module = ApiModule.BOOKMARK,
-        methodName = "getBookmarkTags",
-        displayName = "收藏标签",
+        methodName = "deleteBookmarks",
+        displayName = "批量删除插画收藏 ⚠️",
+        parameters = listOf(
+            ApiParameter("bookmarkIds", "收藏ID列表(逗号分隔)", "", required = true)
+        ),
+        priority = 1
+    )
+    
+    object GetIllustBookmarkTags : ApiMethod(
+        module = ApiModule.BOOKMARK,
+        methodName = "getIllustBookmarkTags",
+        displayName = "插画收藏标签",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "11", required = true)
+        ),
+        priority = 2
+    )
+    
+    // 小说收藏
+    object AddNovelBookmark : ApiMethod(
+        module = ApiModule.BOOKMARK,
+        methodName = "addNovelBookmark",
+        displayName = "添加小说收藏 ⚠️",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "", required = true),
+            ApiParameter("restrict", "公开性", "0", required = false,
+                options = listOf("0", "1")),
+            ApiParameter("comment", "评论", "", required = false),
+            ApiParameter("tags", "标签", "", required = false)
+        ),
+        priority = 1
+    )
+    
+    object DeleteNovelBookmark : ApiMethod(
+        module = ApiModule.BOOKMARK,
+        methodName = "deleteNovelBookmark",
+        displayName = "删除小说收藏 ⚠️",
+        parameters = listOf(
+            ApiParameter("bookId", "收藏ID", "", required = true)
+        ),
+        priority = 1
+    )
+    
+    object DeleteNovelBookmarks : ApiMethod(
+        module = ApiModule.BOOKMARK,
+        methodName = "deleteNovelBookmarks",
+        displayName = "批量删除小说收藏 ⚠️",
+        parameters = listOf(
+            ApiParameter("bookmarkIds", "收藏ID列表(逗号分隔)", "", required = true)
+        ),
+        priority = 2
+    )
+    
+    object GetNovelBookmarkTags : ApiMethod(
+        module = ApiModule.BOOKMARK,
+        methodName = "getNovelBookmarkTags",
+        displayName = "小说收藏标签",
         parameters = listOf(
             ApiParameter("userId", "用户ID", "11", required = true)
         ),
@@ -303,7 +359,8 @@ sealed class ApiMethod(
             GetUserInfo, GetUserFullInfo, GetUserIllusts, 
             GetUserBookmarks, GetUserFollowing, GetUserFollowers,
             // BookmarkApi
-            AddBookmark, DeleteBookmark, GetBookmarkTags,
+            AddBookmark, DeleteBookmark, DeleteBookmarks, GetIllustBookmarkTags,
+            AddNovelBookmark, DeleteNovelBookmark, DeleteNovelBookmarks, GetNovelBookmarkTags,
             // RankingApi
             GetDailyRanking, GetWeeklyRanking, GetMonthlyRanking,
             GetRookieRanking, GetOriginalRanking, GetMaleRanking,

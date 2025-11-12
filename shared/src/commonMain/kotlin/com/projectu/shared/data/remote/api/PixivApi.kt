@@ -43,20 +43,23 @@ class PixivApi(
          * @param token CSRF token（可选，会自动获取）
          * @param host API主机地址
          * @param lang 语言设置
+         * @param onTokenUpdated CSRF token更新回调
          */
         fun create(
             httpClient: HttpClient,
             phpSessionId: String,
             token: String? = null,
             host: String = PixivApiClient.DEFAULT_HOST,
-            lang: String = PixivApiClient.DEFAULT_LANG
+            lang: String = PixivApiClient.DEFAULT_LANG,
+            onTokenUpdated: (suspend (String) -> Unit)? = null
         ): PixivApi {
             val client = PixivApiClient(
                 httpClient = httpClient,
                 phpSessionId = phpSessionId,
                 token = token,
                 host = host,
-                lang = lang
+                lang = lang,
+                onTokenUpdated = onTokenUpdated
             )
             return PixivApi(client)
         }

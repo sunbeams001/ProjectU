@@ -52,7 +52,11 @@ val pixivApiModule = module {
             httpClient = get(),
             phpSessionId = config.phpSessionId.ifBlank { "0_default" }, // 默认值，未登录时使用
             token = config.csrfToken,
-            lang = config.language
+            lang = config.language,
+            onTokenUpdated = { token ->
+                // 保存获取到的CSRF token
+                pixivConfigStore.setCsrfToken(token)
+            }
         )
     }
     

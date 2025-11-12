@@ -26,6 +26,7 @@ import kotlinx.serialization.json.encodeToJsonElement
  * @property token POST请求使用的令牌，可选，如果不提供会自动获取
  * @property host API主机地址，默认为 https://www.pixiv.net
  * @property lang 语言设置，默认为中文
+ * @property onTokenUpdated CSRF token更新回调，用于持久化保存
  */
 class PixivApiClient(
     @PublishedApi
@@ -35,7 +36,8 @@ class PixivApiClient(
     @PublishedApi
     internal val host: String = DEFAULT_HOST,
     @PublishedApi
-    internal val lang: String = DEFAULT_LANG
+    internal val lang: String = DEFAULT_LANG,
+    private val onTokenUpdated: (suspend (String) -> Unit)? = null
 ) {
     companion object {
         const val DEFAULT_HOST = "https://www.pixiv.net"
@@ -132,9 +134,9 @@ class PixivApiClient(
     /**
      * 执行POST请求（JSON body）
      */
-    suspend inline fun <reified T> postJson(
+    suspend inline fun <reified T, reified B> postJson(
         url: String,
-        body: Any? = null
+        body: B
     ): PixivResponse<T> {
         // 确保有token
         if (csrfToken == null) {
@@ -147,18 +149,36 @@ class PixivApiClient(
             header(HEADER_CSRF_TOKEN, csrfToken)
             parameter("lang", lang)
             contentType(ContentType.Application.Json)
-            body?.let {
-                setBody(it)
-            }
+            setBody(body)
+        }.body()
+    }
+    
+    /**
+     * 执行POST请求（JSON body，无body参数）
+     */
+    suspend inline fun <reified T> postJson(
+        url: String
+    ): PixivResponse<T> {
+        // 确保有token
+        if (csrfToken == null) {
+            csrfToken = fetchToken()
+        }
+
+        return httpClient.post("$host$url") {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            header(HEADER_CSRF_TOKEN, csrfToken)
+            parameter("lang", lang)
+            contentType(ContentType.Application.Json)
         }.body()
     }
 
     /**
      * 执行POST请求（JSON body，带原始JSON）- 用于API测试
      */
-    suspend inline fun <reified T> postJsonWithRaw(
+    suspend inline fun <reified T, reified B> postJsonWithRaw(
         url: String,
-        body: Any? = null
+        body: B
     ): PixivResponseWithRaw<T> {
         // 确保有token
         if (csrfToken == null) {
@@ -171,9 +191,30 @@ class PixivApiClient(
             header(HEADER_CSRF_TOKEN, csrfToken)
             parameter("lang", lang)
             contentType(ContentType.Application.Json)
-            body?.let {
-                setBody(it)
-            }
+            setBody(body)
+        }
+        val rawJson = httpResponse.bodyAsText()
+        val response = jsonParser.decodeFromString<PixivResponse<T>>(rawJson)
+        return PixivResponseWithRaw(response, rawJson)
+    }
+    
+    /**
+     * 执行POST请求（JSON body，带原始JSON，无body）- 用于API测试
+     */
+    suspend inline fun <reified T> postJsonWithRaw(
+        url: String
+    ): PixivResponseWithRaw<T> {
+        // 确保有token
+        if (csrfToken == null) {
+            csrfToken = fetchToken()
+        }
+
+        val httpResponse = httpClient.post("$host$url") {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            header(HEADER_CSRF_TOKEN, csrfToken)
+            parameter("lang", lang)
+            contentType(ContentType.Application.Json)
         }
         val rawJson = httpResponse.bodyAsText()
         val response = jsonParser.decodeFromString<PixivResponse<T>>(rawJson)
@@ -242,15 +283,34 @@ class PixivApiClient(
      */
     @PublishedApi
     internal suspend fun fetchToken(): String {
-        val html = httpClient.get("$host/setting_user.php") {
-            header(HEADER_REFERER, DEFAULT_HOST)
+        val url = "$host/settings/account"
+        
+        val response = httpClient.get(url) {
+            header(HEADER_REFERER, host)
             header(HEADER_COOKIE, cookie)
-        }.body<String>()
-
-        val regex = Regex("""pixiv\.context\.token = "(.+?)";""")
+            header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+            header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7")
+            header("Connection", "keep-alive")
+            header("Upgrade-Insecure-Requests", "1")
+            header("Sec-Fetch-Dest", "document")
+            header("Sec-Fetch-Mode", "navigate")
+            header("Sec-Fetch-Site", "same-origin")
+        }
+        
+        val html = response.bodyAsText(Charsets.UTF_8)
+        
+        // 匹配 JSON 字符串中被转义的 token
+        val regex = Regex("""api\\":\{\\"token\\":\\"([a-f0-9]+)\\"""")
         val matchResult = regex.find(html)
-        return matchResult?.groupValues?.get(1)
+        
+        val token = matchResult?.groupValues?.get(1)
             ?: throw IllegalStateException("无法获取CSRF Token")
+        
+        // 保存 token 到存储
+        onTokenUpdated?.invoke(token)
+        
+        return token
     }
 
     /**

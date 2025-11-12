@@ -3,6 +3,10 @@ package com.projectu.ui.screens.apitest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.projectu.shared.data.local.PixivConfigStore
+import com.projectu.shared.data.remote.api.BookmarkAddResponse
+import com.projectu.shared.data.remote.api.BookmarkRequest
+import com.projectu.shared.data.remote.api.BookmarkTagsResponse
+import com.projectu.shared.data.remote.api.NovelBookmarkRequest
 import com.projectu.shared.data.remote.api.PixivApi
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -160,7 +164,12 @@ class ApiTestViewModel(
                         // ==================== BookmarkApi ====================
                         ApiMethod.AddBookmark -> testAddBookmark()
                         ApiMethod.DeleteBookmark -> testDeleteBookmark()
-                        ApiMethod.GetBookmarkTags -> testGetBookmarkTags()
+                        ApiMethod.DeleteBookmarks -> testDeleteBookmarks()
+                        ApiMethod.GetIllustBookmarkTags -> testGetIllustBookmarkTags()
+                        ApiMethod.AddNovelBookmark -> testAddNovelBookmark()
+                        ApiMethod.DeleteNovelBookmark -> testDeleteNovelBookmark()
+                        ApiMethod.DeleteNovelBookmarks -> testDeleteNovelBookmarks()
+                        ApiMethod.GetNovelBookmarkTags -> testGetNovelBookmarkTags()
                         
                         // ==================== RankingApi ====================
                         ApiMethod.GetDailyRanking -> testGetDailyRanking()
@@ -589,21 +598,23 @@ class ApiTestViewModel(
         
         val tagList = tags.split(",").map { it.trim() }.filter { it.isNotBlank() }
         
-        val requestBody = mapOf(
-            "illust_id" to illustId,
-            "restrict" to restrict,
-            "comment" to comment,
-            "tags" to tagList
+        // 创建请求体（使用shared模块的BookmarkRequest）
+        val requestBody = BookmarkRequest(
+            illustId = illustId.toString(),
+            restrict = restrict,
+            comment = comment,
+            tags = tagList
         )
         
-        val responseWithRaw = pixivApi.client.postJsonWithRaw<Map<String, Any>>(
+        // 使用postJsonWithRaw获取原始响应和强类型数据
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<BookmarkAddResponse, BookmarkRequest>(
             "/ajax/illusts/bookmarks/add",
             requestBody
         )
         val response = responseWithRaw.response
         
         val summary = buildString {
-            appendLine("⚠️ 收藏操作已执行")
+            appendLine("✅ 收藏操作已执行")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("作品ID: $illustId")
             appendLine("公开性: ${if (restrict == 0) "公开" else "私密"}")
@@ -612,6 +623,12 @@ class ApiTestViewModel(
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("收藏ID: ${body.lastBookmarkId ?: "未返回"}")
+                appendLine("状态ID: ${body.staccStatusId ?: "未返回"}")
+            }
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整结果")
         }
@@ -622,19 +639,24 @@ class ApiTestViewModel(
     private suspend fun testDeleteBookmark() {
         val bookmarkId = getParam("bookmarkId")
         
-        val responseWithRaw = pixivApi.client.postFormWithRaw<Unit>(
+        // 删除接口返回空数组 []，使用 List<String> 来接收
+        val responseWithRaw = pixivApi.client.postFormWithRaw<List<String>>(
             "/ajax/illusts/bookmarks/delete",
             mapOf("bookmark_id" to bookmarkId)
         )
         val response = responseWithRaw.response
         
         val summary = buildString {
-            appendLine("⚠️ 取消收藏已执行")
+            appendLine("✅ 取消收藏已执行")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("收藏ID: $bookmarkId")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("响应体: ${if (body.isEmpty()) "空数组 []" else body.toString()}")
+            }
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整结果")
         }
@@ -642,24 +664,209 @@ class ApiTestViewModel(
         updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
-    private suspend fun testGetBookmarkTags() {
+    private suspend fun testGetIllustBookmarkTags() {
         val userId = getParam("userId").toLongOrNull() ?: 11L
         
-        // 使用用户收藏 API，可以间接获取标签信息
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserBookmarkBody>(
-            "/ajax/user/$userId/illusts/bookmarks",
-            mapOf("limit" to 10)
+        // 使用插画收藏标签 API
+        val responseWithRaw = pixivApi.client.getWithRaw<BookmarkTagsResponse>(
+            "/ajax/user/$userId/illusts/bookmark/tags"
         )
         val response = responseWithRaw.response
         
         val summary = buildString {
-            appendLine("✅ 用户收藏获取成功")
+            appendLine("✅ 插画收藏标签获取成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("用户ID: $userId")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("公开标签数: ${body.public.size}")
+                appendLine("私密标签数: ${body.private.size}")
+                appendLine("收藏过多: ${body.tooManyBookmark}")
+                appendLine("标签过多: ${body.tooManyBookmarkTags}")
+                if (body.public.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("公开标签（前10个）:")
+                    body.public.take(10).forEach { tag ->
+                        appendLine("  • ${tag.tag} (${tag.cnt})")
+                    }
+                }
+            }
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("注意: 使用收藏列表 API 代替收藏标签")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelBookmarkTags() {
+        val userId = getParam("userId").toLongOrNull() ?: 11L
+        
+        // 使用小说收藏标签 API
+        val responseWithRaw = pixivApi.client.getWithRaw<BookmarkTagsResponse>(
+            "/ajax/user/$userId/novels/bookmark/tags"
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说收藏标签获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("公开标签数: ${body.public.size}")
+                appendLine("私密标签数: ${body.private.size}")
+                appendLine("收藏过多: ${body.tooManyBookmark}")
+                appendLine("标签过多: ${body.tooManyBookmarkTags}")
+                if (body.public.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("公开标签（前10个）:")
+                    body.public.take(10).forEach { tag ->
+                        appendLine("  • ${tag.tag} (${tag.cnt})")
+                    }
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testDeleteBookmarks() {
+        val bookmarkIds = getParam("bookmarkIds")
+        val idList = bookmarkIds.split(",").map { it.trim() }
+        
+        // 批量删除插画收藏，返回空数组
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<List<String>, Map<String, List<String>>>(
+            "/ajax/illusts/bookmarks/remove",
+            mapOf("bookmarkIds" to idList)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 批量取消收藏已执行")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("收藏ID列表: ${idList.joinToString()}")
+            appendLine("删除数量: ${idList.size}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("响应体: ${if (body.isEmpty()) "空数组 []" else body.toString()}")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testAddNovelBookmark() {
+        val novelId = getParam("novelId").toLongOrNull() ?: 0L
+        val restrict = getParam("restrict").toIntOrNull() ?: 0
+        val comment = getParam("comment")
+        val tags = getParam("tags")
+        val tagList = if (tags.isNotBlank()) tags.split(",").map { it.trim() } else emptyList()
+        
+        // 添加小说收藏，使用 NovelBookmarkRequest
+        val requestBody = NovelBookmarkRequest(
+            novelId = novelId.toString(),
+            restrict = restrict,
+            comment = comment,
+            tags = tagList
+        )
+        
+        // 小说收藏返回的是字符串 (收藏ID)
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<String, NovelBookmarkRequest>(
+            "/ajax/novels/bookmarks/add",
+            requestBody
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说收藏操作已执行")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("小说ID: $novelId")
+            appendLine("公开性: ${if (restrict == 0) "公开" else "私密"}")
+            appendLine("评论: ${comment.ifBlank { "无" }}")
+            appendLine("标签: ${tagList.joinToString().ifBlank { "无" }}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("收藏ID: $body")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testDeleteNovelBookmark() {
+        val bookId = getParam("bookId")
+        
+        // 删除小说收藏，返回空数组
+        val responseWithRaw = pixivApi.client.postFormWithRaw<List<String>>(
+            "/ajax/novels/bookmarks/delete",
+            mapOf(
+                "book_id" to bookId,
+                "del" to "1"
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 取消小说收藏已执行")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("收藏ID: $bookId")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("响应体: ${if (body.isEmpty()) "空数组 []" else body.toString()}")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testDeleteNovelBookmarks() {
+        val bookmarkIds = getParam("bookmarkIds")
+        val idList = bookmarkIds.split(",").map { it.trim() }
+        
+        // 批量删除小说收藏，返回空数组
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<List<String>, Map<String, List<String>>>(
+            "/ajax/novels/bookmarks/remove",
+            mapOf("bookmarkIds" to idList)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 批量取消小说收藏已执行")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("收藏ID列表: ${idList.joinToString()}")
+            appendLine("删除数量: ${idList.size}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            val body = response.body
+            if (body != null) {
+                appendLine("响应体: ${if (body.isEmpty()) "空数组 []" else body.toString()}")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整结果")
         }
         
