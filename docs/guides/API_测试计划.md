@@ -157,18 +157,145 @@ suspend fun testGetUserInfo(pixivApi: PixivApi) {
 ### RankingApi - 排行榜相关 API
 
 > 📁 文件: `shared/data/remote/api/RankingApi.kt`  
-> ✅ 状态: 已集成，待测试
+> ✅ 状态: 已集成，已测试
 
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
-| `getRanking` | `/ranking.php` | P0 | ⏳ | 综合排行榜 |
-| `getDailyRanking` | `/ranking.php?mode=daily` | P0 | ⏳ | 日榜 |
-| `getWeeklyRanking` | `/ranking.php?mode=weekly` | P1 | ⏳ | 周榜 |
-| `getMonthlyRanking` | `/ranking.php?mode=monthly` | P1 | ⏳ | 月榜 |
-| `getRookieRanking` | `/ranking.php?mode=rookie` | P2 | ⏳ | 新人榜 |
-| `getOriginalRanking` | `/ranking.php?mode=original` | P2 | ⏳ | 原创榜 |
-| `getMaleRanking` | `/ranking.php?mode=male` | P2 | ⏳ | 男性向 |
-| `getFemaleRanking` | `/ranking.php?mode=female` | P2 | ⏳ | 女性向 |
+| `getIllustRanking` | `/ranking.php` | P0 | ✅ | 插画排行榜，通过枚举参数区分 |
+| `getNovelRanking` | `/novel/ranking.php` | P1 | ✅ | 小说排行榜，解析JSON格式数据 |
+
+**支持的排行榜模式 (RankingMode 枚举)**:
+
+**一般排行榜**:
+- `DAILY` (daily) - 今日
+- `WEEKLY` (weekly) - 本周
+- `MONTHLY` (monthly) - 本月
+- `ROOKIE` (rookie) - 新人
+- `ORIGINAL` (original) - 原创
+- `DAILY_AI` (daily_ai) - AI生成 ✨ 新增
+- `MALE` (male) - 男性向
+- `FEMALE` (female) - 女性向
+
+**R-18 排行榜**:
+- `DAILY_R18` (daily_r18) - 今日R-18
+- `WEEKLY_R18` (weekly_r18) - 本周R-18
+- `DAILY_R18_AI` (daily_r18_ai) - AI生成R-18 ✨ 新增
+- `MALE_R18` (male_r18) - 男性向R-18
+- `FEMALE_R18` (female_r18) - 女性向R-18
+
+**R-18G 排行榜**:
+- `R18G` (r18g) - R-18G（猎奇向） ✨ 新增
+
+**内容类型 (RankingContent 枚举)**:
+- `ALL` (all) - 全部
+- `ILLUST` (illust) - 插画
+- `MANGA` (manga) - 漫画
+- `UGOIRA` (ugoira) - 动图
+
+**其他参数**:
+- `page` - 页码
+- `date` - 日期 (格式: yyyyMMdd，可选)
+
+#### 小说排行榜实现详情
+
+✅ **已完成**:
+- 从 Next.js 页面的 `__NEXT_DATA__` JSON 中提取数据
+- 解析 50 条小说信息（每页）
+- 完整的数据结构包含:
+  - 基本信息: rank, id, title, novelUrl
+  - 作者信息: userId, userName, profileImageUrl, novelListUrl
+  - 封面图片: coverImageUrl
+  - 统计数据: characterCount, bookmarkCount
+  - 标签列表: tags[]
+  - 简介: caption
+  - 系列信息: series (seriesId, seriesTitle, seriesUrl)
+  - **收藏状态**: isBookmarked, bookmarkId, bookmarkRestrict
+  - **阅读进度**: marker (书签位置)
+
+**解析器实现**:
+- 📁 `NovelRankingParser.kt` - 从 HTML 中提取 `<script id="__NEXT_DATA__">` 的 JSON
+- 📁 `NovelRankingDto.kt` - 完整的数据类定义
+- JSON 路径: `props.pageProps.assign.display_a.rank_a[]`
+- 支持收藏和阅读进度信息
+
+⚠️ **注意**: 
+- **插画排行榜**: 返回 JSON 格式 (RankingResponse)
+- **小说排行榜**: 返回 HTML，但已实现 JSON 提取解析器 (NovelRankingResponse)
+- 使用类型安全的枚举参数替代字符串
+- 删除了所有便捷封装方法 (getDailyRanking 等)，统一使用主方法
+
+#### 测试用例示例
+
+```kotlin
+// 1. 测试插画排行榜
+suspend fun testGetIllustRanking(pixivApi: PixivApi) {
+    val mode = RankingMode.DAILY
+    val response = pixivApi.rankingApi.getIllustRanking(
+        mode = mode,
+        page = 1,
+        content = RankingContent.ALL,
+        date = null
+    )
+    
+    println("=== 插画排行榜测试 ===")
+    println("模式: ${mode.displayName}")
+    println("作品数量: ${response.contents.size}")
+    
+    response.contents.take(3).forEach { item ->
+        println("- [${item.rank}位] ${item.title} by ${item.userName}")
+    }
+    
+    // 验证
+    assert(response.contents.isNotEmpty())
+}
+
+// 2. 测试小说排行榜（含 JSON 解析）
+suspend fun testGetNovelRanking(pixivApi: PixivApi) {
+    val mode = RankingMode.DAILY
+    val response = pixivApi.rankingApi.getNovelRanking(
+        mode = mode,
+        page = 1,
+        content = RankingContent.ALL,
+        date = null
+    )
+    
+    println("=== 小说排行榜测试 ===")
+    println("模式: ${response.mode}")
+    println("日期: ${response.date}")
+    println("小说数量: ${response.novels.size}")
+    println("排名范围: ${response.rankRange}")
+    
+    // 显示前3条小说
+    response.novels.take(3).forEach { novel ->
+        println("\n【${novel.rank}位】${novel.title}")
+        println("  ID: ${novel.novelId}")
+        println("  作者: ${novel.author.userName} (${novel.author.userId})")
+        println("  字数: ${novel.characterCount}")
+        println("  书签: ${novel.bookmarkCount}")
+        println("  标签: ${novel.tags.take(5).joinToString(", ")}")
+        
+        // 检查收藏状态
+        if (novel.isBookmarked) {
+            println("  ⭐ 已收藏 (ID: ${novel.bookmarkId})")
+            novel.marker?.let { println("  📖 阅读进度: $it") }
+            if (novel.bookmarkRestrict == "1") {
+                println("  🔒 私密收藏")
+            }
+        }
+        
+        // 检查系列信息
+        novel.series?.let {
+            println("  📚 系列: ${it.seriesTitle} (${it.seriesId})")
+        }
+    }
+    
+    // 验证
+    assert(response.novels.size == 50) // 每页固定50条
+    assert(response.novels.all { it.rank > 0 })
+    assert(response.novels.all { it.novelId.isNotBlank() })
+    assert(response.novels.all { it.title.isNotBlank() })
+}
+```
 
 ---
 
@@ -340,13 +467,12 @@ runBlocking {
    - ✅ `deleteBookmark` - 删除收藏
 
 4. **RankingApi**
-   - ✅ `getDailyRanking` - 日榜
+   - ✅ `getIllustRanking` - 统一排行榜接口 (测试不同mode参数)
 
 ### 阶段 2: P1 中优先级 API
 
 - IllustApi 其他方法
 - UserApi 其他方法
-- RankingApi 其他排行榜
 
 ### 阶段 3: P2 低优先级 API
 
@@ -398,8 +524,8 @@ runBlocking {
 | IllustApi | 6 | 6 | 6 | 0 | 100% |
 | UserApi | 7 | 7 | 7 | 0 | 100% |
 | BookmarkApi | 8 | 8 | 8 | 0 | 100% |
-| RankingApi | 7 | 0 | 0 | 0 | 0% |
-| **总计** | **28** | **21** | **21** | **0** | **75%** |
+| RankingApi | 2 | 2 | 2 | 0 | 100% |
+| **总计** | **23** | **23** | **23** | **0** | **100%** |
 
 ---
 

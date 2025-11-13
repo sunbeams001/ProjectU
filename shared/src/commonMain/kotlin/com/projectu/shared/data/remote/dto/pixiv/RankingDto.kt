@@ -1,6 +1,14 @@
 package com.projectu.shared.data.remote.dto.pixiv
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.*
 
 /**
  * 排行榜响应
@@ -11,10 +19,14 @@ data class RankingResponse(
     val mode: String,
     val content: String,
     val page: Int,
+    @Serializable(with = BooleanOrIntSerializer::class)
     val prev: Int? = null,
+    @Serializable(with = BooleanOrIntSerializer::class)
     val next: Int? = null,
     val date: String,
+    @Serializable(with = BooleanOrStringSerializer::class)
     val prev_date: String? = null,
+    @Serializable(with = BooleanOrStringSerializer::class)
     val next_date: String? = null,
     val rank_total: Int
 )
@@ -31,7 +43,8 @@ data class RankingContent(
     val user_name: String,
     val profile_img: String,
     val illust_content_type: RankingContentType,
-    val illust_series: Boolean,
+    @Serializable(with = BooleanOrSeriesSerializer::class)
+    val illust_series: IllustSeries? = null,
     val illust_id: Long,
     val width: Int,
     val height: Int,
@@ -41,7 +54,10 @@ data class RankingContent(
     val rating_count: Int,
     val view_count: Int,
     val illust_upload_timestamp: Long,
-    val attr: String = ""
+    val attr: String = "",
+    val is_masked: Boolean = false,
+    val is_bookmarked: Boolean = false,
+    val bookmarkable: Boolean = true
 )
 
 @Serializable
@@ -61,3 +77,96 @@ data class RankingContentType(
     val yuri: Boolean = false
 )
 
+@Serializable
+data class IllustSeries(
+    val illust_series_id: String,
+    val illust_series_user_id: String,
+    val illust_series_title: String,
+    val illust_series_caption: String,
+    val illust_series_content_count: String,
+    val illust_series_create_datetime: String,
+    val illust_series_content_illust_id: String,
+    val illust_series_content_order: String,
+    val page_url: String
+)
+
+// 自定义序列化器：处理 Boolean 或 Int 的情况
+object BooleanOrIntSerializer : KSerializer<Int?> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("BooleanOrInt")
+
+    override fun deserialize(decoder: Decoder): Int? {
+        val jsonDecoder = decoder as? JsonDecoder ?: throw SerializationException("This serializer can only be used with Json")
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when (element) {
+            is JsonPrimitive -> {
+                when {
+                    element.isString -> null
+                    element.booleanOrNull == false -> null
+                    else -> element.intOrNull
+                }
+            }
+            else -> null
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: Int?) {
+        if (value == null) {
+            encoder.encodeBoolean(false)
+        } else {
+            encoder.encodeInt(value)
+        }
+    }
+}
+
+// 自定义序列化器：处理 Boolean 或 String 的情况
+object BooleanOrStringSerializer : KSerializer<String?> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("BooleanOrString")
+
+    override fun deserialize(decoder: Decoder): String? {
+        val jsonDecoder = decoder as? JsonDecoder ?: throw SerializationException("This serializer can only be used with Json")
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when (element) {
+            is JsonPrimitive -> {
+                when {
+                    element.booleanOrNull == false -> null
+                    else -> element.contentOrNull
+                }
+            }
+            else -> null
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: String?) {
+        if (value == null) {
+            encoder.encodeBoolean(false)
+        } else {
+            encoder.encodeString(value)
+        }
+    }
+}
+
+// 自定义序列化器：处理 Boolean 或 Object 的情况
+object BooleanOrSeriesSerializer : KSerializer<IllustSeries?> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("BooleanOrSeries")
+
+    override fun deserialize(decoder: Decoder): IllustSeries? {
+        val jsonDecoder = decoder as? JsonDecoder ?: throw SerializationException("This serializer can only be used with Json")
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when (element) {
+            is JsonObject -> jsonDecoder.json.decodeFromJsonElement(IllustSeries.serializer(), element)
+            is JsonPrimitive -> if (element.booleanOrNull == false) null else null
+            else -> null
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: IllustSeries?) {
+        if (value == null) {
+            encoder.encodeBoolean(false)
+        } else {
+            encoder.encodeSerializableValue(IllustSeries.serializer(), value)
+        }
+    }
+}

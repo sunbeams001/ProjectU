@@ -3,6 +3,7 @@ package com.projectu.shared.data.repository
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.mapper.toArtwork
 import com.projectu.shared.data.remote.mapper.toArtworkList
+import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.UgoiraMetadata
 import com.projectu.shared.domain.repository.ArtworkRepository
@@ -71,7 +72,7 @@ class ArtworkRepositoryImpl(
     }
 
     override suspend fun getRankingArtworks(
-        mode: String,
+        mode: RankingMode,
         page: Int,
         date: String?
     ): Result<List<Artwork>> = runCatching {

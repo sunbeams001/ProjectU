@@ -40,20 +40,22 @@
 ### RankingApi - 排行榜相关 API
 | 功能 | 端点 | 状态 | 说明 |
 |-----|------|------|------|
-| 获取排行榜 | `/ranking.php` | ✅ | 支持多种模式 |
+| 获取插画排行榜 | `/ranking.php` | ✅ | 统一接口，支持枚举参数，返回 JSON |
+| 获取小说排行榜 | `/novel/ranking.php` | ✅ | 参数同插画，返回 HTML |
 
-**支持的排行榜模式**:
-- `daily` - 日榜
-- `weekly` - 周榜
-- `monthly` - 月榜
-- `rookie` - 新人榜
-- `original` - 原创榜
-- `male` - 男性向榜
-- `female` - 女性向榜
-- `daily_r18` - R-18 日榜
-- `weekly_r18` - R-18 周榜
-- `male_r18` - R-18 男性向
-- `female_r18` - R-18 女性向
+**支持的排行榜模式** (RankingMode 枚举):
+- **一般排行榜**: `daily`, `weekly`, `monthly`, `rookie`, `original`, `daily_ai`✨, `male`, `female`
+- **R-18 排行榜**: `daily_r18`, `weekly_r18`, `daily_r18_ai`✨, `male_r18`, `female_r18`
+
+**内容类型** (RankingContent 枚举):
+- `all` - 全部
+- `illust` - 插画
+- `manga` - 漫画
+- `ugoira` - 动图
+
+**响应格式**:
+- 插画排行榜: JSON (RankingResponse)
+- 小说排行榜: HTML (String)
 
 ---
 

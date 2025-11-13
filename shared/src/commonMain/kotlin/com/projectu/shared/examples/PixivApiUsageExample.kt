@@ -1,6 +1,7 @@
 package com.projectu.shared.examples
 
 import com.projectu.shared.data.remote.api.PixivApi
+import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -103,7 +104,7 @@ suspend fun example5GetRanking(
     artworkRepository: ArtworkRepository
 ) {
     artworkRepository.getRankingArtworks(
-        mode = "daily",  // 日榜
+        mode = RankingMode.DAILY,  // 日榜
         page = 1
     ).onSuccess { artworks ->
         println("=== 日榜 Top 10 ===")

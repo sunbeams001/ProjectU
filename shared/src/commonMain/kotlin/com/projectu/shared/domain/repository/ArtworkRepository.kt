@@ -1,6 +1,7 @@
 package com.projectu.shared.domain.repository
 
 import com.projectu.shared.domain.model.Artwork
+import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.domain.model.UgoiraMetadata
 import kotlinx.coroutines.flow.Flow
 
@@ -38,7 +39,7 @@ interface ArtworkRepository {
      * 获取排行榜作品
      */
     suspend fun getRankingArtworks(
-        mode: String = "daily",
+        mode: RankingMode = RankingMode.DAILY,
         page: Int = 1,
         date: String? = null
     ): Result<List<Artwork>>

@@ -1,105 +1,95 @@
 package com.projectu.shared.data.remote.api
 
+import com.projectu.shared.data.remote.dto.novel.NovelRankingResponse
 import com.projectu.shared.data.remote.dto.pixiv.RankingResponse
+import com.projectu.shared.data.remote.model.RankingContent
+import com.projectu.shared.data.remote.model.RankingMode
+import com.projectu.shared.data.remote.parser.NovelRankingParser
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
+import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
+
+/**
+ * 平台特定的文件保存功能
+ */
+internal expect fun saveHtmlToFile(html: String, filename: String)
 
 /**
  * 排行榜 API
- * 提供各类排行榜查询功能
+ * 提供插画和小说排行榜查询功能
  */
 class RankingApi(private val client: PixivApiClient) {
 
     /**
      * 查询插画排行榜
-     * @param mode 模式：daily(日榜), weekly(周榜), monthly(月榜), rookie(新人), 
-     *             original(原创), male(男性向), female(女性向), 
-     *             daily_r18(R18日榜), weekly_r18(R18周榜), male_r18(R18男性向), female_r18(R18女性向)
+     * @param mode 排行榜模式
      * @param page 页码
-     * @param content 内容类型：all(全部), illust(插画), manga(漫画), ugoira(动图)
+     * @param content 内容类型
      * @param date 日期（格式：yyyyMMdd，可选）
+     * @return RankingResponse 排行榜响应数据
      */
     suspend fun getIllustRanking(
-        mode: String = "daily",
+        mode: RankingMode = RankingMode.DAILY,
         page: Int = 1,
-        content: String = "all",
+        content: RankingContent = RankingContent.ALL,
         date: String? = null
     ): RankingResponse {
         val params = mutableMapOf<String, Any?>(
-            "mode" to mode,
+            "mode" to mode.value,
             "p" to page,
             "format" to "json",
-            "content" to content
+            "content" to content.value
         )
         date?.let { params["date"] = it }
 
         // 排行榜API直接返回RankingResponse，不包装在PixivResponse中
-        // 需要访问 client 内部的 httpClient，所以需要暴露它
-        return client.get<RankingResponse>("/ranking.php", params).body ?: throw IllegalStateException("排行榜数据为空")
+        return client.get<RankingResponse>("/ranking.php", params).body ?: throw IllegalStateException("插画排行榜数据为空")
     }
 
     /**
-     * 获取日榜
+     * 查询小说排行榜
+     * @param mode 排行榜模式（与插画排行榜相同）
+     * @param page 页码
+     * @param content 内容类型（小说排行榜可能不支持此参数，但保持接口一致性）
+     * @param date 日期（格式：yyyyMMdd，可选）
+     * @return NovelRankingResponse 解析后的小说排行榜数据
+     * 
+     * ⚠️ 注意：
+     * - 小说排行榜返回HTML格式，不支持JSON（即使添加format=json也无效）
+     * - 端点为 /novel/ranking.php
+     * - 内部会自动解析HTML提取小说信息
      */
-    suspend fun getDailyRanking(
+    suspend fun getNovelRanking(
+        mode: RankingMode = RankingMode.DAILY,
         page: Int = 1,
-        content: String = "all",
+        content: RankingContent = RankingContent.ALL,
         date: String? = null
-    ) = getIllustRanking("daily", page, content, date)
+    ): NovelRankingResponse {
+        // 构建URL参数
+        val urlBuilder = StringBuilder("${client.host}/novel/ranking.php?lang=${client.lang}")
+        urlBuilder.append("&mode=${mode.value}")
+        urlBuilder.append("&p=$page")
+        urlBuilder.append("&content=${content.value}")
+        date?.let { urlBuilder.append("&date=$it") }
 
-    /**
-     * 获取周榜
-     */
-    suspend fun getWeeklyRanking(
-        page: Int = 1,
-        content: String = "all",
-        date: String? = null
-    ) = getIllustRanking("weekly", page, content, date)
-
-    /**
-     * 获取月榜
-     */
-    suspend fun getMonthlyRanking(
-        page: Int = 1,
-        content: String = "all",
-        date: String? = null
-    ) = getIllustRanking("monthly", page, content, date)
-
-    /**
-     * 获取新人榜
-     */
-    suspend fun getRookieRanking(
-        page: Int = 1,
-        content: String = "all",
-        date: String? = null
-    ) = getIllustRanking("rookie", page, content, date)
-
-    /**
-     * 获取原创榜
-     */
-    suspend fun getOriginalRanking(
-        page: Int = 1,
-        content: String = "all",
-        date: String? = null
-    ) = getIllustRanking("original", page, content, date)
-
-    /**
-     * 获取男性向榜
-     */
-    suspend fun getMaleRanking(
-        page: Int = 1,
-        content: String = "all",
-        date: String? = null
-    ) = getIllustRanking("male", page, content, date)
-
-    /**
-     * 获取女性向榜
-     */
-    suspend fun getFemaleRanking(
-        page: Int = 1,
-        content: String = "all",
-        date: String? = null
-    ) = getIllustRanking("female", page, content, date)
+        // 直接使用 HttpClient 获取HTML文本
+        val html = client.httpClient.get(urlBuilder.toString()) {
+            header(PixivApiClient.HEADER_REFERER, PixivApiClient.DEFAULT_HOST)
+            header(PixivApiClient.HEADER_COOKIE, client.cookie)
+        }.bodyAsText()
+        
+        // 调试：将HTML保存到文件（仅用于调试，正式环境不需要）
+        // try {
+        //     saveHtmlToFile(html, "novel_ranking_response.html")
+        //     println("✅ HTML响应已保存到文件")
+        // } catch (e: Exception) {
+        //     println("⚠️ 保存HTML文件失败: ${e.message}")
+        // }
+        
+        // 使用解析器解析HTML
+        return NovelRankingParser.parseNovelRanking(html, mode.value)
+    }
 }
+
 

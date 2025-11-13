@@ -259,92 +259,74 @@ sealed class ApiMethod(
     
     // ==================== RankingApi ====================
     
-    object GetDailyRanking : ApiMethod(
+    object GetIllustRanking : ApiMethod(
         module = ApiModule.RANKING,
-        methodName = "getDailyRanking",
-        displayName = "日榜",
+        methodName = "getIllustRanking",
+        displayName = "获取插画排行榜",
         parameters = listOf(
+            ApiParameter("mode", "排行榜模式", "daily", required = true,
+                options = listOf(
+                    // 一般排行榜
+                    "daily",      // 今日
+                    "weekly",     // 本周
+                    "monthly",    // 本月
+                    "rookie",     // 新人
+                    "original",   // 原创
+                    "daily_ai",   // AI生成
+                    "male",       // 男性向
+                    "female",     // 女性向
+                    // R-18 排行榜
+                    "daily_r18",     // 今日R-18
+                    "weekly_r18",    // 本周R-18
+                    "daily_r18_ai",  // AI生成R-18
+                    "male_r18",      // 男性向R-18
+                    "female_r18",    // 女性向R-18
+                    // R-18G 排行榜
+                    "r18g"           // R-18G（猎奇向）
+                )
+            ),
             ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
+            ApiParameter("content", "内容类型", "all", required = false,
+                options = listOf("all", "illust", "manga", "ugoira")
+            ),
+            ApiParameter("date", "日期(yyyyMMdd)", "", required = false)
         ),
         priority = 0
     )
     
-    object GetWeeklyRanking : ApiMethod(
+    object GetNovelRanking : ApiMethod(
         module = ApiModule.RANKING,
-        methodName = "getWeeklyRanking",
-        displayName = "周榜",
+        methodName = "getNovelRanking",
+        displayName = "获取小说排行榜",
         parameters = listOf(
+            ApiParameter("mode", "排行榜模式", "daily", required = true,
+                options = listOf(
+                    // 一般排行榜
+                    "daily",      // 今日
+                    "weekly",     // 本周
+                    "monthly",    // 本月
+                    "rookie",     // 新人
+                    "original",   // 原创
+                    "daily_ai",   // AI生成
+                    "male",       // 男性向
+                    "female",     // 女性向
+                    // R-18 排行榜
+                    "daily_r18",     // 今日R-18
+                    "weekly_r18",    // 本周R-18
+                    "daily_r18_ai",  // AI生成R-18
+                    "male_r18",      // 男性向R-18
+                    "female_r18",    // 女性向R-18
+                    // R-18G 排行榜
+                    "r18g"           // R-18G（猎奇向）
+                )
+            ),
             ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
+            ApiParameter("content", "内容类型", "all", required = false,
+                options = listOf("all", "illust", "manga", "ugoira")
+            ),
+            ApiParameter("date", "日期(yyyyMMdd)", "", required = false)
         ),
         priority = 1
-    )
-    
-    object GetMonthlyRanking : ApiMethod(
-        module = ApiModule.RANKING,
-        methodName = "getMonthlyRanking",
-        displayName = "月榜",
-        parameters = listOf(
-            ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
-        ),
-        priority = 1
-    )
-    
-    object GetRookieRanking : ApiMethod(
-        module = ApiModule.RANKING,
-        methodName = "getRookieRanking",
-        displayName = "新人榜",
-        parameters = listOf(
-            ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
-        ),
-        priority = 2
-    )
-    
-    object GetOriginalRanking : ApiMethod(
-        module = ApiModule.RANKING,
-        methodName = "getOriginalRanking",
-        displayName = "原创榜",
-        parameters = listOf(
-            ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
-        ),
-        priority = 2
-    )
-    
-    object GetMaleRanking : ApiMethod(
-        module = ApiModule.RANKING,
-        methodName = "getMaleRanking",
-        displayName = "男性向",
-        parameters = listOf(
-            ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
-        ),
-        priority = 2
-    )
-    
-    object GetFemaleRanking : ApiMethod(
-        module = ApiModule.RANKING,
-        methodName = "getFemaleRanking",
-        displayName = "女性向",
-        parameters = listOf(
-            ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
-        ),
-        priority = 2
-    )
-    
-    object GetR18DailyRanking : ApiMethod(
-        module = ApiModule.RANKING,
-        methodName = "getR18DailyRanking",
-        displayName = "R18 日榜",
-        parameters = listOf(
-            ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("date", "日期", "", required = false)
-        ),
-        priority = 2
     )
     
     companion object {
@@ -362,9 +344,7 @@ sealed class ApiMethod(
             AddBookmark, DeleteBookmark, DeleteBookmarks, GetIllustBookmarkTags,
             AddNovelBookmark, DeleteNovelBookmark, DeleteNovelBookmarks, GetNovelBookmarkTags,
             // RankingApi
-            GetDailyRanking, GetWeeklyRanking, GetMonthlyRanking,
-            GetRookieRanking, GetOriginalRanking, GetMaleRanking,
-            GetFemaleRanking, GetR18DailyRanking
+            GetIllustRanking, GetNovelRanking
         )
         
         /**
