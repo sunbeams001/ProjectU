@@ -395,16 +395,77 @@ sealed class ApiMethod(
         priority = 2
     )
     
+    object PostIllustComment : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "postIllustComment",
+        displayName = "发布插画评论",
+        parameters = listOf(
+            ApiParameter("illustId", "作品ID", "102814610", required = true),
+            ApiParameter("userId", "用户ID", "", required = true),
+            ApiParameter("comment", "评论内容", "", required = false),
+            ApiParameter("stampId", "表情ID", "", required = false),
+            ApiParameter("parentCommentId", "父评论ID", "", required = false)
+        ),
+        priority = 3
+    )
+    
+    object DeleteIllustComment : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "deleteIllustComment",
+        displayName = "删除插画评论",
+        parameters = listOf(
+            ApiParameter("illustId", "作品ID", "102814610", required = true),
+            ApiParameter("commentId", "评论ID", "", required = true)
+        ),
+        priority = 4
+    )
+    
     object GetNovelCommentRoots : ApiMethod(
         module = ApiModule.COMMENT,
         methodName = "getNovelCommentRoots",
         displayName = "获取小说评论",
         parameters = listOf(
-            ApiParameter("novelId", "小说ID", "", required = true),
+            ApiParameter("novelId", "小说ID", "15809265", required = true),
             ApiParameter("offset", "偏移", "0", required = false),
             ApiParameter("limit", "数量", "20", required = false)
         ),
-        priority = 2
+        priority = 5
+    )
+    
+    object GetNovelCommentReplies : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "getNovelCommentReplies",
+        displayName = "获取小说评论回复",
+        parameters = listOf(
+            ApiParameter("commentId", "评论ID", "50155161", required = true),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 6
+    )
+    
+    object PostNovelComment : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "postNovelComment",
+        displayName = "发布小说评论",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "15809265", required = true),
+            ApiParameter("userId", "用户ID", "", required = true),
+            ApiParameter("comment", "评论内容", "", required = false),
+            ApiParameter("stampId", "表情ID", "", required = false),
+            ApiParameter("parentCommentId", "父评论ID", "", required = false)
+        ),
+        priority = 7
+    )
+    
+    object DeleteNovelComment : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "deleteNovelComment",
+        displayName = "删除小说评论",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "15809265", required = true),
+            ApiParameter("commentId", "评论ID", "", required = true)
+        ),
+        priority = 8
     )
     
     // ==================== NovelApi ====================
@@ -568,7 +629,8 @@ sealed class ApiMethod(
             // RankingApi
             GetIllustRanking, GetNovelRanking,
             // CommentApi
-            GetIllustCommentRoots, GetCommentReplies, GetNovelCommentRoots,
+            GetIllustCommentRoots, GetCommentReplies, PostIllustComment, DeleteIllustComment,
+            GetNovelCommentRoots, GetNovelCommentReplies, PostNovelComment, DeleteNovelComment,
             // NovelApi
             GetNovelDetail, GetNovelBookmarkData, SearchNovel, 
             GetNovelDiscovery, GetNovelFollowLatest, GetNovelNew,

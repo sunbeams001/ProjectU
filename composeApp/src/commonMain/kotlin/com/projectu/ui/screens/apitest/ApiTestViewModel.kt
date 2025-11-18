@@ -6,6 +6,7 @@ import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.data.remote.api.BookmarkAddResponse
 import com.projectu.shared.data.remote.api.BookmarkRequest
 import com.projectu.shared.data.remote.api.BookmarkTagsResponse
+import com.projectu.shared.data.remote.api.DeleteCommentResult
 import com.projectu.shared.data.remote.api.NovelBookmarkRequest
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.model.RankingContent
@@ -18,30 +19,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.system.measureTimeMillis
-
-/**
- * 评论响应体 - 用于API测试
- */
-@Serializable
-data class CommentsBody(
-    val comments: List<CommentReply> = emptyList(),
-    val hasNext: Boolean = false
-)
-
-/**
- * 评论回复 - 用于API测试
- */
-@Serializable
-data class CommentReply(
-    val id: String,
-    val comment: String? = null,
-    val stampId: String? = null,
-    val commentUserId: String,
-    val commentUserName: String,
-    val commentDate: String,
-    val hasReplies: Boolean = false,
-    val editable: Boolean = false
-)
 
 /**
  * API 测试 ViewModel
@@ -208,7 +185,12 @@ class ApiTestViewModel(
                         // ==================== CommentApi ====================
                         ApiMethod.GetIllustCommentRoots -> testGetIllustCommentRoots()
                         ApiMethod.GetCommentReplies -> testGetCommentReplies()
+                        ApiMethod.PostIllustComment -> testPostIllustComment()
+                        ApiMethod.DeleteIllustComment -> testDeleteIllustComment()
                         ApiMethod.GetNovelCommentRoots -> testGetNovelCommentRoots()
+                        ApiMethod.GetNovelCommentReplies -> testGetNovelCommentReplies()
+                        ApiMethod.PostNovelComment -> testPostNovelComment()
+                        ApiMethod.DeleteNovelComment -> testDeleteNovelComment()
                         
                         // ==================== NovelApi ====================
                         ApiMethod.GetNovelDetail -> testGetNovelDetail()
@@ -1235,7 +1217,7 @@ class ApiTestViewModel(
         val offset = getParam("offset").toIntOrNull() ?: 0
         val limit = getParam("limit").toIntOrNull() ?: 20
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.ui.screens.apitest.CommentsBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
             "/ajax/illusts/comments/roots",
             mapOf(
                 "illust_id" to illustId,
@@ -1266,7 +1248,7 @@ class ApiTestViewModel(
         val commentId = getParam("commentId")
         val page = getParam("page").toIntOrNull() ?: 1
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.ui.screens.apitest.CommentsBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
             "/ajax/illusts/comments/replies",
             mapOf(
                 "comment_id" to commentId,
@@ -1291,12 +1273,113 @@ class ApiTestViewModel(
         updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
+    private suspend fun testPostIllustComment() {
+        val illustId = getParam("illustId").toLongOrNull() ?: 102814610L
+        val userId = getParam("userId").toLongOrNull() 
+            ?: throw IllegalArgumentException("用户ID不能为空")
+        val comment = getParam("comment").takeIf { it.isNotEmpty() }
+        val stampId = getParam("stampId").toIntOrNull()
+        val parentCommentId = getParam("parentCommentId").toLongOrNull()
+        
+        if (comment == null && stampId == null) {
+            throw IllegalArgumentException("评论内容和表情ID至少需要提供一个")
+        }
+        
+        val result = pixivApi.commentApi.postIllustComment(
+            illustId = illustId,
+            userId = userId,
+            comment = comment,
+            stampId = stampId,
+            parentCommentId = parentCommentId
+        )
+        
+        val rawJson = when (result) {
+            is com.projectu.shared.data.remote.api.PostCommentResult.Success -> 
+                """{"error":false,"message":"","body":{"comment_id":${result.commentId}}}"""
+            is com.projectu.shared.data.remote.api.PostCommentResult.Error -> 
+                """{"error":true,"message":"${result.message}","body":[]}"""
+        }
+        
+        val summary = buildString {
+            when (result) {
+                is com.projectu.shared.data.remote.api.PostCommentResult.Success -> {
+                    appendLine("✅ 插画评论发布成功")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("作品ID: $illustId")
+                    appendLine("用户ID: $userId")
+                    comment?.let { appendLine("评论内容: $it") }
+                    stampId?.let { appendLine("表情ID: $it") }
+                    parentCommentId?.let { appendLine("父评论ID: $it") }
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("评论ID: ${result.commentId}")
+                }
+                is com.projectu.shared.data.remote.api.PostCommentResult.Error -> {
+                    appendLine("❌ 插画评论发布失败")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("作品ID: $illustId")
+                    appendLine("用户ID: $userId")
+                    comment?.let { appendLine("评论内容: $it") }
+                    stampId?.let { appendLine("表情ID: $it") }
+                    parentCommentId?.let { appendLine("父评论ID: $it") }
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("错误信息: ${result.message}")
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(rawJson, summary)
+    }
+    
+    private suspend fun testDeleteIllustComment() {
+        val illustId = getParam("illustId").toLongOrNull() ?: 102814610L
+        val commentId = getParam("commentId").toLongOrNull()
+            ?: throw IllegalArgumentException("评论ID不能为空")
+        
+        val result = pixivApi.commentApi.deleteIllustComment(
+            illustId = illustId,
+            commentId = commentId
+        )
+        
+        when (result) {
+            is DeleteCommentResult.Success -> {
+                val rawJson = """{"error":false,"message":"ok","body":[]}"""
+                
+                val summary = buildString {
+                    appendLine("✅ 插画评论删除成功")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("作品ID: $illustId")
+                    appendLine("评论ID: $commentId")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("状态: 成功删除")
+                }
+                
+                updateResultWithRaw(rawJson, summary)
+            }
+            is DeleteCommentResult.Error -> {
+                val rawJson = """{"error":true,"message":"${result.message}","body":[]}"""
+                
+                val summary = buildString {
+                    appendLine("❌ 插画评论删除失败")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("作品ID: $illustId")
+                    appendLine("评论ID: $commentId")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("错误信息: ${result.message}")
+                }
+                
+                updateResultWithRaw(rawJson, summary)
+            }
+        }
+    }
+    
     private suspend fun testGetNovelCommentRoots() {
         val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
         val offset = getParam("offset").toIntOrNull() ?: 0
         val limit = getParam("limit").toIntOrNull() ?: 20
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.ui.screens.apitest.CommentsBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
             "/ajax/novels/comments/roots",
             mapOf(
                 "novel_id" to novelId,
@@ -1321,6 +1404,136 @@ class ApiTestViewModel(
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelCommentReplies() {
+        val commentId = getParam("commentId")
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
+            "/ajax/novels/comments/replies",
+            mapOf(
+                "comment_id" to commentId,
+                "page" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说评论回复获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("评论ID: $commentId")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testPostNovelComment() {
+        val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
+        val userId = getParam("userId").toLongOrNull() 
+            ?: throw IllegalArgumentException("用户ID不能为空")
+        val comment = getParam("comment").takeIf { it.isNotEmpty() }
+        val stampId = getParam("stampId").toIntOrNull()
+        val parentCommentId = getParam("parentCommentId").toLongOrNull()
+        
+        if (comment == null && stampId == null) {
+            throw IllegalArgumentException("评论内容和表情ID至少需要提供一个")
+        }
+        
+        val result = pixivApi.commentApi.postNovelComment(
+            novelId = novelId,
+            userId = userId,
+            comment = comment,
+            stampId = stampId,
+            parentCommentId = parentCommentId
+        )
+        
+        val rawJson = when (result) {
+            is com.projectu.shared.data.remote.api.PostCommentResult.Success -> 
+                """{"error":false,"message":"","body":{"comment_id":${result.commentId}}}"""
+            is com.projectu.shared.data.remote.api.PostCommentResult.Error -> 
+                """{"error":true,"message":"${result.message}","body":[]}"""
+        }
+        
+        val summary = buildString {
+            when (result) {
+                is com.projectu.shared.data.remote.api.PostCommentResult.Success -> {
+                    appendLine("✅ 小说评论发布成功")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("小说ID: $novelId")
+                    appendLine("用户ID: $userId")
+                    comment?.let { appendLine("评论内容: $it") }
+                    stampId?.let { appendLine("表情ID: $it") }
+                    parentCommentId?.let { appendLine("父评论ID: $it") }
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("评论ID: ${result.commentId}")
+                }
+                is com.projectu.shared.data.remote.api.PostCommentResult.Error -> {
+                    appendLine("❌ 小说评论发布失败")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("小说ID: $novelId")
+                    appendLine("用户ID: $userId")
+                    comment?.let { appendLine("评论内容: $it") }
+                    stampId?.let { appendLine("表情ID: $it") }
+                    parentCommentId?.let { appendLine("父评论ID: $it") }
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("错误信息: ${result.message}")
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(rawJson, summary)
+    }
+    
+    private suspend fun testDeleteNovelComment() {
+        val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
+        val commentId = getParam("commentId").toLongOrNull()
+            ?: throw IllegalArgumentException("评论ID不能为空")
+        
+        val result = pixivApi.commentApi.deleteNovelComment(
+            novelId = novelId,
+            commentId = commentId
+        )
+        
+        when (result) {
+            is DeleteCommentResult.Success -> {
+                val rawJson = """{"error":false,"message":"ok","body":[]}"""
+                
+                val summary = buildString {
+                    appendLine("✅ 小说评论删除成功")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("小说ID: $novelId")
+                    appendLine("评论ID: $commentId")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("状态: 成功删除")
+                }
+                
+                updateResultWithRaw(rawJson, summary)
+            }
+            is DeleteCommentResult.Error -> {
+                val rawJson = """{"error":true,"message":"${result.message}","body":[]}"""
+                
+                val summary = buildString {
+                    appendLine("❌ 小说评论删除失败")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("小说ID: $novelId")
+                    appendLine("评论ID: $commentId")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("错误信息: ${result.message}")
+                }
+                
+                updateResultWithRaw(rawJson, summary)
+            }
+        }
     }
     
     // ==================== NovelApi 测试方法 ====================
