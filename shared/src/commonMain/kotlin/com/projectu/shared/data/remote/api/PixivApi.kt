@@ -11,6 +11,10 @@ import io.ktor.client.HttpClient
  * @property userApi 用户 API
  * @property bookmarkApi 收藏 API
  * @property rankingApi 排行榜 API
+ * @property commentApi 评论 API
+ * @property novelApi 小说 API
+ * @property novelSeriesApi 小说系列 API
+ * @property tagApi 标签 API
  */
 class PixivApi(
     val client: PixivApiClient
@@ -34,6 +38,26 @@ class PixivApi(
      * 排行榜API
      */
     val rankingApi: RankingApi = RankingApi(client)
+
+    /**
+     * 评论API
+     */
+    val commentApi: CommentApi = CommentApi(client)
+
+    /**
+     * 小说API
+     */
+    val novelApi: NovelApi = NovelApi(client)
+
+    /**
+     * 小说系列API
+     */
+    val novelSeriesApi: NovelSeriesApi = NovelSeriesApi(client)
+
+    /**
+     * 标签API
+     */
+    val tagApi: TagApi = TagApi(client)
 
     companion object {
         /**

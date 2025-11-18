@@ -1,6 +1,13 @@
 package com.projectu.shared.data.remote.dto.pixiv
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.*
 
 /**
  * 用户信息响应体
@@ -103,6 +110,46 @@ data class UserWorkspace(
     val userWorkspaceImageUrl: String? = null
 )
 
+/**
+ * 自定义序列化器：处理 Map 或空数组的情况
+ * Pixiv API 在有数据时返回 Map，无数据时返回空数组 []
+ */
+object MapOrEmptyArraySerializer : KSerializer<Map<String, String?>?> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("MapOrEmptyArray")
+
+    override fun deserialize(decoder: Decoder): Map<String, String?>? {
+        val jsonDecoder = decoder as? JsonDecoder ?: return null
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when {
+            element is JsonObject -> {
+                element.mapValues { (_, value) -> 
+                    if (value is JsonNull) null else value.jsonPrimitive.contentOrNull
+                }
+            }
+            element is JsonArray && element.isEmpty() -> {
+                // 空数组返回空Map
+                emptyMap()
+            }
+            else -> null
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: Map<String, String?>?) {
+        if (value == null) {
+            encoder.encodeNull()
+        } else {
+            val jsonEncoder = encoder as JsonEncoder
+            val jsonObject = buildJsonObject {
+                value.forEach { (key, v) ->
+                    put(key, if (v == null) JsonNull else JsonPrimitive(v))
+                }
+            }
+            jsonEncoder.encodeJsonElement(jsonObject)
+        }
+    }
+}
+
 @Serializable
 data class UserGroup(
     val id: String,
@@ -115,12 +162,16 @@ data class UserGroup(
  */
 @Serializable
 data class ProfileAllBody(
+    @Serializable(with = MapOrEmptyArraySerializer::class)
     val illusts: Map<String, String?>? = null,
+    @Serializable(with = MapOrEmptyArraySerializer::class)
     val manga: Map<String, String?>? = null,
+    @Serializable(with = MapOrEmptyArraySerializer::class)
     val novels: Map<String, String?>? = null,
     val mangaSeries: List<MangaSeriesInfo>? = null,
     val novelSeries: List<NovelSeriesInfo>? = null,
-    val collections: List<CollectionInfo>? = null,  // 收藏集列表
+    @Serializable(with = MapOrEmptyArraySerializer::class)
+    val collections: Map<String, String?>? = null,  // 收藏集Map (ID -> null)
     val collectionIds: List<String>? = null,  // 收藏集 ID 列表
     val pickup: List<PickupInfo>? = null,
     val bookmarkCount: ProfileBookmarkCount? = null,
@@ -226,12 +277,6 @@ data class PickupInfo(
 )
 
 @Serializable
-data class CollectionInfo(
-    val id: String,
-    val title: String? = null
-)
-
-@Serializable
 data class ExternalSiteWorksStatus(
     val booth: Boolean = false,
     val sketch: Boolean = false,
@@ -260,7 +305,8 @@ data class ProfileBookmarkCount(
 @Serializable
 data class ProfileBookmarkCountDetail(
     val illust: Int = 0,
-    val novel: Int = 0
+    val novel: Int = 0,
+    val collection: Int = 0
 )
 
 /**
@@ -278,42 +324,59 @@ data class ProfileIllustsBody(
  */
 @Serializable
 data class UserRecommendBody(
-    val users: List<RecommendUser>,
-    val thumbnails: Map<String, List<IllustSimple>>? = null
+    val recommendUsers: List<RecommendUser>,
+    val thumbnails: RecommendThumbnails? = null,
+    val users: List<RecommendUserDetail>? = null
+)
+
+@Serializable
+data class RecommendThumbnails(
+    val illust: List<IllustSimple>? = null,
+    val novel: List<NovelThumbnail>? = null
 )
 
 @Serializable
 data class RecommendUser(
-    val userId: Long,
-    val userName: String,
-    val profileImg: String,
-    val userComment: String? = null,
-    val following: Boolean = false,
-    val followed: Boolean = false,
-    val illusts: List<RecommendUserIllust>? = null
+    val userId: String,
+    val illustIds: List<String> = emptyList(),
+    val novelIds: List<String> = emptyList()
 )
 
+/**
+ * 小说缩略信息（用于推荐用户的作品展示）
+ */
 @Serializable
-data class RecommendUserIllust(
-    val id: Long,
+data class NovelThumbnail(
+    val id: String,
     val title: String,
-    val illustType: Int,
-    val xRestrict: Int,
-    val restrict: Int,
-    val sl: Int,
+    val genre: String,
+    val xRestrict: Int = 0,
+    val restrict: Int = 0,
     val url: String,
-    val description: String,
-    val tags: List<String>,
-    val userId: Long,
+    val tags: List<String> = emptyList(),
+    val userId: String,
     val userName: String,
-    val width: Int,
-    val height: Int,
-    val pageCount: Int,
-    val isBookmarkable: Boolean,
+    val profileImageUrl: String,
+    val textCount: Int = 0,
+    val wordCount: Int = 0,
+    val readingTime: Int = 0,
+    val useWordCount: Boolean = false,
+    val description: String? = null,
+    val isBookmarkable: Boolean = false,
     val bookmarkData: BookmarkData? = null,
-    val alt: String,
-    val createDate: String,
-    val updateDate: String
+    val bookmarkCount: Int = 0,
+    val isOriginal: Boolean = false,
+    val marker: String? = null,
+    val titleCaptionTranslation: TitleCaptionTranslation? = null,
+    val createDate: String? = null,
+    val updateDate: String? = null,
+    val isMasked: Boolean = false,
+    val aiType: Int = 0,
+    val seriesId: String? = null,
+    val seriesTitle: String? = null,
+    val isUnlisted: Boolean = false,
+    val visibilityScope: Int = 0,
+    val language: String? = null
 )
 
 /**
@@ -369,6 +432,26 @@ data class UserCommission(
 )
 
 /**
+ * 推荐用户详细信息（包含在推荐响应的users字段中）
+ */
+@Serializable
+data class RecommendUserDetail(
+    val userId: String,
+    val name: String,
+    val image: String,
+    val imageBig: String,
+    val comment: String? = null,
+    val followedBack: Boolean = false,
+    val isFollowed: Boolean = false,
+    val isMypixiv: Boolean = false,
+    val isBlocking: Boolean = false,
+    val premium: Boolean = false,
+    val background: String? = null,
+    val partial: Int = 0,
+    val commission: Commission? = null
+)
+
+/**
  * 小说简要信息
  */
 @Serializable
@@ -381,5 +464,15 @@ data class NovelSimple(
     val userName: String,
     val createDate: String,
     val updateDate: String
+)
+
+/**
+ * 取消关注用户响应体
+ */
+@Serializable
+data class UnfollowUserResponse(
+    @SerialName("user_id")
+    val userId: String,
+    val type: String
 )
 

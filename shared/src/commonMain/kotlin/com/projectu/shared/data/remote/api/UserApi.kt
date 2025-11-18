@@ -141,13 +141,14 @@ class UserApi(private val client: PixivApiClient) {
      * @param userId 用户ID
      * @param tag 标签（可选）
      * @param restrict 是否公开（0=公开，1=私密）
+     * @return 返回空字符串 "[]" 表示成功
      */
     suspend fun followUser(
         userId: Long,
         tag: String = "",
         restrict: Int = 0
-    ): PixivResponse<Unit> {
-        return client.postForm("/bookmark_add.php", mapOf(
+    ): String {
+        val result: kotlinx.serialization.json.JsonArray = client.postFormRaw("/bookmark_add.php", mapOf(
             "mode" to "add",
             "type" to "user",
             "user_id" to userId.toString(),
@@ -155,14 +156,16 @@ class UserApi(private val client: PixivApiClient) {
             "restrict" to restrict.toString(),
             "format" to "json"
         ))
+        return result.toString()
     }
 
     /**
      * 取消关注用户
      * @param userId 用户ID
+     * @return 返回包含用户ID和类型的响应对象
      */
-    suspend fun unfollowUser(userId: Long): PixivResponse<Unit> {
-        return client.postForm("/rpc_group_setting.php", mapOf(
+    suspend fun unfollowUser(userId: Long): UnfollowUserResponse {
+        return client.postFormRaw("/rpc_group_setting.php", mapOf(
             "mode" to "del",
             "type" to "bookuser",
             "id" to userId.toString()

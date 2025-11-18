@@ -16,7 +16,32 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlin.system.measureTimeMillis
+
+/**
+ * 评论响应体 - 用于API测试
+ */
+@Serializable
+data class CommentsBody(
+    val comments: List<CommentReply> = emptyList(),
+    val hasNext: Boolean = false
+)
+
+/**
+ * 评论回复 - 用于API测试
+ */
+@Serializable
+data class CommentReply(
+    val id: String,
+    val comment: String? = null,
+    val stampId: String? = null,
+    val commentUserId: String,
+    val commentUserName: String,
+    val commentDate: String,
+    val hasReplies: Boolean = false,
+    val editable: Boolean = false
+)
 
 /**
  * API 测试 ViewModel
@@ -162,6 +187,9 @@ class ApiTestViewModel(
                         ApiMethod.GetUserBookmarks -> testGetUserBookmarks()
                         ApiMethod.GetUserFollowing -> testGetUserFollowing()
                         ApiMethod.GetUserFollowers -> testGetUserFollowers()
+                        ApiMethod.GetRecommendUsers -> testGetRecommendUsers()
+                        ApiMethod.FollowUser -> testFollowUser()
+                        ApiMethod.UnfollowUser -> testUnfollowUser()
                         
                         // ==================== BookmarkApi ====================
                         ApiMethod.AddBookmark -> testAddBookmark()
@@ -176,6 +204,29 @@ class ApiTestViewModel(
                         // ==================== RankingApi ====================
                         ApiMethod.GetIllustRanking -> testGetIllustRanking()
                         ApiMethod.GetNovelRanking -> testGetNovelRanking()
+                        
+                        // ==================== CommentApi ====================
+                        ApiMethod.GetIllustCommentRoots -> testGetIllustCommentRoots()
+                        ApiMethod.GetCommentReplies -> testGetCommentReplies()
+                        ApiMethod.GetNovelCommentRoots -> testGetNovelCommentRoots()
+                        
+                        // ==================== NovelApi ====================
+                        ApiMethod.GetNovelDetail -> testGetNovelDetail()
+                        ApiMethod.GetNovelBookmarkData -> testGetNovelBookmarkData()
+                        ApiMethod.SearchNovel -> testSearchNovel()
+                        ApiMethod.GetNovelDiscovery -> testGetNovelDiscovery()
+                        ApiMethod.GetNovelFollowLatest -> testGetNovelFollowLatest()
+                        ApiMethod.GetNovelNew -> testGetNovelNew()
+                        
+                        // ==================== NovelSeriesApi ====================
+                        ApiMethod.GetNovelSeriesDetail -> testGetNovelSeriesDetail()
+                        ApiMethod.GetNovelSeriesContents -> testGetNovelSeriesContents()
+                        ApiMethod.GetNovelSeriesTitles -> testGetNovelSeriesTitles()
+                        
+                        // ==================== TagApi ====================
+                        ApiMethod.GetTagSuggest -> testGetTagSuggest()
+                        ApiMethod.GetTagInfo -> testGetTagInfo()
+                        ApiMethod.GetPopularTags -> testGetPopularTags()
                     }
                 }
                 
@@ -408,6 +459,7 @@ class ApiTestViewModel(
     private suspend fun testGetUserFullInfo() {
         val userId = getParam("userId").toLongOrNull() ?: 11L
         
+        // 调用 getProfileAll 获取用户的作品概况（作品ID列表等）
         val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.ProfileAllBody>(
             "/ajax/user/$userId/profile/all"
         )
@@ -419,6 +471,27 @@ class ApiTestViewModel(
             appendLine("用户ID: $userId")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
+            
+            response.body?.let { body ->
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("📊 作品统计:")
+                appendLine("插画数量: ${body.illusts?.size ?: 0}")
+                appendLine("漫画数量: ${body.manga?.size ?: 0}")
+                appendLine("小说数量: ${body.novels?.size ?: 0}")
+                appendLine("漫画系列: ${body.mangaSeries?.size ?: 0}")
+                appendLine("小说系列: ${body.novelSeries?.size ?: 0}")
+                appendLine("收藏集: ${body.collections?.size ?: 0}")
+                
+                body.bookmarkCount?.let { bookmarks ->
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("📚 收藏统计:")
+                    appendLine("公开插画: ${bookmarks.public?.illust ?: 0}")
+                    appendLine("公开小说: ${bookmarks.public?.novel ?: 0}")
+                    appendLine("私密插画: ${bookmarks.private?.illust ?: 0}")
+                    appendLine("私密小说: ${bookmarks.private?.novel ?: 0}")
+                }
+            }
+            
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整结果")
         }
@@ -582,6 +655,137 @@ class ApiTestViewModel(
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetRecommendUsers() {
+        val userId = getParam("userId").toLongOrNull() ?: 11L
+        val userNum = getParam("userNum").toIntOrNull() ?: 20
+        val workNum = getParam("workNum").toIntOrNull() ?: 3
+        val isR18 = getParam("isR18").toBoolean()
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserRecommendBody>(
+            "/ajax/user/$userId/recommends",
+            mapOf(
+                "userNum" to userNum,
+                "workNum" to workNum,
+                "isR18" to isR18
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 推荐用户获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("基准用户ID: $userId")
+            appendLine("推荐用户数: $userNum")
+            appendLine("作品数量: $workNum")
+            appendLine("包含R18: $isR18")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            
+            response.body?.let { body ->
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("📊 推荐统计:")
+                appendLine("推荐用户数: ${body.recommendUsers.size}")
+                appendLine("插画缩略图数: ${body.thumbnails?.illust?.size ?: 0}")
+                appendLine("小说缩略图数: ${body.thumbnails?.novel?.size ?: 0}")
+                
+                body.recommendUsers.take(3).forEach { user ->
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("👤 用户 ID: ${user.userId}")
+                    appendLine("   插画作品 ID: ${user.illustIds.joinToString(", ")}")
+                    appendLine("   小说作品 ID: ${user.novelIds.joinToString(", ")}")
+                    
+                    // 从缩略图中获取详细信息
+                    body.thumbnails?.illust?.let { illusts ->
+                        val userIllusts = illusts.filter { it.userId == user.userId }
+                        if (userIllusts.isNotEmpty()) {
+                            appendLine("   插画标题: ${userIllusts.first().title}")
+                        }
+                    }
+                }
+                
+                if (body.recommendUsers.size > 3) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("... 还有 ${body.recommendUsers.size - 3} 个用户")
+                }
+            }
+            
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testFollowUser() {
+        val userId = getParam("userId").toLongOrNull() ?: 11L
+        val tag = getParam("tag")
+        val restrict = getParam("restrict").toIntOrNull() ?: 0
+        
+        // 直接调用API，返回空数组字符串表示成功
+        val result = pixivApi.userApi.followUser(userId, tag, restrict)
+        val rawJson = result.toString()
+        
+        val summary = buildString {
+            // 空数组表示成功
+            val isSuccess = rawJson == "[]"
+            if (isSuccess) {
+                appendLine("✅ 关注用户成功")
+            } else {
+                appendLine("❌ 关注用户失败（响应异常）")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("标签: ${if (tag.isBlank()) "(无)" else tag}")
+            appendLine("公开性: ${if (restrict == 0) "公开" else "私密"}")
+            appendLine("响应: $rawJson")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            
+            if (isSuccess) {
+                appendLine("💡 提示:")
+                appendLine("  - 可以在用户个人页面查看关注状态")
+                appendLine("  - 可以使用 getUserFollowing 查看关注列表")
+            } else {
+                appendLine("⚠️ 可能的原因:")
+                appendLine("  1. 未登录或登录已过期")
+                appendLine("  2. 用户ID不存在")
+                appendLine("  3. 已经关注过该用户")
+                appendLine("  4. 网络请求失败")
+            }
+            
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(rawJson, summary)
+    }
+    
+    private suspend fun testUnfollowUser() {
+        val userId = getParam("userId").toLongOrNull() ?: 11L
+        
+        // 直接调用API，返回 UnfollowUserResponse
+        val result = pixivApi.userApi.unfollowUser(userId)
+        val rawJson = """{"user_id":"${result.userId}","type":"${result.type}"}"""
+        
+        val summary = buildString {
+            // 有响应对象表示成功
+            appendLine("✅ 取消关注成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("响应用户ID: ${result.userId}")
+            appendLine("类型: ${result.type}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            
+            appendLine("💡 提示:")
+            appendLine("  - 可以在用户个人页面确认取消关注")
+            appendLine("  - 可以使用 getUserFollowing 查看关注列表")
+            
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(rawJson, summary)
     }
     
     // ==================== BookmarkApi 测试方法 ====================
@@ -1022,6 +1226,422 @@ class ApiTestViewModel(
         }
         
         updateResultWithRaw(jsonString, summary)
+    }
+    
+    // ==================== CommentApi 测试方法 ====================
+    
+    private suspend fun testGetIllustCommentRoots() {
+        val illustId = getParam("illustId").toLongOrNull() ?: 102814610L
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 20
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.ui.screens.apitest.CommentsBody>(
+            "/ajax/illusts/comments/roots",
+            mapOf(
+                "illust_id" to illustId,
+                "offset" to offset,
+                "limit" to limit
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 插画评论获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("作品ID: $illustId")
+            appendLine("偏移: $offset")
+            appendLine("限制: $limit")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetCommentReplies() {
+        val commentId = getParam("commentId")
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.ui.screens.apitest.CommentsBody>(
+            "/ajax/illusts/comments/replies",
+            mapOf(
+                "comment_id" to commentId,
+                "page" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 评论回复获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("评论ID: $commentId")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelCommentRoots() {
+        val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 20
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.ui.screens.apitest.CommentsBody>(
+            "/ajax/novels/comments/roots",
+            mapOf(
+                "novel_id" to novelId,
+                "offset" to offset,
+                "limit" to limit
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说评论获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("小说ID: $novelId")
+            appendLine("偏移: $offset")
+            appendLine("限制: $limit")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    // ==================== NovelApi 测试方法 ====================
+    
+    private suspend fun testGetNovelDetail() {
+        val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelDetailBody>(
+            "/ajax/novel/$novelId"
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说详情获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("小说ID: $novelId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelBookmarkData() {
+        val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.BookmarkData>(
+            "/ajax/novel/$novelId/bookmarkData"
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说收藏状态获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("小说ID: $novelId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testSearchNovel() {
+        val keyword = getParam("keyword")
+        val searchMode = getParam("searchMode")
+        val order = getParam("order")
+        val mode = getParam("mode")
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val encodedKeyword = keyword.encodeURLPath()
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSearchBody>(
+            "/ajax/search/novels/$encodedKeyword",
+            mapOf(
+                "word" to keyword,
+                "s_mode" to searchMode,
+                "order" to order,
+                "mode" to mode,
+                "p" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说搜索成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("关键词: $keyword")
+            appendLine("搜索模式: $searchMode")
+            appendLine("排序: $order")
+            appendLine("模式: $mode")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelDiscovery() {
+        val mode = getParam("mode")
+        val limit = getParam("limit").toIntOrNull() ?: 100
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.DiscoveryBody>(
+            "/ajax/discovery/novels",
+            mapOf(
+                "mode" to mode,
+                "limit" to limit
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 发现小说成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("模式: $mode")
+            appendLine("限制: $limit")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelFollowLatest() {
+        val mode = getParam("mode")
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.FollowLatestBody>(
+            "/ajax/follow_latest/novel",
+            mapOf(
+                "mode" to mode,
+                "p" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 关注作者最新小说获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("模式: $mode")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelNew() {
+        val limit = getParam("limit").toIntOrNull() ?: 20
+        val mode = getParam("mode")
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.FollowLatestBody>(
+            "/ajax/novel/new",
+            mapOf(
+                "limit" to limit,
+                "mode" to mode
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 最新小说获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("数量: $limit")
+            appendLine("模式: $mode")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    // ==================== NovelSeriesApi 测试方法 ====================
+    
+    private suspend fun testGetNovelSeriesDetail() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSeriesBody>(
+            "/ajax/novel/series/$seriesId"
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说系列详情获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("系列ID: $seriesId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelSeriesContents() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
+        val limit = getParam("limit").toIntOrNull() ?: 30
+        val orderBy = getParam("orderBy")
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSeriesContentBody>(
+            "/ajax/novel/series_content/$seriesId",
+            mapOf(
+                "limit" to limit,
+                "order_by" to orderBy
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 系列内容列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("系列ID: $seriesId")
+            appendLine("数量: $limit")
+            appendLine("排序: $orderBy")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelSeriesTitles() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSeriesTitlesResponse>(
+            "/ajax/novel/series/$seriesId/content_titles"
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 系列标题列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("系列ID: $seriesId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    // ==================== TagApi 测试方法 ====================
+    
+    private suspend fun testGetTagSuggest() {
+        val keyword = getParam("keyword")
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.TagSuggestBody>(
+            "/ajax/tags/suggest_by_word",
+            mapOf("word" to keyword)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 标签搜索建议获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("关键词: $keyword")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetTagInfo() {
+        val tag = getParam("tag")
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.TagInfoBody>(
+            "/ajax/tag/info",
+            mapOf("tag" to tag)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 标签信息获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("标签: $tag")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetPopularTags() {
+        val mode = getParam("mode")
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.TagSuggestBody>(
+            "/ajax/tags/popular",
+            mapOf("mode" to mode)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 热门标签获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("模式: $mode")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
     // ==================== 辅助方法 ====================

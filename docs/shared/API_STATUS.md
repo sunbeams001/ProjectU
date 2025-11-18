@@ -1,6 +1,6 @@
 # Pixiv API 集成状态
 
-> 📅 最后更新: 2025-10-30
+> 📅 最后更新: 2025-11-17
 
 ## 📖 完整文档
 
@@ -33,8 +33,10 @@
 ### BookmarkApi - 收藏相关 API
 | 功能 | 端点 | 状态 | 说明 |
 |-----|------|------|------|
-| 添加收藏 | `/ajax/illusts/bookmarks/add` | ✅ | 支持公开/非公开 |
-| 删除收藏 | `/rpc/index.php` (delete) | ✅ | 批量删除支持 |
+| 添加插画收藏 | `/ajax/illusts/bookmarks/add` | ✅ | 支持公开/非公开 |
+| 删除插画收藏 | `/ajax/illusts/bookmarks/delete` | ✅ | 批量删除支持 |
+| 添加小说收藏 | `/ajax/novels/bookmarks/add` | ✅ | 支持公开/非公开 |
+| 删除小说收藏 | `/ajax/novels/bookmarks/delete` | ✅ | 批量删除支持 |
 | 获取收藏标签 | `/ajax/user/{userId}/illusts/bookmark/tags` | ✅ | 用户的收藏标签 |
 
 ### RankingApi - 排行榜相关 API
@@ -57,26 +59,58 @@
 - 插画排行榜: JSON (RankingResponse)
 - 小说排行榜: HTML (String)
 
+### CommentApi - 评论相关 API ✨新增
+| 功能 | 端点 | 状态 | 说明 |
+|-----|------|------|------|
+| 获取插画评论根楼层 | `/ajax/illusts/comments/roots` | ✅ | 支持分页 |
+| 获取评论回复 | `/ajax/illusts/comments/replies` | ✅ | 获取评论的回复列表 |
+| 发表插画评论 | `/rpc/post_comment.php` | ✅ | 支持文字和表情评论 |
+| 删除插画评论 | `/rpc_delete_comment.php` | ✅ | 删除自己的评论 |
+| 获取小说评论根楼层 | `/ajax/novels/comments/roots` | ✅ | 支持分页 |
+| 发表小说评论 | `/rpc/post_comment.php` | ✅ | 支持文字和表情评论 |
+| 删除小说评论 | `/rpc_delete_comment.php` | ✅ | 删除自己的评论 |
+
+### NovelApi - 小说相关 API ✨新增
+| 功能 | 端点 | 状态 | 说明 |
+|-----|------|------|------|
+| 获取小说详情 | `/ajax/novel/{novelId}` | ✅ | 包含完整小说信息 |
+| 获取小说收藏状态 | `/ajax/novel/{novelId}/bookmarkData` | ✅ | 收藏状态信息 |
+| 搜索小说 | `/ajax/search/novels/{keyword}` | ✅ | 支持排序和筛选 |
+| 发现小说 | `/ajax/discovery/novels` | ✅ | 编辑精选 |
+| 关注作者的最新小说 | `/ajax/follow_latest/novel` | ✅ | 获取关注作者的新作 |
+| 获取新作小说 | `/ajax/novel/new` | ✅ | 最新发布的小说 |
+
+### NovelSeriesApi - 小说系列相关 API ✨新增
+| 功能 | 端点 | 状态 | 说明 |
+|-----|------|------|------|
+| 获取小说系列详情 | `/ajax/novel/series/{seriesId}` | ✅ | 系列基本信息 |
+| 获取系列内容列表 | `/ajax/novel/series_content/{seriesId}` | ✅ | 系列中的小说列表 |
+| 获取系列标题列表 | `/ajax/novel/series/{seriesId}/content_titles` | ✅ | 系列中各篇标题 |
+
+### TagApi - 标签相关 API ✨新增
+| 功能 | 端点 | 状态 | 说明 |
+|-----|------|------|------|
+| 获取标签建议 | `/ajax/tags/suggest_by_word` | ✅ | 搜索或添加标签时的建议 |
+| 获取标签信息 | `/ajax/tag/info` | ✅ | 标签详细信息 |
+| 为插画添加标签 | `/ajax/tags/illust/{illustId}/add` | ✅ | 添加作品标签 |
+| 删除插画标签 | `/ajax/tags/illust/{illustId}/delete` | ✅ | 删除作品标签 |
+| 为小说添加标签 | `/ajax/tags/novel/{novelId}/add` | ✅ | 添加小说标签 |
+| 删除小说标签 | `/ajax/tags/novel/{novelId}/delete` | ✅ | 删除小说标签 |
+| 获取热门标签 | `/ajax/tags/popular` | ✅ | 当前热门标签 |
+
 ---
 
 ## ⏳ 计划中的 API
 
-### CommentApi - 评论相关 API (P1)
-- [ ] 获取作品评论
-- [ ] 发表评论
-- [ ] 删除评论
-- [ ] 回复评论
+### FollowApi - 关注相关 API (P2)
+- [ ] 关注用户
+- [ ] 取消关注
+- [ ] 获取粉丝列表
+- [ ] 获取关注推荐
 
-### NovelApi - 小说相关 API (P2)
-- [ ] 获取小说详情
-- [ ] 搜索小说
-- [ ] 推荐小说
-- [ ] 小说排行榜
-
-### TagApi - 标签相关 API (P2)
-- [ ] 热门标签
-- [ ] 标签搜索建议
-- [ ] 标签统计信息
+### MangaSeriesApi - 漫画系列相关 API (P3)
+- [ ] 获取漫画系列详情
+- [ ] 获取系列内容列表
 
 ---
 
@@ -115,15 +149,17 @@ val artworkDetail = pixivApi.illustApi.getIllustDetail("123456")
 
 ## 📊 API 使用统计
 
-| API 模块 | 方法数 | 完成度 | 测试覆盖 |
+| API 模块 | 方法数 | 完成度 | 最后更新 |
 |---------|-------|--------|---------|
-| IllustApi | 6 | 100% | ✅ |
-| UserApi | 5 | 100% | ✅ |
-| BookmarkApi | 3 | 100% | ✅ |
-| RankingApi | 1 | 100% | ✅ |
-| CommentApi | 0 | 0% | ⏳ |
-| NovelApi | 0 | 0% | ⏳ |
-| **总计** | **15** | **85%** | - |
+| IllustApi | 9 | 100% | 2025-10-30 |
+| UserApi | 7 | 100% | 2025-10-30 |
+| BookmarkApi | 8 | 100% | 2025-10-30 |
+| RankingApi | 2 | 100% | 2025-10-30 |
+| CommentApi | 7 | 100% | 2025-11-17 ✨ |
+| NovelApi | 6 | 100% | 2025-11-17 ✨ |
+| NovelSeriesApi | 3 | 100% | 2025-11-17 ✨ |
+| TagApi | 7 | 100% | 2025-11-17 ✨ |
+| **总计** | **49** | **100%** | - |
 
 ---
 

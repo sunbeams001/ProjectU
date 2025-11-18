@@ -7,7 +7,11 @@ enum class ApiModule(val displayName: String) {
     ILLUST("插画 API (IllustApi)"),
     USER("用户 API (UserApi)"),
     BOOKMARK("收藏 API (BookmarkApi)"),
-    RANKING("排行榜 API (RankingApi)")
+    RANKING("排行榜 API (RankingApi)"),
+    COMMENT("评论 API (CommentApi)"),
+    NOVEL("小说 API (NovelApi)"),
+    NOVEL_SERIES("小说系列 API (NovelSeriesApi)"),
+    TAG("标签 API (TagApi)")
 }
 
 /**
@@ -107,8 +111,8 @@ sealed class ApiMethod(
     
     object GetUserFullInfo : ApiMethod(
         module = ApiModule.USER,
-        methodName = "getUserFullInfo",
-        displayName = "完整用户信息",
+        methodName = "getProfileAll",
+        displayName = "用户作品概况",
         parameters = listOf(
             ApiParameter("userId", "用户ID", "11", required = true)
         ),
@@ -163,6 +167,43 @@ sealed class ApiMethod(
             ApiParameter("limit", "数量", "24", required = false)
         ),
         priority = 2
+    )
+    
+    object GetRecommendUsers : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getRecommendUsers",
+        displayName = "推荐用户",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "11", required = true),
+            ApiParameter("userNum", "推荐数量", "20", required = false),
+            ApiParameter("workNum", "作品数量", "3", required = false),
+            ApiParameter("isR18", "包含R18", "false", required = false,
+                options = listOf("true", "false"))
+        ),
+        priority = 2
+    )
+    
+    object FollowUser : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "followUser",
+        displayName = "关注用户 ⚠️",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "11", required = true),
+            ApiParameter("tag", "标签", "", required = false),
+            ApiParameter("restrict", "公开性", "0", required = false,
+                options = listOf("0", "1"))
+        ),
+        priority = 3
+    )
+    
+    object UnfollowUser : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "unfollowUser",
+        displayName = "取消关注 ⚠️",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "11", required = true)
+        ),
+        priority = 3
     )
     
     // ==================== BookmarkApi ====================
@@ -329,6 +370,186 @@ sealed class ApiMethod(
         priority = 1
     )
     
+    // ==================== CommentApi ====================
+    
+    object GetIllustCommentRoots : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "getIllustCommentRoots",
+        displayName = "获取插画评论",
+        parameters = listOf(
+            ApiParameter("illustId", "作品ID", "102814610", required = true),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "20", required = false)
+        ),
+        priority = 1
+    )
+    
+    object GetCommentReplies : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "getCommentReplies",
+        displayName = "获取评论回复",
+        parameters = listOf(
+            ApiParameter("commentId", "评论ID", "", required = true),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 2
+    )
+    
+    object GetNovelCommentRoots : ApiMethod(
+        module = ApiModule.COMMENT,
+        methodName = "getNovelCommentRoots",
+        displayName = "获取小说评论",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "", required = true),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "20", required = false)
+        ),
+        priority = 2
+    )
+    
+    // ==================== NovelApi ====================
+    
+    object GetNovelDetail : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "getNovelDetail",
+        displayName = "获取小说详情",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "15809265", required = true)
+        ),
+        priority = 0
+    )
+    
+    object GetNovelBookmarkData : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "getNovelBookmarkData",
+        displayName = "小说收藏状态",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "15809265", required = true)
+        ),
+        priority = 1
+    )
+    
+    object SearchNovel : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "searchNovel",
+        displayName = "搜索小说",
+        parameters = listOf(
+            ApiParameter("keyword", "关键词", "初音ミク", required = true),
+            ApiParameter("searchMode", "搜索模式", "s_tag", required = false,
+                options = listOf("s_tag", "s_tag_full", "s_tc")),
+            ApiParameter("order", "排序", "date_d", required = false,
+                options = listOf("date_d", "date")),
+            ApiParameter("mode", "模式", "all", required = false,
+                options = listOf("all", "safe", "r18")),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 0
+    )
+    
+    object GetNovelDiscovery : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "getNovelDiscovery",
+        displayName = "发现小说",
+        parameters = listOf(
+            ApiParameter("mode", "模式", "all", required = false,
+                options = listOf("all", "safe", "r18")),
+            ApiParameter("limit", "数量", "100", required = false)
+        ),
+        priority = 1
+    )
+    
+    object GetNovelFollowLatest : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "getNovelFollowLatest",
+        displayName = "关注作者最新小说",
+        parameters = listOf(
+            ApiParameter("mode", "模式", "all", required = false,
+                options = listOf("all", "r18")),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 2
+    )
+    
+    object GetNovelNew : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "getNovelNew",
+        displayName = "最新小说",
+        parameters = listOf(
+            ApiParameter("limit", "数量", "20", required = false),
+            ApiParameter("mode", "模式", "all", required = false,
+                options = listOf("all", "r18"))
+        ),
+        priority = 2
+    )
+    
+    // ==================== NovelSeriesApi ====================
+    
+    object GetNovelSeriesDetail : ApiMethod(
+        module = ApiModule.NOVEL_SERIES,
+        methodName = "getNovelSeriesDetail",
+        displayName = "小说系列详情",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "8174474", required = true)
+        ),
+        priority = 1
+    )
+    
+    object GetNovelSeriesContents : ApiMethod(
+        module = ApiModule.NOVEL_SERIES,
+        methodName = "getNovelSeriesContents",
+        displayName = "系列内容列表",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "8174474", required = true),
+            ApiParameter("limit", "数量", "30", required = false),
+            ApiParameter("orderBy", "排序", "asc", required = false,
+                options = listOf("asc", "desc"))
+        ),
+        priority = 1
+    )
+    
+    object GetNovelSeriesTitles : ApiMethod(
+        module = ApiModule.NOVEL_SERIES,
+        methodName = "getNovelSeriesTitles",
+        displayName = "系列标题列表",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "8174474", required = true)
+        ),
+        priority = 2
+    )
+    
+    // ==================== TagApi ====================
+    
+    object GetTagSuggest : ApiMethod(
+        module = ApiModule.TAG,
+        methodName = "getTagSuggest",
+        displayName = "标签搜索建议",
+        parameters = listOf(
+            ApiParameter("keyword", "关键词", "RO635", required = true)
+        ),
+        priority = 1
+    )
+    
+    object GetTagInfo : ApiMethod(
+        module = ApiModule.TAG,
+        methodName = "getTagInfo",
+        displayName = "标签信息",
+        parameters = listOf(
+            ApiParameter("tag", "标签名", "初音ミク", required = true)
+        ),
+        priority = 2
+    )
+    
+    object GetPopularTags : ApiMethod(
+        module = ApiModule.TAG,
+        methodName = "getPopularTags",
+        displayName = "热门标签",
+        parameters = listOf(
+            ApiParameter("mode", "模式", "all", required = false,
+                options = listOf("all", "safe", "r18"))
+        ),
+        priority = 2
+    )
+    
     companion object {
         /**
          * 获取所有 API 方法
@@ -340,11 +561,21 @@ sealed class ApiMethod(
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, 
             GetUserBookmarks, GetUserFollowing, GetUserFollowers,
+            GetRecommendUsers, FollowUser, UnfollowUser,
             // BookmarkApi
             AddBookmark, DeleteBookmark, DeleteBookmarks, GetIllustBookmarkTags,
             AddNovelBookmark, DeleteNovelBookmark, DeleteNovelBookmarks, GetNovelBookmarkTags,
             // RankingApi
-            GetIllustRanking, GetNovelRanking
+            GetIllustRanking, GetNovelRanking,
+            // CommentApi
+            GetIllustCommentRoots, GetCommentReplies, GetNovelCommentRoots,
+            // NovelApi
+            GetNovelDetail, GetNovelBookmarkData, SearchNovel, 
+            GetNovelDiscovery, GetNovelFollowLatest, GetNovelNew,
+            // NovelSeriesApi
+            GetNovelSeriesDetail, GetNovelSeriesContents, GetNovelSeriesTitles,
+            // TagApi
+            GetTagSuggest, GetTagInfo, GetPopularTags
         )
         
         /**

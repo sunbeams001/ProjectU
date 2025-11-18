@@ -116,44 +116,62 @@ fun ApiSelector(
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(8.dp)
     ) {
-        Text(
-            text = "API 模块",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
-        )
-        
-        // 模块选择
-        ApiModule.entries.forEach { module ->
-            ModuleChip(
-                module = module,
-                isSelected = selectedModule == module,
-                onClick = { onModuleSelect(module) }
+        // API 模块区域 - 固定比例
+        Column(
+            modifier = Modifier
+                .weight(0.35f)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "API 模块",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
             )
+            
+            // 模块选择 - 使用滚动列
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(ApiModule.entries) { module ->
+                    ModuleChip(
+                        module = module,
+                        isSelected = selectedModule == module,
+                        onClick = { onModuleSelect(module) }
+                    )
+                }
+            }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider()
         Spacer(modifier = Modifier.height(8.dp))
         
-        Text(
-            text = "API 方法",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
-        )
-        
-        // 方法列表
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+        // API 方法区域 - 固定比例
+        Column(
+            modifier = Modifier
+                .weight(0.65f)
+                .fillMaxWidth()
         ) {
-            val methods = ApiMethod.getMethodsByModule(selectedModule)
-            items(methods) { method ->
-                MethodItem(
-                    method = method,
-                    isSelected = selectedMethod == method,
-                    onClick = { onMethodSelect(method) }
-                )
+            Text(
+                text = "API 方法",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
+            )
+            
+            // 方法列表
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val methods = ApiMethod.getMethodsByModule(selectedModule)
+                items(methods) { method ->
+                    MethodItem(
+                        method = method,
+                        isSelected = selectedMethod == method,
+                        onClick = { onMethodSelect(method) }
+                    )
+                }
             }
         }
     }

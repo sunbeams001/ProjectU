@@ -1,11 +1,11 @@
 # Pixiv API 集成指南
 
-> 📅 最后更新: 2025-10-30  
+> 📅 最后更新: 2025-11-17  
 > 🌐 API 集成状态: [docs/shared/API_STATUS.md](../shared/API_STATUS.md)
 
 ## 📖 概述
 
-ProjectU 已完整集成 Pixiv Web API，基于 Kotlin Multiplatform + Ktor，覆盖作品、用户、收藏、排行榜等核心功能，支持 Android 和 Desktop 平台。
+ProjectU 已完整集成 Pixiv Web API，基于 Kotlin Multiplatform + Ktor，覆盖作品、用户、收藏、排行榜、评论、小说、标签等核心功能，支持 Android 和 Desktop 平台。
 
 ### 核心特性
 
@@ -13,7 +13,7 @@ ProjectU 已完整集成 Pixiv Web API，基于 Kotlin Multiplatform + Ktor，�
 - ✅ **异步**: Kotlin Coroutines + Flow
 - ✅ **网络**: Ktor 3.3.1 HTTP 客户端
 - ✅ **认证**: PHPSESSID Cookie + CSRF Token 自动刷新
-- ✅ **完整性**: 30+ API 方法，4 个主要模块，26 个 DTO
+- ✅ **完整性**: 49+ API 方法，8 个主要模块，40+ DTO
 
 ### API 模块完成度
 
@@ -23,9 +23,13 @@ ProjectU 已完整集成 Pixiv Web API，基于 Kotlin Multiplatform + Ktor，�
 |------|--------|--------|
 | IllustApi | 100% | 9 |
 | UserApi | 100% | 7 |
-| BookmarkApi | 100% | 6 |
-| RankingApi | 100% | 8 |
-| **总计** | **85%** | **30** |
+| BookmarkApi | 100% | 8 |
+| RankingApi | 100% | 2 |
+| CommentApi ✨ | 100% | 7 |
+| NovelApi ✨ | 100% | 6 |
+| NovelSeriesApi ✨ | 100% | 3 |
+| TagApi ✨ | 100% | 7 |
+| **总计** | **100%** | **49** |
 
 ---
 

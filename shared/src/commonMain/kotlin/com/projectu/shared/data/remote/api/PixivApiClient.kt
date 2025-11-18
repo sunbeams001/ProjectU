@@ -279,6 +279,37 @@ class PixivApiClient(
     }
 
     /**
+     * 执行POST请求（Form body）- 用于旧的API端点，直接返回原始响应
+     * 这些端点不返回标准的 PixivResponse 格式，而是直接返回数据或空数组
+     */
+    suspend inline fun <reified T> postFormRaw(
+        url: String,
+        formParams: Map<String, String>? = null
+    ): T {
+        // 确保有token
+        if (csrfToken == null) {
+            csrfToken = fetchToken()
+        }
+
+        val httpResponse = httpClient.submitForm(
+            url = "$host$url",
+            formParameters = Parameters.build {
+                append("lang", lang)
+                formParams?.forEach { (key, value) ->
+                    append(key, value)
+                }
+            }
+        ) {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            header(HEADER_CSRF_TOKEN, csrfToken)
+        }
+        
+        val rawJson = httpResponse.bodyAsText()
+        return jsonParser.decodeFromString<T>(rawJson)
+    }
+
+    /**
      * 从服务器获取CSRF Token
      */
     @PublishedApi

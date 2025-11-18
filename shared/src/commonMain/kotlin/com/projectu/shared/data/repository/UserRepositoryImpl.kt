@@ -66,17 +66,15 @@ class UserRepositoryImpl(
     }
 
     override suspend fun followUser(userId: Long): Result<Unit> = runCatching {
-        val response = pixivApi.userApi.followUser(userId)
-        if (response.error) {
-            throw IllegalStateException(response.message)
-        }
+        // 关注用户API返回空数组 [] 表示成功
+        pixivApi.userApi.followUser(userId)
+        // 如果没有抛出异常，说明成功
     }
 
     override suspend fun unfollowUser(userId: Long): Result<Unit> = runCatching {
-        val response = pixivApi.userApi.unfollowUser(userId)
-        if (response.error) {
-            throw IllegalStateException(response.message)
-        }
+        // 取消关注API返回对象表示成功
+        pixivApi.userApi.unfollowUser(userId)
+        // 如果没有抛出异常，说明成功
     }
 
     override fun observeCurrentUser(): Flow<User?> = flow {
