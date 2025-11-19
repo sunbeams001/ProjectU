@@ -22,6 +22,9 @@ class LocaleManager(
     private val _currentLanguage = MutableStateFlow(AppLanguage.SIMPLIFIED_CHINESE)
     val currentLanguage: StateFlow<AppLanguage> = _currentLanguage.asStateFlow()
     
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
+    
     init {
         // 应用启动时从数据库加载语言设置
         loadLanguageFromDatabase()
@@ -40,6 +43,9 @@ class LocaleManager(
                 // 如果加载失败，使用默认语言
                 _currentLanguage.value = AppLanguage.SIMPLIFIED_CHINESE
                 setSystemLocale(AppLanguage.SIMPLIFIED_CHINESE)
+            } finally {
+                // 标记初始化完成
+                _isInitialized.value = true
             }
         }
     }

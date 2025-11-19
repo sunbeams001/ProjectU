@@ -16,6 +16,9 @@ fun App() {
     val settingsRepository: SettingsRepository = koinInject()
     val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
 
+    // 等待语言初始化完成
+    val isLanguageInitialized by localeManager.isInitialized.collectAsState()
+    
     // 等待登录状态加载完成
     var isLoadingLoginState by remember { mutableStateOf(true) }
     var isLoggedIn by remember { mutableStateOf(false) }
@@ -41,8 +44,8 @@ fun App() {
     // 获取当前语言，用于触发重组
     val currentLanguage by localeManager.currentLanguage.collectAsState()
 
-    // 在加载登录状态时显示空白（或可以显示启动画面）
-    if (isLoadingLoginState) {
+    // 在加载登录状态或语言初始化时显示空白（或可以显示启动画面）
+    if (isLoadingLoginState || !isLanguageInitialized) {
         return
     }
 
