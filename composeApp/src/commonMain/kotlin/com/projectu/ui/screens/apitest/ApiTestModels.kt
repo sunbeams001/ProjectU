@@ -11,7 +11,8 @@ enum class ApiModule(val displayName: String) {
     COMMENT("评论 API (CommentApi)"),
     NOVEL("小说 API (NovelApi)"),
     NOVEL_SERIES("小说系列 API (NovelSeriesApi)"),
-    TAG("标签 API (TagApi)")
+    TAG("标签 API (TagApi)"),
+    MARKER("书签 API (MarkerApi)")
 }
 
 /**
@@ -531,18 +532,6 @@ sealed class ApiMethod(
         priority = 2
     )
     
-    object GetNovelNew : ApiMethod(
-        module = ApiModule.NOVEL,
-        methodName = "getNovelNew",
-        displayName = "最新小说",
-        parameters = listOf(
-            ApiParameter("limit", "数量", "20", required = false),
-            ApiParameter("mode", "模式", "all", required = false,
-                options = listOf("all", "r18"))
-        ),
-        priority = 2
-    )
-    
     // ==================== NovelSeriesApi ====================
     
     object GetNovelSeriesDetail : ApiMethod(
@@ -611,6 +600,39 @@ sealed class ApiMethod(
         priority = 2
     )
     
+    // ==================== MarkerApi ====================
+    
+    object AddNovelMarker : ApiMethod(
+        module = ApiModule.MARKER,
+        methodName = "addNovelMarker",
+        displayName = "添加小说书签（稍后再读）",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "15809265", required = true),
+            ApiParameter("userId", "用户ID", "4966721", required = true),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 1
+    )
+    
+    object DeleteNovelMarker : ApiMethod(
+        module = ApiModule.MARKER,
+        methodName = "deleteNovelMarker",
+        displayName = "删除小说书签（取消稍后再读）",
+        parameters = listOf(
+            ApiParameter("novelId", "小说ID", "15809265", required = true),
+            ApiParameter("userId", "用户ID", "4966721", required = true)
+        ),
+        priority = 1
+    )
+    
+    object GetNovelMarkerList : ApiMethod(
+        module = ApiModule.MARKER,
+        methodName = "getNovelMarkerList",
+        displayName = "获取小说书签列表",
+        parameters = emptyList(),
+        priority = 2
+    )
+    
     companion object {
         /**
          * 获取所有 API 方法
@@ -633,11 +655,13 @@ sealed class ApiMethod(
             GetNovelCommentRoots, GetNovelCommentReplies, PostNovelComment, DeleteNovelComment,
             // NovelApi
             GetNovelDetail, GetNovelBookmarkData, SearchNovel, 
-            GetNovelDiscovery, GetNovelFollowLatest, GetNovelNew,
+            GetNovelDiscovery, GetNovelFollowLatest,
             // NovelSeriesApi
             GetNovelSeriesDetail, GetNovelSeriesContents, GetNovelSeriesTitles,
             // TagApi
-            GetTagSuggest, GetTagInfo, GetPopularTags
+            GetTagSuggest, GetTagInfo, GetPopularTags,
+            // MarkerApi
+            AddNovelMarker, DeleteNovelMarker, GetNovelMarkerList
         )
         
         /**

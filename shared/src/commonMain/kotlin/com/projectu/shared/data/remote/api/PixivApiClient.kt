@@ -132,6 +132,31 @@ class PixivApiClient(
     }
 
     /**
+     * 执行GET请求（返回HTML）- 用于旧的PHP页面
+     */
+    suspend fun getHtml(
+        url: String,
+        params: Map<String, Any?>? = null
+    ): String {
+        // 确保有token
+        if (csrfToken == null) {
+            csrfToken = fetchToken()
+        }
+
+        val httpResponse = httpClient.get("$host$url") {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            header(HEADER_CSRF_TOKEN, csrfToken)
+            parameter("lang", lang)
+            params?.forEach { (key, value) ->
+                value?.let { parameter(key, it) }
+            }
+        }
+        
+        return httpResponse.bodyAsText()
+    }
+
+    /**
      * 执行POST请求（JSON body）
      */
     suspend inline fun <reified T, reified B> postJson(

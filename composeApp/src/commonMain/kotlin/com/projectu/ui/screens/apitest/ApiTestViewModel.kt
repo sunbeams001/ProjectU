@@ -198,7 +198,6 @@ class ApiTestViewModel(
                         ApiMethod.SearchNovel -> testSearchNovel()
                         ApiMethod.GetNovelDiscovery -> testGetNovelDiscovery()
                         ApiMethod.GetNovelFollowLatest -> testGetNovelFollowLatest()
-                        ApiMethod.GetNovelNew -> testGetNovelNew()
                         
                         // ==================== NovelSeriesApi ====================
                         ApiMethod.GetNovelSeriesDetail -> testGetNovelSeriesDetail()
@@ -209,6 +208,11 @@ class ApiTestViewModel(
                         ApiMethod.GetTagSuggest -> testGetTagSuggest()
                         ApiMethod.GetTagInfo -> testGetTagInfo()
                         ApiMethod.GetPopularTags -> testGetPopularTags()
+                        
+                        // ==================== MarkerApi ====================
+                        ApiMethod.AddNovelMarker -> testAddNovelMarker()
+                        ApiMethod.DeleteNovelMarker -> testDeleteNovelMarker()
+                        ApiMethod.GetNovelMarkerList -> testGetNovelMarkerList()
                     }
                 }
                 
@@ -1563,7 +1567,7 @@ class ApiTestViewModel(
     private suspend fun testGetNovelBookmarkData() {
         val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.BookmarkData>(
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.NovelBookmarkStatusBody>(
             "/ajax/novel/$novelId/bookmarkData"
         )
         val response = responseWithRaw.response
@@ -1575,7 +1579,20 @@ class ApiTestViewModel(
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            val body = response.body
+            if (body != null) {
+                appendLine("小说ID: ${body.id}")
+                appendLine("可收藏: ${if (body.isBookmarkable) "是" else "否"}")
+                val bookmark = body.bookmarkData
+                if (bookmark != null) {
+                    appendLine("收藏状态: ⭐ 已收藏")
+                    appendLine("收藏ID: ${bookmark.id}")
+                    appendLine("公开性: ${if (bookmark.private) "私密" else "公开"}")
+                } else {
+                    appendLine("收藏状态: ☆ 未收藏")
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整数据")
         }
         
@@ -1680,36 +1697,142 @@ class ApiTestViewModel(
         updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
-    private suspend fun testGetNovelNew() {
-        val limit = getParam("limit").toIntOrNull() ?: 20
-        val mode = getParam("mode")
+    // ==================== MarkerApi 测试方法 ====================
+    
+    private suspend fun testAddNovelMarker() {
+        val novelId = getParam("novelId").toLongOrNull() 
+            ?: throw IllegalArgumentException("novelId 参数必须是数字")
+        val userId = getParam("userId").toLongOrNull() 
+            ?: throw IllegalArgumentException("userId 参数必须是数字")
+        val page = getParam("page").toIntOrNull() ?: 1
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.FollowLatestBody>(
-            "/ajax/novel/new",
-            mapOf(
-                "limit" to limit,
-                "mode" to mode
-            )
-        )
-        val response = responseWithRaw.response
+        val result = pixivApi.markerApi.addNovelMarker(novelId, userId, page)
         
         val summary = buildString {
-            appendLine("✅ 最新小说获取成功")
+            appendLine("✅ 添加小说书签成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("数量: $limit")
-            appendLine("模式: $mode")
+            appendLine("小说ID: $novelId")
+            appendLine("用户ID: $userId")
+            appendLine("页码: $page")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("错误: ${response.error}")
-            appendLine("消息: ${response.message}")
-            appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
-            appendLine("请查看 JSON 标签页查看完整数据")
+            appendLine("结果: page=${result.page}")
+            if (result.page == 1) {
+                appendLine("状态: ✅ 已添加书签")
+            } else {
+                appendLine("状态: ⚠️ 书签添加失败或已存在")
+            }
         }
         
-        updateResultWithRaw(responseWithRaw.rawJson, summary)
+        val rawJson = """{"page":${result.page}}"""
+        updateResultWithRaw(rawJson, summary)
     }
     
-    // ==================== NovelSeriesApi 测试方法 ====================
+    private suspend fun testDeleteNovelMarker() {
+        val novelId = getParam("novelId").toLongOrNull() 
+            ?: throw IllegalArgumentException("novelId 参数必须是数字")
+        val userId = getParam("userId").toLongOrNull() 
+            ?: throw IllegalArgumentException("userId 参数必须是数字")
+        
+        val result = pixivApi.markerApi.deleteNovelMarker(novelId, userId)
+        
+        val summary = buildString {
+            appendLine("✅ 删除小说书签成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("小说ID: $novelId")
+            appendLine("用户ID: $userId")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("结果: page=${result.page}")
+            if (result.page == 0) {
+                appendLine("状态: ✅ 已删除书签")
+            } else {
+                appendLine("状态: ⚠️ 书签删除失败或不存在")
+            }
+        }
+        
+        val rawJson = """{"page":${result.page}}"""
+        updateResultWithRaw(rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelMarkerList() {
+        val result = pixivApi.markerApi.getNovelMarkerList()
+        
+        val summary = buildString {
+            appendLine("✅ 获取小说书签列表成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("书签总数: ${result.total} 件")
+            appendLine("实际解析: ${result.novels.size} 件")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            
+            if (result.novels.isNotEmpty()) {
+                appendLine("小说列表:")
+                result.novels.forEachIndexed { index, novel ->
+                    appendLine("")
+                    appendLine("【${index + 1}】 ${novel.title}")
+                    appendLine("  · ID: ${novel.id}")
+                    appendLine("  · 作者: ${novel.userName} (${novel.userId})")
+                    if (novel.coverUrl != null) {
+                        appendLine("  · 封面: ${novel.coverUrl}")
+                    }
+                    if (novel.seriesId != null) {
+                        appendLine("  · 📚 系列: ${novel.seriesTitle ?: "未知系列"} (ID: ${novel.seriesId})")
+                    }
+                    appendLine("  · 字数: ${novel.textCount} 字符")
+                    appendLine("  · 收藏: ${novel.bookmarkCount}")
+                    if (novel.tags.isNotEmpty()) {
+                        appendLine("  · 标签: ${novel.tags.take(5).joinToString(", ")}")
+                    }
+                    if (novel.description.isNotBlank()) {
+                        val desc = if (novel.description.length > 50) {
+                            novel.description.take(50) + "..."
+                        } else {
+                            novel.description
+                        }
+                        appendLine("  · 简介: $desc")
+                    }
+                    if (novel.xRestrict > 0) {
+                        appendLine("  · 🔞 R-18 作品")
+                    }
+                }
+            } else {
+                appendLine("⚠️ 暂无书签")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("提示：查看 JSON 标签页获取完整数据结构")
+        }
+        
+        // 手动构建 JSON
+        val rawJson = buildString {
+            appendLine("{")
+            appendLine("""  "total": ${result.total},""")
+            appendLine("""  "novels": [""")
+            result.novels.forEachIndexed { index, novel ->
+                appendLine("    {")
+                appendLine("""      "id": "${novel.id}",""")
+                appendLine("""      "title": "${novel.title.replace("\"", "\\\"")}",""")
+                appendLine("""      "userId": "${novel.userId}",""")
+                appendLine("""      "userName": "${novel.userName.replace("\"", "\\\"")}",""")
+                if (novel.coverUrl != null) {
+                    appendLine("""      "coverUrl": "${novel.coverUrl}",""")
+                }
+                if (novel.seriesId != null) {
+                    appendLine("""      "seriesId": "${novel.seriesId}",""")
+                    appendLine("""      "seriesTitle": "${novel.seriesTitle?.replace("\"", "\\\"") ?: ""}",""")
+                }
+                appendLine("""      "textCount": ${novel.textCount},""")
+                appendLine("""      "bookmarkCount": ${novel.bookmarkCount},""")
+                appendLine("""      "xRestrict": ${novel.xRestrict},""")
+                appendLine("""      "tags": [${novel.tags.joinToString { "\"$it\"" }}],""")
+                appendLine("""      "description": "${novel.description.replace("\"", "\\\"").take(100)}" """)
+                append("    }")
+                if (index < result.novels.size - 1) appendLine(",") else appendLine()
+            }
+            appendLine("  ]")
+            append("}")
+        }
+        updateResultWithRaw(rawJson, summary)
+    }
+    
+    // ==================== 辅助方法 ====================
     
     private suspend fun testGetNovelSeriesDetail() {
         val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L

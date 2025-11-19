@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.dto.pixiv
 
+import com.projectu.shared.data.remote.api.NovelSearchItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -248,18 +249,33 @@ data class PopularData(
  */
 @Serializable
 data class DiscoveryBody(
-    val tagTranslation: Map<String, Map<String, String>>? = null,  // 标签翻译映射，key为标签名，value为各语言翻译（en, ko, zh, zh_tw, romaji）
+    @Serializable(with = com.projectu.shared.data.remote.serializers.NestedMapOrEmptyArraySerializer::class)
+    val tagTranslation: Map<String, Map<String, String>>? = null,  // 标签翻译，空时返回[]，非空时返回嵌套Map
     val thumbnails: Thumbnails,
+    val illustSeries: List<String>? = null,  // 插画系列ID列表
+    val requests: List<String>? = null,  // 请求列表
     val users: List<String>? = null,
+    val recommendedNovelIds: List<String>? = null,  // 推荐小说ID列表
+    val recommendNovelDetails: Map<String, String>? = null,  // 推荐小说详情（JSON字符串）
     val nextIds: List<Long>? = null
 )
 
 @Serializable
 data class Thumbnails(
     val illust: List<IllustSimple>,
-    val novel: List<String>? = null,
-    val novelSeries: List<String>? = null,
-    val novelDraft: List<String>? = null
+    val novel: List<NovelSearchItem>? = null,  // 使用 NovelSearchItem 而非 NovelSimple
+    val novelSeries: List<NovelSeriesSimple>? = null,
+    val novelDraft: List<NovelSearchItem>? = null,  // 使用 NovelSearchItem
+    val collection: List<String>? = null  // 收藏集ID列表
+)
+
+/**
+ * 小说系列简要信息（用于 Thumbnails）
+ */
+@Serializable
+data class NovelSeriesSimple(
+    val id: String,
+    val title: String
 )
 
 /**
@@ -298,10 +314,13 @@ data class IllustRecommendInitBody(
 @Serializable
 data class FollowLatestBody(
     val page: FollowLatestPage,
+    @Serializable(with = com.projectu.shared.data.remote.serializers.NestedMapOrEmptyArraySerializer::class)
+    val tagTranslation: Map<String, Map<String, String>>? = null,
     val thumbnails: Thumbnails,
     val illustSeries: List<String>? = null,
     val requests: List<String>? = null,
-    val users: List<String>? = null
+    val users: List<String>? = null,
+    val zoneConfig: kotlinx.serialization.json.JsonElement? = null
 )
 
 @Serializable
@@ -318,5 +337,16 @@ data class FollowLatestPage(
 @Serializable
 data class LikeBody(
     val isLiked: Boolean
+)
+
+/**
+ * 小说收藏状态响应体
+ * 用于 /ajax/novel/{novelId}/bookmarkData 接口
+ */
+@Serializable
+data class NovelBookmarkStatusBody(
+    val id: Long,  // 小说ID
+    val isBookmarkable: Boolean,  // 是否可收藏
+    val bookmarkData: BookmarkData? = null  // 收藏数据，未收藏时为 null
 )
 

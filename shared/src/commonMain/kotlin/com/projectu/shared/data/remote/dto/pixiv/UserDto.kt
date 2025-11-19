@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.dto.pixiv
 
+import com.projectu.shared.data.remote.serializers.MapOrEmptyArraySerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.KSerializer
@@ -109,46 +110,6 @@ data class UserWorkspace(
     val userWorkspaceComment: String? = null,
     val userWorkspaceImageUrl: String? = null
 )
-
-/**
- * 自定义序列化器：处理 Map 或空数组的情况
- * Pixiv API 在有数据时返回 Map，无数据时返回空数组 []
- */
-object MapOrEmptyArraySerializer : KSerializer<Map<String, String?>?> {
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("MapOrEmptyArray")
-
-    override fun deserialize(decoder: Decoder): Map<String, String?>? {
-        val jsonDecoder = decoder as? JsonDecoder ?: return null
-        val element = jsonDecoder.decodeJsonElement()
-        
-        return when {
-            element is JsonObject -> {
-                element.mapValues { (_, value) -> 
-                    if (value is JsonNull) null else value.jsonPrimitive.contentOrNull
-                }
-            }
-            element is JsonArray && element.isEmpty() -> {
-                // 空数组返回空Map
-                emptyMap()
-            }
-            else -> null
-        }
-    }
-
-    override fun serialize(encoder: Encoder, value: Map<String, String?>?) {
-        if (value == null) {
-            encoder.encodeNull()
-        } else {
-            val jsonEncoder = encoder as JsonEncoder
-            val jsonObject = buildJsonObject {
-                value.forEach { (key, v) ->
-                    put(key, if (v == null) JsonNull else JsonPrimitive(v))
-                }
-            }
-            jsonEncoder.encodeJsonElement(jsonObject)
-        }
-    }
-}
 
 @Serializable
 data class UserGroup(
