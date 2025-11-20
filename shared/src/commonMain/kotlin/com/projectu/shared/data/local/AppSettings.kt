@@ -59,7 +59,9 @@ enum class PixivLanguage(val code: String, val displayName: String) {
     TRADITIONAL_CHINESE("zh_tw", "繁體中文"),
     ENGLISH("en", "English"),
     JAPANESE("ja", "日本語"),
-    KOREAN("ko", "한국어");
+    KOREAN("ko", "한국어"),
+    THAI("th", "ภาษาไทย"),
+    MALAY("ms", "Bahasa Melayu");
     
     companion object {
         /**
