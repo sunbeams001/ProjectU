@@ -609,17 +609,6 @@ sealed class ApiMethod(
         priority = 2
     )
     
-    object GetPopularTags : ApiMethod(
-        module = ApiModule.TAG,
-        methodName = "getPopularTags",
-        displayName = "热门标签",
-        parameters = listOf(
-            ApiParameter("mode", "模式", "all", required = false,
-                options = listOf("all", "safe", "r18"))
-        ),
-        priority = 2
-    )
-    
     // ==================== MarkerApi ====================
     
     object AddNovelMarker : ApiMethod(
@@ -680,7 +669,7 @@ sealed class ApiMethod(
             GetNovelSeriesDetail, GetNovelSeriesContents, GetNovelSeriesTitles,
             WatchNovelSeries, UnwatchNovelSeries,
             // TagApi
-            GetTagSuggest, GetTagInfo, GetPopularTags,
+            GetTagSuggest, GetTagInfo,
             // MarkerApi
             AddNovelMarker, DeleteNovelMarker, GetNovelMarkerList
         )

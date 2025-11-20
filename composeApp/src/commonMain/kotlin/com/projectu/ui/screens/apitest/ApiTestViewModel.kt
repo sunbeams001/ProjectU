@@ -209,7 +209,6 @@ class ApiTestViewModel(
                         // ==================== TagApi ====================
                         ApiMethod.GetTagSuggest -> testGetTagSuggest()
                         ApiMethod.GetTagInfo -> testGetTagInfo()
-                        ApiMethod.GetPopularTags -> testGetPopularTags()
                         
                         // ==================== MarkerApi ====================
                         ApiMethod.AddNovelMarker -> testAddNovelMarker()
@@ -2020,29 +2019,6 @@ class ApiTestViewModel(
             appendLine("✅ 标签信息获取成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("标签: $tag")
-            appendLine("错误: ${response.error}")
-            appendLine("消息: ${response.message}")
-            appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
-            appendLine("请查看 JSON 标签页查看完整数据")
-        }
-        
-        updateResultWithRaw(responseWithRaw.rawJson, summary)
-    }
-    
-    private suspend fun testGetPopularTags() {
-        val mode = getParam("mode")
-        
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.TagSuggestBody>(
-            "/ajax/tags/popular",
-            mapOf("mode" to mode)
-        )
-        val response = responseWithRaw.response
-        
-        val summary = buildString {
-            appendLine("✅ 热门标签获取成功")
-            appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("模式: $mode")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")

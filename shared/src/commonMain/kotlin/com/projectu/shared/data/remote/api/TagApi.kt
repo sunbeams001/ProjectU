@@ -18,8 +18,19 @@ data class TagSuggestBody(
 @Serializable
 data class TagCandidate(
     @SerialName("tag_name") val tagName: String,
-    @SerialName("access_count") val accessCount: Long? = null,
-    @SerialName("type") val type: String? = null
+    @SerialName("illust_count") val illustCount: Long = 0,
+    @SerialName("total_count") val totalCount: Long = 0,
+    @SerialName("suggest_type") val suggestType: String? = null
+)
+
+/**
+ * 标签翻译信息
+ */
+@Serializable
+data class TagTranslation(
+    val tag: String? = null,
+    @SerialName("abstract") val abstract: String? = null,
+    val url: String? = null
 )
 
 /**
@@ -30,11 +41,11 @@ data class TagInfoBody(
     val tag: String,
     @SerialName("abstract") val abstract: String? = null,
     @SerialName("thumbnail") val thumbnail: String? = null,
-    @SerialName("isLocked") val isLocked: Boolean = false,
-    @SerialName("deletable") val deletable: Boolean = false,
-    @SerialName("userId") val userId: String? = null,
-    @SerialName("userName") val userName: String? = null,
-    @SerialName("translation") val translation: Map<String, String>? = null
+    val en: TagTranslation? = null,
+    @SerialName("en_new") val enNew: TagTranslation? = null,
+    val ja: TagTranslation? = null,
+    @SerialName("ja_new") val jaNew: TagTranslation? = null,
+    @SerialName("is_view_lead_wire") val isViewLeadWire: Boolean = false
 )
 
 /**
@@ -130,18 +141,6 @@ class TagApi(private val client: PixivApiClient) {
     ): PixivResponse<AddTagBody> {
         return client.postJson("/ajax/tags/novel/$novelId/delete", mapOf(
             "tag" to tag
-        ))
-    }
-
-    /**
-     * 获取热门标签
-     * @param mode 模式：all, safe, r18
-     */
-    suspend fun getPopularTags(
-        mode: String = "all"
-    ): PixivResponse<TagSuggestBody> {
-        return client.get("/ajax/tags/popular", mapOf(
-            "mode" to mode
         ))
     }
 }
