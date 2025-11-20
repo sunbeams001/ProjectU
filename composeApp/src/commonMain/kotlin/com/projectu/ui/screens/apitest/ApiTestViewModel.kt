@@ -203,6 +203,8 @@ class ApiTestViewModel(
                         ApiMethod.GetNovelSeriesDetail -> testGetNovelSeriesDetail()
                         ApiMethod.GetNovelSeriesContents -> testGetNovelSeriesContents()
                         ApiMethod.GetNovelSeriesTitles -> testGetNovelSeriesTitles()
+                        ApiMethod.WatchNovelSeries -> testWatchNovelSeries()
+                        ApiMethod.UnwatchNovelSeries -> testUnwatchNovelSeries()
                         
                         // ==================== TagApi ====================
                         ApiMethod.GetTagSuggest -> testGetTagSuggest()
@@ -1890,7 +1892,7 @@ class ApiTestViewModel(
     private suspend fun testGetNovelSeriesTitles() {
         val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSeriesTitlesResponse>(
+        val responseWithRaw = pixivApi.client.getWithRaw<List<com.projectu.shared.data.remote.api.NovelSeriesTitle>>(
             "/ajax/novel/series/$seriesId/content_titles"
         )
         val response = responseWithRaw.response
@@ -1902,8 +1904,79 @@ class ApiTestViewModel(
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            response.body?.let { titles ->
+                appendLine("标题数量: ${titles.size}")
+                appendLine("\n标题列表:")
+                titles.forEachIndexed { index, title ->
+                    appendLine("${index + 1}. [${title.id}] ${title.title} (可用: ${title.available})")
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testWatchNovelSeries() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
+        
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<List<String>, Map<String, String>>(
+            "/ajax/novel/series/$seriesId/watch",
+            emptyMap()
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            if (response.error) {
+                appendLine("❌ 追更系列失败")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+            } else {
+                appendLine("✅ 追更系列成功")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("已成功添加到追更列表")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整响应")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testUnwatchNovelSeries() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
+        
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<List<String>, Map<String, String>>(
+            "/ajax/novel/series/$seriesId/unwatch",
+            emptyMap()
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            if (response.error) {
+                appendLine("❌ 取消追更失败")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+            } else {
+                appendLine("✅ 取消追更成功")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("已成功从追更列表移除")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整响应")
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)

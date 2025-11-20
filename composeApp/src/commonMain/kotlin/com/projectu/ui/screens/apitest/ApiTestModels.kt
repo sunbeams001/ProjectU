@@ -567,6 +567,26 @@ sealed class ApiMethod(
         priority = 2
     )
     
+    object WatchNovelSeries : ApiMethod(
+        module = ApiModule.NOVEL_SERIES,
+        methodName = "watch",
+        displayName = "追更系列",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "8174474", required = true)
+        ),
+        priority = 3
+    )
+    
+    object UnwatchNovelSeries : ApiMethod(
+        module = ApiModule.NOVEL_SERIES,
+        methodName = "unwatch",
+        displayName = "取消追更",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "8174474", required = true)
+        ),
+        priority = 3
+    )
+    
     // ==================== TagApi ====================
     
     object GetTagSuggest : ApiMethod(
@@ -658,6 +678,7 @@ sealed class ApiMethod(
             GetNovelDiscovery, GetNovelFollowLatest,
             // NovelSeriesApi
             GetNovelSeriesDetail, GetNovelSeriesContents, GetNovelSeriesTitles,
+            WatchNovelSeries, UnwatchNovelSeries,
             // TagApi
             GetTagSuggest, GetTagInfo, GetPopularTags,
             // MarkerApi
