@@ -592,7 +592,27 @@ sealed class ApiMethod(
     object GetTagSuggest : ApiMethod(
         module = ApiModule.TAG,
         methodName = "getTagSuggest",
-        displayName = "标签搜索建议",
+        displayName = "标签搜索建议 (Ajax)",
+        parameters = listOf(
+            ApiParameter("keyword", "关键词", "RO635", required = true)
+        ),
+        priority = 1
+    )
+    
+    object GetSearchSuggestion : ApiMethod(
+        module = ApiModule.TAG,
+        methodName = "getSearchSuggestion",
+        displayName = "搜索建议（点击搜索框）",
+        parameters = listOf(
+            ApiParameter("mode", "模式", "all", required = false, options = listOf("all", "r18"))
+        ),
+        priority = 1
+    )
+    
+    object GetTagSearchSuggest : ApiMethod(
+        module = ApiModule.TAG,
+        methodName = "getTagSearchSuggest",
+        displayName = "标签搜索建议 (RPC)",
         parameters = listOf(
             ApiParameter("keyword", "关键词", "RO635", required = true)
         ),
@@ -669,7 +689,7 @@ sealed class ApiMethod(
             GetNovelSeriesDetail, GetNovelSeriesContents, GetNovelSeriesTitles,
             WatchNovelSeries, UnwatchNovelSeries,
             // TagApi
-            GetTagSuggest, GetTagInfo,
+            GetTagSuggest, GetSearchSuggestion, GetTagSearchSuggest, GetTagInfo,
             // MarkerApi
             AddNovelMarker, DeleteNovelMarker, GetNovelMarkerList
         )

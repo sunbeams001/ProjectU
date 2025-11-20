@@ -132,6 +132,35 @@ class PixivApiClient(
     }
 
     /**
+     * 执行GET请求（直接返回解析后的对象，不包装在PixivResponse中）
+     * 用于不遵循标准响应格式的API（如 /rpc/cps.php）
+     */
+    suspend inline fun <reified T> getRaw(
+        url: String,
+        queryParams: Map<String, Any?>? = null
+    ): T {
+        return httpClient.get("$host$url") {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            queryParams?.forEach { (key, value) ->
+                when (value) {
+                    is Collection<*> -> {
+                        value.forEach { item ->
+                            parameter(key, item.toString())
+                        }
+                    }
+                    null -> {
+                        // 忽略null值
+                    }
+                    else -> {
+                        parameter(key, value.toString())
+                    }
+                }
+            }
+        }.body()
+    }
+
+    /**
      * 执行GET请求（返回HTML）- 用于旧的PHP页面
      */
     suspend fun getHtml(

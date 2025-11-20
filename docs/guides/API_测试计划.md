@@ -1,6 +1,7 @@
 # Pixiv API 调试测试计划
 
 > 📅 创建日期: 2025-10-30  
+> 🔄 更新日期: 2025-11-20  
 > 🎯 目的: 系统化测试所有已集成的 Pixiv API，确保接口参数和返回值与实际一致
 
 ---
@@ -20,6 +21,7 @@
 - **Android**: API 24+ 设备或模拟器
 - **Desktop**: Windows/Mac/Linux 开发环境
 - **网络**: 可访问 Pixiv 的网络环境（可能需要代理）
+- **测试工具**: 内置 API 测试模块（在应用设置中访问）
 
 ---
 
@@ -39,54 +41,6 @@
 | `getDiscoveryIllust` | `/ajax/discovery/artworks` | P1 | ✅ | 发现页作品 |
 | `getUgoiraMetadata` | `/ajax/illust/{illustId}/ugoira_meta` | P2 | ✅ | 动图元数据 |
 
-#### 测试用例示例
-
-```kotlin
-// 1. 获取作品详情
-suspend fun testGetIllustDetail(pixivApi: PixivApi) {
-    val illustId = "102814610"  // 测试用作品ID
-    val response = pixivApi.illustApi.getIllustDetail(illustId)
-    
-    println("=== 作品详情测试 ===")
-    println("ID: ${response.body.id}")
-    println("标题: ${response.body.title}")
-    println("作者: ${response.body.userId}")
-    println("浏览量: ${response.body.viewCount}")
-    println("收藏数: ${response.body.bookmarkCount}")
-    println("图片URL: ${response.body.urls.regular}")
-    
-    // 验证关键字段
-    assert(response.error == false)
-    assert(response.body.id == illustId)
-    assert(response.body.title.isNotBlank())
-}
-
-// 2. 搜索作品
-suspend fun testSearchIllust(pixivApi: PixivApi) {
-    val keyword = "初音ミク"
-    val response = pixivApi.illustApi.searchIllust(
-        keyword = keyword,
-        mode = "safe",  // safe, r18
-        order = "date_d", // date_d(日期降序), date_asc, popular_d
-        sMode = "s_tag",  // s_tag(标签), s_tc(标题+标注)
-        type = "all"      // all, illust, manga, ugoira
-    )
-    
-    println("=== 搜索测试 ===")
-    println("关键词: $keyword")
-    println("总数: ${response.body.total}")
-    println("结果数: ${response.body.illusts.size}")
-    
-    response.body.illusts.take(3).forEach { illust ->
-        println("- [${illust.id}] ${illust.title} by ${illust.userName}")
-    }
-    
-    // 验证
-    assert(response.error == false)
-    assert(response.body.illusts.isNotEmpty())
-}
-```
-
 ---
 
 ### UserApi - 用户相关 API
@@ -103,24 +57,8 @@ suspend fun testSearchIllust(pixivApi: PixivApi) {
 | `getUserFollowing` | `/ajax/user/{userId}/following` | P2 | ✅ | 用户关注列表 |
 | `getUserFollowers` | `/ajax/user/{userId}/followers` | P2 | ✅ | 用户粉丝列表 |
 | `getRecommendUsers` | `/ajax/user/{userId}/recommends` | P2 | ✅ | 推荐用户 |
-
-#### 测试用例示例
-
-```kotlin
-suspend fun testGetUserInfo(pixivApi: PixivApi) {
-    val userId = "123456"  // 替换为真实用户ID
-    val response = pixivApi.userApi.getUserInfo(userId)
-    
-    println("=== 用户信息测试 ===")
-    println("ID: ${response.body.userId}")
-    println("用户名: ${response.body.name}")
-    println("头像: ${response.body.image}")
-    
-    // 验证
-    assert(response.error == false)
-    assert(response.body.userId == userId)
-}
-```
+| `followUser` | `POST /bookmark_add.php` | P1 | ✅ | 关注用户 |
+| `unfollowUser` | `POST /rpc_group_setting.php` | P1 | ✅ | 取消关注用户 |
 
 ---
 
@@ -133,24 +71,19 @@ suspend fun testGetUserInfo(pixivApi: PixivApi) {
 
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
-| `addIllust` | `POST /bookmark_add.php` | P0 | ✅ | 添加插画收藏，返回 BookmarkAddResponse |
-| `deleteIllust` | `POST /ajax/illusts/bookmarks/delete` | P0 | ✅ | 删除单个插画收藏，返回空数组 |
-| `deleteIllusts` | `POST /ajax/illusts/bookmarks/delete` | P1 | ✅ | 批量删除插画收藏 |
+| `addIllust` | `POST /bookmark_add.php` | P0 | ✅ | 添加插画收藏 |
+| `deleteIllust` | `POST /ajax/illusts/bookmarks/remove` | P0 | ✅ | 删除单个插画收藏 |
+| `deleteIllusts` | `POST /ajax/illusts/bookmarks/remove` | P1 | ✅ | 批量删除插画收藏 |
 | `getIllustBookmarkTags` | `GET /ajax/user/{userId}/illusts/bookmark/tags` | P2 | ✅ | 获取插画收藏标签 |
 
 #### 小说收藏 API
 
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
-| `addNovel` | `POST /novel/bookmark_add.php` | P0 | ✅ | 添加小说收藏，返回 bookmark_id 字符串 |
-| `deleteNovel` | `POST /ajax/novels/bookmarks/delete` | P0 | ✅ | 删除单个小说收藏，返回空数组 |
-| `deleteNovels` | `POST /ajax/novels/bookmarks/delete` | P1 | ✅ | 批量删除小说收藏 |
+| `addNovel` | `POST /novel/bookmark_add.php` | P0 | ✅ | 添加小说收藏 |
+| `deleteNovel` | `POST /ajax/novels/bookmarks/remove` | P0 | ✅ | 删除单个小说收藏 |
+| `deleteNovels` | `POST /ajax/novels/bookmarks/remove` | P1 | ✅ | 批量删除小说收藏 |
 | `getNovelBookmarkTags` | `GET /ajax/user/{userId}/novels/bookmark/tags` | P2 | ✅ | 获取小说收藏标签 |
-
-⚠️ **注意**: 
-- 收藏操作会修改实际数据，测试时请谨慎！
-- 插画和小说的添加接口返回类型不同：插画返回对象，小说返回字符串 bookmark_id
-- 删除接口统一返回空数组 `[]`，需使用 `EmptyArrayResponse` 或 `List<String>` 处理
 
 ---
 
@@ -161,323 +94,159 @@ suspend fun testGetUserInfo(pixivApi: PixivApi) {
 
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
-| `getIllustRanking` | `/ranking.php` | P0 | ✅ | 插画排行榜，通过枚举参数区分 |
-| `getNovelRanking` | `/novel/ranking.php` | P1 | ✅ | 小说排行榜，解析JSON格式数据 |
+| `getIllustRanking` | `/ranking.php` | P0 | ✅ | 插画排行榜 |
+| `getNovelRanking` | `/novel/ranking.php` | P1 | ✅ | 小说排行榜（HTML解析） |
 
-**支持的排行榜模式 (RankingMode 枚举)**:
+---
 
-**一般排行榜**:
-- `DAILY` (daily) - 今日
-- `WEEKLY` (weekly) - 本周
-- `MONTHLY` (monthly) - 本月
-- `ROOKIE` (rookie) - 新人
-- `ORIGINAL` (original) - 原创
-- `DAILY_AI` (daily_ai) - AI生成 ✨ 新增
-- `MALE` (male) - 男性向
-- `FEMALE` (female) - 女性向
+### CommentApi - 评论相关 API
 
-**R-18 排行榜**:
-- `DAILY_R18` (daily_r18) - 今日R-18
-- `WEEKLY_R18` (weekly_r18) - 本周R-18
-- `DAILY_R18_AI` (daily_r18_ai) - AI生成R-18 ✨ 新增
-- `MALE_R18` (male_r18) - 男性向R-18
-- `FEMALE_R18` (female_r18) - 女性向R-18
+> 📁 文件: `shared/data/remote/api/CommentApi.kt`  
+> ✅ 状态: 已集成，已测试
 
-**R-18G 排行榜**:
-- `R18G` (r18g) - R-18G（猎奇向） ✨ 新增
+#### 插画评论 API
 
-**内容类型 (RankingContent 枚举)**:
-- `ALL` (all) - 全部
-- `ILLUST` (illust) - 插画
-- `MANGA` (manga) - 漫画
-- `UGOIRA` (ugoira) - 动图
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `getIllustCommentRoots` | `/ajax/illusts/comments/roots` | P1 | ✅ | 获取插画根评论 |
+| `getCommentReplies` | `/ajax/illusts/comments/replies` | P2 | ✅ | 获取评论回复 |
+| `postIllustComment` | `POST /rpc_post_comment.php` | P1 | ✅ | 发表插画评论 |
+| `deleteIllustComment` | `POST /rpc_delete_comment.php` | P1 | ✅ | 删除插画评论 |
 
-**其他参数**:
-- `page` - 页码
-- `date` - 日期 (格式: yyyyMMdd，可选)
+#### 小说评论 API
 
-#### 小说排行榜实现详情
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `getNovelCommentRoots` | `/ajax/novels/comments/roots` | P1 | ✅ | 获取小说根评论 |
+| `getNovelCommentReplies` | `/ajax/novels/comments/replies` | P2 | ✅ | 获取评论回复 |
+| `postNovelComment` | `POST /novel/rpc_post_comment.php` | P1 | ✅ | 发表小说评论 |
+| `deleteNovelComment` | `POST /novel/rpc_delete_comment.php` | P1 | ✅ | 删除小说评论 |
 
-✅ **已完成**:
-- 从 Next.js 页面的 `__NEXT_DATA__` JSON 中提取数据
-- 解析 50 条小说信息（每页）
-- 完整的数据结构包含:
-  - 基本信息: rank, id, title, novelUrl
-  - 作者信息: userId, userName, profileImageUrl, novelListUrl
-  - 封面图片: coverImageUrl
-  - 统计数据: characterCount, bookmarkCount
-  - 标签列表: tags[]
-  - 简介: caption
-  - 系列信息: series (seriesId, seriesTitle, seriesUrl)
-  - **收藏状态**: isBookmarked, bookmarkId, bookmarkRestrict
-  - **阅读进度**: marker (书签位置)
+---
 
-**解析器实现**:
-- 📁 `NovelRankingParser.kt` - 从 HTML 中提取 `<script id="__NEXT_DATA__">` 的 JSON
-- 📁 `NovelRankingDto.kt` - 完整的数据类定义
-- JSON 路径: `props.pageProps.assign.display_a.rank_a[]`
-- 支持收藏和阅读进度信息
+### NovelApi - 小说相关 API
+
+> 📁 文件: `shared/data/remote/api/NovelApi.kt`  
+> ✅ 状态: 已集成，已测试
+
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `getNovelDetail` | `/ajax/novel/{novelId}` | P0 | ✅ | 小说详情 |
+| `getNovelBookmarkData` | `/ajax/novel/{novelId}/bookmarkData` | P1 | ✅ | 小说收藏数据 |
+| `searchNovel` | `/ajax/search/novels/{keyword}` | P0 | ✅ | 搜索小说 |
+| `getNovelDiscovery` | `/ajax/discovery/novels` | P1 | ✅ | 发现页小说 |
+| `getNovelFollowLatest` | `/ajax/novel/follow_latest` | P1 | ✅ | 关注作者最新小说 |
+
+---
+
+### NovelSeriesApi - 小说系列相关 API
+
+> 📁 文件: `shared/data/remote/api/NovelSeriesApi.kt`  
+> ✅ 状态: 已集成，已测试
+
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `getDetail` | `/ajax/novel/series/{seriesId}` | P0 | ✅ | 系列详情 |
+| `getContents` | `/ajax/novel/series_content/{seriesId}` | P0 | ✅ | 系列内容列表 |
+| `getTitles` | `/ajax/novel/series/{seriesId}/content_titles` | P1 | ✅ | 系列标题列表 |
+| `watch` | `POST /ajax/novel/series/{seriesId}/watch` | P1 | ✅ | 追更系列 |
+| `unwatch` | `POST /ajax/novel/series/{seriesId}/unwatch` | P1 | ✅ | 取消追更 |
 
 ⚠️ **注意**: 
-- **插画排行榜**: 返回 JSON 格式 (RankingResponse)
-- **小说排行榜**: 返回 HTML，但已实现 JSON 提取解析器 (NovelRankingResponse)
-- 使用类型安全的枚举参数替代字符串
-- 删除了所有便捷封装方法 (getDailyRanking 等)，统一使用主方法
-
-#### 测试用例示例
-
-```kotlin
-// 1. 测试插画排行榜
-suspend fun testGetIllustRanking(pixivApi: PixivApi) {
-    val mode = RankingMode.DAILY
-    val response = pixivApi.rankingApi.getIllustRanking(
-        mode = mode,
-        page = 1,
-        content = RankingContent.ALL,
-        date = null
-    )
-    
-    println("=== 插画排行榜测试 ===")
-    println("模式: ${mode.displayName}")
-    println("作品数量: ${response.contents.size}")
-    
-    response.contents.take(3).forEach { item ->
-        println("- [${item.rank}位] ${item.title} by ${item.userName}")
-    }
-    
-    // 验证
-    assert(response.contents.isNotEmpty())
-}
-
-// 2. 测试小说排行榜（含 JSON 解析）
-suspend fun testGetNovelRanking(pixivApi: PixivApi) {
-    val mode = RankingMode.DAILY
-    val response = pixivApi.rankingApi.getNovelRanking(
-        mode = mode,
-        page = 1,
-        content = RankingContent.ALL,
-        date = null
-    )
-    
-    println("=== 小说排行榜测试 ===")
-    println("模式: ${response.mode}")
-    println("日期: ${response.date}")
-    println("小说数量: ${response.novels.size}")
-    println("排名范围: ${response.rankRange}")
-    
-    // 显示前3条小说
-    response.novels.take(3).forEach { novel ->
-        println("\n【${novel.rank}位】${novel.title}")
-        println("  ID: ${novel.novelId}")
-        println("  作者: ${novel.author.userName} (${novel.author.userId})")
-        println("  字数: ${novel.characterCount}")
-        println("  书签: ${novel.bookmarkCount}")
-        println("  标签: ${novel.tags.take(5).joinToString(", ")}")
-        
-        // 检查收藏状态
-        if (novel.isBookmarked) {
-            println("  ⭐ 已收藏 (ID: ${novel.bookmarkId})")
-            novel.marker?.let { println("  📖 阅读进度: $it") }
-            if (novel.bookmarkRestrict == "1") {
-                println("  🔒 私密收藏")
-            }
-        }
-        
-        // 检查系列信息
-        novel.series?.let {
-            println("  📚 系列: ${it.seriesTitle} (${it.seriesId})")
-        }
-    }
-    
-    // 验证
-    assert(response.novels.size == 50) // 每页固定50条
-    assert(response.novels.all { it.rank > 0 })
-    assert(response.novels.all { it.novelId.isNotBlank() })
-    assert(response.novels.all { it.title.isNotBlank() })
-}
-```
+- DTO 已完全重构以匹配实际响应
+- `watch` 和 `unwatch` 需要发送空 JSON 对象 `{}`
+- 所有方法已通过测试验证
 
 ---
 
-## 🛠️ 测试工具实现方案
+### TagApi - 标签相关 API
 
-### 方案 1: 调试测试页面 (推荐)
+> 📁 文件: `shared/data/remote/api/TagApi.kt`  
+> ✅ 状态: 已集成，已测试
 
-创建一个专门的测试页面 `ApiTestScreen`，包含：
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `getSuggestByWord` | `/ajax/tags/suggest_by_word` | P1 | ✅ | 添加标签时的建议 |
+| `getSearchSuggestion` | `/ajax/search/suggestion` | P1 | ✅ | 点击搜索框时触发 |
+| `getSearchSuggest` | `/rpc/cps.php` | P1 | ✅ | RPC 标签搜索建议 |
+| `getTagInfo` | `/ajax/tags/{tag}` | P2 | ✅ | 标签信息 |
 
-1. **API 选择器**: 选择要测试的 API 模块和方法
-2. **参数输入**: 动态输入测试参数
-3. **执行按钮**: 调用 API
-4. **结果展示**: 显示原始 JSON 和格式化结果
-5. **日志面板**: 显示请求/响应日志
-
-```kotlin
-// composeApp/ui/screens/debug/ApiTestScreen.kt
-class ApiTestScreen : Screen {
-    @Composable
-    override fun Content() {
-        val viewModel: ApiTestViewModel = koinInject()
-        val state by viewModel.state.collectAsState()
-        
-        Column {
-            // API 选择
-            ApiSelector(
-                selectedModule = state.selectedModule,
-                selectedMethod = state.selectedMethod,
-                onSelect = { module, method -> 
-                    viewModel.selectApi(module, method) 
-                }
-            )
-            
-            // 参数输入
-            ParameterInputs(
-                parameters = state.parameters,
-                onParameterChange = { key, value ->
-                    viewModel.updateParameter(key, value)
-                }
-            )
-            
-            // 执行按钮
-            Button(
-                onClick = { viewModel.executeTest() },
-                enabled = !state.isLoading
-            ) {
-                Text("执行测试")
-            }
-            
-            // 结果展示
-            TestResultView(
-                result = state.result,
-                error = state.error
-            )
-        }
-    }
-}
-```
-
-### 方案 2: 单元测试套件
-
-在 `shared/src/commonTest` 中创建测试类：
-
-```kotlin
-// shared/src/commonTest/kotlin/com/projectu/shared/api/PixivApiTest.kt
-class PixivApiTest {
-    private lateinit var pixivApi: PixivApi
-    
-    @BeforeTest
-    fun setup() {
-        val phpSessionId = System.getenv("PIXIV_PHPSESSID") 
-            ?: error("请设置 PIXIV_PHPSESSID 环境变量")
-        
-        pixivApi = PixivApi.create(
-            httpClient = NetworkClient.create(CIO.create()),
-            phpSessionId = phpSessionId
-        )
-    }
-    
-    @Test
-    fun testGetIllustDetail() = runBlocking {
-        val response = pixivApi.illustApi.getIllustDetail("102814610")
-        assert(response.error == false)
-        assert(response.body.id == "102814610")
-    }
-    
-    // ... 更多测试
-}
-```
-
-### 方案 3: 命令行测试脚本
-
-创建 Kotlin 脚本用于快速测试：
-
-```kotlin
-// scripts/test-pixiv-api.main.kts
-import com.projectu.shared.data.remote.api.PixivApi
-import com.projectu.shared.util.NetworkClient
-import io.ktor.client.engine.cio.*
-import kotlinx.coroutines.runBlocking
-
-val phpSessionId = System.getenv("PIXIV_PHPSESSID") 
-    ?: error("请设置 PIXIV_PHPSESSID 环境变量")
-
-val pixivApi = PixivApi.create(
-    httpClient = NetworkClient.create(CIO.create()),
-    phpSessionId = phpSessionId
-)
-
-runBlocking {
-    // 测试作品详情
-    println("=== 测试作品详情 ===")
-    val detail = pixivApi.illustApi.getIllustDetail("102814610")
-    println("标题: ${detail.body.title}")
-    
-    // 测试搜索
-    println("\n=== 测试搜索 ===")
-    val search = pixivApi.illustApi.searchIllust("初音ミク")
-    println("结果数: ${search.body.illusts.size}")
-}
-```
+⚠️ **注意**: 
+- `TagCandidate` DTO 已修复（illustCount, totalCount, suggestType）
+- `TagInfoBody` 已重构，包含完整的翻译信息（en, ja, en_new, ja_new）
+- **新增** `getSearchSuggestion`: 返回热门标签、推荐标签、我的收藏标签、标签翻译、缩略图预览
+  - 支持模式: `all`(全部作品), `r18`(R18作品)
+  - 包含 DTO: SearchSuggestionBody, PopularTags, TagTranslationInfo, ThumbnailInfo, BookmarkData
+- **新增** `getSearchSuggest`: RPC 接口，输入关键字时的实时搜索建议
 
 ---
 
-## 📝 测试记录模板
+### MarkerApi - 阅读标记相关 API
 
-为每个 API 创建测试记录：
+> 📁 文件: `shared/data/remote/api/MarkerApi.kt`  
+> ✅ 状态: 已集成并测试完成
 
-```markdown
-### getIllustDetail 测试记录
-
-**测试时间**: 2025-10-30  
-**测试环境**: Android / Desktop  
-**测试参数**: 
-- illustId: `102814610`
-
-**预期行为**:
-- 返回作品详细信息
-- 包含标题、作者、图片URL等
-
-**实际结果**:
-- ✅ 接口调用成功
-- ✅ 返回数据格式正确
-- ⚠️ 发现问题: `xxxField` 字段类型与定义不符
-
-**需要修复**:
-1. 修改 `IllustDetailDto.kt` 中 `xxxField` 的类型
-2. 更新 Mapper 逻辑
-
----
-```
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `addNovelMarker` | `POST /ajax/novel/markers/add` | P2 | ✅ | 添加小说阅读标记 |
+| `deleteNovelMarker` | `POST /ajax/novel/markers/delete` | P2 | ✅ | 删除小说阅读标记 |
+| `getNovelMarkerList` | `/ajax/novel/markers` | P2 | ✅ | 获取小说阅读标记列表 |
 
 ---
 
-## 🚀 测试执行步骤
+## 📊 测试进度追踪
 
-### 阶段 1: P0 高优先级 API (必须)
+| 模块 | 总方法数 | 已测试 | 通过 | 失败 | 进度 |
+|------|---------|--------|------|------|------|
+| IllustApi | 6 | 6 | 6 | 0 | 100% |
+| UserApi | 9 | 9 | 9 | 0 | 100% |
+| BookmarkApi | 8 | 8 | 8 | 0 | 100% |
+| RankingApi | 2 | 2 | 2 | 0 | 100% |
+| CommentApi | 8 | 8 | 8 | 0 | 100% |
+| NovelApi | 5 | 5 | 5 | 0 | 100% |
+| NovelSeriesApi | 5 | 5 | 5 | 0 | 100% |
+| TagApi | 4 | 4 | 4 | 0 | 100% |
+| MarkerApi | 3 | 3 | 3 | 0 | 100% |
+| **总计** | **50** | **50** | **50** | **0** | **100%** |
 
-1. **IllustApi**
-   - ✅ `getIllustDetail` - 作品详情 (核心功能)
-   - ✅ `searchIllust` - 搜索作品 (核心功能)
+---
 
-2. **UserApi**
-   - ✅ `getUserInfo` - 用户信息
-   - ✅ `getUserFullInfo` - 完整用户信息
+## 🛠️ 内置 API 测试工具
 
-3. **BookmarkApi**
-   - ✅ `addBookmark` - 添加收藏
-   - ✅ `deleteBookmark` - 删除收藏
+项目包含完整的 API 测试模块，位于应用设置中。
 
-4. **RankingApi**
-   - ✅ `getIllustRanking` - 统一排行榜接口 (测试不同mode参数)
+### 功能特性
 
-### 阶段 2: P1 中优先级 API
+1. **API 方法选择器**: 按模块分类浏览所有可用 API
+2. **参数输入面板**: 动态生成参数输入字段，支持下拉选项
+3. **实时测试执行**: 点击执行按钮立即调用 API
+4. **双标签结果展示**:
+   - JSON 标签页：显示原始 JSON 响应
+   - 摘要标签页：格式化的可读摘要
+5. **错误处理**: 完整的错误堆栈跟踪和错误信息
 
-- IllustApi 其他方法
-- UserApi 其他方法
+### 测试步骤
 
-### 阶段 3: P2 低优先级 API
+1. 在应用中进入 **设置** → **API 测试工具**
+2. 选择要测试的 **API 模块**（如 IllustApi、NovelSeriesApi）
+3. 选择具体的 **API 方法**
+4. 填写必需参数，可选参数可留空使用默认值
+5. 点击 **执行测试** 按钮
+6. 查看测试结果：
+   - **摘要** 标签页：格式化的测试结果摘要
+   - **JSON** 标签页：完整的原始 JSON 响应
 
-- Ugoira 相关
-- 其他辅助功能
+### 测试覆盖模块
+
+- ✅ IllustApi - 6 个方法
+- ✅ UserApi - 9 个方法  
+- ✅ BookmarkApi - 8 个方法
+- ✅ RankingApi - 2 个方法
+- ✅ CommentApi - 8 个方法
+- ✅ NovelApi - 5 个方法
+- ✅ NovelSeriesApi - 5 个方法（含 watch/unwatch）
+- ✅ TagApi - 4 个方法（含搜索建议）
+- ✅ MarkerApi - 3 个方法（阅读标记功能）
 
 ---
 
@@ -497,7 +266,6 @@ runBlocking {
 - 访问频率过高
 
 **解决**:
-1. 确保所有请求都包含 `Referer: https://www.pixiv.net/`
 2. 添加请求间隔（建议 1 秒）
 
 ### 3. 数据类型不匹配

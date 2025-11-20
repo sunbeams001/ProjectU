@@ -9,6 +9,7 @@ import com.projectu.shared.data.remote.api.BookmarkTagsResponse
 import com.projectu.shared.data.remote.api.DeleteCommentResult
 import com.projectu.shared.data.remote.api.NovelBookmarkRequest
 import com.projectu.shared.data.remote.api.PixivApi
+import com.projectu.shared.data.remote.api.SearchSuggestionBody
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.RankingMode
 import io.ktor.http.encodeURLPath
@@ -208,6 +209,8 @@ class ApiTestViewModel(
                         
                         // ==================== TagApi ====================
                         ApiMethod.GetTagSuggest -> testGetTagSuggest()
+                        ApiMethod.GetSearchSuggestion -> testGetSearchSuggestion()
+                        ApiMethod.GetTagSearchSuggest -> testGetTagSearchSuggest()
                         ApiMethod.GetTagInfo -> testGetTagInfo()
                         
                         // ==================== MarkerApi ====================
@@ -1993,7 +1996,7 @@ class ApiTestViewModel(
         val response = responseWithRaw.response
         
         val summary = buildString {
-            appendLine("✅ 标签搜索建议获取成功")
+            appendLine("✅ 标签搜索建议获取成功 (Ajax)")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("关键词: $keyword")
             appendLine("错误: ${response.error}")
@@ -2004,6 +2007,171 @@ class ApiTestViewModel(
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetSearchSuggestion() {
+        val mode = getParam("mode").ifEmpty { "all" }
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<SearchSuggestionBody>(
+            "/ajax/search/suggestion",
+            mapOf("mode" to mode)
+        )
+        val response = responseWithRaw.response
+        val body = response.body ?: error("响应体为空")
+        
+        val summary = buildString {
+            appendLine("✅ 搜索建议获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("搜索模式: $mode")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            
+            // 热门标签 (插画)
+            body.popularTags?.illust?.let { illustTags ->
+                if (illustTags.isNotEmpty()) {
+                    appendLine()
+                    appendLine("【热门标签 - 插画】(${illustTags.size} 个)")
+                    illustTags.take(10).forEach { popularTag ->
+                        val translation = body.tagTranslation[popularTag.tag]?.zh?.takeIf { it.isNotEmpty() }
+                            ?: body.tagTranslation[popularTag.tag]?.zhTw?.takeIf { it.isNotEmpty() }
+                        val displayName = if (translation != null) {
+                            "${popularTag.tag} ($translation)"
+                        } else {
+                            popularTag.tag
+                        }
+                        appendLine("  • $displayName - ${popularTag.ids.size} 作品")
+                    }
+                }
+            }
+            
+            // 热门标签 (小说)
+            body.popularTags?.novel?.let { novelTags ->
+                if (novelTags.isNotEmpty()) {
+                    appendLine()
+                    appendLine("【热门标签 - 小说】(${novelTags.size} 个)")
+                    novelTags.take(5).forEach { popularTag ->
+                        val translation = body.tagTranslation[popularTag.tag]?.zh?.takeIf { it.isNotEmpty() }
+                            ?: body.tagTranslation[popularTag.tag]?.zhTw?.takeIf { it.isNotEmpty() }
+                        val displayName = if (translation != null) {
+                            "${popularTag.tag} ($translation)"
+                        } else {
+                            popularTag.tag
+                        }
+                        appendLine("  • $displayName - ${popularTag.ids.size} 作品")
+                    }
+                }
+            }
+            
+            // 推荐标签
+            body.recommendTags?.illust?.let { recommendTags ->
+                if (recommendTags.isNotEmpty()) {
+                    appendLine()
+                    appendLine("【推荐标签】(${recommendTags.size} 个)")
+                    recommendTags.forEach { popularTag ->
+                        val translation = body.tagTranslation[popularTag.tag]?.zh?.takeIf { it.isNotEmpty() }
+                            ?: body.tagTranslation[popularTag.tag]?.zhTw?.takeIf { it.isNotEmpty() }
+                        val displayName = if (translation != null) {
+                            "${popularTag.tag} ($translation)"
+                        } else {
+                            popularTag.tag
+                        }
+                        appendLine("  • $displayName")
+                    }
+                }
+            }
+            
+            // 基于标签推荐
+            body.recommendByTags?.illust?.let { recommendByTags ->
+                if (recommendByTags.isNotEmpty()) {
+                    appendLine()
+                    appendLine("【基于标签推荐】(${recommendByTags.size} 个)")
+                    recommendByTags.take(5).forEach { popularTag ->
+                        val translation = body.tagTranslation[popularTag.tag]?.zh?.takeIf { it.isNotEmpty() }
+                            ?: body.tagTranslation[popularTag.tag]?.zhTw?.takeIf { it.isNotEmpty() }
+                        val displayName = if (translation != null) {
+                            "${popularTag.tag} ($translation)"
+                        } else {
+                            popularTag.tag
+                        }
+                        appendLine("  • $displayName - ${popularTag.ids.size} 作品")
+                    }
+                }
+            }
+            
+            // 我的收藏标签
+            if (body.myFavoriteTags.isNotEmpty()) {
+                appendLine()
+                appendLine("【我的收藏标签】(${body.myFavoriteTags.size} 个)")
+                body.myFavoriteTags.forEach { favTag ->
+                    val translation = body.tagTranslation[favTag]?.zh?.takeIf { it.isNotEmpty() }
+                        ?: body.tagTranslation[favTag]?.zhTw?.takeIf { it.isNotEmpty() }
+                    val displayName = if (translation != null) {
+                        "$favTag ($translation)"
+                    } else {
+                        favTag
+                    }
+                    appendLine("  • $displayName")
+                }
+            }
+            
+            // 缩略图信息
+            appendLine()
+            appendLine("【缩略图预览】(${body.thumbnails.size} 张)")
+            body.thumbnails.take(3).forEach { thumbnail ->
+                appendLine("  • [${thumbnail.id}] ${thumbnail.title}")
+                appendLine("    作者: ${thumbnail.userName}")
+                appendLine("    标签: ${thumbnail.tags.take(3).joinToString(", ")}")
+                appendLine()
+            }
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetTagSearchSuggest() {
+        val keyword = getParam("keyword")
+        
+        val response = pixivApi.tagApi.getSearchSuggest(keyword)
+        
+        // 手动构建 JSON（因为这不是 PixivResponse 包装的）
+        val rawJson = buildString {
+            appendLine("{")
+            appendLine("  \"candidates\": [")
+            response.candidates.forEachIndexed { index, candidate ->
+                appendLine("    {")
+                appendLine("      \"tag_name\": \"${candidate.tagName}\",")
+                appendLine("      \"access_count\": \"${candidate.accessCount}\",")
+                appendLine("      \"type\": \"${candidate.type}\"")
+                candidate.tagTranslation?.let {
+                    appendLine("      ,\"tag_translation\": \"$it\"")
+                }
+                appendLine("    }${if (index < response.candidates.size - 1) "," else ""}")
+            }
+            appendLine("  ]")
+            appendLine("}")
+        }
+        
+        val summary = buildString {
+            appendLine("✅ 标签搜索建议获取成功 (RPC)")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("关键词: $keyword")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("候选标签数量: ${response.candidates.size}")
+            appendLine()
+            response.candidates.take(5).forEachIndexed { index, candidate ->
+                appendLine("【${index + 1}】 ${candidate.tagName}")
+                appendLine("    访问数: ${candidate.accessCount}")
+                appendLine("    类型: ${candidate.type}")
+                candidate.tagTranslation?.let {
+                    appendLine("    翻译: $it")
+                }
+                appendLine()
+            }
+            if (response.candidates.size > 5) {
+                appendLine("... 还有 ${response.candidates.size - 5} 个候选标签")
+            }
+        }
+        
+        updateResultWithRaw(rawJson, summary)
     }
     
     private suspend fun testGetTagInfo() {
