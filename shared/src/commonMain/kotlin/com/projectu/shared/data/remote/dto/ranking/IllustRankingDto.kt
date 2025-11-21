@@ -1,9 +1,8 @@
-package com.projectu.shared.data.remote.dto.pixiv
+package com.projectu.shared.data.remote.dto.ranking
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -75,19 +74,6 @@ data class RankingContentType(
     val furry: Boolean = false,
     val bl: Boolean = false,
     val yuri: Boolean = false
-)
-
-@Serializable
-data class IllustSeries(
-    val illust_series_id: String,
-    val illust_series_user_id: String,
-    val illust_series_title: String,
-    val illust_series_caption: String,
-    val illust_series_content_count: String,
-    val illust_series_create_datetime: String,
-    val illust_series_content_illust_id: String,
-    val illust_series_content_order: String,
-    val page_url: String
 )
 
 // 自定义序列化器：处理 Boolean 或 Int 的情况

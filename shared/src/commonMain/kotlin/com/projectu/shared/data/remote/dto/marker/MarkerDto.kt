@@ -1,4 +1,4 @@
-package com.projectu.shared.data.remote.dto.novel
+package com.projectu.shared.data.remote.dto.marker
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

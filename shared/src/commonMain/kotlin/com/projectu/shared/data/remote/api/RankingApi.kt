@@ -1,7 +1,7 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.novel.NovelRankingResponse
-import com.projectu.shared.data.remote.dto.pixiv.RankingResponse
+import com.projectu.shared.data.remote.dto.ranking.NovelRankingResponse
+import com.projectu.shared.data.remote.dto.ranking.RankingResponse
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.data.remote.parser.NovelRankingParser

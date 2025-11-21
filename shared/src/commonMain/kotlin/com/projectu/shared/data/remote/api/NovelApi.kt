@@ -1,15 +1,15 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.novel.BookmarkRange
+import com.projectu.shared.data.remote.dto.common.BookmarkRange
+import com.projectu.shared.data.remote.dto.common.PixivResponse
+import com.projectu.shared.data.remote.dto.illust.DiscoveryBody
+import com.projectu.shared.data.remote.dto.illust.FollowLatestBody
+import com.projectu.shared.data.remote.dto.novel.NovelBookmarkStatusBody
 import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
 import com.projectu.shared.data.remote.dto.novel.NovelSearchBody
 import com.projectu.shared.data.remote.dto.novel.NovelSearchData
 import com.projectu.shared.data.remote.dto.novel.NovelSearchItem
 import com.projectu.shared.data.remote.dto.novel.NovelTagInfo
-import com.projectu.shared.data.remote.dto.pixiv.DiscoveryBody
-import com.projectu.shared.data.remote.dto.pixiv.FollowLatestBody
-import com.projectu.shared.data.remote.dto.pixiv.NovelBookmarkStatusBody
-import com.projectu.shared.data.remote.dto.pixiv.PixivResponse
 import io.ktor.http.encodeURLPath
 
 /**

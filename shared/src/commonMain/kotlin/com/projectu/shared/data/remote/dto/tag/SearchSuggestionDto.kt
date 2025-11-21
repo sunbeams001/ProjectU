@@ -1,79 +1,9 @@
-package com.projectu.shared.data.remote.dto.pixiv
+package com.projectu.shared.data.remote.dto.tag
 
+import com.projectu.shared.data.remote.dto.common.BookmarkData
+import com.projectu.shared.data.remote.dto.common.TitleCaptionTranslation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
-/**
- * 标签建议响应体
- */
-@Serializable
-data class TagSuggestBody(
-    val candidates: List<TagCandidate> = emptyList()
-)
-
-/**
- * 标签候选项
- */
-@Serializable
-data class TagCandidate(
-    @SerialName("tag_name") val tagName: String,
-    @SerialName("illust_count") val illustCount: Long = 0,
-    @SerialName("total_count") val totalCount: Long = 0,
-    @SerialName("suggest_type") val suggestType: String? = null
-)
-
-/**
- * 标签搜索建议响应体（来自 /rpc/cps.php）
- */
-@Serializable
-data class TagSearchSuggestBody(
-    val candidates: List<TagSearchCandidate> = emptyList()
-)
-
-/**
- * 标签搜索候选项
- */
-@Serializable
-data class TagSearchCandidate(
-    @SerialName("tag_name") val tagName: String,
-    @SerialName("access_count") val accessCount: String = "0",
-    val type: String,
-    @SerialName("tag_translation") val tagTranslation: String? = null
-)
-
-/**
- * 标签翻译信息
- */
-@Serializable
-data class TagTranslation(
-    val tag: String? = null,
-    @SerialName("abstract") val abstract: String? = null,
-    val url: String? = null
-)
-
-/**
- * 标签信息响应体
- */
-@Serializable
-data class TagInfoBody(
-    val tag: String,
-    @SerialName("abstract") val abstract: String? = null,
-    @SerialName("thumbnail") val thumbnail: String? = null,
-    val en: TagTranslation? = null,
-    @SerialName("en_new") val enNew: TagTranslation? = null,
-    val ja: TagTranslation? = null,
-    @SerialName("ja_new") val jaNew: TagTranslation? = null,
-    @SerialName("is_view_lead_wire") val isViewLeadWire: Boolean = false
-)
-
-/**
- * 添加标签响应体
- */
-@Serializable
-data class AddTagBody(
-    val success: Boolean = false,
-    val message: String? = null
-)
 
 /**
  * 搜索建议响应体（点击搜索框时触发）

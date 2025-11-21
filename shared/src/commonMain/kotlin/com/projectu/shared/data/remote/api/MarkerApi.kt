@@ -1,8 +1,8 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.novel.NovelMarkerBody
-import com.projectu.shared.data.remote.dto.novel.NovelMarkerItem
-import com.projectu.shared.data.remote.dto.novel.NovelMarkerListBody
+import com.projectu.shared.data.remote.dto.marker.NovelMarkerBody
+import com.projectu.shared.data.remote.dto.marker.NovelMarkerItem
+import com.projectu.shared.data.remote.dto.marker.NovelMarkerListBody
 
 /**
  * 小说书签 API

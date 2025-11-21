@@ -1,17 +1,17 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesBody
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesContent
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesContentBody
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesCover
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesCoverUrls
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesFirstEpisode
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesInfo
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesPage
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesThumbnails
-import com.projectu.shared.data.remote.dto.novel.NovelSeriesTitle
-import com.projectu.shared.data.remote.dto.novel.NovelThumbnail
-import com.projectu.shared.data.remote.dto.pixiv.PixivResponse
+import com.projectu.shared.data.remote.dto.common.PixivResponse
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesBody
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesContent
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesContentBody
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesCover
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesCoverUrls
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesFirstEpisode
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesInfo
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesPage
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesThumbnails
+import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesTitle
+import com.projectu.shared.data.remote.dto.novel_series.NovelThumbnail
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 

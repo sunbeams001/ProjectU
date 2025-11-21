@@ -1,7 +1,7 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.pixiv.PixivResponse
-import com.projectu.shared.data.remote.dto.pixiv.PixivResponseWithRaw
+import com.projectu.shared.data.remote.dto.common.PixivResponse
+import com.projectu.shared.data.remote.dto.common.PixivResponseWithRaw
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.submitForm

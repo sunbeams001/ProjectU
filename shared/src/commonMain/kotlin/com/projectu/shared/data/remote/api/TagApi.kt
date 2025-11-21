@@ -1,22 +1,21 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.pixiv.AddTagBody
-import com.projectu.shared.data.remote.dto.pixiv.BookmarkData
-import com.projectu.shared.data.remote.dto.pixiv.PixivResponse
-import com.projectu.shared.data.remote.dto.pixiv.PopularTag
-import com.projectu.shared.data.remote.dto.pixiv.PopularTags
-import com.projectu.shared.data.remote.dto.pixiv.RecommendByTags
-import com.projectu.shared.data.remote.dto.pixiv.RecommendTags
-import com.projectu.shared.data.remote.dto.pixiv.SearchSuggestionBody
-import com.projectu.shared.data.remote.dto.pixiv.TagCandidate
-import com.projectu.shared.data.remote.dto.pixiv.TagInfoBody
-import com.projectu.shared.data.remote.dto.pixiv.TagSearchCandidate
-import com.projectu.shared.data.remote.dto.pixiv.TagSearchSuggestBody
-import com.projectu.shared.data.remote.dto.pixiv.TagSuggestBody
-import com.projectu.shared.data.remote.dto.pixiv.TagTranslation
-import com.projectu.shared.data.remote.dto.pixiv.TagTranslationInfo
-import com.projectu.shared.data.remote.dto.pixiv.ThumbnailInfo
-import com.projectu.shared.data.remote.dto.pixiv.TitleCaptionTranslation
+import com.projectu.shared.data.remote.dto.common.BookmarkData
+import com.projectu.shared.data.remote.dto.common.PixivResponse
+import com.projectu.shared.data.remote.dto.tag.AddTagBody
+import com.projectu.shared.data.remote.dto.tag.PopularTag
+import com.projectu.shared.data.remote.dto.tag.PopularTags
+import com.projectu.shared.data.remote.dto.tag.RecommendByTags
+import com.projectu.shared.data.remote.dto.tag.RecommendTags
+import com.projectu.shared.data.remote.dto.tag.SearchSuggestionBody
+import com.projectu.shared.data.remote.dto.tag.TagCandidate
+import com.projectu.shared.data.remote.dto.tag.TagInfoBody
+import com.projectu.shared.data.remote.dto.tag.TagSearchCandidate
+import com.projectu.shared.data.remote.dto.tag.TagSearchSuggestBody
+import com.projectu.shared.data.remote.dto.tag.TagSuggestBody
+import com.projectu.shared.data.remote.dto.tag.TagTranslation
+import com.projectu.shared.data.remote.dto.tag.TagTranslationInfo
+import com.projectu.shared.data.remote.dto.tag.ThumbnailInfo
 
 /**
  * 标签 API

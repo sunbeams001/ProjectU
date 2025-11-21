@@ -1,12 +1,12 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.pixiv.BookmarkAddResponse
-import com.projectu.shared.data.remote.dto.pixiv.BookmarkRequest
-import com.projectu.shared.data.remote.dto.pixiv.BookmarkTag
-import com.projectu.shared.data.remote.dto.pixiv.BookmarkTagsResponse
-import com.projectu.shared.data.remote.dto.pixiv.EmptyArrayResponse
-import com.projectu.shared.data.remote.dto.pixiv.NovelBookmarkRequest
-import com.projectu.shared.data.remote.dto.pixiv.PixivResponse
+import com.projectu.shared.data.remote.dto.bookmark.BookmarkAddResponse
+import com.projectu.shared.data.remote.dto.bookmark.BookmarkRequest
+import com.projectu.shared.data.remote.dto.bookmark.BookmarkTag
+import com.projectu.shared.data.remote.dto.bookmark.BookmarkTagsResponse
+import com.projectu.shared.data.remote.dto.bookmark.NovelBookmarkRequest
+import com.projectu.shared.data.remote.dto.common.EmptyArrayResponse
+import com.projectu.shared.data.remote.dto.common.PixivResponse
 
 /**
  * 收藏 API

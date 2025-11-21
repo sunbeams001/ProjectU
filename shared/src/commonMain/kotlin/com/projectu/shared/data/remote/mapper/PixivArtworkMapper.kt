@@ -1,7 +1,7 @@
 package com.projectu.shared.data.remote.mapper
 
-import com.projectu.shared.data.remote.dto.pixiv.IllustDetailBody
-import com.projectu.shared.data.remote.dto.pixiv.IllustSimple
+import com.projectu.shared.data.remote.dto.illust.IllustDetailBody
+import com.projectu.shared.data.remote.dto.illust.IllustSimple
 import com.projectu.shared.domain.model.AgeLimit
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.ArtworkType

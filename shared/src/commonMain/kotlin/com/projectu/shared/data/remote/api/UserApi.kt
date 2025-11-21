@@ -1,6 +1,13 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.pixiv.*
+import com.projectu.shared.data.remote.dto.common.PixivResponse
+import com.projectu.shared.data.remote.dto.user.ProfileAllBody
+import com.projectu.shared.data.remote.dto.user.ProfileIllustsBody
+import com.projectu.shared.data.remote.dto.user.UnfollowUserResponse
+import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
+import com.projectu.shared.data.remote.dto.user.UserFollowingBody
+import com.projectu.shared.data.remote.dto.user.UserInfoBody
+import com.projectu.shared.data.remote.dto.user.UserRecommendBody
 
 /**
  * 用户 API

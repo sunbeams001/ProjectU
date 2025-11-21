@@ -1,6 +1,6 @@
 package com.projectu.shared.data.remote.parser
 
-import com.projectu.shared.data.remote.dto.novel.*
+import com.projectu.shared.data.remote.dto.ranking.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray

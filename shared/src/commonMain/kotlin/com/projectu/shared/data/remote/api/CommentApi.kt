@@ -1,12 +1,12 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.pixiv.CommentReply
-import com.projectu.shared.data.remote.dto.pixiv.CommentsBody
-import com.projectu.shared.data.remote.dto.pixiv.DeleteCommentResult
-import com.projectu.shared.data.remote.dto.pixiv.FlexibleStringSerializer
-import com.projectu.shared.data.remote.dto.pixiv.PixivResponse
-import com.projectu.shared.data.remote.dto.pixiv.PostCommentBody
-import com.projectu.shared.data.remote.dto.pixiv.PostCommentResult
+import com.projectu.shared.data.remote.dto.comment.CommentReply
+import com.projectu.shared.data.remote.dto.comment.CommentsBody
+import com.projectu.shared.data.remote.dto.comment.DeleteCommentResult
+import com.projectu.shared.data.remote.dto.comment.FlexibleStringSerializer
+import com.projectu.shared.data.remote.dto.comment.PostCommentBody
+import com.projectu.shared.data.remote.dto.comment.PostCommentResult
+import com.projectu.shared.data.remote.dto.common.PixivResponse
 
 /**
  * 评论 API

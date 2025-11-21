@@ -1,6 +1,15 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.pixiv.*
+import com.projectu.shared.data.remote.dto.common.BookmarkData
+import com.projectu.shared.data.remote.dto.common.PixivResponse
+import com.projectu.shared.data.remote.dto.illust.DiscoveryBody
+import com.projectu.shared.data.remote.dto.illust.FollowLatestBody
+import com.projectu.shared.data.remote.dto.illust.IllustDetailBody
+import com.projectu.shared.data.remote.dto.illust.IllustRecommendBody
+import com.projectu.shared.data.remote.dto.illust.IllustRecommendInitBody
+import com.projectu.shared.data.remote.dto.illust.IllustSearchBody
+import com.projectu.shared.data.remote.dto.illust.LikeBody
+import com.projectu.shared.data.remote.dto.illust.UgoiraMetaBody
 import io.ktor.http.encodeURLPath
 
 /**

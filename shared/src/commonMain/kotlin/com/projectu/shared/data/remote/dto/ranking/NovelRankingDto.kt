@@ -1,4 +1,4 @@
-package com.projectu.shared.data.remote.dto.novel
+package com.projectu.shared.data.remote.dto.ranking
 
 import kotlinx.serialization.Serializable
 
