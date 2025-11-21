@@ -22,14 +22,7 @@ data class PixivConfig(
      * API 主机地址
      * 默认为 https://www.pixiv.net
      */
-    val host: String = "https://www.pixiv.net",
-    
-    /**
-     * 语言设置
-     * 支持：zh(简体中文), zh_tw(繁体中文), en(英文), ja(日文), ko(韩文)
-     * 注意：这个字段现在可以从 AppSettings 的 pixivLanguage 同步
-     */
-    val language: String = "zh"
+    val host: String = "https://www.pixiv.net"
 ) {
     /**
      * 检查配置是否有效

@@ -67,7 +67,7 @@ class RankingApi(private val client: PixivApiClient) {
         date: String? = null
     ): NovelRankingResponse {
         // 构建URL参数
-        val urlBuilder = StringBuilder("${client.host}/novel/ranking.php?lang=${client.lang}")
+        val urlBuilder = StringBuilder("${client.host}/novel/ranking.php?lang=${client.langProvider()}")
         urlBuilder.append("&mode=${mode.value}")
         urlBuilder.append("&p=$page")
         urlBuilder.append("&content=${content.value}")

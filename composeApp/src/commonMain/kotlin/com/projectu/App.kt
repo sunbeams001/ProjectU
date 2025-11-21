@@ -15,6 +15,7 @@ fun App() {
     val localeManager: LocaleManager = koinInject()
     val settingsRepository: SettingsRepository = koinInject()
     val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
+    val pixivConfigStore: com.projectu.shared.data.local.PixivConfigStore = koinInject()
 
     // 等待语言初始化完成
     val isLanguageInitialized by localeManager.isInitialized.collectAsState()
@@ -34,10 +35,13 @@ fun App() {
         }
     }
 
-    // 监听设置变化，同步语言到 LocaleManager
+    // 监听设置变化，同步语言到 LocaleManager 和 PixivConfigStore
     LaunchedEffect(Unit) {
         settingsRepository.getSettings().collect { settings ->
+            // 同步 App 语言到 LocaleManager
             localeManager.setLanguage(settings.appLanguage)
+            // 同步 Pixiv 语言到 PixivConfigStore (仅内存)
+            pixivConfigStore.setLanguageInMemory(settings.pixivLanguage.code)
         }
     }
 

@@ -1,6 +1,5 @@
 package com.projectu.di
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.database.AppDatabase

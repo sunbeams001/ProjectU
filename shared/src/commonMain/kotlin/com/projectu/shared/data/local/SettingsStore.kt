@@ -57,7 +57,8 @@ class SettingsStore(
     }
     
     /**
-     * 设置 Pixiv 语言
+     * 设置 Pixiv API 语言偏好
+     * 支持：简体中文、繁体中文、英语、日语、韩语、泰语、马来语
      */
     suspend fun setPixivLanguage(language: PixivLanguage) {
         settingsDao.updatePixivLanguage(language.name)

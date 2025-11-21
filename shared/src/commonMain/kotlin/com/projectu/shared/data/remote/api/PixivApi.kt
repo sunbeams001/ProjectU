@@ -88,7 +88,7 @@ class PixivApi(
                 phpSessionId = phpSessionId,
                 token = token,
                 host = host,
-                lang = lang,
+                langProvider = { lang },
                 onTokenUpdated = onTokenUpdated
             )
             return PixivApi(client)

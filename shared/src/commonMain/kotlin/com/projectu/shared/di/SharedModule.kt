@@ -43,7 +43,7 @@ val dataStoreModule = module {
  * API 实例会根据 PixivConfigStore 中的凭据动态创建
  */
 val pixivApiModule = module {
-    // Pixiv API Client - 从 PixivConfigStore 读取凭据
+    // Pixiv API Client - 从 PixivConfigStore 读取凭据和语言
     single {
         val pixivConfigStore: PixivConfigStore = get()
         val config = runBlocking { pixivConfigStore.getCurrentConfig() }
@@ -52,7 +52,7 @@ val pixivApiModule = module {
             httpClient = get(),
             phpSessionId = config.phpSessionId.ifBlank { "0_default" }, // 默认值，未登录时使用
             token = config.csrfToken,
-            lang = config.language,
+            langProvider = { pixivConfigStore.getCurrentLanguage() }, // 动态获取语言
             onTokenUpdated = { token ->
                 // 保存获取到的CSRF token
                 pixivConfigStore.setCsrfToken(token)

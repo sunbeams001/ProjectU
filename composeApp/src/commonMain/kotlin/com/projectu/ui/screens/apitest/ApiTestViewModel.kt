@@ -3,13 +3,37 @@ package com.projectu.ui.screens.apitest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.projectu.shared.data.local.PixivConfigStore
-import com.projectu.shared.data.remote.api.BookmarkAddResponse
-import com.projectu.shared.data.remote.api.BookmarkRequest
-import com.projectu.shared.data.remote.api.BookmarkTagsResponse
-import com.projectu.shared.data.remote.api.DeleteCommentResult
-import com.projectu.shared.data.remote.api.NovelBookmarkRequest
 import com.projectu.shared.data.remote.api.PixivApi
-import com.projectu.shared.data.remote.api.SearchSuggestionBody
+import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
+import com.projectu.shared.data.remote.dto.novel.NovelSearchBody
+import com.projectu.shared.data.remote.dto.novel.NovelSeriesBody
+import com.projectu.shared.data.remote.dto.novel.NovelSeriesContentBody
+import com.projectu.shared.data.remote.dto.novel.NovelSeriesTitle
+import com.projectu.shared.data.remote.dto.pixiv.BookmarkAddResponse
+import com.projectu.shared.data.remote.dto.pixiv.BookmarkRequest
+import com.projectu.shared.data.remote.dto.pixiv.BookmarkTagsResponse
+import com.projectu.shared.data.remote.dto.pixiv.CommentsBody
+import com.projectu.shared.data.remote.dto.pixiv.DeleteCommentResult
+import com.projectu.shared.data.remote.dto.pixiv.DiscoveryBody
+import com.projectu.shared.data.remote.dto.pixiv.FollowLatestBody
+import com.projectu.shared.data.remote.dto.pixiv.IllustDetailBody
+import com.projectu.shared.data.remote.dto.pixiv.IllustRecommendBody
+import com.projectu.shared.data.remote.dto.pixiv.IllustRecommendInitBody
+import com.projectu.shared.data.remote.dto.pixiv.IllustSearchBody
+import com.projectu.shared.data.remote.dto.pixiv.NovelBookmarkRequest
+import com.projectu.shared.data.remote.dto.pixiv.NovelBookmarkStatusBody
+import com.projectu.shared.data.remote.dto.pixiv.PostCommentResult
+import com.projectu.shared.data.remote.dto.pixiv.ProfileAllBody
+import com.projectu.shared.data.remote.dto.pixiv.RankingResponse
+import com.projectu.shared.data.remote.dto.pixiv.SearchSuggestionBody
+import com.projectu.shared.data.remote.dto.pixiv.TagInfoBody
+import com.projectu.shared.data.remote.dto.pixiv.TagSuggestBody
+import com.projectu.shared.data.remote.dto.pixiv.UgoiraMetaBody
+import com.projectu.shared.data.remote.dto.pixiv.UserBookmarkBody
+import com.projectu.shared.data.remote.dto.pixiv.UserFollowingBody
+import com.projectu.shared.data.remote.dto.pixiv.UserInfoBody
+import com.projectu.shared.data.remote.dto.pixiv.UserRecommendBody
+import com.projectu.shared.data.remote.model.RankingCategory
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.RankingMode
 import io.ktor.http.encodeURLPath
@@ -18,7 +42,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import kotlin.system.measureTimeMillis
 
 /**
@@ -249,7 +272,7 @@ class ApiTestViewModel(
     private suspend fun testGetIllustDetail() {
         val illustId = getParam("illustId").toLongOrNull() ?: 102814610L
         // 使用 getWithRaw 获取原始 JSON
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.IllustDetailBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<IllustDetailBody>(
             "/ajax/illust/$illustId"
         )
         val response = responseWithRaw.response
@@ -278,7 +301,7 @@ class ApiTestViewModel(
         // URL编码关键词
         val encodedKeyword = keyword.encodeURLPath()
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.IllustSearchBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<IllustSearchBody>(
             "/ajax/search/artworks/$encodedKeyword",
             mapOf(
                 "word" to keyword,
@@ -310,7 +333,7 @@ class ApiTestViewModel(
         val pid = getParam("pid").toLongOrNull() ?: 102814610L
         val limit = getParam("limit").toIntOrNull() ?: 18
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.IllustRecommendInitBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<IllustRecommendInitBody>(
             "/ajax/illust/$pid/recommend/init",
             mapOf("limit" to limit)
         )
@@ -350,7 +373,7 @@ class ApiTestViewModel(
             return
         }
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.IllustRecommendBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<IllustRecommendBody>(
             "/ajax/illust/recommend/illusts",
             mapOf("illust_ids[]" to illustIds)
         )
@@ -378,7 +401,7 @@ class ApiTestViewModel(
         val mode = getParam("mode")
         val limit = getParam("limit").toIntOrNull() ?: 100
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.DiscoveryBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<DiscoveryBody>(
             "/ajax/discovery/artworks",
             mapOf(
                 "mode" to mode,
@@ -404,7 +427,7 @@ class ApiTestViewModel(
     private suspend fun testGetUgoiraMetadata() {
         val illustId = getParam("illustId").toLongOrNull() ?: 44298467L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UgoiraMetaBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<UgoiraMetaBody>(
             "/ajax/illust/$illustId/ugoira_meta"
         )
         val response = responseWithRaw.response
@@ -427,7 +450,7 @@ class ApiTestViewModel(
     private suspend fun testGetUserInfo() {
         val userId = getParam("userId").toLongOrNull() ?: 11L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserInfoBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<UserInfoBody>(
             "/ajax/user/$userId",
             mapOf("full" to 1)
         )
@@ -450,7 +473,7 @@ class ApiTestViewModel(
         val userId = getParam("userId").toLongOrNull() ?: 11L
         
         // 调用 getProfileAll 获取用户的作品概况（作品ID列表等）
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.ProfileAllBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<ProfileAllBody>(
             "/ajax/user/$userId/profile/all"
         )
         val response = responseWithRaw.response
@@ -493,7 +516,7 @@ class ApiTestViewModel(
         val userId = getParam("userId").toLongOrNull() ?: 11L
         
         // 首先获取作品ID列表
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.ProfileAllBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<ProfileAllBody>(
             "/ajax/user/$userId/profile/all"
         )
         val response = responseWithRaw.response
@@ -528,7 +551,7 @@ class ApiTestViewModel(
         )
         
         // 获取带原始JSON的响应用于显示
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserBookmarkBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<UserBookmarkBody>(
             "/ajax/user/$userId/illusts/bookmarks",
             mapOf(
                 "tag" to tag,
@@ -573,7 +596,7 @@ class ApiTestViewModel(
             acceptingRequests = acceptingRequests
         )
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserFollowingBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<UserFollowingBody>(
             "/ajax/user/$userId/following",
             mapOf(
                 "offset" to offset,
@@ -619,7 +642,7 @@ class ApiTestViewModel(
             limit = limit
         )
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserFollowingBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<UserFollowingBody>(
             "/ajax/user/$userId/followers",
             mapOf(
                 "offset" to offset,
@@ -653,7 +676,7 @@ class ApiTestViewModel(
         val workNum = getParam("workNum").toIntOrNull() ?: 3
         val isR18 = getParam("isR18").toBoolean()
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.UserRecommendBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<UserRecommendBody>(
             "/ajax/user/$userId/recommends",
             mapOf(
                 "userNum" to userNum,
@@ -1087,7 +1110,7 @@ class ApiTestViewModel(
         }
         
         // 调用 API
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.RankingResponse>(
+        val responseWithRaw = pixivApi.client.getWithRaw<RankingResponse>(
             "/ranking.php",
             params
         )
@@ -1097,7 +1120,7 @@ class ApiTestViewModel(
             appendLine("✅ ${mode.displayName}排行榜 获取成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("模式: ${mode.value} (${mode.displayName})")
-            appendLine("分类: ${if (mode.category == com.projectu.shared.data.remote.model.RankingCategory.GENERAL) "一般" else "R-18"}")
+            appendLine("分类: ${if (mode.category == RankingCategory.GENERAL) "一般" else "R-18"}")
             appendLine("页码: $page")
             appendLine("内容类型: ${content.value} (${content.displayName})")
             appendLine("日期: ${date ?: "最新"}")
@@ -1126,7 +1149,7 @@ class ApiTestViewModel(
             appendLine("✅ ${mode.displayName}小说排行榜 获取成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("模式: ${mode.value} (${mode.displayName})")
-            appendLine("分类: ${if (mode.category == com.projectu.shared.data.remote.model.RankingCategory.GENERAL) "一般" else "R-18"}")
+            appendLine("分类: ${if (mode.category == RankingCategory.GENERAL) "一般" else "R-18"}")
             appendLine("页码: $page / ${response.totalPages}")
             appendLine("排名范围: ${response.rankRange}")
             appendLine("日期: ${response.date}")
@@ -1225,7 +1248,7 @@ class ApiTestViewModel(
         val offset = getParam("offset").toIntOrNull() ?: 0
         val limit = getParam("limit").toIntOrNull() ?: 20
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<CommentsBody>(
             "/ajax/illusts/comments/roots",
             mapOf(
                 "illust_id" to illustId,
@@ -1256,7 +1279,7 @@ class ApiTestViewModel(
         val commentId = getParam("commentId")
         val page = getParam("page").toIntOrNull() ?: 1
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<CommentsBody>(
             "/ajax/illusts/comments/replies",
             mapOf(
                 "comment_id" to commentId,
@@ -1302,15 +1325,15 @@ class ApiTestViewModel(
         )
         
         val rawJson = when (result) {
-            is com.projectu.shared.data.remote.api.PostCommentResult.Success -> 
+            is PostCommentResult.Success ->
                 """{"error":false,"message":"","body":{"comment_id":${result.commentId}}}"""
-            is com.projectu.shared.data.remote.api.PostCommentResult.Error -> 
+            is PostCommentResult.Error ->
                 """{"error":true,"message":"${result.message}","body":[]}"""
         }
         
         val summary = buildString {
             when (result) {
-                is com.projectu.shared.data.remote.api.PostCommentResult.Success -> {
+                is PostCommentResult.Success -> {
                     appendLine("✅ 插画评论发布成功")
                     appendLine("━━━━━━━━━━━━━━━━━━━━━")
                     appendLine("作品ID: $illustId")
@@ -1321,7 +1344,7 @@ class ApiTestViewModel(
                     appendLine("━━━━━━━━━━━━━━━━━━━━━")
                     appendLine("评论ID: ${result.commentId}")
                 }
-                is com.projectu.shared.data.remote.api.PostCommentResult.Error -> {
+                is PostCommentResult.Error -> {
                     appendLine("❌ 插画评论发布失败")
                     appendLine("━━━━━━━━━━━━━━━━━━━━━")
                     appendLine("作品ID: $illustId")
@@ -1387,7 +1410,7 @@ class ApiTestViewModel(
         val offset = getParam("offset").toIntOrNull() ?: 0
         val limit = getParam("limit").toIntOrNull() ?: 20
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<CommentsBody>(
             "/ajax/novels/comments/roots",
             mapOf(
                 "novel_id" to novelId,
@@ -1418,7 +1441,7 @@ class ApiTestViewModel(
         val commentId = getParam("commentId")
         val page = getParam("page").toIntOrNull() ?: 1
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.CommentsBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<CommentsBody>(
             "/ajax/novels/comments/replies",
             mapOf(
                 "comment_id" to commentId,
@@ -1464,15 +1487,15 @@ class ApiTestViewModel(
         )
         
         val rawJson = when (result) {
-            is com.projectu.shared.data.remote.api.PostCommentResult.Success -> 
+            is PostCommentResult.Success ->
                 """{"error":false,"message":"","body":{"comment_id":${result.commentId}}}"""
-            is com.projectu.shared.data.remote.api.PostCommentResult.Error -> 
+            is PostCommentResult.Error ->
                 """{"error":true,"message":"${result.message}","body":[]}"""
         }
         
         val summary = buildString {
             when (result) {
-                is com.projectu.shared.data.remote.api.PostCommentResult.Success -> {
+                is PostCommentResult.Success -> {
                     appendLine("✅ 小说评论发布成功")
                     appendLine("━━━━━━━━━━━━━━━━━━━━━")
                     appendLine("小说ID: $novelId")
@@ -1483,7 +1506,7 @@ class ApiTestViewModel(
                     appendLine("━━━━━━━━━━━━━━━━━━━━━")
                     appendLine("评论ID: ${result.commentId}")
                 }
-                is com.projectu.shared.data.remote.api.PostCommentResult.Error -> {
+                is PostCommentResult.Error -> {
                     appendLine("❌ 小说评论发布失败")
                     appendLine("━━━━━━━━━━━━━━━━━━━━━")
                     appendLine("小说ID: $novelId")
@@ -1549,7 +1572,7 @@ class ApiTestViewModel(
     private suspend fun testGetNovelDetail() {
         val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelDetailBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<NovelDetailBody>(
             "/ajax/novel/$novelId"
         )
         val response = responseWithRaw.response
@@ -1571,7 +1594,7 @@ class ApiTestViewModel(
     private suspend fun testGetNovelBookmarkData() {
         val novelId = getParam("novelId").toLongOrNull() ?: 15809265L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.NovelBookmarkStatusBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<NovelBookmarkStatusBody>(
             "/ajax/novel/$novelId/bookmarkData"
         )
         val response = responseWithRaw.response
@@ -1612,7 +1635,7 @@ class ApiTestViewModel(
         
         val encodedKeyword = keyword.encodeURLPath()
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSearchBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<NovelSearchBody>(
             "/ajax/search/novels/$encodedKeyword",
             mapOf(
                 "word" to keyword,
@@ -1647,7 +1670,7 @@ class ApiTestViewModel(
         val mode = getParam("mode")
         val limit = getParam("limit").toIntOrNull() ?: 100
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.DiscoveryBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<DiscoveryBody>(
             "/ajax/discovery/novels",
             mapOf(
                 "mode" to mode,
@@ -1676,7 +1699,7 @@ class ApiTestViewModel(
         val mode = getParam("mode")
         val page = getParam("page").toIntOrNull() ?: 1
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.pixiv.FollowLatestBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<FollowLatestBody>(
             "/ajax/follow_latest/novel",
             mapOf(
                 "mode" to mode,
@@ -1841,7 +1864,7 @@ class ApiTestViewModel(
     private suspend fun testGetNovelSeriesDetail() {
         val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSeriesBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<NovelSeriesBody>(
             "/ajax/novel/series/$seriesId"
         )
         val response = responseWithRaw.response
@@ -1865,7 +1888,7 @@ class ApiTestViewModel(
         val limit = getParam("limit").toIntOrNull() ?: 30
         val orderBy = getParam("orderBy")
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.NovelSeriesContentBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<NovelSeriesContentBody>(
             "/ajax/novel/series_content/$seriesId",
             mapOf(
                 "limit" to limit,
@@ -1894,7 +1917,7 @@ class ApiTestViewModel(
     private suspend fun testGetNovelSeriesTitles() {
         val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L
         
-        val responseWithRaw = pixivApi.client.getWithRaw<List<com.projectu.shared.data.remote.api.NovelSeriesTitle>>(
+        val responseWithRaw = pixivApi.client.getWithRaw<List<NovelSeriesTitle>>(
             "/ajax/novel/series/$seriesId/content_titles"
         )
         val response = responseWithRaw.response
@@ -1989,7 +2012,7 @@ class ApiTestViewModel(
     private suspend fun testGetTagSuggest() {
         val keyword = getParam("keyword")
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.TagSuggestBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<TagSuggestBody>(
             "/ajax/tags/suggest_by_word",
             mapOf("word" to keyword)
         )
@@ -2177,7 +2200,7 @@ class ApiTestViewModel(
     private suspend fun testGetTagInfo() {
         val tag = getParam("tag")
         
-        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.api.TagInfoBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<TagInfoBody>(
             "/ajax/tag/info",
             mapOf("tag" to tag)
         )

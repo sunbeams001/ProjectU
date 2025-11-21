@@ -38,7 +38,8 @@ interface SettingsDao {
     suspend fun updateAppLanguage(language: String, timestamp: Long = System.currentTimeMillis())
     
     /**
-     * 更新 Pixiv 语言
+     * 更新 Pixiv API 语言偏好
+     * 支持：简体中文(zh)、繁体中文(zh_tw)、英语(en)、日语(ja)、韩语(ko)、泰语(th)、马来语(ms)
      */
     @Query("UPDATE app_settings SET pixivLanguage = :language, updatedAt = :timestamp WHERE id = 1")
     suspend fun updatePixivLanguage(language: String, timestamp: Long = System.currentTimeMillis())

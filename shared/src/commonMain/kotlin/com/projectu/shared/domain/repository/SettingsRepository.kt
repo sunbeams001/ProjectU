@@ -27,7 +27,8 @@ interface SettingsRepository {
     suspend fun updateAppLanguage(language: AppLanguage)
     
     /**
-     * 更新 Pixiv 语言
+     * 更新 Pixiv API 语言偏好
+     * 支持：简体中文、繁体中文、英语、日语、韩语、泰语、马来语
      */
     suspend fun updatePixivLanguage(language: PixivLanguage)
     

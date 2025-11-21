@@ -25,7 +25,7 @@ import kotlinx.serialization.json.encodeToJsonElement
  * @property phpSessionId PHPSESSID cookie值，通过Web端登录后获取
  * @property token POST请求使用的令牌，可选，如果不提供会自动获取
  * @property host API主机地址，默认为 https://www.pixiv.net
- * @property lang 语言设置，默认为中文
+ * @property langProvider 语言提供者函数，动态获取当前语言设置
  * @property onTokenUpdated CSRF token更新回调，用于持久化保存
  */
 class PixivApiClient(
@@ -36,7 +36,7 @@ class PixivApiClient(
     @PublishedApi
     internal val host: String = DEFAULT_HOST,
     @PublishedApi
-    internal val lang: String = DEFAULT_LANG,
+    internal val langProvider: () -> String = { DEFAULT_LANG },
     private val onTokenUpdated: (suspend (String) -> Unit)? = null
 ) {
     companion object {
@@ -78,7 +78,7 @@ class PixivApiClient(
         return httpClient.get("$host$url") {
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
-            parameter("lang", lang)
+            parameter("lang", langProvider())
             queryParams?.forEach { (key, value) ->
                 when (value) {
                     is Collection<*> -> {
@@ -108,7 +108,7 @@ class PixivApiClient(
         val httpResponse = httpClient.get("$host$url") {
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
-            parameter("lang", lang)
+            parameter("lang", langProvider())
             queryParams?.forEach { (key, value) ->
                 when (value) {
                     is Collection<*> -> {
@@ -176,7 +176,7 @@ class PixivApiClient(
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
             header(HEADER_CSRF_TOKEN, csrfToken)
-            parameter("lang", lang)
+            parameter("lang", langProvider())
             params?.forEach { (key, value) ->
                 value?.let { parameter(key, it) }
             }
@@ -201,7 +201,7 @@ class PixivApiClient(
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
             header(HEADER_CSRF_TOKEN, csrfToken)
-            parameter("lang", lang)
+            parameter("lang", langProvider())
             contentType(ContentType.Application.Json)
             setBody(body)
         }.body()
@@ -222,7 +222,7 @@ class PixivApiClient(
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
             header(HEADER_CSRF_TOKEN, csrfToken)
-            parameter("lang", lang)
+            parameter("lang", langProvider())
             contentType(ContentType.Application.Json)
         }.body()
     }
@@ -243,7 +243,7 @@ class PixivApiClient(
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
             header(HEADER_CSRF_TOKEN, csrfToken)
-            parameter("lang", lang)
+            parameter("lang", langProvider())
             contentType(ContentType.Application.Json)
             setBody(body)
         }
@@ -267,7 +267,7 @@ class PixivApiClient(
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
             header(HEADER_CSRF_TOKEN, csrfToken)
-            parameter("lang", lang)
+            parameter("lang", langProvider())
             contentType(ContentType.Application.Json)
         }
         val rawJson = httpResponse.bodyAsText()
@@ -290,7 +290,7 @@ class PixivApiClient(
         return httpClient.submitForm(
             url = "$host$url",
             formParameters = Parameters.build {
-                append("lang", lang)
+                append("lang", langProvider())
                 formParams?.forEach { (key, value) ->
                     append(key, value)
                 }
@@ -317,7 +317,7 @@ class PixivApiClient(
         val httpResponse = httpClient.submitForm(
             url = "$host$url",
             formParameters = Parameters.build {
-                append("lang", lang)
+                append("lang", langProvider())
                 formParams?.forEach { (key, value) ->
                     append(key, value)
                 }
@@ -348,7 +348,7 @@ class PixivApiClient(
         val httpResponse = httpClient.submitForm(
             url = "$host$url",
             formParameters = Parameters.build {
-                append("lang", lang)
+                append("lang", langProvider())
                 formParams?.forEach { (key, value) ->
                     append(key, value)
                 }

@@ -1,6 +1,6 @@
 package com.projectu.shared.data.remote.dto.pixiv
 
-import com.projectu.shared.data.remote.api.NovelSearchItem
+import com.projectu.shared.data.remote.dto.novel.NovelSearchItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -80,19 +80,23 @@ data class IllustUrls(
 data class IllustTags(
     val authorId: String? = null,  // 字符串类型
     val isLocked: Boolean = false,
-    val tags: List<IllustTag>,
+    val tags: List<PixivTag>,
     val writable: Boolean = true
 )
 
+/**
+ * Pixiv 标签信息（插画和小说通用）
+ * 注意：小说API返回的标签不包含 translation 和 romaji 字段
+ */
 @Serializable
-data class IllustTag(
+data class PixivTag(
     val tag: String,
     val locked: Boolean = false,
     val deletable: Boolean = false,
-    val userId: String? = null,  // 字符串类型
+    val userId: String? = null,
     val userName: String? = null,
-    val translation: Map<String, String>? = null,
-    val romaji: String? = null
+    val translation: Map<String, String>? = null,  // 插画专用：标签翻译（小说API不返回）
+    val romaji: String? = null  // 插画专用：罗马音（小说API不返回）
 )
 
 @Serializable

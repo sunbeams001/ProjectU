@@ -53,6 +53,7 @@ enum class AppLanguage(val code: String, val displayName: String) {
 
 /**
  * Pixiv API 语言枚举
+ * 支持简体中文、繁体中文、英语、日语、韩语、泰语、马来语
  */
 enum class PixivLanguage(val code: String, val displayName: String) {
     SIMPLIFIED_CHINESE("zh", "简体中文"),

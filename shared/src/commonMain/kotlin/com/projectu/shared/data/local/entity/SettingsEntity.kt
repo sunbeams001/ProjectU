@@ -22,6 +22,7 @@ data class SettingsEntity(
     
     /**
      * Pixiv API 语言偏好
+     * 支持：简体中文、繁体中文、英语、日语、韩语、泰语、马来语
      */
     val pixivLanguage: String,
     
