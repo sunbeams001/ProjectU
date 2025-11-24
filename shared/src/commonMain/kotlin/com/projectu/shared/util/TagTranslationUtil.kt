@@ -1,6 +1,6 @@
 package com.projectu.shared.util
 
-import com.projectu.shared.data.local.PixivConfigStore
+import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.domain.model.Tag
 
 /**
@@ -21,10 +21,10 @@ import com.projectu.shared.domain.model.Tag
  * }
  * ```
  * 
- * @property configStore Pixiv 配置存储，用于获取当前语言设置
+ * @property settingsCache 设置缓存，用于获取当前 Pixiv 语言偏好
  */
 class TagTranslationUtil(
-    private val configStore: PixivConfigStore
+    private val settingsCache: SettingsCache
 ) {
     
     /**
@@ -101,8 +101,8 @@ class TagTranslationUtil(
         // 获取该标签的翻译映射
         val translations = tagTranslation[originalTag] ?: return null
         
-        // 从配置中获取当前语言
-        val targetLang = configStore.getCurrentLanguage()
+        // 从 SettingsCache 获取当前 Pixiv 语言偏好
+        val targetLang = settingsCache.getPixivLanguageCode()
         
         // 标准化目标语言代码
         val normalizedLang = normalizeLangCode(targetLang)

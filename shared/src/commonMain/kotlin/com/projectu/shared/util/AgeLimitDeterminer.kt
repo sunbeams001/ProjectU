@@ -1,45 +1,19 @@
 package com.projectu.shared.util
 
-import com.projectu.shared.data.local.SettingsStore
+import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.domain.model.AgeLimit
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 /**
  * 年龄限制判定工具
  * 
  * 根据作品的 xRestrict 和 Sanity Level 综合判断年龄限制等级
- * 从 SettingsStore 订阅 R18 Sanity Level 阈值，缓存在内存中避免重复数据库查询
+ * 使用 SettingsCache 获取 R18 Sanity Level 阈值（统一配置缓存框架）
  * 
- * 性能优化：参照 PixivConfigStore 的语言设置设计，使用内存缓存 + Flow 响应式更新
+ * 性能优化：使用 SettingsCache 内存缓存，避免重复数据库查询
  */
 class AgeLimitDeterminer(
-    private val settingsStore: SettingsStore
+    private val settingsCache: SettingsCache
 ) {
-    // 内存缓存阈值，避免每次都查询数据库
-    private val _threshold = MutableStateFlow(6) // 默认值
-    val threshold: StateFlow<Int> = _threshold.asStateFlow()
-    
-    init {
-        // 在后台协程中监听设置变化，实时更新内存缓存
-        CoroutineScope(Dispatchers.Default).launch {
-            settingsStore.settings.collect { settings ->
-                _threshold.value = settings.r18SanityLevelThreshold
-            }
-        }
-    }
-    
-    /**
-     * 获取当前阈值（同步方法，使用内存缓存）
-     */
-    fun getCurrentThreshold(): Int {
-        return _threshold.value
-    }
-    
     /**
      * 确定作品的年龄限制等级
      * 
@@ -53,8 +27,8 @@ class AgeLimitDeterminer(
         sl: Int? = null,
         tags: List<String>? = null
     ): AgeLimit {
-        // 使用内存缓存的阈值，避免每次都查询数据库
-        val threshold = getCurrentThreshold()
+        // 使用 SettingsCache 内存缓存的阈值，避免每次都查询数据库
+        val threshold = settingsCache.getR18SanityLevelThreshold()
         
         // 复合判断：xRestrict 和 Sanity Level 任一达到 R18 标准则为 R18
         val isR18ByXRestrict = xRestrict >= 1

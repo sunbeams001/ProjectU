@@ -1,6 +1,7 @@
 package com.projectu.shared.di
 
 import com.projectu.shared.data.local.PixivConfigStore
+import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.createPixivConfigDataStore
 import com.projectu.shared.data.remote.api.PixivApi
@@ -46,6 +47,11 @@ val dataStoreModule = module {
     single {
         SettingsStore(get())
     }
+    
+    // 应用设置缓存（统一配置缓存管理）
+    single {
+        SettingsCache(get())
+    }
 }
 
 /**
@@ -53,16 +59,17 @@ val dataStoreModule = module {
  * API 实例会根据 PixivConfigStore 中的凭据动态创建
  */
 val pixivApiModule = module {
-    // Pixiv API Client - 从 PixivConfigStore 读取凭据和语言
+    // Pixiv API Client - 从 PixivConfigStore 读取凭据，从 SettingsCache 读取语言
     single {
         val pixivConfigStore: PixivConfigStore = get()
+        val settingsCache: SettingsCache = get()
         val config = runBlocking { pixivConfigStore.getCurrentConfig() }
         
         PixivApiClient(
             httpClient = get(),
             phpSessionId = config.phpSessionId.ifBlank { "0_default" }, // 默认值，未登录时使用
             token = config.csrfToken,
-            langProvider = { pixivConfigStore.getCurrentLanguage() }, // 动态获取语言
+            langProvider = { settingsCache.getPixivLanguageCode() }, // 从 SettingsCache 动态获取语言
             onTokenUpdated = { token ->
                 // 保存获取到的CSRF token
                 pixivConfigStore.setCsrfToken(token)

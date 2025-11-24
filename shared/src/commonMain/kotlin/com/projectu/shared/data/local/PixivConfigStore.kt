@@ -5,16 +5,13 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
  * Pixiv 配置存储
  * 使用 DataStore 进行认证信息持久化存储
- * 语言设置仅在内存中维护，从数据库读取
+ * 负责管理 PHPSESSID 和 CSRF Token 等认证信息
  */
 class PixivConfigStore(
     private val dataStore: DataStore<Preferences>
@@ -23,10 +20,6 @@ class PixivConfigStore(
         private val KEY_PHP_SESSION_ID = stringPreferencesKey("php_session_id")
         private val KEY_CSRF_TOKEN = stringPreferencesKey("csrf_token")
     }
-    
-    // 语言设置 - 仅内存存储，从 AppSettings 同步
-    private val _language = MutableStateFlow("zh")
-    val language: StateFlow<String> = _language.asStateFlow()
     
     /**
      * 配置流
@@ -43,13 +36,6 @@ class PixivConfigStore(
      */
     suspend fun getCurrentConfig(): PixivConfig {
         return config.first()
-    }
-    
-    /**
-     * 获取当前语言
-     */
-    fun getCurrentLanguage(): String {
-        return _language.value
     }
     
     /**
@@ -81,15 +67,6 @@ class PixivConfigStore(
     }
     
     /**
-     * 在内存中设置语言（不持久化）
-     * 由 App.kt 的响应式监听调用，从数据库读取后更新内存状态
-     * @param language Pixiv 语言代码（支持：zh, zh_tw, en, ja, ko, th, ms）
-     */
-    fun setLanguageInMemory(language: String) {
-        _language.value = language
-    }
-    
-    /**
      * 清除配置（登出）
      */
     suspend fun clear() {
@@ -97,7 +74,6 @@ class PixivConfigStore(
             preferences.remove(KEY_PHP_SESSION_ID)
             preferences.remove(KEY_CSRF_TOKEN)
         }
-        // 语言保持不变，不需要重置
     }
     
     /**
