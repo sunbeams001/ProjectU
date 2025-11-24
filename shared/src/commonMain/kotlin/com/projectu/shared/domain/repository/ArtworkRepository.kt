@@ -64,6 +64,17 @@ interface ArtworkRepository {
     suspend fun getUgoiraMetadata(artworkId: Long): Result<UgoiraMetadata>
     
     /**
+     * 获取多页作品的所有页详情
+     * 
+     * 用于更新 Artwork 的 imageUrls.pages 字段
+     * 只应在 pageCount > 1 时调用
+     * 
+     * @param artwork 现有的 Artwork 实例
+     * @return 更新后的 Artwork（pages 字段包含所有页的完整信息）
+     */
+    suspend fun getArtworkPages(artwork: Artwork): Result<Artwork>
+    
+    /**
      * 观察作品详情（Flow版本）
      */
     fun observeArtworkDetail(artworkId: Long): Flow<Artwork>

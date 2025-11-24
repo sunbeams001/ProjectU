@@ -4,6 +4,7 @@ import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.mapper.toArtwork
 import com.projectu.shared.data.remote.mapper.toArtworkList
 import com.projectu.shared.data.remote.mapper.toUgoiraMetadata
+import com.projectu.shared.data.remote.mapper.updatePages
 import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.UgoiraMetadata
@@ -138,6 +139,22 @@ class ArtworkRepositoryImpl(
         }
         val body = response.body ?: throw IllegalStateException("Ugoira元数据为空")
         body.toUgoiraMetadata()
+    }
+
+    override suspend fun getArtworkPages(artwork: Artwork): Result<Artwork> = runCatching {
+        // 检查是否为多页作品
+        if (artwork.pageCount <= 1) {
+            return@runCatching artwork
+        }
+        
+        // 获取多页作品的所有页详情
+        val response = pixivApi.illustApi.getPages(artwork.id.toLong())
+        if (response.error) {
+            throw IllegalStateException(response.message)
+        }
+        
+        val pages = response.body ?: throw IllegalStateException("多页作品详情为空")
+        artwork.updatePages(pages)
     }
 
     override fun observeArtworkDetail(artworkId: Long): Flow<Artwork> = flow {

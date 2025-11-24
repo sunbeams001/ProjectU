@@ -8,7 +8,7 @@ data class Artwork(
     val title: String,
     val description: String,
     val type: ArtworkType = ArtworkType.ILLUSTRATION,
-    val imageUrls: List<String>,
+    val imageUrls: ArtworkImageUrls,
     val width: Int,
     val height: Int,
     val pageCount: Int,
@@ -38,13 +38,120 @@ data class Artwork(
 )
 
 /**
- * 图片URL集合（用于标准API）
+ * 作品图片 URL 结构
+ * 
+ * 统一使用 PageImageUrls 表示：
+ * - 单页作品：pages 为 null 或只有一页（page=0），使用该页的 URL 和尺寸
+ * - 多页作品：pages 包含所有页的完整 URL（需要调用 getPages 接口获取）
+ * 
+ * @property pages 所有页的图片信息（单页作品只有一页，多页作品有多页）
+ */
+data class ArtworkImageUrls(
+    val pages: List<PageImageUrls>
+) {
+    /**
+     * 获取显示用的最佳 URL
+     * 
+     * 优先级：
+     * 1. 第一页的原图
+     * 2. 第一页的最大尺寸缩略图
+     */
+    fun getBestQualityUrl(): String {
+        val firstPage = pages.firstOrNull()?.urls ?: return ""
+        return firstPage.original
+            ?: firstPage.master1200
+            ?: firstPage.large
+            ?: firstPage.medium
+            ?: firstPage.squareMedium
+    }
+    
+    /**
+     * 获取所有页的原图 URL 列表
+     * 用于多页作品的浏览
+     */
+    fun getAllPageUrls(): List<String> {
+        return pages.mapNotNull { it.urls.original ?: it.urls.master1200 }
+    }
+    
+    /**
+     * 是否有真正的原图（img-original）
+     */
+    fun hasOriginal(): Boolean {
+        return pages.any { it.urls.original != null }
+    }
+    
+    /**
+     * 是否为多页作品
+     */
+    fun isMultiPage(): Boolean = pages.size > 1
+}
+
+/**
+ * 图片 URL 集合（统一所有尺寸级别）
+ * 
+ * 尺寸级别映射（按质量从小到大）：
+ * 
+ * **API 字段 → Domain 字段映射**：
+ * 
+ * | API 接口 | API 字段 | 尺寸 | Domain 字段 |
+ * |---------|---------|------|------------|
+ * | 多页 pages | thumb_mini | 128x128 | mini |
+ * | 详情/发现 | thumb | 250x250 custom-thumb | squareMedium |
+ * | 发现 | 360x360 | 360x360 custom-thumb | medium |
+ * | 详情/发现/多页 | small / 540x540 | 540x540 | large |
+ * | 详情/发现/多页 | regular / 1200x1200 | master1200 | master1200 |
+ * | 详情/多页 | original | 原始尺寸 | original |
+ * 
+ * @property mini 超小缩略图（128x128，仅多页接口）
+ * @property squareMedium 方形中等缩略图（250x250 custom-thumb）
+ * @property medium 中等缩略图（360x360 custom-thumb，仅发现接口）
+ * @property large 大缩略图（540x540）
+ * @property master1200 最大缩略图（img-master/master1200）
+ * @property original 原图 URL（img-original，仅详情和多页接口）
  */
 data class ImageUrls(
+    val mini: String? = null,
     val squareMedium: String,
-    val medium: String,
-    val large: String,
-    val original: String
+    val medium: String? = null,
+    val large: String? = null,
+    val master1200: String? = null,
+    val original: String? = null
+) {
+    /**
+     * 获取最佳质量的可用 URL
+     */
+    fun getBestAvailable(): String {
+        return original ?: master1200 ?: large ?: medium ?: squareMedium
+    }
+}
+
+/**
+ * 多页作品的单页图片信息
+ * 
+ * 真实 API 响应示例（/ajax/illust/{pid}/pages）：
+ * ```json
+ * {
+ *   "urls": {
+ *     "thumb_mini": "https://i.pximg.net/c/128x128/img-master/...",
+ *     "small": "https://i.pximg.net/c/540x540_70/img-master/...",
+ *     "regular": "https://i.pximg.net/img-master/.../p0_master1200.jpg",
+ *     "original": "https://i.pximg.net/img-original/.../p0.png"
+ *   },
+ *   "width": 1536,
+ *   "height": 1024
+ * }
+ * ```
+ * 
+ * @property page 页码（从 0 开始）
+ * @property urls 该页的多尺寸 URL
+ * @property width 图片宽度（像素）
+ * @property height 图片高度（像素）
+ */
+data class PageImageUrls(
+    val page: Int,
+    val urls: ImageUrls,
+    val width: Int,
+    val height: Int
 )
 
 /**

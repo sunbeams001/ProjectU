@@ -9,6 +9,7 @@ import com.projectu.shared.data.remote.dto.illust.IllustRecommendBody
 import com.projectu.shared.data.remote.dto.illust.IllustRecommendInitBody
 import com.projectu.shared.data.remote.dto.illust.IllustSearchBody
 import com.projectu.shared.data.remote.dto.illust.LikeBody
+import com.projectu.shared.data.remote.dto.illust.PageInfo
 import com.projectu.shared.data.remote.dto.illust.UgoiraMetaBody
 import io.ktor.http.encodeURLPath
 
@@ -32,6 +33,18 @@ class IllustApi(private val client: PixivApiClient) {
      */
     suspend fun getBookmarkData(pid: Long): PixivResponse<BookmarkData> {
         return client.get("/ajax/illust/$pid/bookmarkData")
+    }
+
+    /**
+     * 查询多页插画的所有页面详情
+     * 
+     * 用于获取多页作品（漫画）的每一页原图 URL
+     * 
+     * @param pid 作品ID
+     * @return 页面列表，每个元素包含该页的各种尺寸图片 URL
+     */
+    suspend fun getPages(pid: Long): PixivResponse<List<PageInfo>> {
+        return client.get("/ajax/illust/$pid/pages")
     }
 
     /**

@@ -98,6 +98,16 @@ sealed class ApiMethod(
         priority = 2
     )
     
+    object GetIllustPages : ApiMethod(
+        module = ApiModule.ILLUST,
+        methodName = "getIllustPages",
+        displayName = "获取多页作品详情",
+        parameters = listOf(
+            ApiParameter("illustId", "作品ID", "137776727", required = true)
+        ),
+        priority = 0
+    )
+    
     // ==================== UserApi ====================
     
     object GetUserInfo : ApiMethod(
@@ -669,7 +679,7 @@ sealed class ApiMethod(
         fun getAllMethods(): List<ApiMethod> = listOf(
             // IllustApi
             GetIllustDetail, SearchIllust, GetRecommendInit, 
-            GetRecommendIllusts, GetDiscoveryIllust, GetUgoiraMetadata,
+            GetRecommendIllusts, GetDiscoveryIllust, GetUgoiraMetadata, GetIllustPages,
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, 
             GetUserBookmarks, GetUserFollowing, GetUserFollowers,

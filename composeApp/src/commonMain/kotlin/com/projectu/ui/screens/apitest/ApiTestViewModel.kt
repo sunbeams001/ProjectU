@@ -16,6 +16,7 @@ import com.projectu.shared.data.remote.dto.illust.IllustDetailBody
 import com.projectu.shared.data.remote.dto.illust.IllustRecommendBody
 import com.projectu.shared.data.remote.dto.illust.IllustRecommendInitBody
 import com.projectu.shared.data.remote.dto.illust.IllustSearchBody
+import com.projectu.shared.data.remote.dto.illust.PageInfo
 import com.projectu.shared.data.remote.dto.illust.UgoiraMetaBody
 import com.projectu.shared.data.remote.dto.bookmark.NovelBookmarkRequest
 import com.projectu.shared.data.remote.dto.novel.NovelBookmarkStatusBody
@@ -180,6 +181,7 @@ class ApiTestViewModel(
                         ApiMethod.GetRecommendIllusts -> testGetRecommendIllusts()
                         ApiMethod.GetDiscoveryIllust -> testGetDiscoveryIllust()
                         ApiMethod.GetUgoiraMetadata -> testGetUgoiraMetadata()
+                        ApiMethod.GetIllustPages -> testGetIllustPages()
                         
                         // ==================== UserApi ====================
                         ApiMethod.GetUserInfo -> testGetUserInfo()
@@ -440,6 +442,48 @@ class ApiTestViewModel(
             appendLine("消息: ${response.message}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetIllustPages() {
+        val illustId = getParam("illustId").toLongOrNull() ?: 137776727L
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<List<PageInfo>>(
+            "/ajax/illust/$illustId/pages"
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 多页作品详情获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("作品ID: $illustId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            val pages = response.body
+            if (pages != null) {
+                appendLine("页数: ${pages.size}")
+                appendLine()
+                pages.forEachIndexed { index, page ->
+                    appendLine("📄 第 ${index + 1} 页:")
+                    appendLine("  尺寸: ${page.width} x ${page.height}")
+                    appendLine("  📐 完整 URL 级别:")
+                    appendLine("    • thumb_mini (128x128):")
+                    appendLine("      ${page.urls.thumb_mini}")
+                    appendLine("    • small (540x540):")
+                    appendLine("      ${page.urls.small}")
+                    appendLine("    • regular (master1200):")
+                    appendLine("      ${page.urls.regular}")
+                    appendLine("    • original (原图 ${page.width}x${page.height}):")
+                    appendLine("      ${page.urls.original}")
+                    if (index < pages.size - 1) appendLine()
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("💡 提示: 每页都有 4 个级别的 URL (mini/small/regular/original)")
+            appendLine("请查看 JSON 标签页查看完整数据")
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)
