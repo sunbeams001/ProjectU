@@ -99,8 +99,17 @@
     
     <!-- Ugoira -->
     <string name="ugoira_play">재생</string>
-    <string name="ugoira_pause">일시정지</string>
+    <string name="ugoira_pause">일시 정지</string>
     <string name="ugoira_speed">속도</string>
-    <string name="ugoira_downloading">우고이라 다운로드 중...</string>
+    <string name="ugoira_downloading">움직이는 읽러오기 중...</string>
+    
+    <!-- Settings - Content Filter -->
+    <string name="settings_content_filter">콘텐츠 필터</string>
+    <string name="settings_r18_sanity_threshold">R18 Sanity Level 임계값</string>
+    <string name="settings_r18_sanity_threshold_desc">Sanity Level ≥ 이 값인 작품은 R18로 표시됩니다</string>
+    <string name="settings_r18_sanity_level_safe">안전 (0–1)</string>
+    <string name="settings_r18_sanity_level_normal">일반 (2–3)</string>
+    <string name="settings_r18_sanity_level_suggestive">선정적 (4–5)</string>
+    <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
 </resources>
 

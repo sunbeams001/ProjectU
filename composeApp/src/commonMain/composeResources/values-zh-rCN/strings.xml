@@ -132,5 +132,14 @@
     <string name="settings_phpsessid_warning">⚠️ 修改后将立即生效，请确保输入正确</string>
     <string name="settings_logout_confirm_title">确认退出登录</string>
     <string name="settings_logout_confirm_message">退出后需要重新输入 PHPSESSID 才能使用 Pixiv 功能</string>
+    
+    <!-- Settings - Content Filter -->
+    <string name="settings_content_filter">内容过滤</string>
+    <string name="settings_r18_sanity_threshold">R18 健全度阈值</string>
+    <string name="settings_r18_sanity_threshold_desc">健全度 ≥ 此值的作品将被标记为 R18</string>
+    <string name="settings_r18_sanity_level_safe">安全 (0–1)</string>
+    <string name="settings_r18_sanity_level_normal">正常 (2–3)</string>
+    <string name="settings_r18_sanity_level_suggestive">暗示性 (4–5)</string>
+    <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
 </resources>
 

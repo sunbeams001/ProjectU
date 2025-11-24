@@ -22,7 +22,7 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         UgoiraCacheEntity::class,
         SettingsEntity::class
     ],
-    version = 2, // 增加版本号以支持新添加的SettingsEntity
+    version = 3, // 版本3: 在SettingsEntity中添加r18SanityLevelThreshold字段
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)

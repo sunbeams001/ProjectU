@@ -21,7 +21,20 @@ data class AppSettings(
      * 主题设置
      * 支持：LIGHT(浅色), DARK(深色), SYSTEM(跟随系统)
      */
-    val themeMode: ThemeMode = ThemeMode.SYSTEM
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    
+    /**
+     * R18 Sanity Level 阈值
+     * 当作品的 Sanity Level 达到或超过该值时，将被视为 R18 内容
+     * 
+     * 参考值：
+     * - 2: 一般作品
+     * - 4: 包含轻度裸露
+     * - 6: R18 作品（默认）
+     * 
+     * 范围：0-9
+     */
+    val r18SanityLevelThreshold: Int = 6
 ) {
     companion object {
         /**

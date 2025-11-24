@@ -133,5 +133,14 @@
     <string name="settings_phpsessid_warning">⚠️ Changing PHPSESSID will update your login credentials</string>
     <string name="settings_logout_confirm_title">Logout</string>
     <string name="settings_logout_confirm_message">Are you sure you want to logout? You will need to login again.</string>
+    
+    <!-- Settings - Content Filter -->
+    <string name="settings_content_filter">Content Filter</string>
+    <string name="settings_r18_sanity_threshold">R18 Sanity Level Threshold</string>
+    <string name="settings_r18_sanity_threshold_desc">Artworks with sanity level ≥ this value will be marked as R18</string>
+    <string name="settings_r18_sanity_level_safe">Safe (0–1)</string>
+    <string name="settings_r18_sanity_level_normal">Normal (2–3)</string>
+    <string name="settings_r18_sanity_level_suggestive">Suggestive (4–5)</string>
+    <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
 </resources>
 

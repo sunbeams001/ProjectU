@@ -1,16 +1,21 @@
 package com.projectu.shared.di
 
 import com.projectu.shared.data.local.PixivConfigStore
+import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.createPixivConfigDataStore
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.api.PixivApiClient
 import com.projectu.shared.data.repository.ArtworkRepositoryImpl
 import com.projectu.shared.data.repository.AuthRepositoryImpl
+import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.data.repository.UserRepositoryImpl
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.AuthRepository
+import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.usecase.GetUgoiraUseCase
+import com.projectu.shared.util.AgeLimitDeterminer
+import com.projectu.shared.util.TagTranslationUtil
 import io.ktor.client.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -35,6 +40,11 @@ val dataStoreModule = module {
     // Pixiv 配置存储
     single {
         PixivConfigStore(createPixivConfigDataStore())
+    }
+    
+    // 应用设置存储
+    single {
+        SettingsStore(get())
     }
 }
 
@@ -78,9 +88,18 @@ val repositoryModule = module {
         )
     }
     
+    // 设置仓储
+    single<SettingsRepository> {
+        SettingsRepositoryImpl(get())
+    }
+    
     // 作品仓储
     single<ArtworkRepository> { 
-        ArtworkRepositoryImpl(get()) 
+        ArtworkRepositoryImpl(
+            pixivApi = get(),
+            tagTranslationUtil = get(),
+            ageLimitDeterminer = get()
+        ) 
     }
     
     // 用户仓储
@@ -97,3 +116,13 @@ val useCaseModule = module {
     factory { GetUgoiraUseCase(get()) }
 }
 
+/**
+ * 工具类模块
+ */
+val utilModule = module {
+    // 标签翻译工具
+    single { TagTranslationUtil(get()) }
+    
+    // 年龄限制判定工具
+    single { AgeLimitDeterminer(get()) }
+}

@@ -38,6 +38,12 @@ interface SettingsRepository {
     suspend fun updateThemeMode(mode: ThemeMode)
     
     /**
+     * 更新 R18 Sanity Level 阈值
+     * @param threshold 阈值范围 0-9，默认为 6
+     */
+    suspend fun updateR18SanityLevelThreshold(threshold: Int)
+    
+    /**
      * 更新完整设置
      */
     suspend fun updateSettings(settings: AppSettings)

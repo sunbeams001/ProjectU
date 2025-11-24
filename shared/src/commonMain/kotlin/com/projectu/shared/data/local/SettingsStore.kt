@@ -72,6 +72,14 @@ class SettingsStore(
     }
     
     /**
+     * 设置 R18 Sanity Level 阈值
+     * @param threshold 阈值范围 0-9，默认为 6
+     */
+    suspend fun setR18SanityLevelThreshold(threshold: Int) {
+        settingsDao.updateR18SanityLevelThreshold(threshold.coerceIn(0, 9))
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

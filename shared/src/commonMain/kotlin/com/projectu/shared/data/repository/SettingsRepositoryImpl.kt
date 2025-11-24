@@ -36,6 +36,10 @@ class SettingsRepositoryImpl(
         settingsStore.setThemeMode(mode)
     }
     
+    override suspend fun updateR18SanityLevelThreshold(threshold: Int) {
+        settingsStore.setR18SanityLevelThreshold(threshold)
+    }
+    
     override suspend fun updateSettings(settings: AppSettings) {
         settingsStore.updateSettings(settings)
     }

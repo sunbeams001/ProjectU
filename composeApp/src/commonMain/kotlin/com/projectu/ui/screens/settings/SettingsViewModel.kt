@@ -60,6 +60,20 @@ class SettingsViewModel(
     }
     
     /**
+     * 更新 R18 Sanity Level 阈值
+     * 阈值范围: 0-9
+     * - 0-1: 安全内容
+     * - 2-3: 正常内容
+     * - 4-5: 暗示性内容
+     * - 6-9: R18 内容
+     */
+    fun updateR18SanityLevelThreshold(threshold: Int) {
+        viewModelScope.launch {
+            settingsRepository.updateR18SanityLevelThreshold(threshold)
+        }
+    }
+    
+    /**
      * 重置设置
      */
     fun resetSettings() {

@@ -21,6 +21,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
         com.projectu.shared.di.repositoryModule, // Shared Repository (包括AuthRepository)
         useCaseModule,
         com.projectu.shared.di.useCaseModule,    // Shared UseCase
+        com.projectu.shared.di.utilModule,       // Shared Util (包括TagTranslationUtil)
         viewModelModule
     )
 }

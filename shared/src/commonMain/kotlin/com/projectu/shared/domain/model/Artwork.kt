@@ -17,7 +17,7 @@ data class Artwork(
     val userName: String,
     val userProfileImageUrl: String,
     // 标签
-    val tags: List<String>,
+    val tags: List<Tag>,
     // 统计信息
     val viewCount: Int,
     val likeCount: Int,
@@ -28,6 +28,7 @@ data class Artwork(
     // 状态
     val isBookmarked: Boolean = false,
     val isMuted: Boolean = false,
+    val isAiGenerated: Boolean = false,
     // 扩展信息
     val totalView: Int,
     val totalBookmarks: Int,

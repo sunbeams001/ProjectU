@@ -102,5 +102,14 @@
     <string name="ugoira_pause">一時停止</string>
     <string name="ugoira_speed">速度</string>
     <string name="ugoira_downloading">うごイラをダウンロード中...</string>
+    
+    <!-- Settings - Content Filter -->
+    <string name="settings_content_filter">コンテンツフィルター</string>
+    <string name="settings_r18_sanity_threshold">R18健全度しきい値</string>
+    <string name="settings_r18_sanity_threshold_desc">健全度 ≥ この値の作品はR18としてマークされます</string>
+    <string name="settings_r18_sanity_level_safe">安全 (0–1)</string>
+    <string name="settings_r18_sanity_level_normal">通常 (2–3)</string>
+    <string name="settings_r18_sanity_level_suggestive">示唆的 (4–5)</string>
+    <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
 </resources>
 

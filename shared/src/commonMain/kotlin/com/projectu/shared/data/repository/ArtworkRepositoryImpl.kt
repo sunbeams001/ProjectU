@@ -3,10 +3,13 @@ package com.projectu.shared.data.repository
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.mapper.toArtwork
 import com.projectu.shared.data.remote.mapper.toArtworkList
+import com.projectu.shared.data.remote.mapper.toUgoiraMetadata
 import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.UgoiraMetadata
 import com.projectu.shared.domain.repository.ArtworkRepository
+import com.projectu.shared.util.AgeLimitDeterminer
+import com.projectu.shared.util.TagTranslationUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -15,7 +18,9 @@ import kotlinx.coroutines.flow.flow
  * 基于 Pixiv Web API 实现
  */
 class ArtworkRepositoryImpl(
-    private val pixivApi: PixivApi
+    private val pixivApi: PixivApi,
+    private val tagTranslationUtil: TagTranslationUtil,
+    private val ageLimitDeterminer: AgeLimitDeterminer
 ) : ArtworkRepository {
 
     override suspend fun getArtworkDetail(artworkId: Long): Result<Artwork> = runCatching {
@@ -23,7 +28,7 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.toArtwork() ?: throw IllegalStateException("作品详情为空")
+        response.body?.toArtwork(ageLimitDeterminer) ?: throw IllegalStateException("作品详情为空")
     }
 
     override suspend fun getRecommendedArtworks(
@@ -37,7 +42,11 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.thumbnails?.illust?.toArtworkList() ?: emptyList()
+        response.body?.thumbnails?.illust?.toArtworkList(
+            tagTranslationUtil = tagTranslationUtil,
+            tagTranslation = response.body.tagTranslation,
+            ageLimitDeterminer = ageLimitDeterminer
+        ) ?: emptyList()
     }
 
     override suspend fun getFollowingArtworks(
@@ -50,7 +59,11 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.thumbnails?.illust?.toArtworkList() ?: emptyList()
+        response.body?.thumbnails?.illust?.toArtworkList(
+            tagTranslationUtil = tagTranslationUtil,
+            tagTranslation = response.body.tagTranslation,
+            ageLimitDeterminer = ageLimitDeterminer
+        ) ?: emptyList()
     }
 
     override suspend fun searchArtworks(
@@ -68,7 +81,11 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.illustManga?.data?.toArtworkList() ?: emptyList()
+        response.body?.illustManga?.data?.toArtworkList(
+            tagTranslationUtil = tagTranslationUtil,
+            tagTranslation = response.body.tagTranslation,
+            ageLimitDeterminer = ageLimitDeterminer
+        ) ?: emptyList()
     }
 
     override suspend fun getRankingArtworks(
@@ -81,38 +98,7 @@ class ArtworkRepositoryImpl(
             page = page,
             date = date
         )
-        response.contents.map { content ->
-            Artwork(
-                id = content.illust_id.toString(),
-                title = content.title,
-                description = "",
-                type = when (content.illust_type) {
-                    "illustration" -> com.projectu.shared.domain.model.ArtworkType.ILLUSTRATION
-                    "manga" -> com.projectu.shared.domain.model.ArtworkType.MANGA
-                    "ugoira" -> com.projectu.shared.domain.model.ArtworkType.UGOIRA
-                    else -> com.projectu.shared.domain.model.ArtworkType.ILLUSTRATION
-                },
-                imageUrls = listOf(content.url),
-                width = content.width,
-                height = content.height,
-                pageCount = content.illust_page_count.toIntOrNull() ?: 1,
-                userId = content.user_id.toString(),
-                userName = content.user_name,
-                userProfileImageUrl = content.profile_img,
-                tags = content.tags,
-                viewCount = content.view_count,
-                likeCount = content.rating_count,
-                bookmarkCount = 0,
-                commentCount = 0,
-                createdTime = content.date,
-                isBookmarked = false,
-                isMuted = false,
-                totalView = content.view_count,
-                totalBookmarks = 0,
-                ageLimit = com.projectu.shared.domain.model.AgeLimit.ALL_AGE,
-                ugoiraMetadata = null
-            )
-        }
+        response.contents.toArtworkList(ageLimitDeterminer)
     }
 
     override suspend fun addBookmark(
@@ -151,16 +137,7 @@ class ArtworkRepositoryImpl(
             throw IllegalStateException(response.message)
         }
         val body = response.body ?: throw IllegalStateException("Ugoira元数据为空")
-        
-        UgoiraMetadata(
-            zipUrl = body.originalSrc,
-            frames = body.frames.map { frame ->
-                com.projectu.shared.domain.model.UgoiraFrame(
-                    file = frame.file,
-                    delay = frame.delay
-                )
-            }
-        )
+        body.toUgoiraMetadata()
     }
 
     override fun observeArtworkDetail(artworkId: Long): Flow<Artwork> = flow {

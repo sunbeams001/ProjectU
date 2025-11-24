@@ -102,5 +102,14 @@
     <string name="ugoira_pause">暫停</string>
     <string name="ugoira_speed">速度</string>
     <string name="ugoira_downloading">正在下載動圖...</string>
+    
+    <!-- Settings - Content Filter -->
+    <string name="settings_content_filter">內容過濾</string>
+    <string name="settings_r18_sanity_threshold">R18 健全度阈值</string>
+    <string name="settings_r18_sanity_threshold_desc">健全度 ≥ 此值的作品將被標記為 R18</string>
+    <string name="settings_r18_sanity_level_safe">安全 (0–1)</string>
+    <string name="settings_r18_sanity_level_normal">正常 (2–3)</string>
+    <string name="settings_r18_sanity_level_suggestive">暗示性 (4–5)</string>
+    <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
 </resources>
 

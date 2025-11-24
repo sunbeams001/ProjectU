@@ -32,6 +32,12 @@ data class SettingsEntity(
     val themeMode: String,
     
     /**
+     * R18 Sanity Level 阈值
+     * 范围：0-9，默认为 6
+     */
+    val r18SanityLevelThreshold: Int = 6,
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -44,7 +50,8 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
     return SettingsEntity(
         appLanguage = this.appLanguage.name,
         pixivLanguage = this.pixivLanguage.name,
-        themeMode = this.themeMode.name
+        themeMode = this.themeMode.name,
+        r18SanityLevelThreshold = this.r18SanityLevelThreshold
     )
 }
 
@@ -55,6 +62,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
     return com.projectu.shared.data.local.AppSettings(
         appLanguage = AppLanguage.valueOf(this.appLanguage),
         pixivLanguage = PixivLanguage.valueOf(this.pixivLanguage),
-        themeMode = ThemeMode.valueOf(this.themeMode)
+        themeMode = ThemeMode.valueOf(this.themeMode),
+        r18SanityLevelThreshold = this.r18SanityLevelThreshold
     )
 }

@@ -51,6 +51,13 @@ interface SettingsDao {
     suspend fun updateThemeMode(mode: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新 R18 Sanity Level 阈值
+     * @param threshold 阈值范围 0-9，默认为 6
+     */
+    @Query("UPDATE app_settings SET r18SanityLevelThreshold = :threshold, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateR18SanityLevelThreshold(threshold: Int, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

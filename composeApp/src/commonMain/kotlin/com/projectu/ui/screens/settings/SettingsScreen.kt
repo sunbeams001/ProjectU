@@ -51,6 +51,13 @@ import projectu.composeapp.generated.resources.settings_edit_phpsessid
 import projectu.composeapp.generated.resources.settings_phpsessid_input_hint
 import projectu.composeapp.generated.resources.settings_phpsessid_warning
 import projectu.composeapp.generated.resources.login_phpsessid_label
+import projectu.composeapp.generated.resources.settings_content_filter
+import projectu.composeapp.generated.resources.settings_r18_sanity_threshold
+import projectu.composeapp.generated.resources.settings_r18_sanity_threshold_desc
+import projectu.composeapp.generated.resources.settings_r18_sanity_level_safe
+import projectu.composeapp.generated.resources.settings_r18_sanity_level_normal
+import projectu.composeapp.generated.resources.settings_r18_sanity_level_suggestive
+import projectu.composeapp.generated.resources.settings_r18_sanity_level_r18
 import org.koin.compose.koinInject
 
 /**
@@ -78,9 +85,11 @@ class SettingsScreen : Screen {
             isLoggedIn = isLoggedIn,
             currentPhpSessionId = pixivConfig.phpSessionId,
             currentUserId = pixivConfig.getUserId(),
+            currentR18SanityThreshold = settings.r18SanityLevelThreshold,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
             onThemeModeChange = { viewModel.updateThemeMode(it) },
+            onR18SanityThresholdChange = { viewModel.updateR18SanityLevelThreshold(it) },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
             onNavigateBack = { navigator.pop() },
@@ -98,9 +107,11 @@ private fun SettingsScreenContent(
     isLoggedIn: Boolean,
     currentPhpSessionId: String,
     currentUserId: Long?,
+    currentR18SanityThreshold: Int,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
+    onR18SanityThresholdChange: (Int) -> Unit,
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -109,6 +120,7 @@ private fun SettingsScreenContent(
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showR18ThresholdDialog by remember { mutableStateOf(false) }
     var showEditPhpSessionIdDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     
@@ -169,6 +181,26 @@ private fun SettingsScreenContent(
                     subtitle = currentPixivLanguage.displayName,
                     description = stringResource(Res.string.settings_pixiv_language_desc),
                     onClick = { showPixivLanguageDialog = true }
+                )
+            }
+            
+            // 内容过滤设置分组
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_content_filter))
+            }
+            
+            // R18 Sanity Level 阈值设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_r18_sanity_threshold),
+                    subtitle = when (currentR18SanityThreshold) {
+                        in 0..1 -> stringResource(Res.string.settings_r18_sanity_level_safe)
+                        in 2..3 -> stringResource(Res.string.settings_r18_sanity_level_normal)
+                        in 4..5 -> stringResource(Res.string.settings_r18_sanity_level_suggestive)
+                        else -> stringResource(Res.string.settings_r18_sanity_level_r18)
+                    } + " ($currentR18SanityThreshold)",
+                    description = stringResource(Res.string.settings_r18_sanity_threshold_desc),
+                    onClick = { showR18ThresholdDialog = true }
                 )
             }
             
@@ -276,6 +308,18 @@ private fun SettingsScreenContent(
                 showThemeDialog = false
             },
             onDismiss = { showThemeDialog = false }
+        )
+    }
+    
+    // R18 阈值设置对话框
+    if (showR18ThresholdDialog) {
+        R18ThresholdDialog(
+            currentThreshold = currentR18SanityThreshold,
+            onConfirm = { threshold ->
+                onR18SanityThresholdChange(threshold)
+                showR18ThresholdDialog = false
+            },
+            onDismiss = { showR18ThresholdDialog = false }
         )
     }
     
@@ -567,6 +611,83 @@ private fun EditPhpSessionIdDialog(
                         }
                     }
                 }
+            ) {
+                Text(stringResource(Res.string.common_save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * R18 Sanity Level 阈值设置对话框
+ */
+@Composable
+private fun R18ThresholdDialog(
+    currentThreshold: Int,
+    onConfirm: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var threshold by remember { mutableStateOf(currentThreshold) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_r18_sanity_threshold)) },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(Res.string.settings_r18_sanity_threshold_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Slider(
+                            value = threshold.toFloat(),
+                            onValueChange = { value ->
+                                // 四舍五入到最近的整数，确保所有整数值都能选中
+                                threshold = kotlin.math.round(value).toInt()
+                            },
+                            valueRange = 0f..9f,
+                            steps = 8,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        
+                        // 阈值描述
+                        Text(
+                            text = when (threshold) {
+                                in 0..1 -> stringResource(Res.string.settings_r18_sanity_level_safe)
+                                in 2..3 -> stringResource(Res.string.settings_r18_sanity_level_normal)
+                                in 4..5 -> stringResource(Res.string.settings_r18_sanity_level_suggestive)
+                                else -> stringResource(Res.string.settings_r18_sanity_level_r18)
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    
+                    Text(
+                        text = threshold.toString(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(threshold) }
             ) {
                 Text(stringResource(Res.string.common_save))
             }
