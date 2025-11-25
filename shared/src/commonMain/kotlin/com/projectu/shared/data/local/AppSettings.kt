@@ -1,5 +1,7 @@
 package com.projectu.shared.data.local
 
+import com.projectu.shared.domain.model.ImageQuality
+
 /**
  * 应用设置数据模型
  * 存储应用的各项配置信息
@@ -34,7 +36,14 @@ data class AppSettings(
      * 
      * 范围：0-9
      */
-    val r18SanityLevelThreshold: Int = 6
+    val r18SanityLevelThreshold: Int = 6,
+    
+    /**
+     * 插画卡片首选图片质量
+     * 用于列表、瀑布流等场景的缩略图显示
+     * 默认：SQUARE_MEDIUM (250x250)
+     */
+    val preferredImageQuality: ImageQuality = ImageQuality.SQUARE_MEDIUM
 ) {
     companion object {
         /**

@@ -49,6 +49,10 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
             
+            // Ktor (for ImageLoader configuration)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+            
             // Compose Resources多语言 (内置支持)
             implementation(compose.components.resources)
             

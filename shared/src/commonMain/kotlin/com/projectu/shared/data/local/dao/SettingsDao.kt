@@ -58,6 +58,12 @@ interface SettingsDao {
     suspend fun updateR18SanityLevelThreshold(threshold: Int, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新插画卡片首选图片质量
+     */
+    @Query("UPDATE app_settings SET preferredImageQuality = :quality, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updatePreferredImageQuality(quality: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

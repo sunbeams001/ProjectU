@@ -2,6 +2,7 @@ package com.projectu.shared.domain.repository
 
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.data.remote.model.RankingMode
+import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.UgoiraMetadata
 import kotlinx.coroutines.flow.Flow
 
@@ -19,6 +20,16 @@ interface ArtworkRepository {
      * 获取推荐作品
      */
     suspend fun getRecommendedArtworks(page: Int = 1, limit: Int = 30): Result<List<Artwork>>
+    
+    /**
+     * 获取发现插画
+     * @param mode 内容模式（全部/全年龄/R-18）
+     * @param limit 返回数量
+     */
+    suspend fun getDiscoveryIllusts(
+        mode: DiscoveryMode = DiscoveryMode.ALL,
+        limit: Int = 100
+    ): Result<List<Artwork>>
     
     /**
      * 获取关注用户作品

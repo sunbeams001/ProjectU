@@ -7,6 +7,7 @@ import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.AppSettings
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.ui.screens.login.LoginScreen
@@ -70,6 +71,15 @@ class SettingsViewModel(
     fun updateR18SanityLevelThreshold(threshold: Int) {
         viewModelScope.launch {
             settingsRepository.updateR18SanityLevelThreshold(threshold)
+        }
+    }
+    
+    /**
+     * 更新插画卡片首选图片质量
+     */
+    fun updatePreferredImageQuality(quality: ImageQuality) {
+        viewModelScope.launch {
+            settingsRepository.updatePreferredImageQuality(quality)
         }
     }
     

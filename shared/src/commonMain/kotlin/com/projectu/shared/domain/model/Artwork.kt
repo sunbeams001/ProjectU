@@ -26,7 +26,8 @@ data class Artwork(
     // 时间
     val createdTime: String,
     // 状态
-    val isBookmarked: Boolean = false,
+    val bookmarkStatus: BookmarkStatus = BookmarkStatus.NOT_BOOKMARKED,
+    val bookmarkId: String? = null,
     val isMuted: Boolean = false,
     val isAiGenerated: Boolean = false,
     // 扩展信息

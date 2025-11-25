@@ -51,13 +51,13 @@ interface ArtworkDao {
     /**
      * 更新作品收藏状态
      */
-    @Query("UPDATE artworks SET isBookmarked = :isBookmarked WHERE id = :id")
-    suspend fun updateBookmarkStatus(id: String, isBookmarked: Boolean)
+    @Query("UPDATE artworks SET bookmarkStatus = :bookmarkStatus, bookmarkId = :bookmarkId WHERE id = :id")
+    suspend fun updateBookmarkStatus(id: String, bookmarkStatus: String, bookmarkId: String?)
     
     /**
-     * 获取收藏的作品
+     * 获取收藏的作品（包括公开和私人）
      */
-    @Query("SELECT * FROM artworks WHERE isBookmarked = 1 ORDER BY cachedAt DESC")
+    @Query("SELECT * FROM artworks WHERE bookmarkStatus != 'NOT_BOOKMARKED' ORDER BY cachedAt DESC")
     fun getBookmarkedArtworks(): Flow<List<ArtworkEntity>>
 }
 

@@ -19,6 +19,12 @@
     <string name="discovery_search_hint">Search artworks, users...</string>
     <string name="discovery_trending_tags">Trending Tags</string>
     <string name="discovery_recent_searches">Recent Searches</string>
+    <string name="discovery_recommended_users">Recommended Users</string>
+    <string name="discovery_recommended_illusts">Recommended Illusts &amp; Manga</string>
+    <string name="discovery_recommended_novels">Recommended Novels</string>
+    <string name="discovery_mode_all">All</string>
+    <string name="discovery_mode_safe">All Ages</string>
+    <string name="discovery_mode_r18">R-18</string>
     
     <!-- Ranking Screen -->
     <string name="ranking_daily">Daily</string>
@@ -142,5 +148,14 @@
     <string name="settings_r18_sanity_level_normal">Normal (2–3)</string>
     <string name="settings_r18_sanity_level_suggestive">Suggestive (4–5)</string>
     <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
+    
+    <!-- Settings - Image Quality -->
+    <string name="settings_image_quality">Image Quality</string>
+    <string name="settings_preferred_image_quality">Preferred Card Image Quality</string>
+    <string name="settings_preferred_image_quality_desc">Quality for artwork cards in lists and grids</string>
+    <string name="image_quality_square_medium">Standard (250×250)</string>
+    <string name="image_quality_medium">Medium (360×360)</string>
+    <string name="image_quality_large">Large (540×540)</string>
+    <string name="image_quality_master_1200">Master (1200px)</string>
 </resources>
 

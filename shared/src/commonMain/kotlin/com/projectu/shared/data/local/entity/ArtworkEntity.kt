@@ -23,7 +23,8 @@ data class ArtworkEntity(
     val bookmarkCount: Int,
     val likeCount: Int,
     val commentCount: Int,
-    val isBookmarked: Boolean,
+    val bookmarkStatus: String, // BookmarkStatus 的 name
+    val bookmarkId: String?,
     val type: String,
     val ageLimit: String,
     val cachedAt: Long

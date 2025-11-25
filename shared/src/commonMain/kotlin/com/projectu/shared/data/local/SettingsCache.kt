@@ -1,5 +1,6 @@
 package com.projectu.shared.data.local
 
+import com.projectu.shared.domain.model.ImageQuality
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,13 @@ class SettingsCache(
     private val _r18SanityLevelThreshold = MutableStateFlow(6)
     val r18SanityLevelThreshold: StateFlow<Int> = _r18SanityLevelThreshold.asStateFlow()
     
+    /**
+     * 插画卡片首选图片质量缓存
+     * 用于列表和瀑布流中快速获取图片质量设置（高频访问）
+     */
+    private val _preferredImageQuality = MutableStateFlow(ImageQuality.SQUARE_MEDIUM)
+    val preferredImageQuality: StateFlow<ImageQuality> = _preferredImageQuality.asStateFlow()
+    
     // TODO: 后续添加更多配置项缓存
     // private val _someOtherConfig = MutableStateFlow(defaultValue)
     // val someOtherConfig: StateFlow<Type> = _someOtherConfig.asStateFlow()
@@ -53,6 +61,7 @@ class SettingsCache(
                 // 更新所有缓存字段
                 _pixivLanguage.value = settings.pixivLanguage
                 _r18SanityLevelThreshold.value = settings.r18SanityLevelThreshold
+                _preferredImageQuality.value = settings.preferredImageQuality
                 
                 // TODO: 后续添加更多字段的同步
                 // _someOtherConfig.value = settings.someOtherConfig
@@ -81,6 +90,14 @@ class SettingsCache(
      */
     fun getR18SanityLevelThreshold(): Int {
         return _r18SanityLevelThreshold.value
+    }
+    
+    /**
+     * 获取当前插画卡片首选图片质量（同步方法，使用内存缓存）
+     * 用于 ArtworkCard 等组件快速获取图片质量设置
+     */
+    fun getPreferredImageQuality(): ImageQuality {
+        return _preferredImageQuality.value
     }
     
     // TODO: 后续添加更多配置项的 getter

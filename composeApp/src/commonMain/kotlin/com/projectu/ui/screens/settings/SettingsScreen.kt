@@ -21,6 +21,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.ImageQuality
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
 import projectu.composeapp.generated.resources.settings_title
@@ -58,6 +59,13 @@ import projectu.composeapp.generated.resources.settings_r18_sanity_level_safe
 import projectu.composeapp.generated.resources.settings_r18_sanity_level_normal
 import projectu.composeapp.generated.resources.settings_r18_sanity_level_suggestive
 import projectu.composeapp.generated.resources.settings_r18_sanity_level_r18
+import projectu.composeapp.generated.resources.settings_image_quality
+import projectu.composeapp.generated.resources.settings_preferred_image_quality
+import projectu.composeapp.generated.resources.settings_preferred_image_quality_desc
+import projectu.composeapp.generated.resources.image_quality_square_medium
+import projectu.composeapp.generated.resources.image_quality_medium
+import projectu.composeapp.generated.resources.image_quality_large
+import projectu.composeapp.generated.resources.image_quality_master_1200
 import org.koin.compose.koinInject
 
 /**
@@ -86,10 +94,12 @@ class SettingsScreen : Screen {
             currentPhpSessionId = pixivConfig.phpSessionId,
             currentUserId = pixivConfig.getUserId(),
             currentR18SanityThreshold = settings.r18SanityLevelThreshold,
+            currentPreferredImageQuality = settings.preferredImageQuality,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
             onThemeModeChange = { viewModel.updateThemeMode(it) },
             onR18SanityThresholdChange = { viewModel.updateR18SanityLevelThreshold(it) },
+            onPreferredImageQualityChange = { viewModel.updatePreferredImageQuality(it) },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
             onNavigateBack = { navigator.pop() },
@@ -108,10 +118,12 @@ private fun SettingsScreenContent(
     currentPhpSessionId: String,
     currentUserId: Long?,
     currentR18SanityThreshold: Int,
+    currentPreferredImageQuality: ImageQuality,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
     onR18SanityThresholdChange: (Int) -> Unit,
+    onPreferredImageQualityChange: (ImageQuality) -> Unit,
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -121,6 +133,7 @@ private fun SettingsScreenContent(
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showR18ThresholdDialog by remember { mutableStateOf(false) }
+    var showImageQualityDialog by remember { mutableStateOf(false) }
     var showEditPhpSessionIdDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     
@@ -201,6 +214,26 @@ private fun SettingsScreenContent(
                     } + " ($currentR18SanityThreshold)",
                     description = stringResource(Res.string.settings_r18_sanity_threshold_desc),
                     onClick = { showR18ThresholdDialog = true }
+                )
+            }
+            
+            // 图片质量设置分组
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_image_quality))
+            }
+            
+            // 插画卡片首选图片质量设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_preferred_image_quality),
+                    subtitle = when (currentPreferredImageQuality) {
+                        ImageQuality.SQUARE_MEDIUM -> stringResource(Res.string.image_quality_square_medium)
+                        ImageQuality.MEDIUM -> stringResource(Res.string.image_quality_medium)
+                        ImageQuality.LARGE -> stringResource(Res.string.image_quality_large)
+                        ImageQuality.MASTER_1200 -> stringResource(Res.string.image_quality_master_1200)
+                    },
+                    description = stringResource(Res.string.settings_preferred_image_quality_desc),
+                    onClick = { showImageQualityDialog = true }
                 )
             }
             
@@ -320,6 +353,18 @@ private fun SettingsScreenContent(
                 showR18ThresholdDialog = false
             },
             onDismiss = { showR18ThresholdDialog = false }
+        )
+    }
+    
+    // 图片质量选择对话框
+    if (showImageQualityDialog) {
+        ImageQualitySelectionDialog(
+            currentQuality = currentPreferredImageQuality,
+            onSelect = { quality ->
+                onPreferredImageQualityChange(quality)
+                showImageQualityDialog = false
+            },
+            onDismiss = { showImageQualityDialog = false }
         )
     }
     
@@ -693,6 +738,61 @@ private fun R18ThresholdDialog(
             }
         },
         dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 图片质量选择对话框
+ */
+@Composable
+private fun ImageQualitySelectionDialog(
+    currentQuality: ImageQuality,
+    onSelect: (ImageQuality) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val qualities = listOf(
+        ImageQuality.SQUARE_MEDIUM to stringResource(Res.string.image_quality_square_medium),
+        ImageQuality.MEDIUM to stringResource(Res.string.image_quality_medium),
+        ImageQuality.LARGE to stringResource(Res.string.image_quality_large),
+        ImageQuality.MASTER_1200 to stringResource(Res.string.image_quality_master_1200)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_preferred_image_quality)) },
+        text = {
+            Column {
+                qualities.forEach { (quality, name) ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(quality) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = quality == currentQuality,
+                                onClick = { onSelect(quality) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(Res.string.common_cancel))
             }

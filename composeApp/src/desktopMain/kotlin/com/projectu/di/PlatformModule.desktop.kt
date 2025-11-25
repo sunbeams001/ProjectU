@@ -10,6 +10,7 @@ import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
 import com.projectu.ui.screens.apitest.ApiTestViewModel
 import com.projectu.ui.screens.settings.SettingsViewModel
+import com.projectu.ui.screens.discovery.DiscoveryIllustsViewModel
 import io.ktor.client.engine.cio.*
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -50,5 +51,8 @@ actual val viewModelModule: Module = module {
     
     // API 测试 ViewModel
     single { ApiTestViewModel(get(), get()) }
+    
+    // 发现插画 ScreenModel
+    factory { DiscoveryIllustsViewModel(get()) }
 }
 

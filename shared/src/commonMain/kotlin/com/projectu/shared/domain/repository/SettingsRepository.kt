@@ -4,6 +4,7 @@ import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.AppSettings
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.ImageQuality
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -42,6 +43,11 @@ interface SettingsRepository {
      * @param threshold 阈值范围 0-9，默认为 6
      */
     suspend fun updateR18SanityLevelThreshold(threshold: Int)
+    
+    /**
+     * 更新插画卡片首选图片质量
+     */
+    suspend fun updatePreferredImageQuality(quality: ImageQuality)
     
     /**
      * 更新完整设置

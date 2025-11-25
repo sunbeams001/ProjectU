@@ -9,6 +9,7 @@ import com.projectu.shared.domain.model.AgeLimit
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.ArtworkImageUrls
 import com.projectu.shared.domain.model.ArtworkType
+import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.model.ImageUrls
 import com.projectu.shared.domain.model.PageImageUrls
 import com.projectu.shared.domain.model.Tag
@@ -84,7 +85,12 @@ fun IllustDetailBody.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork 
         bookmarkCount = this.bookmarkCount,
         commentCount = this.commentCount,
         createdTime = this.createDate,
-        isBookmarked = this.bookmarkData != null,
+        bookmarkStatus = when {
+            this.bookmarkData == null -> BookmarkStatus.NOT_BOOKMARKED
+            this.bookmarkData.private -> BookmarkStatus.PRIVATE
+            else -> BookmarkStatus.PUBLIC
+        },
+        bookmarkId = this.bookmarkData?.id,
         isMuted = false,
         isAiGenerated = isAiGeneratedArtwork(this.aiType, this.tags.tags.map { it.tag }),
         totalView = this.viewCount,
@@ -152,7 +158,12 @@ fun IllustSimple.toArtwork(
         bookmarkCount = 0,
         commentCount = 0,
         createdTime = this.createDate,
-        isBookmarked = this.bookmarkData != null,
+        bookmarkStatus = when {
+            this.bookmarkData == null -> BookmarkStatus.NOT_BOOKMARKED
+            this.bookmarkData.private -> BookmarkStatus.PRIVATE
+            else -> BookmarkStatus.PUBLIC
+        },
+        bookmarkId = this.bookmarkData?.id,
         isMuted = this.isMasked,
         isAiGenerated = isAiGeneratedArtwork(this.aiType, this.tags),
         totalView = 0,
@@ -226,7 +237,8 @@ fun RankingContent.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork {
         bookmarkCount = 0,
         commentCount = 0,
         createdTime = this.date,
-        isBookmarked = this.is_bookmarked,
+        bookmarkStatus = if (this.is_bookmarked) BookmarkStatus.PUBLIC else BookmarkStatus.NOT_BOOKMARKED,
+        bookmarkId = null,
         isMuted = this.is_masked,
         isAiGenerated = isAiGeneratedArtwork(0, this.tags),
         totalView = this.view_count,

@@ -3,11 +3,14 @@ package com.projectu
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.ui.localization.LocalLocaleManager
 import com.projectu.ui.localization.LocaleManager
 import com.projectu.ui.screens.home.HomeScreen
 import com.projectu.ui.theme.AppTheme
+import com.projectu.ui.util.createImageLoader
 import org.koin.compose.koinInject
 
 @Composable
@@ -15,6 +18,11 @@ fun App() {
     val localeManager: LocaleManager = koinInject()
     val settingsRepository: SettingsRepository = koinInject()
     val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
+
+    // 配置 Coil ImageLoader，添加 Pixiv Referer 头
+    setSingletonImageLoaderFactory { context ->
+        createImageLoader(context)
+    }
 
     // 等待语言初始化完成
     val isLanguageInitialized by localeManager.isInitialized.collectAsState()

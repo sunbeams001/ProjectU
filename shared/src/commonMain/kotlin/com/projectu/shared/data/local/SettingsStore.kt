@@ -80,6 +80,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置插画卡片首选图片质量
+     */
+    suspend fun setPreferredImageQuality(quality: com.projectu.shared.domain.model.ImageQuality) {
+        settingsDao.updatePreferredImageQuality(quality.name)
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

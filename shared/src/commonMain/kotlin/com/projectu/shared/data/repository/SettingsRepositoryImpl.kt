@@ -5,6 +5,7 @@ import com.projectu.shared.data.local.AppSettings
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -38,6 +39,10 @@ class SettingsRepositoryImpl(
     
     override suspend fun updateR18SanityLevelThreshold(threshold: Int) {
         settingsStore.setR18SanityLevelThreshold(threshold)
+    }
+    
+    override suspend fun updatePreferredImageQuality(quality: ImageQuality) {
+        settingsStore.setPreferredImageQuality(quality)
     }
     
     override suspend fun updateSettings(settings: AppSettings) {

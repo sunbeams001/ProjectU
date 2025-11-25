@@ -26,6 +26,10 @@ import projectu.composeapp.generated.resources.nav_ranking
 import projectu.composeapp.generated.resources.nav_profile
 import projectu.composeapp.generated.resources.home_framework_complete
 import projectu.composeapp.generated.resources.settings_title
+import projectu.composeapp.generated.resources.discovery_recommended_users
+import projectu.composeapp.generated.resources.discovery_recommended_illusts
+import projectu.composeapp.generated.resources.discovery_recommended_novels
+import com.projectu.ui.screens.discovery.DiscoveryIllustsScreen
 
 /**
  * 主屏幕 - 包含底部导航栏的容器
@@ -214,25 +218,65 @@ object DiscoveryTab : Tab {
     
     @Composable
     override fun Content() {
+        DiscoveryTabContent()
+    }
+}
+
+@Composable
+fun DiscoveryTabContent() {
+    // 获取父级 Navigator（而不是 TabNavigator）
+    val parentNavigator = LocalNavigator.current?.parent
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // 顶部按钮区域
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // 推荐用户按钮
+            Button(
+                onClick = { /* TODO: 待实现 */ },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(stringResource(Res.string.discovery_recommended_users))
+            }
+            
+            // 推荐插画·漫画按钮
+            Button(
+                onClick = {
+                    parentNavigator?.push(DiscoveryIllustsScreen())
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(stringResource(Res.string.discovery_recommended_illusts))
+            }
+            
+            // 推荐小说按钮
+            Button(
+                onClick = { /* TODO: 待实现 */ },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(stringResource(Res.string.discovery_recommended_novels))
+            }
+        }
+        
+        // 内容区域占位
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = stringResource(Res.string.nav_discovery),
-                    style = MaterialTheme.typography.headlineMedium
-                )
-            }
+            Text(
+                text = "等待进一步指示...",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

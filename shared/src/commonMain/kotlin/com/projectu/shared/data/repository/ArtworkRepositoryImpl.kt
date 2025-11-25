@@ -6,6 +6,7 @@ import com.projectu.shared.data.remote.mapper.toArtworkList
 import com.projectu.shared.data.remote.mapper.toUgoiraMetadata
 import com.projectu.shared.data.remote.mapper.updatePages
 import com.projectu.shared.data.remote.model.RankingMode
+import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.UgoiraMetadata
 import com.projectu.shared.domain.repository.ArtworkRepository
@@ -38,6 +39,24 @@ class ArtworkRepositoryImpl(
     ): Result<List<Artwork>> = runCatching {
         val response = pixivApi.illustApi.getDiscovery(
             mode = "all",
+            limit = limit
+        )
+        if (response.error) {
+            throw IllegalStateException(response.message)
+        }
+        response.body?.thumbnails?.illust?.toArtworkList(
+            tagTranslationUtil = tagTranslationUtil,
+            tagTranslation = response.body.tagTranslation,
+            ageLimitDeterminer = ageLimitDeterminer
+        ) ?: emptyList()
+    }
+
+    override suspend fun getDiscoveryIllusts(
+        mode: DiscoveryMode,
+        limit: Int
+    ): Result<List<Artwork>> = runCatching {
+        val response = pixivApi.illustApi.getDiscovery(
+            mode = mode.value,
             limit = limit
         )
         if (response.error) {

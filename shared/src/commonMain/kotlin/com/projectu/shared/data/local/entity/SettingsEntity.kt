@@ -38,6 +38,11 @@ data class SettingsEntity(
     val r18SanityLevelThreshold: Int = 6,
     
     /**
+     * 插画卡片首选图片质量
+     */
+    val preferredImageQuality: String = "SQUARE_MEDIUM",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -51,7 +56,8 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         appLanguage = this.appLanguage.name,
         pixivLanguage = this.pixivLanguage.name,
         themeMode = this.themeMode.name,
-        r18SanityLevelThreshold = this.r18SanityLevelThreshold
+        r18SanityLevelThreshold = this.r18SanityLevelThreshold,
+        preferredImageQuality = this.preferredImageQuality.name
     )
 }
 
@@ -63,6 +69,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         appLanguage = AppLanguage.valueOf(this.appLanguage),
         pixivLanguage = PixivLanguage.valueOf(this.pixivLanguage),
         themeMode = ThemeMode.valueOf(this.themeMode),
-        r18SanityLevelThreshold = this.r18SanityLevelThreshold
+        r18SanityLevelThreshold = this.r18SanityLevelThreshold,
+        preferredImageQuality = com.projectu.shared.domain.model.ImageQuality.fromName(this.preferredImageQuality)
     )
 }
