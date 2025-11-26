@@ -16,17 +16,18 @@ actual fun rememberWindowSize(): WindowSize {
     val configuration = LocalConfiguration.current
     val context = LocalContext.current
     
-    return remember(configuration) {
-        val width = configuration.screenWidthDp.dp
-        val height = configuration.screenHeightDp.dp
-        
-        // 判断设备类型
-        val deviceType = if (configuration.smallestScreenWidthDp >= 600) {
-            DeviceType.TABLET
-        } else {
-            DeviceType.PHONE
-        }
-        
+    // 使用 Configuration.screenWidthDp 和 screenHeightDp（推荐方式）
+    val width = configuration.screenWidthDp.dp
+    val height = configuration.screenHeightDp.dp
+    
+    // 判断设备类型
+    val deviceType = if (configuration.smallestScreenWidthDp >= 600) {
+        DeviceType.TABLET
+    } else {
+        DeviceType.PHONE
+    }
+    
+    return remember(width, height, deviceType) {
         WindowSize(
             width = width,
             height = height,
