@@ -30,8 +30,10 @@ interface UserRepository {
     
     /**
      * 关注用户
+     * @param userId 用户ID
+     * @param restrict 关注类型："public"=公开关注, "private"=悄悄关注
      */
-    suspend fun followUser(userId: Long): Result<Unit>
+    suspend fun followUser(userId: Long, restrict: String = "public"): Result<Unit>
     
     /**
      * 取消关注
@@ -42,5 +44,12 @@ interface UserRepository {
      * 观察当前用户（Flow版本）
      */
     fun observeCurrentUser(): Flow<User?>
+    
+    /**
+     * 获取发现推荐用户列表
+     * @param limit 返回数量（默认20）
+     * @return 推荐用户列表
+     */
+    suspend fun getDiscoveryUsers(limit: Int = 20): Result<List<User>>
 }
 

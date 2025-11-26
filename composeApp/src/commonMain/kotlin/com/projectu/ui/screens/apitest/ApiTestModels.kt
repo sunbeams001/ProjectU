@@ -183,7 +183,7 @@ sealed class ApiMethod(
     object GetRecommendUsers : ApiMethod(
         module = ApiModule.USER,
         methodName = "getRecommendUsers",
-        displayName = "推荐用户",
+        displayName = "推荐用户(针对特定用户)",
         parameters = listOf(
             ApiParameter("userId", "用户ID", "11", required = true),
             ApiParameter("userNum", "推荐数量", "20", required = false),
@@ -192,6 +192,16 @@ sealed class ApiMethod(
                 options = listOf("true", "false"))
         ),
         priority = 2
+    )
+    
+    object GetDiscoveryUsers : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getDiscoveryUsers",
+        displayName = "发现用户(总体推荐)",
+        parameters = listOf(
+            ApiParameter("limit", "推荐数量", "20", required = false)
+        ),
+        priority = 1
     )
     
     object FollowUser : ApiMethod(
@@ -683,7 +693,7 @@ sealed class ApiMethod(
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, 
             GetUserBookmarks, GetUserFollowing, GetUserFollowers,
-            GetRecommendUsers, FollowUser, UnfollowUser,
+            GetRecommendUsers, GetDiscoveryUsers, FollowUser, UnfollowUser,
             // BookmarkApi
             AddBookmark, DeleteBookmark, DeleteBookmarks, GetIllustBookmarkTags,
             AddNovelBookmark, DeleteNovelBookmark, DeleteNovelBookmarks, GetNovelBookmarkTags,

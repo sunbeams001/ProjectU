@@ -50,12 +50,7 @@ fun IllustDetailBody.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork 
         id = this.id,
         title = this.title,
         description = this.description,
-        type = when (this.illustType) {
-            0 -> ArtworkType.ILLUSTRATION
-            1 -> ArtworkType.MANGA
-            2 -> ArtworkType.UGOIRA
-            else -> ArtworkType.ILLUSTRATION
-        },
+        type = ArtworkType.fromIllustType(this.illustType),
         imageUrls = ArtworkImageUrls(
             pages = listOf(
                 PageImageUrls(
@@ -123,12 +118,7 @@ fun IllustSimple.toArtwork(
         id = this.id,
         title = this.title,
         description = this.description,
-        type = when (this.illustType) {
-            0 -> ArtworkType.ILLUSTRATION
-            1 -> ArtworkType.MANGA
-            2 -> ArtworkType.UGOIRA
-            else -> ArtworkType.ILLUSTRATION
-        },
+        type = ArtworkType.fromIllustType(this.illustType),
         imageUrls = ArtworkImageUrls(
             pages = listOf(
                 PageImageUrls(
@@ -202,12 +192,7 @@ fun RankingContent.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork {
         id = this.illust_id.toString(),
         title = this.title,
         description = "",
-        type = when (this.illust_type) {
-            "illustration" -> ArtworkType.ILLUSTRATION
-            "manga" -> ArtworkType.MANGA
-            "ugoira" -> ArtworkType.UGOIRA
-            else -> ArtworkType.ILLUSTRATION
-        },
+        type = ArtworkType.fromString(this.illust_type),
         imageUrls = ArtworkImageUrls(
             pages = listOf(
                 PageImageUrls(

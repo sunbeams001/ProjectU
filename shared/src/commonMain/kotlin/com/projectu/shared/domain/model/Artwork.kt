@@ -156,17 +156,46 @@ data class PageImageUrls(
 )
 
 /**
- * 用户信息（完整版本）
+ * 用户信息
+ * 基于 UserApi 相关 DTO 重新设计：UserInfoBody, RecommendUserDetail, DiscoveryUserInfo
  */
 data class User(
+    /** 用户ID */
     val id: String,
+    /** 用户名 */
     val name: String,
-    val account: String,
+    /** 用户账号 */
+    val account: String? = null,
+    /** 头像URL (小) */
     val profileImageUrl: String,
-    val isFollowed: Boolean = false,
-    val isMuted: Boolean = false,
-    val illusts: List<String> = emptyList(),
-    val novels: List<String> = emptyList()
+    /** 头像URL (大) */
+    val profileImageUrlBig: String? = null,
+    /** 个人简介 */
+    val comment: String? = null,
+    /** 关注状态 */
+    val followStatus: FollowStatus = FollowStatus.NOT_FOLLOWING,
+    /** 是否为好P友 */
+    val isMypixiv: Boolean = false,
+    /** 是否已屏蔽 */
+    val isBlocking: Boolean = false,
+    /** 是否被对方关注 */
+    val followedBack: Boolean = false,
+    /** 是否为高级会员 */
+    val isPremium: Boolean = false,
+    /** 背景图URL */
+    val backgroundUrl: String? = null,
+    /** 是否接受约稿请求 */
+    val acceptCommissionRequest: Boolean = false,
+    /** 关注数量 */
+    val followingCount: Int = 0,
+    /** 个人网站 */
+    val webpage: String? = null,
+    /** 是否为官方账号 */
+    val isOfficial: Boolean = false,
+    /** 用户插画作品列表 */
+    val illusts: List<Artwork> = emptyList(),
+    /** 用户小说作品列表 (待实现) */
+    val novels: List<Any> = emptyList() // TODO: 改为 Novel 实体
 )
 
 /**
@@ -180,7 +209,35 @@ data class Tag(
 enum class ArtworkType {
     ILLUSTRATION,  // 插画
     MANGA,         // 漫画
-    UGOIRA         // 动图
+    UGOIRA;        // 动图
+    
+    companion object {
+        /**
+         * 从 illustType 整数值转换为 ArtworkType
+         * @param illustType Pixiv API 返回的作品类型值 (0=插画, 1=漫画, 2=动图)
+         */
+        fun fromIllustType(illustType: Int): ArtworkType {
+            return when (illustType) {
+                0 -> ILLUSTRATION
+                1 -> MANGA
+                2 -> UGOIRA
+                else -> ILLUSTRATION // 默认为插画
+            }
+        }
+        
+        /**
+         * 从字符串类型转换为 ArtworkType
+         * @param type 作品类型字符串 (illustration, manga, ugoira)
+         */
+        fun fromString(type: String): ArtworkType {
+            return when (type.lowercase()) {
+                "illustration" -> ILLUSTRATION
+                "manga" -> MANGA
+                "ugoira" -> UGOIRA
+                else -> ILLUSTRATION // 默认为插画
+            }
+        }
+    }
 }
 
 enum class AgeLimit {

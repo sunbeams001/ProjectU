@@ -3,7 +3,6 @@ package com.projectu.ui.util
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.request.crossfade
-import coil3.util.DebugLogger
 
 /**
  * 创建配置好的 ImageLoader
@@ -17,5 +16,5 @@ expect fun createImageLoader(context: PlatformContext): ImageLoader
 fun ImageLoader.Builder.applyPixivConfiguration(): ImageLoader.Builder {
     return this
         .crossfade(true)
-        .logger(DebugLogger())
+        // .logger(DebugLogger()) // 已关闭图片加载日志
 }

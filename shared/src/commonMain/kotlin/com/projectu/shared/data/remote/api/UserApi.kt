@@ -1,6 +1,7 @@
 package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.common.PixivResponse
+import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.ProfileIllustsBody
 import com.projectu.shared.data.remote.dto.user.UnfollowUserResponse
@@ -124,7 +125,8 @@ class UserApi(private val client: PixivApiClient) {
     }
 
     /**
-     * 推荐用户
+     * 推荐用户（针对特定用户）
+     * 根据指定用户推荐相似用户
      * @param uid 用户ID
      * @param userNum 推荐用户数量
      * @param workNum 每个用户附带的作品数量
@@ -140,6 +142,19 @@ class UserApi(private val client: PixivApiClient) {
             "userNum" to userNum,
             "workNum" to workNum,
             "isR18" to isR18
+        ))
+    }
+
+    /**
+     * 发现用户（总体推荐）
+     * 获取推荐给当前登录账户的用户，不针对特定用户
+     * @param limit 返回数量（默认20）
+     */
+    suspend fun getDiscoveryUsers(
+        limit: Int = 20
+    ): PixivResponse<DiscoveryUsersBody> {
+        return client.get("/ajax/discovery/users", mapOf(
+            "limit" to limit
         ))
     }
 

@@ -111,7 +111,10 @@ val repositoryModule = module {
     
     // 用户仓储
     single<UserRepository> { 
-        UserRepositoryImpl(get()) 
+        UserRepositoryImpl(
+            pixivApi = get(),
+            ageLimitDeterminer = get()
+        ) 
     }
 }
 

@@ -30,6 +30,7 @@ import com.projectu.shared.data.remote.dto.tag.SearchSuggestionBody
 import com.projectu.shared.data.remote.dto.tag.TagInfoBody
 import com.projectu.shared.data.remote.dto.tag.TagSuggestBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
+import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
 import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
@@ -191,6 +192,7 @@ class ApiTestViewModel(
                         ApiMethod.GetUserFollowing -> testGetUserFollowing()
                         ApiMethod.GetUserFollowers -> testGetUserFollowers()
                         ApiMethod.GetRecommendUsers -> testGetRecommendUsers()
+                        ApiMethod.GetDiscoveryUsers -> testGetDiscoveryUsers()
                         ApiMethod.FollowUser -> testFollowUser()
                         ApiMethod.UnfollowUser -> testUnfollowUser()
                         
@@ -770,6 +772,89 @@ class ApiTestViewModel(
             
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetDiscoveryUsers() {
+        val limit = getParam("limit").toIntOrNull() ?: 20
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<DiscoveryUsersBody>(
+            "/ajax/discovery/users",
+            mapOf(
+                "limit" to limit
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 发现用户获取成功（总体推荐）")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("推荐数量: $limit")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            
+            response.body?.let { body ->
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("📊 推荐统计:")
+                appendLine("推荐用户数: ${body.users.size}")
+                appendLine("推荐条目数: ${body.recommendedUsers.size}")
+                appendLine("插画缩略图数: ${body.thumbnails.illust.size}")
+                appendLine("小说缩略图数: ${body.thumbnails.novel.size}")
+                appendLine("标签翻译数: ${body.tagTranslation.size}")
+                
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("👥 推荐用户列表:")
+                body.users.take(5).forEach { user ->
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("👤 用户名: ${user.name}")
+                    appendLine("   用户ID: ${user.userId}")
+                    appendLine("   简介: ${user.comment.take(50)}${if (user.comment.length > 50) "..." else ""}")
+                    appendLine("   已关注: ${if (user.isFollowed) "是" else "否"}")
+                    appendLine("   高级会员: ${if (user.premium) "是" else "否"}")
+                    appendLine("   被对方关注: ${if (user.followedBack) "是" else "否"}")
+                    
+                    // 查找该用户的作品
+                    val userEntry = body.recommendedUsers.find { it.userId == user.userId }
+                    userEntry?.let { entry ->
+                        if (entry.recentIllustIds.isNotEmpty()) {
+                            appendLine("   最近插画: ${entry.recentIllustIds.take(3).joinToString(", ")}")
+                        }
+                        if (entry.recentNovelIds.isNotEmpty()) {
+                            appendLine("   最近小说: ${entry.recentNovelIds.take(3).joinToString(", ")}")
+                        }
+                    }
+                }
+                
+                if (body.users.size > 5) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("... 还有 ${body.users.size - 5} 个用户")
+                }
+                
+                // 显示部分缩略图信息
+                if (body.thumbnails.illust.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("🎨 示例插画作品:")
+                    body.thumbnails.illust.take(3).forEach { illust ->
+                        appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                        appendLine("作品ID: ${illust.id}")
+                        appendLine("标题: ${illust.title}")
+                        appendLine("作者: ${illust.userName} (ID: ${illust.userId})")
+                        appendLine("尺寸: ${illust.width}x${illust.height}")
+                        appendLine("AI类型: ${when(illust.aiType) {
+                            0 -> "非AI"
+                            1 -> "AI生成"
+                            2 -> "AI辅助"
+                            else -> "未知"
+                        }}")
+                        appendLine("收藏状态: ${if (illust.isBookmarkable) "可收藏" else "不可收藏"}")
+                    }
+                }
+            }
+            
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果（包括标签翻译等详细信息）")
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)

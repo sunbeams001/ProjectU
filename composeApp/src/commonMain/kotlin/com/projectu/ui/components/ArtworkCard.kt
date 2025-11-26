@@ -48,31 +48,41 @@ fun ArtworkCard(
     ) {
         Column {
             // 作品缩略图（只有上方圆角）
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = artwork.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(artwork.width.toFloat() / artwork.height.toFloat())
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 12.dp,
-                            topEnd = 12.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 0.dp
+            Box {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = artwork.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(artwork.width.toFloat() / artwork.height.toFloat())
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 12.dp,
+                                topEnd = 12.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 0.dp
+                            )
                         )
-                    )
-                    .combinedClickable(
-                        onClick = {
-                            println("ArtworkCard: 点击图片 - ID: ${artwork.id}, 标题: ${artwork.title}")
-                            onClick()
-                        },
-                        onLongClick = {
-                            println("ArtworkCard: 长按图片 - ID: ${artwork.id}, 标题: ${artwork.title}")
-                        }
-                    ),
-                contentScale = ContentScale.Crop
-            )
+                        .combinedClickable(
+                            onClick = {
+                                println("ArtworkCard: 点击图片 - ID: ${artwork.id}, 标题: ${artwork.title}")
+                                onClick()
+                            },
+                            onLongClick = {
+                                println("ArtworkCard: 长按图片 - ID: ${artwork.id}, 标题: ${artwork.title}")
+                            }
+                        ),
+                    contentScale = ContentScale.Crop
+                )
+                
+                // 使用统一的标记组件
+                ArtworkBadges(
+                    artwork = artwork,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(artwork.width.toFloat() / artwork.height.toFloat())
+                )
+            }
             
             // 作品信息
             Column(

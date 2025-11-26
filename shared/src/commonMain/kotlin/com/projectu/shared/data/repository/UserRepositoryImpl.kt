@@ -1,8 +1,11 @@
 package com.projectu.shared.data.repository
 
 import com.projectu.shared.data.remote.api.PixivApi
+import com.projectu.shared.data.remote.mapper.toUser
+import com.projectu.shared.data.remote.mapper.toUsersWithArtworks
 import com.projectu.shared.domain.model.User
 import com.projectu.shared.domain.repository.UserRepository
+import com.projectu.shared.util.AgeLimitDeterminer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -11,7 +14,8 @@ import kotlinx.coroutines.flow.flow
  * 基于 Pixiv Web API 实现
  */
 class UserRepositoryImpl(
-    private val pixivApi: PixivApi
+    private val pixivApi: PixivApi,
+    private val ageLimitDeterminer: AgeLimitDeterminer
 ) : UserRepository {
 
     override suspend fun login(username: String, password: String): Result<User> {
@@ -33,17 +37,7 @@ class UserRepositoryImpl(
             throw IllegalStateException(response.message)
         }
         val body = response.body ?: throw IllegalStateException("用户信息为空")
-        
-        User(
-            id = body.userId,  // userId 现在是 String 类型，无需转换
-            name = body.name,
-            account = body.userId,  // userId 现在是 String 类型，无需转换
-            profileImageUrl = body.imageBig,
-            isFollowed = false,
-            isMuted = false,
-            illusts = emptyList(),
-            novels = emptyList()
-        )
+        body.toUser()
     }
 
     override suspend fun getUserById(userId: Long): Result<User> = runCatching {
@@ -52,22 +46,14 @@ class UserRepositoryImpl(
             throw IllegalStateException(response.message)
         }
         val body = response.body ?: throw IllegalStateException("用户信息为空")
-        
-        User(
-            id = body.userId,  // userId 现在是 String 类型，无需转换
-            name = body.name,
-            account = body.userId,  // userId 现在是 String 类型，无需转换
-            profileImageUrl = body.imageBig,
-            isFollowed = body.isFollowed,
-            isMuted = body.isBlocking,
-            illusts = emptyList(),
-            novels = emptyList()
-        )
+        body.toUser()
     }
 
-    override suspend fun followUser(userId: Long): Result<Unit> = runCatching {
+    override suspend fun followUser(userId: Long, restrict: String): Result<Unit> = runCatching {
+        // 将字符串 restrict 转换为数字：public=0, private=1
+        val restrictValue = if (restrict == "private") 1 else 0
         // 关注用户API返回空数组 [] 表示成功
-        pixivApi.userApi.followUser(userId)
+        pixivApi.userApi.followUser(userId, restrict = restrictValue)
         // 如果没有抛出异常，说明成功
     }
 
@@ -80,6 +66,15 @@ class UserRepositoryImpl(
     override fun observeCurrentUser(): Flow<User?> = flow {
         val result = getCurrentUser()
         emit(result.getOrNull())
+    }
+    
+    override suspend fun getDiscoveryUsers(limit: Int): Result<List<User>> = runCatching {
+        val response = pixivApi.userApi.getDiscoveryUsers(limit)
+        if (response.error) {
+            throw IllegalStateException(response.message)
+        }
+        val body = response.body ?: throw IllegalStateException("发现用户数据为空")
+        body.toUsersWithArtworks(ageLimitDeterminer)
     }
 }
 

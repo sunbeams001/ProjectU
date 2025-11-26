@@ -30,6 +30,7 @@ import projectu.composeapp.generated.resources.discovery_recommended_users
 import projectu.composeapp.generated.resources.discovery_recommended_illusts
 import projectu.composeapp.generated.resources.discovery_recommended_novels
 import com.projectu.ui.screens.discovery.DiscoveryIllustsScreen
+import com.projectu.ui.screens.discovery.DiscoveryUsersScreen
 
 /**
  * 主屏幕 - 包含底部导航栏的容器
@@ -240,7 +241,9 @@ fun DiscoveryTabContent() {
         ) {
             // 推荐用户按钮
             Button(
-                onClick = { /* TODO: 待实现 */ },
+                onClick = {
+                    parentNavigator?.push(DiscoveryUsersScreen())
+                },
                 modifier = Modifier.weight(1f)
             ) {
                 Text(stringResource(Res.string.discovery_recommended_users))

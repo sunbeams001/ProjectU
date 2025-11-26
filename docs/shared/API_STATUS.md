@@ -16,7 +16,7 @@
 | 模块 | 总方法数 | 已实现 | 已测试 | 完成度 |
 |------|---------|-------|-------|--------|
 | IllustApi | 6 | 6 | 6 | ✅ 100% |
-| UserApi | 9 | 9 | 9 | ✅ 100% |
+| UserApi | 10 | 10 | 10 | ✅ 100% |
 | BookmarkApi | 8 | 8 | 8 | ✅ 100% |
 | RankingApi | 2 | 2 | 2 | ✅ 100% |
 | CommentApi | 8 | 8 | 8 | ✅ 100% |
@@ -24,7 +24,7 @@
 | NovelSeriesApi | 5 | 5 | 5 | ✅ 100% |
 | TagApi | 4 | 4 | 4 | ✅ 100% |
 | MarkerApi | 3 | 3 | 3 | ✅ 100% |
-| **总计** | **50** | **50** | **50** | **✅ 100%** |
+| **总计** | **51** | **51** | **51** | **✅ 100%** |
 
 ---
 
@@ -41,7 +41,7 @@
 | 发现作品 | `/ajax/discovery/artworks` | ✅ | ✅ | ✅ | 编辑精选 |
 | Ugoira 元数据 | `/ajax/illust/{illustId}/ugoira_meta` | ✅ | ✅ | ✅ | 动图 ZIP 和帧信息 |
 
-### UserApi - 用户相关 API (9/9) ✅
+### UserApi - 用户相关 API (10/10) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
@@ -51,9 +51,10 @@
 | 用户收藏列表 | `/ajax/user/{userId}/illusts/bookmarks` | ✅ | ✅ | ✅ | 支持公开/非公开 |
 | 关注列表 | `/ajax/user/{userId}/following` | ✅ | ✅ | ✅ | 正在关注的用户 |
 | 粉丝列表 | `/ajax/user/{userId}/followers` | ✅ | ✅ | ✅ | 粉丝用户列表 |
-| 推荐用户 | `/ajax/user/recommend` | ✅ | ✅ | ✅ | 系统推荐关注 |
-| 关注用户 | `/rpc/follow_user.php` | ✅ | ✅ | ✅ | POST请求 |
-| 取消关注 | `/rpc/unfollow_user.php` | ✅ | ✅ | ✅ | POST请求 |
+| 推荐用户(针对用户) | `/ajax/user/{userId}/recommends` | ✅ | ✅ | ✅ | 基于特定用户推荐 |
+| 发现用户(总体推荐) | `/ajax/discovery/users` | ✅ | ✅ | ✅ | 推荐给当前账户 |
+| 关注用户 | `/bookmark_add.php` | ✅ | ✅ | ✅ | POST请求 |
+| 取消关注 | `/rpc_group_setting.php` | ✅ | ✅ | ✅ | POST请求 |
 
 ### BookmarkApi - 收藏相关 API (8/8) ✅
 

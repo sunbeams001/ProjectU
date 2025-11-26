@@ -18,7 +18,7 @@
 
 **功能特性**:
 - ✅ 支持 9 个模块: IllustApi, UserApi, BookmarkApi, RankingApi, CommentApi, NovelApi, NovelSeriesApi, TagApi, MarkerApi
-- ✅ 支持 50 个 API 方法，全部已测试（100%）
+- ✅ 支持 51 个 API 方法，全部已测试（100%）
 - ✅ 按优先级分类 (P0/P1/P2)
 - ✅ 动态参数输入（文本框/下拉选择）
 - ✅ 双标签页结果展示（摘要 + 原始 JSON）
@@ -57,7 +57,7 @@
 
 1. **选择模块**: 
    - 插画 API (IllustApi) - 6 个方法
-   - 用户 API (UserApi) - 9 个方法
+   - 用户 API (UserApi) - 10 个方法
    - 收藏 API (BookmarkApi) - 8 个方法
    - 排行榜 API (RankingApi) - 2 个方法
    - 评论 API (CommentApi) - 8 个方法
@@ -121,8 +121,15 @@
 | getUserFollowing | 用户ID | ✅ 已测试 |
 | getUserFollowers | 用户ID | ✅ 已测试 |
 | getRecommendUsers | 用户ID | ✅ 已测试 |
+| getDiscoveryUsers | limit=20 | ✅ 已测试 |
 | followUser | 用户ID | ✅ 已测试 |
 | unfollowUser | 用户ID | ✅ 已测试 |
+
+⚠️ **推荐用户接口区别**:
+- **getRecommendUsers**: 针对特定用户推荐相似用户 (`/ajax/user/{userId}/recommends`)
+- **getDiscoveryUsers**: 发现模块的总体推荐，推荐给当前登录账户 (`/ajax/discovery/users`)
+  - 包含标签翻译字典、用户详细信息、作品缩略图
+  - 语言参数由 ApiClient 自动提供
 
 ### BookmarkApi - 收藏 API ✅ 100%
 
