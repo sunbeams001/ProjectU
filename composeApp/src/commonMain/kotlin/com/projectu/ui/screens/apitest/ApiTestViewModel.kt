@@ -32,6 +32,7 @@ import com.projectu.shared.data.remote.dto.tag.TagSuggestBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
 import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
+import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
 import com.projectu.shared.data.remote.dto.user.UserRecommendBody
@@ -195,6 +196,7 @@ class ApiTestViewModel(
                         ApiMethod.GetDiscoveryUsers -> testGetDiscoveryUsers()
                         ApiMethod.FollowUser -> testFollowUser()
                         ApiMethod.UnfollowUser -> testUnfollowUser()
+                        ApiMethod.GetUserFollowDetail -> testGetUserFollowDetail()
                         
                         // ==================== BookmarkApi ====================
                         ApiMethod.AddBookmark -> testAddBookmark()
@@ -928,6 +930,66 @@ class ApiTestViewModel(
         }
         
         updateResultWithRaw(rawJson, summary)
+    }
+    
+    private suspend fun testGetUserFollowDetail() {
+        val userId = getParam("userId").toLongOrNull() ?: 58277L
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<UserFollowDetailBody>(
+            "/ajax/following/user/details",
+            mapOf("user_id" to userId)
+        )
+        val response = responseWithRaw.response
+        val body = response.body
+        
+        val summary = buildString {
+            if (response.error || body == null) {
+                appendLine("❌ 获取关注详情失败")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("用户ID: $userId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+                appendLine()
+                appendLine("⚠️ 注意：此接口只能查询已关注的用户")
+                appendLine("   未关注的用户会返回错误")
+            } else {
+                appendLine("✅ 用户关注详情获取成功")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("用户ID: ${body.userId}")
+                appendLine("用户名: ${body.userName}")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                
+                // 关注类型
+                val restrictText = when (body.restrict) {
+                    "0" -> "公开关注"
+                    "1" -> "悄悄关注（私密）"
+                    else -> "未知类型 (${body.restrict})"
+                }
+                appendLine("关注类型: $restrictText")
+                
+                // 标签信息
+                if (body.tags.isNotEmpty()) {
+                    appendLine()
+                    appendLine("【关注标签】(${body.tags.size} 个)")
+                    body.tags.forEach { tag ->
+                        appendLine("  • $tag")
+                    }
+                } else {
+                    appendLine("标签: 无")
+                }
+                
+                appendLine()
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("💡 用途:")
+                appendLine("  • 精确获取用户关注状态（公开/悄悄关注）")
+                appendLine("  • 用于修复Discovery接口不返回关注类型的问题")
+                appendLine("  • 同步全局状态缓存的关注状态")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
     // ==================== BookmarkApi 测试方法 ====================

@@ -2,9 +2,13 @@ package com.projectu.ui.screens.discovery
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.projectu.shared.data.cache.StateCacheEvent
+import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.remote.model.DiscoveryMode
+import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.repository.NovelRepository
+import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -13,7 +17,9 @@ import kotlinx.coroutines.launch
  * MVI 架构模式
  */
 class DiscoveryNovelsViewModel(
-    private val novelRepository: NovelRepository
+    private val novelRepository: NovelRepository,
+    private val syncNovelStatesUseCase: SyncNovelStatesUseCase,
+    private val stateCacheManager: StateCacheManager
 ) : ScreenModel {
     
     // UI 状态
@@ -23,6 +29,18 @@ class DiscoveryNovelsViewModel(
     init {
         // 初始加载
         loadNovels()
+        
+        // 监听全局状态变更事件
+        screenModelScope.launch {
+            stateCacheManager.stateChangeEvents.collect { event ->
+                when (event) {
+                    is StateCacheEvent.NovelBookmarkChanged -> {
+                        updateNovelBookmarkStatus(event.novelId, event.status, event.bookmarkId)
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
     
     /**
@@ -77,14 +95,17 @@ class DiscoveryNovelsViewModel(
                 limit = 100
             )
                 .onSuccess { newNovels ->
+                    // 应用全局状态缓存
+                    val syncedNovels = syncNovelStatesUseCase(newNovels)
+                    
                     _state.update { currentState ->
                         // 如果是追加模式，需要去重
                         val updatedNovels = if (append) {
                             val existingIds = currentState.novels.map { it.id }.toSet()
-                            val uniqueNewNovels = newNovels.filter { it.id !in existingIds }
+                            val uniqueNewNovels = syncedNovels.filter { it.id !in existingIds }
                             currentState.novels + uniqueNewNovels
                         } else {
-                            newNovels
+                            syncedNovels
                         }
                         
                         currentState.copy(
@@ -104,6 +125,31 @@ class DiscoveryNovelsViewModel(
                         )
                     }
                 }
+        }
+    }
+    
+    /**
+     * 更新列表中小说的收藏状态
+     * 由全局状态变更事件触发
+     */
+    private fun updateNovelBookmarkStatus(
+        novelId: String,
+        status: BookmarkStatus,
+        bookmarkId: String?
+    ) {
+        _state.update { currentState ->
+            currentState.copy(
+                novels = currentState.novels.map { novel ->
+                    if (novel.id == novelId) {
+                        novel.copy(
+                            bookmarkStatus = status,
+                            bookmarkId = bookmarkId
+                        )
+                    } else {
+                        novel
+                    }
+                }
+            )
         }
     }
 }

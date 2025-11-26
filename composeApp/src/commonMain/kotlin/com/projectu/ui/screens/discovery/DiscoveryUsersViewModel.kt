@@ -2,8 +2,13 @@ package com.projectu.ui.screens.discovery
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.projectu.shared.data.cache.StateCacheEvent
+import com.projectu.shared.data.cache.StateCacheManager
+import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.User
 import com.projectu.shared.domain.repository.UserRepository
+import com.projectu.shared.domain.usecase.SyncUserFollowDetailsUseCase
+import com.projectu.shared.domain.usecase.SyncUserStatesUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -12,7 +17,10 @@ import kotlinx.coroutines.launch
  * MVI 架构模式
  */
 class DiscoveryUsersViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val syncUserStatesUseCase: SyncUserStatesUseCase,
+    private val syncUserFollowDetailsUseCase: SyncUserFollowDetailsUseCase,
+    private val stateCacheManager: StateCacheManager
 ) : ScreenModel {
     
     // UI 状态
@@ -22,6 +30,18 @@ class DiscoveryUsersViewModel(
     init {
         // 初始加载
         loadUsers()
+        
+        // 监听全局状态变更事件
+        screenModelScope.launch {
+            stateCacheManager.stateChangeEvents.collect { event ->
+                when (event) {
+                    is StateCacheEvent.UserFollowChanged -> {
+                        updateUserFollowStatus(event.userId, event.status)
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
     
     /**
@@ -55,14 +75,21 @@ class DiscoveryUsersViewModel(
         screenModelScope.launch {
             userRepository.getDiscoveryUsers(limit = 20)
                 .onSuccess { newUsers ->
+                    // 第一步：应用全局状态缓存
+                    val syncedUsers = syncUserStatesUseCase(newUsers)
+                    
+                    // 第二步：精确同步已关注用户的关注状态（公开/悄悄关注）
+                    // 只对已关注的用户调用接口，减少性能开销
+                    val detailedUsers = syncUserFollowDetailsUseCase(syncedUsers)
+                    
                     _state.update { currentState ->
                         // 如果是追加模式，需要去重
                         val updatedUsers = if (append) {
                             val existingIds = currentState.users.map { it.id }.toSet()
-                            val uniqueNewUsers = newUsers.filter { it.id !in existingIds }
+                            val uniqueNewUsers = detailedUsers.filter { it.id !in existingIds }
                             currentState.users + uniqueNewUsers
                         } else {
-                            newUsers
+                            detailedUsers
                         }
                         
                         currentState.copy(
@@ -82,6 +109,27 @@ class DiscoveryUsersViewModel(
                         )
                     }
                 }
+        }
+    }
+    
+    /**
+     * 更新列表中用户的关注状态
+     * 由全局状态变更事件触发
+     */
+    private fun updateUserFollowStatus(
+        userId: String,
+        status: FollowStatus
+    ) {
+        _state.update { currentState ->
+            currentState.copy(
+                users = currentState.users.map { user ->
+                    if (user.id == userId) {
+                        user.copy(followStatus = status)
+                    } else {
+                        user
+                    }
+                }
+            )
         }
     }
 }

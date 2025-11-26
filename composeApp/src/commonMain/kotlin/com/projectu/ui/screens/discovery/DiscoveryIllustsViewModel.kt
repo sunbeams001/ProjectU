@@ -2,9 +2,13 @@ package com.projectu.ui.screens.discovery
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.projectu.shared.data.cache.StateCacheEvent
+import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Artwork
+import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.repository.ArtworkRepository
+import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -13,7 +17,9 @@ import kotlinx.coroutines.launch
  * MVI 架构模式
  */
 class DiscoveryIllustsViewModel(
-    private val artworkRepository: ArtworkRepository
+    private val artworkRepository: ArtworkRepository,
+    private val syncArtworkStatesUseCase: SyncArtworkStatesUseCase,
+    private val stateCacheManager: StateCacheManager
 ) : ScreenModel {
     
     // UI 状态
@@ -23,6 +29,18 @@ class DiscoveryIllustsViewModel(
     init {
         // 初始加载
         loadArtworks()
+        
+        // 监听全局状态变更事件
+        screenModelScope.launch {
+            stateCacheManager.stateChangeEvents.collect { event ->
+                when (event) {
+                    is StateCacheEvent.ArtworkBookmarkChanged -> {
+                        updateArtworkBookmarkStatus(event.artworkId, event.status, event.bookmarkId)
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
     
     /**
@@ -84,14 +102,17 @@ class DiscoveryIllustsViewModel(
                 limit = 100
             )
                 .onSuccess { newArtworks ->
+                    // 应用全局状态缓存
+                    val syncedArtworks = syncArtworkStatesUseCase(newArtworks)
+                    
                     _state.update { currentState ->
                         // 如果是追加模式，需要去重
                         val updatedArtworks = if (append) {
                             val existingIds = currentState.artworks.map { it.id }.toSet()
-                            val uniqueNewArtworks = newArtworks.filter { it.id !in existingIds }
+                            val uniqueNewArtworks = syncedArtworks.filter { it.id !in existingIds }
                             currentState.artworks + uniqueNewArtworks
                         } else {
-                            newArtworks
+                            syncedArtworks
                         }
                         
                         currentState.copy(
@@ -111,6 +132,31 @@ class DiscoveryIllustsViewModel(
                         )
                     }
                 }
+        }
+    }
+    
+    /**
+     * 更新列表中作品的收藏状态
+     * 由全局状态变更事件触发
+     */
+    private fun updateArtworkBookmarkStatus(
+        artworkId: String,
+        status: BookmarkStatus,
+        bookmarkId: String?
+    ) {
+        _state.update { currentState ->
+            currentState.copy(
+                artworks = currentState.artworks.map { artwork ->
+                    if (artwork.id == artworkId) {
+                        artwork.copy(
+                            bookmarkStatus = status,
+                            bookmarkId = bookmarkId
+                        )
+                    } else {
+                        artwork
+                    }
+                }
+            )
         }
     }
 }

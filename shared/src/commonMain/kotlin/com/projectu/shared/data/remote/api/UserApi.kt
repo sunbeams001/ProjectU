@@ -6,6 +6,7 @@ import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.ProfileIllustsBody
 import com.projectu.shared.data.remote.dto.user.UnfollowUserResponse
 import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
+import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
 import com.projectu.shared.data.remote.dto.user.UserRecommendBody
@@ -155,6 +156,31 @@ class UserApi(private val client: PixivApiClient) {
     ): PixivResponse<DiscoveryUsersBody> {
         return client.get("/ajax/discovery/users", mapOf(
             "limit" to limit
+        ))
+    }
+
+    /**
+     * 获取用户关注详情
+     * 
+     * 查询指定用户的关注状态（公开/悄悄关注）
+     * 
+     * ⚠️ 重要：此接口只能查询自己关注的用户，未关注的用户会返回错误
+     * 
+     * @param userId 用户ID
+     * @return 关注详情，包含restrict字段：
+     *         - "0" = 公开关注
+     *         - "1" = 悄悄关注（私密）
+     * 
+     * 应用场景：
+     * - 精确同步全局状态缓存中的用户关注状态
+     * - 在Discovery列表中区分公开/悄悄关注
+     * - 纠正Pixiv官方接口返回的不完整状态信息
+     */
+    suspend fun getUserFollowDetail(
+        userId: Long
+    ): PixivResponse<UserFollowDetailBody> {
+        return client.get("/ajax/following/user/details", mapOf(
+            "user_id" to userId
         ))
     }
 

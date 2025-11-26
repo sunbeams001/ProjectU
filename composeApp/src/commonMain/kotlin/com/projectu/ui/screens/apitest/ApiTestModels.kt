@@ -227,6 +227,16 @@ sealed class ApiMethod(
         priority = 3
     )
     
+    object GetUserFollowDetail : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getUserFollowDetail",
+        displayName = "用户关注详情（公开/悄悄关注）",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "58277", required = true)
+        ),
+        priority = 1
+    )
+    
     // ==================== BookmarkApi ====================
     
     // 插画收藏
@@ -694,6 +704,7 @@ sealed class ApiMethod(
             GetUserInfo, GetUserFullInfo, GetUserIllusts, 
             GetUserBookmarks, GetUserFollowing, GetUserFollowers,
             GetRecommendUsers, GetDiscoveryUsers, FollowUser, UnfollowUser,
+            GetUserFollowDetail,
             // BookmarkApi
             AddBookmark, DeleteBookmark, DeleteBookmarks, GetIllustBookmarkTags,
             AddNovelBookmark, DeleteNovelBookmark, DeleteNovelBookmarks, GetNovelBookmarkTags,

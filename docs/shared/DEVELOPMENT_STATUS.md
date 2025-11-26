@@ -1,6 +1,6 @@
 # 开发进度
 
-> 📅 最后更新: 2025-10-30
+> 📅 最后更新: 2025-11-26
 
 ## ✅ 已完成功能
 
@@ -29,8 +29,15 @@
 - ✅ Room 数据库 (跨平台 SQLite)
   - ✅ ArtworkEntity - 作品缓存
   - ✅ SettingsEntity - 应用设置
+  - ✅ StateCacheEntity - 全局状态缓存 🆕
 - ✅ DataStore - Pixiv 配置键值对存储
 - ✅ Ugoira 缓存系统 (ZIP 下载、解压、帧管理)
+- ✅ **全局状态缓存系统** 🆕
+  - ✅ 作品收藏状态管理
+  - ✅ 小说收藏状态管理
+  - ✅ 用户关注状态管理
+  - ✅ 跨页面状态同步
+  - ✅ 响应式状态更新
 - ✅ Repository 层完整实现
 
 ### 多语言系统
@@ -43,6 +50,13 @@
 - ✅ GetUgoiraUseCase - Ugoira 动图获取
 - ✅ SyncPixivLanguageUseCase - 语言同步
 - ✅ SettingsViewModel - 设置页面状态管理
+- ✅ **状态管理 UseCases** 🆕
+  - ✅ BookmarkArtworkUseCase - 收藏作品
+  - ✅ UnbookmarkArtworkUseCase - 取消收藏作品
+  - ✅ SyncArtworkStatesUseCase - 同步作品状态
+  - ✅ BookmarkNovelUseCase - 收藏小说
+  - ✅ UnbookmarkNovelUseCase - 取消收藏小说
+  - ✅ SyncNovelStatesUseCase - 同步小说状态
 
 ### 平台特定实现
 - ✅ Android 平台支持 (MainActivity, Application, DI)

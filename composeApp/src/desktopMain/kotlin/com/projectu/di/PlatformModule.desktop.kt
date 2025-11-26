@@ -55,12 +55,12 @@ actual val viewModelModule: Module = module {
     single { ApiTestViewModel(get(), get()) }
     
     // 发现插画 ScreenModel
-    factory { DiscoveryIllustsViewModel(get()) }
+    factory { DiscoveryIllustsViewModel(get(), get(), get()) }
     
     // 发现用户 ScreenModel
-    factory { DiscoveryUsersViewModel(get()) }
+    factory { DiscoveryUsersViewModel(get(), get(), get(), get()) }
     
     // 发现小说 ScreenModel
-    factory { DiscoveryNovelsViewModel(get()) }
+    factory { DiscoveryNovelsViewModel(get(), get(), get()) }
 }
 

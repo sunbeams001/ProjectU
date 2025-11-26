@@ -19,9 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.User
-import com.projectu.shared.domain.repository.UserRepository
+import com.projectu.shared.domain.usecase.FollowUserUseCase
+import com.projectu.shared.domain.usecase.UnfollowUserUseCase
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -39,7 +42,6 @@ import org.koin.compose.koinInject
  * 
  * @param user 用户对象（需要包含完整的关注信息）
  * @param size 组件大小
- * @param onStatusChanged 状态变化回调（可选，用于更新UI）
  * @param modifier 修饰符
  */
 @OptIn(ExperimentalFoundationApi::class)
@@ -47,13 +49,23 @@ import org.koin.compose.koinInject
 fun FollowIndicator(
     user: User,
     size: Dp = 24.dp,
-    onStatusChanged: ((FollowStatus) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    repository: UserRepository = koinInject()
+    followUserUseCase: FollowUserUseCase = koinInject(),
+    unfollowUserUseCase: UnfollowUserUseCase = koinInject(),
+    stateCacheManager: StateCacheManager = koinInject()
 ) {
     var followStatus by remember { mutableStateOf(user.followStatus) }
     var isProcessing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    
+    // 监听全局状态变化
+    LaunchedEffect(user.id) {
+        stateCacheManager.getUserState(user.id).collectLatest { state ->
+            if (state != null) {
+                followStatus = state.followStatus
+            }
+        }
+    }
     
     // 监听外部状态变化，同步内部状态
     LaunchedEffect(user.followStatus) {
@@ -81,10 +93,8 @@ fun FollowIndicator(
                                 FollowStatus.NOT_FOLLOWING -> {
                                     // 未关注 → 公开关注
                                     println("📌 FollowIndicator: 添加公开关注 - 用户ID: ${user.id}")
-                                    repository.followUser(user.id.toLong(), restrict = "public")
+                                    followUserUseCase(user.id.toLong(), isPrivate = false)
                                         .onSuccess {
-                                            followStatus = FollowStatus.PUBLIC
-                                            onStatusChanged?.invoke(FollowStatus.PUBLIC)
                                             println("✅ 公开关注成功")
                                         }.onFailure { e ->
                                             println("❌ 关注失败: ${e.message}")
@@ -93,10 +103,8 @@ fun FollowIndicator(
                                 FollowStatus.PUBLIC, FollowStatus.PRIVATE -> {
                                     // 已关注 → 取消关注
                                     println("📌 FollowIndicator: 取消关注 - 用户ID: ${user.id}")
-                                    repository.unfollowUser(user.id.toLong())
+                                    unfollowUserUseCase(user.id.toLong())
                                         .onSuccess {
-                                            followStatus = FollowStatus.NOT_FOLLOWING
-                                            onStatusChanged?.invoke(FollowStatus.NOT_FOLLOWING)
                                             println("✅ 已取消关注")
                                         }.onFailure { e ->
                                             println("❌ 取消关注失败: ${e.message}")
@@ -118,10 +126,8 @@ fun FollowIndicator(
                                 FollowStatus.NOT_FOLLOWING -> {
                                     // 未关注 → 悄悄关注
                                     println("📌 FollowIndicator: 添加悄悄关注 - 用户ID: ${user.id}")
-                                    repository.followUser(user.id.toLong(), restrict = "private")
+                                    followUserUseCase(user.id.toLong(), isPrivate = true)
                                         .onSuccess {
-                                            followStatus = FollowStatus.PRIVATE
-                                            onStatusChanged?.invoke(FollowStatus.PRIVATE)
                                             println("✅ 悄悄关注成功")
                                         }.onFailure { e ->
                                             println("❌ 悄悄关注失败: ${e.message}")
@@ -130,10 +136,8 @@ fun FollowIndicator(
                                 FollowStatus.PUBLIC -> {
                                     // 公开关注 → 悄悄关注
                                     println("📌 FollowIndicator: 转换为悄悄关注 - 用户ID: ${user.id}")
-                                    repository.followUser(user.id.toLong(), restrict = "private")
+                                    followUserUseCase(user.id.toLong(), isPrivate = true)
                                         .onSuccess {
-                                            followStatus = FollowStatus.PRIVATE
-                                            onStatusChanged?.invoke(FollowStatus.PRIVATE)
                                             println("✅ 已转换为悄悄关注")
                                         }.onFailure { e ->
                                             println("❌ 转换失败: ${e.message}")
@@ -142,10 +146,8 @@ fun FollowIndicator(
                                 FollowStatus.PRIVATE -> {
                                     // 悄悄关注 → 取消关注
                                     println("📌 FollowIndicator: 取消悄悄关注 - 用户ID: ${user.id}")
-                                    repository.unfollowUser(user.id.toLong())
+                                    unfollowUserUseCase(user.id.toLong())
                                         .onSuccess {
-                                            followStatus = FollowStatus.NOT_FOLLOWING
-                                            onStatusChanged?.invoke(FollowStatus.NOT_FOLLOWING)
                                             println("✅ 已取消关注")
                                         }.onFailure { e ->
                                             println("❌ 取消关注失败: ${e.message}")

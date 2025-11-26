@@ -1,5 +1,6 @@
 package com.projectu.shared.di
 
+import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.data.local.SettingsStore
@@ -10,13 +11,25 @@ import com.projectu.shared.data.repository.ArtworkRepositoryImpl
 import com.projectu.shared.data.repository.AuthRepositoryImpl
 import com.projectu.shared.data.repository.NovelRepositoryImpl
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
+import com.projectu.shared.data.repository.StateCacheRepositoryInMemory
 import com.projectu.shared.data.repository.UserRepositoryImpl
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.domain.repository.SettingsRepository
+import com.projectu.shared.domain.repository.StateCacheRepository
 import com.projectu.shared.domain.repository.UserRepository
+import com.projectu.shared.domain.usecase.BookmarkArtworkUseCase
+import com.projectu.shared.domain.usecase.BookmarkNovelUseCase
+import com.projectu.shared.domain.usecase.FollowUserUseCase
 import com.projectu.shared.domain.usecase.GetUgoiraUseCase
+import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
+import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
+import com.projectu.shared.domain.usecase.SyncUserFollowDetailsUseCase
+import com.projectu.shared.domain.usecase.SyncUserStatesUseCase
+import com.projectu.shared.domain.usecase.UnbookmarkArtworkUseCase
+import com.projectu.shared.domain.usecase.UnbookmarkNovelUseCase
+import com.projectu.shared.domain.usecase.UnfollowUserUseCase
 import com.projectu.shared.util.AgeLimitDeterminer
 import com.projectu.shared.util.TagTranslationUtil
 import io.ktor.client.*
@@ -126,6 +139,23 @@ val repositoryModule = module {
             ageLimitDeterminer = get()
         )
     }
+    
+    // 全局状态缓存仓储（纯内存实现，不依赖数据库）
+    single<StateCacheRepository> {
+        StateCacheRepositoryInMemory()
+    }
+}
+
+/**
+ * 全局状态缓存模块
+ */
+val stateCacheModule = module {
+    // 全局状态缓存管理器
+    single {
+        StateCacheManager(
+            stateCacheRepository = get()
+        )
+    }
 }
 
 /**
@@ -134,6 +164,22 @@ val repositoryModule = module {
 val useCaseModule = module {
     // Ugoira 相关
     factory { GetUgoiraUseCase(get()) }
+    
+    // 作品收藏相关
+    factory { BookmarkArtworkUseCase(get(), get()) }
+    factory { UnbookmarkArtworkUseCase(get(), get()) }
+    factory { SyncArtworkStatesUseCase(get()) }
+    
+    // 小说收藏相关
+    factory { BookmarkNovelUseCase(get(), get()) }
+    factory { UnbookmarkNovelUseCase(get(), get()) }
+    factory { SyncNovelStatesUseCase(get()) }
+    
+    // 用户关注相关
+    factory { FollowUserUseCase(get(), get()) }
+    factory { UnfollowUserUseCase(get(), get()) }
+    factory { SyncUserStatesUseCase(get()) }
+    factory { SyncUserFollowDetailsUseCase(get(), get()) }
 }
 
 /**
