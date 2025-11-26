@@ -10,15 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.BookmarkStatus
-import com.projectu.shared.domain.repository.ArtworkRepository
+import com.projectu.shared.domain.model.Novel
+import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.ui.components.icons.PixivBookmarkIcons
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 /**
- * 收藏状态指示器组件（带内置收藏逻辑）
+ * 小说收藏状态指示器组件（带内置收藏逻辑）
  * 
  * 视觉效果：
  * - 未收藏：空心爱心（灰色）
@@ -29,27 +29,29 @@ import org.koin.compose.koinInject
  * - 短按：切换收藏状态（未收藏→公开收藏→未收藏）
  * - 长按：如果已收藏，切换公开/私人状态；如果未收藏，添加为私人收藏
  * 
- * @param artwork 作品对象（需要包含完整的收藏信息）
+ * @param novel 小说对象（需要包含完整的收藏信息）
  * @param size 组件大小
  * @param onStatusChanged 状态变化回调（可选，用于更新UI）
  * @param modifier 修饰符
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BookmarkIndicator(
-    artwork: Artwork,
+fun NovelBookmarkIndicator(
+    novel: Novel,
     size: Dp = 24.dp,
     onStatusChanged: ((BookmarkStatus) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    repository: ArtworkRepository = koinInject()
+    repository: NovelRepository = koinInject()
 ) {
-    var currentStatus by remember { mutableStateOf(artwork.bookmarkStatus) }
+    var currentStatus by remember { mutableStateOf(novel.bookmarkStatus) }
+    var currentBookmarkId by remember { mutableStateOf(novel.bookmarkId) }
     var isProcessing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     
     // 监听外部状态变化，同步内部状态
-    LaunchedEffect(artwork.bookmarkStatus) {
-        currentStatus = artwork.bookmarkStatus
+    LaunchedEffect(novel.bookmarkStatus, novel.bookmarkId) {
+        currentStatus = novel.bookmarkStatus
+        currentBookmarkId = novel.bookmarkId
     }
     
     // 根据状态选择图标
@@ -81,23 +83,29 @@ fun BookmarkIndicator(
                             when (currentStatus) {
                                 BookmarkStatus.NOT_BOOKMARKED -> {
                                     // 添加公开收藏
-                                    println("📌 BookmarkIndicator: 添加公开收藏 - 作品ID: ${artwork.id}")
+                                    println("📌 NovelBookmarkIndicator: 添加公开收藏 - 小说ID: ${novel.id}")
                                     repository.addBookmark(
-                                        artworkId = artwork.id.toLong(),
+                                        novelId = novel.id.toLong(),
                                         isPrivate = false
-                                    ).onSuccess {
+                                    ).onSuccess { bookmarkId ->
+                                        currentBookmarkId = bookmarkId
                                         currentStatus = BookmarkStatus.PUBLIC
                                         onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
-                                        println("✅ 收藏成功：公开收藏")
+                                        println("✅ 收藏成功：公开收藏, bookmarkId=$bookmarkId")
                                     }.onFailure { e ->
                                         println("❌ 收藏失败: ${e.message}")
                                     }
                                 }
                                 BookmarkStatus.PUBLIC, BookmarkStatus.PRIVATE -> {
                                     // 取消收藏
-                                    println("📌 BookmarkIndicator: 取消收藏 - 作品ID: ${artwork.id}")
-                                    repository.removeBookmark(artwork.id.toLong())
+                                    if (currentBookmarkId == null) {
+                                        println("❌ NovelBookmarkIndicator: 无法取消收藏 - bookmarkId为空")
+                                        return@launch
+                                    }
+                                    println("📌 NovelBookmarkIndicator: 取消收藏 - 小说ID: ${novel.id}, bookmarkId: $currentBookmarkId")
+                                    repository.removeBookmark(currentBookmarkId!!)
                                         .onSuccess {
+                                            currentBookmarkId = null
                                             currentStatus = BookmarkStatus.NOT_BOOKMARKED
                                             onStatusChanged?.invoke(BookmarkStatus.NOT_BOOKMARKED)
                                             println("✅ 已取消收藏")
@@ -120,29 +128,35 @@ fun BookmarkIndicator(
                             when (currentStatus) {
                                 BookmarkStatus.NOT_BOOKMARKED -> {
                                     // 添加私人收藏
-                                    println("📌 BookmarkIndicator: 添加私人收藏 - 作品ID: ${artwork.id}")
+                                    println("📌 NovelBookmarkIndicator: 添加私人收藏 - 小说ID: ${novel.id}")
                                     repository.addBookmark(
-                                        artworkId = artwork.id.toLong(),
+                                        novelId = novel.id.toLong(),
                                         isPrivate = true
-                                    ).onSuccess {
+                                    ).onSuccess { bookmarkId ->
+                                        currentBookmarkId = bookmarkId
                                         currentStatus = BookmarkStatus.PRIVATE
                                         onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
-                                        println("✅ 收藏成功：私人收藏")
+                                        println("✅ 收藏成功：私人收藏, bookmarkId=$bookmarkId")
                                     }.onFailure { e ->
                                         println("❌ 私人收藏失败: ${e.message}")
                                     }
                                 }
                                 BookmarkStatus.PUBLIC -> {
                                     // 先取消，再添加为私人收藏
-                                    println("📌 BookmarkIndicator: 公开→私人 - 作品ID: ${artwork.id}")
-                                    repository.removeBookmark(artwork.id.toLong())
+                                    if (currentBookmarkId == null) {
+                                        println("❌ NovelBookmarkIndicator: 无法切换为私人 - bookmarkId为空")
+                                        return@launch
+                                    }
+                                    println("📌 NovelBookmarkIndicator: 公开→私人 - 小说ID: ${novel.id}, bookmarkId: $currentBookmarkId")
+                                    repository.removeBookmark(currentBookmarkId!!)
                                         .onSuccess {
                                             println("🔸 步骤1完成：已取消公开收藏")
                                             repository.addBookmark(
-                                                artworkId = artwork.id.toLong(),
+                                                novelId = novel.id.toLong(),
                                                 isPrivate = true
-                                            ).onSuccess {
-                                                println("🔸 步骤2完成：已添加私人收藏")
+                                            ).onSuccess { newBookmarkId ->
+                                                currentBookmarkId = newBookmarkId
+                                                println("🔸 步骤2完成：已添加私人收藏, newBookmarkId=$newBookmarkId")
                                                 println("🔸 准备更新状态：PRIVATE")
                                                 currentStatus = BookmarkStatus.PRIVATE
                                                 onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
@@ -156,16 +170,21 @@ fun BookmarkIndicator(
                                 }
                                 BookmarkStatus.PRIVATE -> {
                                     // 先取消，再添加为公开收藏
-                                    println("📌 BookmarkIndicator: 私人→公开 - 作品ID: ${artwork.id}")
-                                    repository.removeBookmark(artwork.id.toLong())
+                                    if (currentBookmarkId == null) {
+                                        println("❌ NovelBookmarkIndicator: 无法切换为公开 - bookmarkId为空")
+                                        return@launch
+                                    }
+                                    println("📌 NovelBookmarkIndicator: 私人→公开 - 小说ID: ${novel.id}, bookmarkId: $currentBookmarkId")
+                                    repository.removeBookmark(currentBookmarkId!!)
                                         .onSuccess {
                                             repository.addBookmark(
-                                                artworkId = artwork.id.toLong(),
+                                                novelId = novel.id.toLong(),
                                                 isPrivate = false
-                                            ).onSuccess {
+                                            ).onSuccess { newBookmarkId ->
+                                                currentBookmarkId = newBookmarkId
                                                 currentStatus = BookmarkStatus.PUBLIC
                                                 onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
-                                                println("✅ 已切换为公开收藏")
+                                                println("✅ 已切换为公开收藏, newBookmarkId=$newBookmarkId")
                                             }.onFailure { e ->
                                                 println("❌ 切换为公开收藏失败: ${e.message}")
                                             }
@@ -182,3 +201,5 @@ fun BookmarkIndicator(
             )
     )
 }
+
+

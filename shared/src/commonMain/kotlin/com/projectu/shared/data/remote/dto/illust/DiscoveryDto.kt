@@ -1,6 +1,7 @@
 package com.projectu.shared.data.remote.dto.illust
 
-import com.projectu.shared.data.remote.dto.novel.NovelSearchItem
+import com.projectu.shared.data.remote.dto.novel.NovelSeriesSimple
+import com.projectu.shared.data.remote.dto.novel.NovelSimple
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -53,13 +54,13 @@ data class RecommendedIllust(
 @Serializable
 data class Thumbnails(
     val illust: List<IllustSimple>? = null,  // 插画列表，小说发现时为空
-    val novel: List<NovelSearchItem>? = null,  // 小说列表，插画发现时为空
+    val novel: List<NovelSimple>? = null,  // 小说列表，插画发现时为空
     
     // ========== 以下字段不反序列化（性能优化） ==========
     @Transient
     val novelSeries: List<NovelSeriesSimple>? = null,  // 小说系列列表（不反序列化）
     @Transient
-    val novelDraft: List<NovelSearchItem>? = null,  // 小说草稿列表（不反序列化）
+    val novelDraft: List<NovelSimple>? = null,  // 小说草稿列表（不反序列化）
     @Transient
     val collection: List<String>? = null  // 收藏集ID列表（不反序列化）
 )
@@ -85,13 +86,4 @@ data class FollowLatestPage(
     val isLastPage: Boolean,
     @SerialName("tags")
     val tags: List<String>? = null
-)
-
-/**
- * 小说系列简要信息（用于 Thumbnails）
- */
-@Serializable
-data class NovelSeriesSimple(
-    val id: String,
-    val title: String
 )

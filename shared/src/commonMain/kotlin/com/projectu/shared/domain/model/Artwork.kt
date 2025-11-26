@@ -194,8 +194,8 @@ data class User(
     val isOfficial: Boolean = false,
     /** 用户插画作品列表 */
     val illusts: List<Artwork> = emptyList(),
-    /** 用户小说作品列表 (待实现) */
-    val novels: List<Any> = emptyList() // TODO: 改为 Novel 实体
+    /** 用户小说作品列表 */
+    val novels: List<Novel> = emptyList()
 )
 
 /**

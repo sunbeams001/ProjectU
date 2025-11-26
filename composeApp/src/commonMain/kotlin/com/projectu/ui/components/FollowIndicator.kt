@@ -51,9 +51,14 @@ fun FollowIndicator(
     modifier: Modifier = Modifier,
     repository: UserRepository = koinInject()
 ) {
-    var followStatus by remember(user.followStatus) { mutableStateOf(user.followStatus) }
+    var followStatus by remember { mutableStateOf(user.followStatus) }
     var isProcessing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    
+    // 监听外部状态变化，同步内部状态
+    LaunchedEffect(user.followStatus) {
+        followStatus = user.followStatus
+    }
     
     // 颜色定义
     val followedColor = Color(0xFF2196F3) // Material Blue

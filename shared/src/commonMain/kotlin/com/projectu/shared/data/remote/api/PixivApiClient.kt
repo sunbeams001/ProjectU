@@ -187,6 +187,7 @@ class PixivApiClient(
 
     /**
      * 执行POST请求（JSON body）
+     * 自动处理 CSRF token 过期问题：如果遇到 403 错误，会刷新 token 并重试一次
      */
     suspend inline fun <reified T, reified B> postJson(
         url: String,
@@ -197,18 +198,37 @@ class PixivApiClient(
             csrfToken = fetchToken()
         }
 
-        return httpClient.post("$host$url") {
-            header(HEADER_REFERER, DEFAULT_HOST)
-            header(HEADER_COOKIE, cookie)
-            header(HEADER_CSRF_TOKEN, csrfToken)
-            parameter("lang", langProvider())
-            contentType(ContentType.Application.Json)
-            setBody(body)
-        }.body()
+        return try {
+            httpClient.post("$host$url") {
+                header(HEADER_REFERER, DEFAULT_HOST)
+                header(HEADER_COOKIE, cookie)
+                header(HEADER_CSRF_TOKEN, csrfToken)
+                parameter("lang", langProvider())
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body()
+        } catch (e: Exception) {
+            // 如果是403错误（可能是token过期），刷新token并重试
+            if (e.message?.contains("403") == true) {
+                println("⚠️ POST请求遇到403错误，刷新CSRF token并重试...")
+                csrfToken = fetchToken()
+                httpClient.post("$host$url") {
+                    header(HEADER_REFERER, DEFAULT_HOST)
+                    header(HEADER_COOKIE, cookie)
+                    header(HEADER_CSRF_TOKEN, csrfToken)
+                    parameter("lang", langProvider())
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }.body()
+            } else {
+                throw e
+            }
+        }
     }
     
     /**
      * 执行POST请求（JSON body，无body参数）
+     * 自动处理 CSRF token 过期问题：如果遇到 403 错误，会刷新 token 并重试一次
      */
     suspend inline fun <reified T> postJson(
         url: String
@@ -218,13 +238,30 @@ class PixivApiClient(
             csrfToken = fetchToken()
         }
 
-        return httpClient.post("$host$url") {
-            header(HEADER_REFERER, DEFAULT_HOST)
-            header(HEADER_COOKIE, cookie)
-            header(HEADER_CSRF_TOKEN, csrfToken)
-            parameter("lang", langProvider())
-            contentType(ContentType.Application.Json)
-        }.body()
+        return try {
+            httpClient.post("$host$url") {
+                header(HEADER_REFERER, DEFAULT_HOST)
+                header(HEADER_COOKIE, cookie)
+                header(HEADER_CSRF_TOKEN, csrfToken)
+                parameter("lang", langProvider())
+                contentType(ContentType.Application.Json)
+            }.body()
+        } catch (e: Exception) {
+            // 如果是403错误（可能是token过期），刷新token并重试
+            if (e.message?.contains("403") == true) {
+                println("⚠️ POST请求遇到403错误，刷新CSRF token并重试...")
+                csrfToken = fetchToken()
+                httpClient.post("$host$url") {
+                    header(HEADER_REFERER, DEFAULT_HOST)
+                    header(HEADER_COOKIE, cookie)
+                    header(HEADER_CSRF_TOKEN, csrfToken)
+                    parameter("lang", langProvider())
+                    contentType(ContentType.Application.Json)
+                }.body()
+            } else {
+                throw e
+            }
+        }
     }
 
     /**
@@ -277,6 +314,7 @@ class PixivApiClient(
 
     /**
      * 执行POST请求（Form body）
+     * 自动处理 CSRF token 过期问题：如果遇到 403 错误，会刷新 token 并重试一次
      */
     suspend inline fun <reified T> postForm(
         url: String,
@@ -287,19 +325,42 @@ class PixivApiClient(
             csrfToken = fetchToken()
         }
 
-        return httpClient.submitForm(
-            url = "$host$url",
-            formParameters = Parameters.build {
-                append("lang", langProvider())
-                formParams?.forEach { (key, value) ->
-                    append(key, value)
+        return try {
+            httpClient.submitForm(
+                url = "$host$url",
+                formParameters = Parameters.build {
+                    append("lang", langProvider())
+                    formParams?.forEach { (key, value) ->
+                        append(key, value)
+                    }
                 }
+            ) {
+                header(HEADER_REFERER, DEFAULT_HOST)
+                header(HEADER_COOKIE, cookie)
+                header(HEADER_CSRF_TOKEN, csrfToken)
+            }.body()
+        } catch (e: Exception) {
+            // 如果是403错误（可能是token过期），刷新token并重试
+            if (e.message?.contains("403") == true) {
+                println("⚠️ POST请求遇到403错误，刷新CSRF token并重试...")
+                csrfToken = fetchToken()
+                httpClient.submitForm(
+                    url = "$host$url",
+                    formParameters = Parameters.build {
+                        append("lang", langProvider())
+                        formParams?.forEach { (key, value) ->
+                            append(key, value)
+                        }
+                    }
+                ) {
+                    header(HEADER_REFERER, DEFAULT_HOST)
+                    header(HEADER_COOKIE, cookie)
+                    header(HEADER_CSRF_TOKEN, csrfToken)
+                }.body()
+            } else {
+                throw e
             }
-        ) {
-            header(HEADER_REFERER, DEFAULT_HOST)
-            header(HEADER_COOKIE, cookie)
-            header(HEADER_CSRF_TOKEN, csrfToken)
-        }.body()
+        }
     }
 
     /**
