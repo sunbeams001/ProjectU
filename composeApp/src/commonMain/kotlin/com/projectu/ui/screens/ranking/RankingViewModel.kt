@@ -71,15 +71,13 @@ class RankingViewModel(
             it.copy(
                 currentContentType = contentType,
                 currentMode = newMode,
-                artworks = emptyList(),
-                novels = emptyList(),
-                currentPage = 1,
-                hasMorePages = true,
-                isLoading = true,
+                modeDataCache = emptyMap(), // 清空所有缓存
+                isLoading = false,
                 error = null
             )
         }
-        loadRanking()
+        // 加载新 mode 的数据
+        loadRankingIfNeeded()
     }
     
     /**
@@ -96,15 +94,11 @@ class RankingViewModel(
         _state.update {
             it.copy(
                 currentMode = mode,
-                artworks = emptyList(),
-                novels = emptyList(),
-                currentPage = 1,
-                hasMorePages = true,
-                isLoading = true,
                 error = null
             )
         }
-        loadRanking()
+        // 只在该 mode 没有数据时才加载
+        loadRankingIfNeeded()
     }
     
     /**
@@ -117,24 +111,32 @@ class RankingViewModel(
         _state.update {
             it.copy(
                 selectedDate = date,
-                artworks = emptyList(),
-                novels = emptyList(),
-                currentPage = 1,
-                hasMorePages = true,
-                isLoading = true,
+                modeDataCache = emptyMap(), // 清空所有缓存
+                isLoading = false,
                 error = null
             )
         }
-        loadRanking()
+        loadRankingIfNeeded()
     }
     
     /**
      * 加载更多
      */
     fun loadMore() {
-        if (_state.value.isLoading || _state.value.isLoadingMore || !_state.value.hasMorePages) return
+        val currentState = _state.value
+        val modeData = currentState.modeDataCache[currentState.currentMode.value]
         
-        _state.update { it.copy(isLoadingMore = true) }
+        if (currentState.isLoading || modeData?.isLoadingMore == true || modeData?.hasMorePages == false) {
+            return
+        }
+        
+        _state.update {
+            val updatedCache = it.modeDataCache.toMutableMap()
+            val currentModeData = updatedCache[it.currentMode.value] ?: ModeData()
+            updatedCache[it.currentMode.value] = currentModeData.copy(isLoadingMore = true)
+            it.copy(modeDataCache = updatedCache)
+        }
+        
         loadRanking(append = true)
     }
     
@@ -143,25 +145,42 @@ class RankingViewModel(
      */
     fun refresh() {
         _state.update {
+            val updatedCache = it.modeDataCache.toMutableMap()
+            updatedCache.remove(it.currentMode.value) // 移除当前 mode 的缓存
             it.copy(
-                artworks = emptyList(),
-                novels = emptyList(),
-                currentPage = 1,
-                hasMorePages = true,
-                isLoading = true,
+                modeDataCache = updatedCache,
+                isLoading = false,
                 error = null
             )
         }
-        loadRanking()
+        loadRankingIfNeeded()
     }
     
+    /**
+     * 只在当前 mode 没有数据时加载
+     */
+    private fun loadRankingIfNeeded() {
+        val currentState = _state.value
+        val modeData = currentState.modeDataCache[currentState.currentMode.value]
+        
+        // 如果已有数据，不加载
+        if (modeData != null && (modeData.artworks.isNotEmpty() || modeData.novels.isNotEmpty())) {
+            return
+        }
+        
+        // 否则开始加载
+        _state.update { it.copy(isLoading = true, error = null) }
+        loadRanking()
+    }
     /**
      * 加载排行榜数据
      */
     private fun loadRanking(append: Boolean = false) {
         screenModelScope.launch {
             val currentState = _state.value
-            val page = if (append) currentState.currentPage + 1 else 1
+            val modeKey = currentState.currentMode.value
+            val currentModeData = currentState.modeDataCache[modeKey] ?: ModeData()
+            val page = if (append) currentModeData.currentPage + 1 else 1
             
             // 根据内容类型判断是加载作品还是小说
             if (currentState.currentContentType == RankingContent.NOVEL) {
@@ -177,31 +196,42 @@ class RankingViewModel(
                         val syncedNovels = syncNovelStatesUseCase(newNovels)
                         
                         _state.update { state ->
+                            val updatedCache = state.modeDataCache.toMutableMap()
+                            val existingData = updatedCache[modeKey] ?: ModeData()
+                            
                             val updatedNovels = if (append) {
-                                state.novels + syncedNovels
+                                existingData.novels + syncedNovels
                             } else {
                                 syncedNovels
                             }
                             
-                            state.copy(
+                            updatedCache[modeKey] = ModeData(
                                 novels = updatedNovels,
                                 currentPage = page,
-                                hasMorePages = newNovels.isNotEmpty(), // 如果返回数据为空，说明没有更多了
+                                hasMorePages = newNovels.isNotEmpty(),
+                                isLoadingMore = false
+                            )
+                            
+                            state.copy(
+                                modeDataCache = updatedCache,
                                 currentDate = dateInfo.first,
                                 prevDate = dateInfo.second,
                                 nextDate = dateInfo.third,
                                 isLoading = false,
-                                isLoadingMore = false,
                                 error = null
                             )
                         }
                     }
                     .onFailure { error ->
-                        _state.update {
-                            it.copy(
+                        _state.update { state ->
+                            val updatedCache = state.modeDataCache.toMutableMap()
+                            val existingData = updatedCache[modeKey] ?: ModeData()
+                            updatedCache[modeKey] = existingData.copy(isLoadingMore = false)
+                            
+                            state.copy(
+                                modeDataCache = updatedCache,
                                 error = error.message,
-                                isLoading = false,
-                                isLoadingMore = false
+                                isLoading = false
                             )
                         }
                     }
@@ -218,31 +248,42 @@ class RankingViewModel(
                         val syncedArtworks = syncArtworkStatesUseCase(newArtworks)
                         
                         _state.update { state ->
+                            val updatedCache = state.modeDataCache.toMutableMap()
+                            val existingData = updatedCache[modeKey] ?: ModeData()
+                            
                             val updatedArtworks = if (append) {
-                                state.artworks + syncedArtworks
+                                existingData.artworks + syncedArtworks
                             } else {
                                 syncedArtworks
                             }
                             
-                            state.copy(
+                            updatedCache[modeKey] = ModeData(
                                 artworks = updatedArtworks,
                                 currentPage = page,
                                 hasMorePages = newArtworks.isNotEmpty(),
+                                isLoadingMore = false
+                            )
+                            
+                            state.copy(
+                                modeDataCache = updatedCache,
                                 currentDate = dateInfo.first,
                                 prevDate = dateInfo.second,
                                 nextDate = dateInfo.third,
                                 isLoading = false,
-                                isLoadingMore = false,
                                 error = null
                             )
                         }
                     }
                     .onFailure { error ->
-                        _state.update {
-                            it.copy(
+                        _state.update { state ->
+                            val updatedCache = state.modeDataCache.toMutableMap()
+                            val existingData = updatedCache[modeKey] ?: ModeData()
+                            updatedCache[modeKey] = existingData.copy(isLoadingMore = false)
+                            
+                            state.copy(
+                                modeDataCache = updatedCache,
                                 error = error.message,
-                                isLoading = false,
-                                isLoadingMore = false
+                                isLoading = false
                             )
                         }
                     }
@@ -259,18 +300,21 @@ class RankingViewModel(
         bookmarkId: String?
     ) {
         _state.update { currentState ->
-            currentState.copy(
-                artworks = currentState.artworks.map { artwork ->
-                    if (artwork.id == artworkId) {
-                        artwork.copy(
-                            bookmarkStatus = status,
-                            bookmarkId = bookmarkId
-                        )
-                    } else {
-                        artwork
+            val updatedCache = currentState.modeDataCache.mapValues { (_, modeData) ->
+                modeData.copy(
+                    artworks = modeData.artworks.map { artwork ->
+                        if (artwork.id == artworkId) {
+                            artwork.copy(
+                                bookmarkStatus = status,
+                                bookmarkId = bookmarkId
+                            )
+                        } else {
+                            artwork
+                        }
                     }
-                }
-            )
+                )
+            }
+            currentState.copy(modeDataCache = updatedCache)
         }
     }
     
@@ -283,18 +327,21 @@ class RankingViewModel(
         bookmarkId: String?
     ) {
         _state.update { currentState ->
-            currentState.copy(
-                novels = currentState.novels.map { novel ->
-                    if (novel.id == novelId) {
-                        novel.copy(
-                            bookmarkStatus = status,
-                            bookmarkId = bookmarkId
-                        )
-                    } else {
-                        novel
+            val updatedCache = currentState.modeDataCache.mapValues { (_, modeData) ->
+                modeData.copy(
+                    novels = modeData.novels.map { novel ->
+                        if (novel.id == novelId) {
+                            novel.copy(
+                                bookmarkStatus = status,
+                                bookmarkId = bookmarkId
+                            )
+                        } else {
+                            novel
+                        }
                     }
-                }
-            )
+                )
+            }
+            currentState.copy(modeDataCache = updatedCache)
         }
     }
 }
@@ -317,6 +364,18 @@ data class RankingState(
     val prevDate: String? = null,     // 前一天的日期
     val nextDate: String? = null,     // 后一天的日期
     
+    // 每个 mode 的数据缓存（key = RankingMode.value）
+    val modeDataCache: Map<String, ModeData> = emptyMap(),
+    
+    // 加载状态
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
+/**
+ * 单个 mode 的数据
+ */
+data class ModeData(
     // 作品列表（当内容类型为综合、插画、漫画、动图时使用）
     val artworks: List<Artwork> = emptyList(),
     
@@ -326,11 +385,7 @@ data class RankingState(
     // 分页状态
     val currentPage: Int = 1,
     val hasMorePages: Boolean = true,
-    
-    // 加载状态
-    val isLoading: Boolean = false,
-    val isLoadingMore: Boolean = false,
-    val error: String? = null
+    val isLoadingMore: Boolean = false
 )
 
 /**

@@ -104,7 +104,14 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                 )
                 NavigationRailItem(
                     selected = it.current == RankingTab,
-                    onClick = { it.current = RankingTab },
+                    onClick = { 
+                        if (it.current == RankingTab) {
+                            // 重复点击排行榜 Tab，触发刷新或滚动到顶部
+                            RankingTab.triggerScrollToTopOrRefresh()
+                        } else {
+                            it.current = RankingTab
+                        }
+                    },
                     icon = { Icon(Icons.Default.Star, contentDescription = null) },
                     label = { Text(stringResource(Res.string.nav_ranking)) }
                 )
@@ -148,7 +155,14 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
     
     NavigationBarItem(
         selected = tabNavigator.current == tab,
-        onClick = { tabNavigator.current = tab },
+        onClick = { 
+            if (tabNavigator.current == tab && tab == RankingTab) {
+                // 重复点击排行榜 Tab，触发刷新或滚动到顶部
+                RankingTab.triggerScrollToTopOrRefresh()
+            } else {
+                tabNavigator.current = tab
+            }
+        },
         icon = { Icon(icon, contentDescription = title) },
         label = { Text(title) }
     )
@@ -292,6 +306,14 @@ fun DiscoveryTabContent() {
 
 // 排行榜标签
 object RankingTab : Tab {
+    // 用于触发刷新或滚动到顶部的事件
+    private val _scrollToTopOrRefreshTrigger = mutableStateOf(0L)
+    val scrollToTopOrRefreshTrigger: State<Long> = _scrollToTopOrRefreshTrigger
+    
+    fun triggerScrollToTopOrRefresh() {
+        _scrollToTopOrRefreshTrigger.value = System.currentTimeMillis()
+    }
+    
     override val options: TabOptions
         @Composable
         get() {
@@ -311,6 +333,16 @@ object RankingTab : Tab {
         val viewModel = koinScreenModel<RankingViewModel>()
         val state by viewModel.state.collectAsState()
         
+        // 用于管理刷新或滚动到顶部的触发
+        val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
+        
+        // 监听触发器
+        LaunchedEffect(scrollToTopOrRefreshTrigger.value) {
+            if (scrollToTopOrRefreshTrigger.value > 0) {
+                scrollToTopOrRefreshCallback.value?.invoke()
+            }
+        }
+        
         RankingContent(
             state = state,
             onContentTypeChange = viewModel::switchContentType,
@@ -325,6 +357,9 @@ object RankingTab : Tab {
             onNovelClick = { novel ->
                 // TODO: 跳转到小说详情页
                 println("点击小说: ${novel.title}")
+            },
+            onRegisterScrollToTopOrRefreshCallback = { callback ->
+                scrollToTopOrRefreshCallback.value = callback
             }
         )
     }

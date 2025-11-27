@@ -10,15 +10,19 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.projectu.shared.data.remote.model.RankingContent
+import kotlinx.coroutines.launch
 import com.projectu.shared.data.remote.model.RankingContentModeConfig
 import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.ui.components.ArtworkCard
@@ -29,6 +33,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  * 排行榜内容区域
  * 用于在 HomeScreen 的 RankingTab 中显示
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RankingContent(
     state: RankingState,
@@ -38,12 +43,82 @@ fun RankingContent(
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onArtworkClick: (com.projectu.shared.domain.model.Artwork) -> Unit,
-    onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit
+    onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
+    onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
+    // 获取当前内容类型支持的所有模式
+    val supportedModes = remember(state.currentContentType) {
+        RankingContentModeConfig.getSupportedModes(state.currentContentType)
+    }
+    
+    // 为每个 mode 创建独立的列表状态缓存
+    val listStates = remember(state.currentContentType) {
+        mutableStateMapOf<String, Any>()
+    }
+    
+    val coroutineScope = rememberCoroutineScope()
+    
+    // 创建滚动到顶部或刷新的回调
+    val scrollToTopOrRefresh: () -> Unit = remember(state.currentMode, listStates) {
+        {
+            val currentMode = state.currentMode
+            val listState = listStates[currentMode.value]
+            val isAtTop = when (listState) {
+                is androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState -> 
+                    listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+                is androidx.compose.foundation.lazy.LazyListState -> 
+                    listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+                else -> true
+            }
+            
+            if (isAtTop) {
+                onRefresh()
+            } else {
+                coroutineScope.launch {
+                    when (listState) {
+                        is androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState -> 
+                            listState.animateScrollToItem(0)
+                        is androidx.compose.foundation.lazy.LazyListState -> 
+                            listState.animateScrollToItem(0)
+                    }
+                }
+            }
+        }
+    }
+    
+    // 注册回调
+    LaunchedEffect(scrollToTopOrRefresh) {
+        onRegisterScrollToTopOrRefreshCallback?.invoke(scrollToTopOrRefresh)
+    }
+    
+    // 创建 Pager 状态
+    val pagerState = rememberPagerState(
+        initialPage = supportedModes.indexOf(state.currentMode).coerceAtLeast(0),
+        pageCount = { supportedModes.size }
+    )
+    
+    // 同步 Pager 页面切换到 ViewModel
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress) {
+            val newMode = supportedModes.getOrNull(pagerState.currentPage)
+            if (newMode != null && newMode != state.currentMode) {
+                onModeChange(newMode)
+            }
+        }
+    }
+    
+    // 当外部通过点击切换 mode 时，同步到 Pager
+    LaunchedEffect(state.currentMode) {
+        val targetPage = supportedModes.indexOf(state.currentMode)
+        if (targetPage >= 0 && targetPage != pagerState.currentPage) {
+            pagerState.animateScrollToPage(targetPage)
+        }
+    }
+    
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 第一层选择器：内容类型 + 日期选择
+        // 第一层选择器：内容类型 + 日期选择（固定不滑动）
         ContentTypeSelector(
             state = state,
             currentContentType = state.currentContentType,
@@ -53,56 +128,88 @@ fun RankingContent(
             modifier = Modifier.fillMaxWidth()
         )
         
-        // 第二层选择器：排行榜模式
+        // 第二层选择器：排行榜模式（固定不滑动，但会响应 Pager 的页面变化）
         RankingModeSelector(
-            currentContentType = state.currentContentType,
-            currentMode = state.currentMode,
-            onModeChange = onModeChange,
+            supportedModes = supportedModes,
+            currentModeIndex = pagerState.currentPage,
+            onModeChange = { mode ->
+                onModeChange(mode)
+            },
+            onRefreshOrScrollToTop = scrollToTopOrRefresh,
             modifier = Modifier.fillMaxWidth()
         )
         
-        // 内容区域
-        Box(modifier = Modifier.fillMaxSize()) {
-            when {
-                state.isLoading && state.artworks.isEmpty() && state.novels.isEmpty() -> {
-                    // 初次加载
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+        // HorizontalPager：支持左右滑动切换 mode
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+            key = { supportedModes[it].value }
+        ) { page ->
+            val mode = supportedModes[page]
+            val modeData = state.modeDataCache[mode.value] ?: ModeData()
+            
+            // 为当前 mode 获取或创建列表状态
+            val listState = if (state.currentContentType == RankingContent.NOVEL) {
+                val lazyListState = rememberLazyListState()
+                remember(mode.value, state.currentContentType) {
+                    listStates.getOrPut(mode.value) { lazyListState }
                 }
-                state.error != null && state.artworks.isEmpty() && state.novels.isEmpty() -> {
-                    // 错误状态
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = state.error,
-                            color = MaterialTheme.colorScheme.error
+            } else {
+                val lazyStaggeredGridState = rememberLazyStaggeredGridState()
+                remember(mode.value, state.currentContentType) {
+                    listStates.getOrPut(mode.value) { lazyStaggeredGridState }
+                }
+            }
+            
+            // 内容区域
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    state.isLoading && modeData.artworks.isEmpty() && modeData.novels.isEmpty() -> {
+                        // 初次加载
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
                         )
-                        Button(onClick = onRefresh) {
-                            Text("重试")
+                    }
+                    state.error != null && modeData.artworks.isEmpty() && modeData.novels.isEmpty() -> {
+                        // 错误状态
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = state.error,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                            Button(onClick = onRefresh) {
+                                Text("重试")
+                            }
                         }
                     }
-                }
-                state.currentContentType == RankingContent.NOVEL && state.novels.isNotEmpty() -> {
-                    // 小说列表布局
-                    NovelListLayout(
-                        novels = state.novels,
-                        onNovelClick = onNovelClick,
-                        onLoadMore = onLoadMore,
-                        isLoadingMore = state.isLoadingMore
-                    )
-                }
-                state.currentContentType != RankingContent.NOVEL && state.artworks.isNotEmpty() -> {
-                    // 作品瀑布流布局
-                    ArtworkStaggeredGridLayout(
-                        artworks = state.artworks,
-                        onArtworkClick = onArtworkClick,
-                        onLoadMore = onLoadMore,
-                        isLoadingMore = state.isLoadingMore
-                    )
+                    state.currentContentType == RankingContent.NOVEL && modeData.novels.isNotEmpty() -> {
+                        // 小说列表布局
+                        NovelListLayout(
+                            novels = modeData.novels,
+                            onNovelClick = onNovelClick,
+                            onLoadMore = onLoadMore,
+                            isLoadingMore = modeData.isLoadingMore,
+                            listState = listState as androidx.compose.foundation.lazy.LazyListState,
+                            isRefreshing = state.isLoading && modeData.novels.isNotEmpty(),
+                            onRefresh = onRefresh
+                        )
+                    }
+                    state.currentContentType != RankingContent.NOVEL && modeData.artworks.isNotEmpty() -> {
+                        // 作品瀑布流布局
+                        ArtworkStaggeredGridLayout(
+                            artworks = modeData.artworks,
+                            onArtworkClick = onArtworkClick,
+                            onLoadMore = onLoadMore,
+                            isLoadingMore = modeData.isLoadingMore,
+                            listState = listState as androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState,
+                            isRefreshing = state.isLoading && modeData.artworks.isNotEmpty(),
+                            onRefresh = onRefresh
+                        )
+                    }
                 }
             }
         }
@@ -338,22 +445,21 @@ fun DateSelector(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RankingModeSelector(
-    currentContentType: RankingContent,
-    currentMode: RankingMode,
+    supportedModes: List<RankingMode>,
+    currentModeIndex: Int,
     onModeChange: (RankingMode) -> Unit,
+    onRefreshOrScrollToTop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 获取当前内容类型支持的所有模式
-    val supportedModes = RankingContentModeConfig.getSupportedModes(currentContentType)
     val scrollState = rememberScrollState()
+    val currentMode = supportedModes.getOrNull(currentModeIndex)
     
     // 当选中的mode变化时，自动滚动到可见位置
-    LaunchedEffect(currentMode, supportedModes) {
-        val selectedIndex = supportedModes.indexOf(currentMode)
-        if (selectedIndex >= 0) {
+    LaunchedEffect(currentModeIndex, supportedModes) {
+        if (currentModeIndex >= 0 && currentModeIndex < supportedModes.size) {
             // 估算每个chip的宽度（约100dp）+ 间距（8dp）
             val chipWidth = 108
-            val scrollPosition = (selectedIndex * chipWidth).coerceAtLeast(0)
+            val scrollPosition = (currentModeIndex * chipWidth).coerceAtLeast(0)
             scrollState.animateScrollTo(scrollPosition)
         }
     }
@@ -371,10 +477,18 @@ fun RankingModeSelector(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            supportedModes.forEach { mode ->
+            supportedModes.forEachIndexed { index, mode ->
                 FilterChip(
-                    selected = currentMode == mode,
-                    onClick = { onModeChange(mode) },
+                    selected = index == currentModeIndex,
+                    onClick = { 
+                        if (index == currentModeIndex) {
+                            // 点击已选中的 mode，触发刷新或滚动到顶部
+                            onRefreshOrScrollToTop()
+                        } else {
+                            // 切换到新的 mode
+                            onModeChange(mode)
+                        }
+                    },
                     label = {
                         Text(text = mode.displayName)
                     }
@@ -392,9 +506,11 @@ fun ArtworkStaggeredGridLayout(
     artworks: List<com.projectu.shared.domain.model.Artwork>,
     onArtworkClick: (com.projectu.shared.domain.model.Artwork) -> Unit,
     onLoadMore: () -> Unit,
-    isLoadingMore: Boolean
+    isLoadingMore: Boolean,
+    listState: androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState = rememberLazyStaggeredGridState(),
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {}
 ) {
-    val listState = rememberLazyStaggeredGridState()
     
     // 监听滚动，触发加载更多
     LaunchedEffect(listState) {
@@ -406,31 +522,37 @@ fun ArtworkStaggeredGridLayout(
             }
     }
     
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(3),
-        state = listState,
-        contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalItemSpacing = 8.dp,
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
-        items(artworks, key = { it.id }) { artwork ->
-            ArtworkCard(
-                artwork = artwork,
-                onClick = { onArtworkClick(artwork) }
-            )
-        }
-        
-        // 加载更多指示器
-        if (isLoadingMore) {
-            item(span = androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan.FullLine) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(3),
+            state = listState,
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalItemSpacing = 8.dp,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(artworks, key = { it.id }) { artwork ->
+                ArtworkCard(
+                    artwork = artwork,
+                    onClick = { onArtworkClick(artwork) }
+                )
+            }
+            
+            // 加载更多指示器
+            if (isLoadingMore) {
+                item(span = androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan.FullLine) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
@@ -445,9 +567,11 @@ fun NovelListLayout(
     novels: List<com.projectu.shared.domain.model.Novel>,
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
     onLoadMore: () -> Unit,
-    isLoadingMore: Boolean
+    isLoadingMore: Boolean,
+    listState: androidx.compose.foundation.lazy.LazyListState = rememberLazyListState(),
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {}
 ) {
-    val listState = rememberLazyListState()
     
     // 监听滚动，触发加载更多
     LaunchedEffect(listState) {
@@ -465,29 +589,35 @@ fun NovelListLayout(
         }
     }
     
-    LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
-        items(novels, key = { it.id }) { novel ->
-            NovelCard(
-                novel = novel,
-                onClick = { onNovelClick(novel) }
-            )
-        }
-        
-        // 加载更多指示器
-        if (isLoadingMore) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        LazyColumn(
+            state = listState,
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(novels, key = { it.id }) { novel ->
+                NovelCard(
+                    novel = novel,
+                    onClick = { onNovelClick(novel) }
+                )
+            }
+            
+            // 加载更多指示器
+            if (isLoadingMore) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }

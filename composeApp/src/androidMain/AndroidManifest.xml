@@ -10,7 +10,7 @@
         android:icon="@android:drawable/ic_menu_gallery"
         android:label="ProjectU"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@style/Theme.ProjectU.Splash">
         
         <activity
             android:name=".MainActivity"

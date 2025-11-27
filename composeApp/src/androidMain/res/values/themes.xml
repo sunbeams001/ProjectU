@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 启动画面主题 - 浅色模式 -->
+    <style name="Theme.ProjectU.Splash" parent="Theme.SplashScreen">
+        <!-- 启动画面背景色 - 浅色 -->
+        <item name="android:windowSplashScreenBackground">#FBFCFE</item>
+        
+        <!-- 启动画面图标（可选，如果有logo的话） -->
+        <!-- <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher</item> -->
+        
+        <!-- 图标背景色（可选） -->
+        <!-- <item name="windowSplashScreenIconBackgroundColor">@color/primary</item> -->
+        
+        <!-- 状态栏和导航栏颜色 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        
+        <!-- 启动后切换到应用主题 -->
+        <item name="postSplashScreenTheme">@style/Theme.ProjectU</item>
+    </style>
+
+    <!-- 应用主题 -->
+    <style name="Theme.ProjectU" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>
