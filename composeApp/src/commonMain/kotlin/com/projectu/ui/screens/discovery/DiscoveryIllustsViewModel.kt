@@ -27,9 +27,6 @@ class DiscoveryIllustsViewModel(
     val state: StateFlow<DiscoveryIllustsState> = _state.asStateFlow()
     
     init {
-        // 初始加载
-        loadArtworks()
-        
         // 监听全局状态变更事件
         screenModelScope.launch {
             stateCacheManager.stateChangeEvents.collect { event ->
@@ -40,6 +37,15 @@ class DiscoveryIllustsViewModel(
                     else -> {}
                 }
             }
+        }
+    }
+    
+    /**
+     * 初始化加载（惰性加载）
+     */
+    fun initLoadIfNeeded() {
+        if (_state.value.artworks.isEmpty() && !_state.value.isLoading && _state.value.error == null) {
+            loadArtworks()
         }
     }
     

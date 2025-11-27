@@ -1,6 +1,7 @@
 package com.projectu.shared.data.local
 
 import com.projectu.shared.domain.model.ImageQuality
+import com.projectu.shared.domain.model.DetailImageQuality
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +51,13 @@ class SettingsCache(
     private val _preferredImageQuality = MutableStateFlow(ImageQuality.SQUARE_MEDIUM)
     val preferredImageQuality: StateFlow<ImageQuality> = _preferredImageQuality.asStateFlow()
     
+    /**
+     * 插画详情页首选图片质量缓存
+     * 用于作品详情页中快速获取图片质量设置（高频访问）
+     */
+    private val _detailImageQuality = MutableStateFlow(DetailImageQuality.LARGE)
+    val detailImageQuality: StateFlow<DetailImageQuality> = _detailImageQuality.asStateFlow()
+    
     // TODO: 后续添加更多配置项缓存
     // private val _someOtherConfig = MutableStateFlow(defaultValue)
     // val someOtherConfig: StateFlow<Type> = _someOtherConfig.asStateFlow()
@@ -62,6 +70,7 @@ class SettingsCache(
                 _pixivLanguage.value = settings.pixivLanguage
                 _r18SanityLevelThreshold.value = settings.r18SanityLevelThreshold
                 _preferredImageQuality.value = settings.preferredImageQuality
+                _detailImageQuality.value = settings.detailImageQuality
                 
                 // TODO: 后续添加更多字段的同步
                 // _someOtherConfig.value = settings.someOtherConfig
@@ -98,6 +107,14 @@ class SettingsCache(
      */
     fun getPreferredImageQuality(): ImageQuality {
         return _preferredImageQuality.value
+    }
+    
+    /**
+     * 获取当前插画详情页首选图片质量（同步方法，使用内存缓存）
+     * 用于 ArtworkDetailContent 等组件快速获取图片质量设置
+     */
+    fun getDetailImageQuality(): DetailImageQuality {
+        return _detailImageQuality.value
     }
     
     // TODO: 后续添加更多配置项的 getter

@@ -34,9 +34,6 @@ class RankingViewModel(
     val state: StateFlow<RankingState> = _state.asStateFlow()
     
     init {
-        // 初始加载
-        loadRanking()
-        
         // 监听全局状态变更事件
         screenModelScope.launch {
             stateCacheManager.stateChangeEvents.collect { event ->
@@ -50,6 +47,18 @@ class RankingViewModel(
                     else -> {}
                 }
             }
+        }
+    }
+    
+    /**
+     * 初始化加载（惰性加载）
+     */
+    fun initLoadIfNeeded() {
+        val currentMode = _state.value.currentMode
+        val hasData = _state.value.modeDataCache[currentMode.value] != null
+        
+        if (!hasData && !_state.value.isLoading) {
+            loadRanking()
         }
     }
     

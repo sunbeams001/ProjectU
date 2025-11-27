@@ -32,5 +32,7 @@ data class IllustSimple(
     val visibilityScope: Int = 0,  // 可见性范围
     val profileImageUrl: String? = null,
     val type: String? = null,  // 作品类型，如 "illust", "manga" 等
-    val urls: Map<String, String>? = null  // 不同尺寸的缩略图 URL，如 "250x250", "360x360", "540x540", "1200x1200"
+    val urls: Map<String, String>? = null,  // 不同尺寸的缩略图 URL，如 "250x250", "360x360", "540x540", "1200x1200"
+    val seriesId: String? = null,  // 系列 ID
+    val seriesTitle: String? = null  // 系列标题
 )

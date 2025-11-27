@@ -5,6 +5,7 @@ import com.projectu.shared.data.local.AppSettings
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.ImageQuality
+import com.projectu.shared.domain.model.DetailImageQuality
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -48,6 +49,11 @@ interface SettingsRepository {
      * 更新插画卡片首选图片质量
      */
     suspend fun updatePreferredImageQuality(quality: ImageQuality)
+    
+    /**
+     * 更新插画详情页首选图片质量
+     */
+    suspend fun updateDetailImageQuality(quality: DetailImageQuality)
     
     /**
      * 更新完整设置

@@ -1,6 +1,7 @@
 package com.projectu.shared.data.local
 
 import com.projectu.shared.domain.model.ImageQuality
+import com.projectu.shared.domain.model.DetailImageQuality
 
 /**
  * 应用设置数据模型
@@ -43,7 +44,14 @@ data class AppSettings(
      * 用于列表、瀑布流等场景的缩略图显示
      * 默认：SQUARE_MEDIUM (250x250)
      */
-    val preferredImageQuality: ImageQuality = ImageQuality.SQUARE_MEDIUM
+    val preferredImageQuality: ImageQuality = ImageQuality.SQUARE_MEDIUM,
+    
+    /**
+     * 插画详情页首选图片质量
+     * 用于作品详情页的图片显示
+     * 默认：LARGE (540x540)
+     */
+    val detailImageQuality: DetailImageQuality = DetailImageQuality.LARGE
 ) {
     companion object {
         /**

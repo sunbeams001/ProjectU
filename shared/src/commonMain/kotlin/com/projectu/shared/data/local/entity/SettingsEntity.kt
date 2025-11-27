@@ -43,6 +43,11 @@ data class SettingsEntity(
     val preferredImageQuality: String = "SQUARE_MEDIUM",
     
     /**
+     * 插画详情页首选图片质量
+     */
+    val detailImageQuality: String = "LARGE",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -57,7 +62,8 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         pixivLanguage = this.pixivLanguage.name,
         themeMode = this.themeMode.name,
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
-        preferredImageQuality = this.preferredImageQuality.name
+        preferredImageQuality = this.preferredImageQuality.name,
+        detailImageQuality = this.detailImageQuality.name
     )
 }
 
@@ -70,6 +76,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         pixivLanguage = PixivLanguage.valueOf(this.pixivLanguage),
         themeMode = ThemeMode.valueOf(this.themeMode),
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
-        preferredImageQuality = com.projectu.shared.domain.model.ImageQuality.fromName(this.preferredImageQuality)
+        preferredImageQuality = com.projectu.shared.domain.model.ImageQuality.fromName(this.preferredImageQuality),
+        detailImageQuality = com.projectu.shared.domain.model.DetailImageQuality.fromName(this.detailImageQuality)
     )
 }

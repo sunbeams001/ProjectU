@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import com.projectu.shared.data.remote.model.DiscoveryMode
@@ -32,6 +33,7 @@ import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.UserCard
+import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -46,6 +48,7 @@ import projectu.composeapp.generated.resources.*
 fun DiscoveryContent(
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
+    val parentNavigator = LocalNavigator.current?.parent
     val contentTypes = remember { DiscoveryContentType.getAll() }
     
     // 预先创建所有 ViewModel，避免切换时重新创建
@@ -72,6 +75,15 @@ fun DiscoveryContent(
     )
     
     val currentContentType = contentTypes[pagerState.currentPage]
+    
+    // 监听页面切换，触发惰性加载
+    LaunchedEffect(pagerState.currentPage) {
+        when (contentTypes[pagerState.currentPage]) {
+            DiscoveryContentType.USERS -> usersViewModel.initLoadIfNeeded()
+            DiscoveryContentType.ILLUSTS -> illustsViewModel.initLoadIfNeeded()
+            DiscoveryContentType.NOVELS -> novelsViewModel.initLoadIfNeeded()
+        }
+    }
     
     // 创建刷新回调映射
     val refreshCallbacks = remember {
@@ -155,8 +167,7 @@ fun DiscoveryContent(
                             println("点击用户: ${user.name}")
                         },
                         onArtworkClick = { artwork ->
-                            // TODO: 跳转到作品详情页
-                            println("点击作品: ${artwork.title}")
+                            parentNavigator?.push(ArtworkDetailScreen(artwork.id))
                         },
                         listState = listState as LazyListState
                     )
@@ -175,8 +186,7 @@ fun DiscoveryContent(
                         onRefresh = illustsViewModel::refresh,
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onArtworkClick = { artwork ->
-                            // TODO: 跳转到作品详情页
-                            println("点击作品: ${artwork.title}")
+                            parentNavigator?.push(ArtworkDetailScreen(artwork.id))
                         },
                         listState = listState as LazyStaggeredGridState
                     )

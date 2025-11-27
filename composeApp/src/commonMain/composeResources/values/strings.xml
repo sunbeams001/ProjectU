@@ -153,9 +153,16 @@
     <string name="settings_image_quality">Image Quality</string>
     <string name="settings_preferred_image_quality">Preferred Card Image Quality</string>
     <string name="settings_preferred_image_quality_desc">Quality for artwork cards in lists and grids</string>
+    <string name="settings_detail_image_quality">Detail Page Image Quality</string>
+    <string name="settings_detail_image_quality_desc">Quality for images in artwork detail pages</string>
     <string name="image_quality_square_medium">Standard (250×250)</string>
     <string name="image_quality_medium">Medium (360×360)</string>
     <string name="image_quality_large">Large (540×540)</string>
     <string name="image_quality_master_1200">Master (1200px)</string>
+    <string name="detail_image_quality_square_medium">Standard (250×250)</string>
+    <string name="detail_image_quality_medium">Medium (360×360)</string>
+    <string name="detail_image_quality_large">Large (540×540)</string>
+    <string name="detail_image_quality_master_1200">Master (1200px)</string>
+    <string name="detail_image_quality_original">Original</string>
 </resources>
 

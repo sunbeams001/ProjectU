@@ -22,6 +22,7 @@ import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.ImageQuality
+import com.projectu.shared.domain.model.DetailImageQuality
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
 import projectu.composeapp.generated.resources.settings_title
@@ -62,10 +63,17 @@ import projectu.composeapp.generated.resources.settings_r18_sanity_level_r18
 import projectu.composeapp.generated.resources.settings_image_quality
 import projectu.composeapp.generated.resources.settings_preferred_image_quality
 import projectu.composeapp.generated.resources.settings_preferred_image_quality_desc
+import projectu.composeapp.generated.resources.settings_detail_image_quality
+import projectu.composeapp.generated.resources.settings_detail_image_quality_desc
 import projectu.composeapp.generated.resources.image_quality_square_medium
 import projectu.composeapp.generated.resources.image_quality_medium
 import projectu.composeapp.generated.resources.image_quality_large
 import projectu.composeapp.generated.resources.image_quality_master_1200
+import projectu.composeapp.generated.resources.detail_image_quality_square_medium
+import projectu.composeapp.generated.resources.detail_image_quality_medium
+import projectu.composeapp.generated.resources.detail_image_quality_large
+import projectu.composeapp.generated.resources.detail_image_quality_master_1200
+import projectu.composeapp.generated.resources.detail_image_quality_original
 import org.koin.compose.koinInject
 
 /**
@@ -95,11 +103,13 @@ class SettingsScreen : Screen {
             currentUserId = pixivConfig.getUserId(),
             currentR18SanityThreshold = settings.r18SanityLevelThreshold,
             currentPreferredImageQuality = settings.preferredImageQuality,
+            currentDetailImageQuality = settings.detailImageQuality,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
             onThemeModeChange = { viewModel.updateThemeMode(it) },
             onR18SanityThresholdChange = { viewModel.updateR18SanityLevelThreshold(it) },
             onPreferredImageQualityChange = { viewModel.updatePreferredImageQuality(it) },
+            onDetailImageQualityChange = { viewModel.updateDetailImageQuality(it) },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
             onNavigateBack = { navigator.pop() },
@@ -119,11 +129,13 @@ private fun SettingsScreenContent(
     currentUserId: Long?,
     currentR18SanityThreshold: Int,
     currentPreferredImageQuality: ImageQuality,
+    currentDetailImageQuality: DetailImageQuality,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
     onR18SanityThresholdChange: (Int) -> Unit,
     onPreferredImageQualityChange: (ImageQuality) -> Unit,
+    onDetailImageQualityChange: (DetailImageQuality) -> Unit,
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -134,6 +146,7 @@ private fun SettingsScreenContent(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showR18ThresholdDialog by remember { mutableStateOf(false) }
     var showImageQualityDialog by remember { mutableStateOf(false) }
+    var showDetailImageQualityDialog by remember { mutableStateOf(false) }
     var showEditPhpSessionIdDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     
@@ -234,6 +247,22 @@ private fun SettingsScreenContent(
                     },
                     description = stringResource(Res.string.settings_preferred_image_quality_desc),
                     onClick = { showImageQualityDialog = true }
+                )
+            }
+            
+            // 插画详情页首选图片质量设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_detail_image_quality),
+                    subtitle = when (currentDetailImageQuality) {
+                        DetailImageQuality.SQUARE_MEDIUM -> stringResource(Res.string.detail_image_quality_square_medium)
+                        DetailImageQuality.MEDIUM -> stringResource(Res.string.detail_image_quality_medium)
+                        DetailImageQuality.LARGE -> stringResource(Res.string.detail_image_quality_large)
+                        DetailImageQuality.MASTER_1200 -> stringResource(Res.string.detail_image_quality_master_1200)
+                        DetailImageQuality.ORIGINAL -> stringResource(Res.string.detail_image_quality_original)
+                    },
+                    description = stringResource(Res.string.settings_detail_image_quality_desc),
+                    onClick = { showDetailImageQualityDialog = true }
                 )
             }
             
@@ -365,6 +394,18 @@ private fun SettingsScreenContent(
                 showImageQualityDialog = false
             },
             onDismiss = { showImageQualityDialog = false }
+        )
+    }
+    
+    // 详情页图片质量选择对话框
+    if (showDetailImageQualityDialog) {
+        DetailImageQualitySelectionDialog(
+            currentQuality = currentDetailImageQuality,
+            onSelect = { quality ->
+                onDetailImageQualityChange(quality)
+                showDetailImageQualityDialog = false
+            },
+            onDismiss = { showDetailImageQualityDialog = false }
         )
     }
     
@@ -764,6 +805,62 @@ private fun ImageQualitySelectionDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.settings_preferred_image_quality)) },
+        text = {
+            Column {
+                qualities.forEach { (quality, name) ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(quality) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = quality == currentQuality,
+                                onClick = { onSelect(quality) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 详情页图片质量选择对话框
+ */
+@Composable
+private fun DetailImageQualitySelectionDialog(
+    currentQuality: DetailImageQuality,
+    onSelect: (DetailImageQuality) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val qualities = listOf(
+        DetailImageQuality.SQUARE_MEDIUM to stringResource(Res.string.detail_image_quality_square_medium),
+        DetailImageQuality.MEDIUM to stringResource(Res.string.detail_image_quality_medium),
+        DetailImageQuality.LARGE to stringResource(Res.string.detail_image_quality_large),
+        DetailImageQuality.MASTER_1200 to stringResource(Res.string.detail_image_quality_master_1200),
+        DetailImageQuality.ORIGINAL to stringResource(Res.string.detail_image_quality_original)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_detail_image_quality)) },
         text = {
             Column {
                 qualities.forEach { (quality, name) ->

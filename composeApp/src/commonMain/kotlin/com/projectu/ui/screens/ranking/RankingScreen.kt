@@ -20,6 +20,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.projectu.shared.data.remote.model.RankingContent
 import kotlinx.coroutines.launch
@@ -229,6 +231,72 @@ fun ContentTypeSelector(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val density = LocalDensity.current
+    
+    // 内容类型列表
+    val contentTypes = listOf(
+        RankingContent.ALL,
+        RankingContent.ILLUST,
+        RankingContent.UGOIRA,
+        RankingContent.MANGA,
+        RankingContent.NOVEL
+    )
+    
+    // 存储Row容器的坐标信息
+    var rowCoordinates by remember { mutableStateOf<androidx.compose.ui.layout.LayoutCoordinates?>(null) }
+    // 存储每个chip的坐标信息
+    val chipCoordinatesList = remember { mutableStateMapOf<Int, androidx.compose.ui.layout.LayoutCoordinates>() }
+    
+    // 获取当前选中内容类型的索引
+    val currentContentTypeIndex = contentTypes.indexOf(currentContentType)
+    
+    // 当选中的内容类型变化且布局信息可用时，进行精确滚动
+    LaunchedEffect(currentContentTypeIndex, chipCoordinatesList.size) {
+        if (currentContentTypeIndex >= 0 && currentContentTypeIndex < contentTypes.size) {
+            // 稍微延迟以确保布局完成
+            kotlinx.coroutines.delay(50)
+            
+            val chipCoords = chipCoordinatesList[currentContentTypeIndex]
+            val rowCoords = rowCoordinates
+            
+            if (chipCoords != null && chipCoords.isAttached && rowCoords != null && rowCoords.isAttached) {
+                // 使用实际的布局信息
+                val chipPositionInRow = rowCoords.localPositionOf(chipCoords, androidx.compose.ui.geometry.Offset.Zero)
+                val chipX = chipPositionInRow.x
+                val chipWidth = chipCoords.size.width.toFloat()
+                val chipCenter = chipX + chipWidth / 2
+                val viewportWidth = scrollState.viewportSize.toFloat()
+                
+                // 计算滚动位置：让chip居中显示
+                val idealScrollPosition = chipCenter - viewportWidth / 2
+                val scrollPosition = idealScrollPosition.coerceIn(
+                    0f,
+                    scrollState.maxValue.toFloat()
+                ).toInt()
+                
+                scrollState.animateScrollTo(scrollPosition)
+            } else {
+                // 如果还没有布局信息，使用估算值
+                with(density) {
+                    val chipWidthDp = 80.dp.toPx()
+                    val spacingDp = 8.dp.toPx()
+                    val itemWidth = chipWidthDp + spacingDp
+                    
+                    val chipX = currentContentTypeIndex * itemWidth
+                    val chipCenter = chipX + chipWidthDp / 2
+                    val viewportWidth = scrollState.viewportSize.toFloat()
+                    
+                    val idealScrollPosition = chipCenter - viewportWidth / 2
+                    val scrollPosition = idealScrollPosition.coerceIn(
+                        0f,
+                        scrollState.maxValue.toFloat()
+                    ).toInt()
+                    
+                    scrollState.animateScrollTo(scrollPosition)
+                }
+            }
+        }
+    }
     
     Surface(
         modifier = modifier,
@@ -246,23 +314,21 @@ fun ContentTypeSelector(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .horizontalScroll(scrollState),
+                    .horizontalScroll(scrollState)
+                    .onGloballyPositioned { coordinates ->
+                        rowCoordinates = coordinates
+                    },
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val contentTypes = listOf(
-                    RankingContent.ALL,
-                    RankingContent.ILLUST,
-                    RankingContent.UGOIRA,
-                    RankingContent.MANGA,
-                    RankingContent.NOVEL
-                )
-                
-                contentTypes.forEach { contentType ->
+                contentTypes.forEachIndexed { index, contentType ->
                     FilterChip(
                         selected = currentContentType == contentType,
                         onClick = { onContentTypeChange(contentType) },
                         label = {
                             Text(text = contentType.displayName)
+                        },
+                        modifier = Modifier.onGloballyPositioned { coordinates ->
+                            chipCoordinatesList[index] = coordinates
                         }
                     )
                 }
@@ -453,14 +519,60 @@ fun RankingModeSelector(
 ) {
     val scrollState = rememberScrollState()
     val currentMode = supportedModes.getOrNull(currentModeIndex)
+    val coroutineScope = rememberCoroutineScope()
+    val density = LocalDensity.current
     
-    // 当选中的mode变化时，自动滚动到可见位置
-    LaunchedEffect(currentModeIndex, supportedModes) {
+    // 存储Row容器的坐标信息
+    var rowCoordinates by remember { mutableStateOf<androidx.compose.ui.layout.LayoutCoordinates?>(null) }
+    // 存储每个chip的坐标信息
+    val chipCoordinatesList = remember { mutableStateMapOf<Int, androidx.compose.ui.layout.LayoutCoordinates>() }
+    
+    // 当选中的mode变化且布局信息可用时，进行精确滚动
+    LaunchedEffect(currentModeIndex, chipCoordinatesList.size) {
         if (currentModeIndex >= 0 && currentModeIndex < supportedModes.size) {
-            // 估算每个chip的宽度（约100dp）+ 间距（8dp）
-            val chipWidth = 108
-            val scrollPosition = (currentModeIndex * chipWidth).coerceAtLeast(0)
-            scrollState.animateScrollTo(scrollPosition)
+            // 稍微延迟以确保布局完成
+            kotlinx.coroutines.delay(50)
+            
+            val chipCoords = chipCoordinatesList[currentModeIndex]
+            val rowCoords = rowCoordinates
+            
+            if (chipCoords != null && chipCoords.isAttached && rowCoords != null && rowCoords.isAttached) {
+                // 使用实际的布局信息
+                // 获取chip相对于Row的位置
+                val chipPositionInRow = rowCoords.localPositionOf(chipCoords, androidx.compose.ui.geometry.Offset.Zero)
+                val chipX = chipPositionInRow.x
+                val chipWidth = chipCoords.size.width.toFloat()
+                val chipCenter = chipX + chipWidth / 2
+                val viewportWidth = scrollState.viewportSize.toFloat()
+                
+                // 计算滚动位置：让chip居中显示
+                val idealScrollPosition = chipCenter - viewportWidth / 2
+                val scrollPosition = idealScrollPosition.coerceIn(
+                    0f,
+                    scrollState.maxValue.toFloat()
+                ).toInt()
+                
+                scrollState.animateScrollTo(scrollPosition)
+            } else {
+                // 如果还没有布局信息，使用估算值
+                with(density) {
+                    val chipWidthDp = 100.dp.toPx()
+                    val spacingDp = 8.dp.toPx()
+                    val itemWidth = chipWidthDp + spacingDp
+                    
+                    val chipX = currentModeIndex * itemWidth
+                    val chipCenter = chipX + chipWidthDp / 2
+                    val viewportWidth = scrollState.viewportSize.toFloat()
+                    
+                    val idealScrollPosition = chipCenter - viewportWidth / 2
+                    val scrollPosition = idealScrollPosition.coerceIn(
+                        0f,
+                        scrollState.maxValue.toFloat()
+                    ).toInt()
+                    
+                    scrollState.animateScrollTo(scrollPosition)
+                }
+            }
         }
     }
     
@@ -474,7 +586,10 @@ fun RankingModeSelector(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .onGloballyPositioned { coordinates ->
+                    rowCoordinates = coordinates
+                },
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             supportedModes.forEachIndexed { index, mode ->
@@ -491,6 +606,10 @@ fun RankingModeSelector(
                     },
                     label = {
                         Text(text = mode.displayName)
+                    },
+                    modifier = Modifier.onGloballyPositioned { coordinates ->
+                        // 记录每个chip的坐标信息
+                        chipCoordinatesList[index] = coordinates
                     }
                 )
             }

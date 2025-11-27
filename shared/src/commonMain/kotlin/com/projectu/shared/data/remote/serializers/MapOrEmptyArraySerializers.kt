@@ -103,3 +103,40 @@ object NestedMapOrEmptyArraySerializer : KSerializer<Map<String, Map<String, Str
         }
     }
 }
+
+/**
+ * 处理 SocialLinks 对象的情况：
+ * - 有数据时返回对象: {"twitter": {"url": "..."}}
+ * - 无数据时返回空数组: []
+ * 
+ * 此序列化器将空数组转换为 null，对象则正常解析为 SocialLinks
+ */
+object SocialLinksOrEmptyArraySerializer : KSerializer<com.projectu.shared.data.remote.dto.user.SocialLinks?> {
+    private val delegateSerializer = com.projectu.shared.data.remote.dto.user.SocialLinks.serializer()
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("SocialLinksOrEmptyArray")
+
+    override fun deserialize(decoder: Decoder): com.projectu.shared.data.remote.dto.user.SocialLinks? {
+        val jsonDecoder = decoder as? JsonDecoder ?: return null
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when {
+            element is JsonObject -> {
+                // 对象类型，正常解析
+                Json.decodeFromJsonElement(delegateSerializer, element)
+            }
+            element is JsonArray && element.isEmpty() -> {
+                // 空数组返回 null
+                null
+            }
+            else -> null
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: com.projectu.shared.data.remote.dto.user.SocialLinks?) {
+        if (value == null) {
+            encoder.encodeNull()
+        } else {
+            encoder.encodeSerializableValue(delegateSerializer, value)
+        }
+    }
+}

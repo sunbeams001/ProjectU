@@ -64,6 +64,12 @@ interface SettingsDao {
     suspend fun updatePreferredImageQuality(quality: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新插画详情页首选图片质量
+     */
+    @Query("UPDATE app_settings SET detailImageQuality = :quality, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateDetailImageQuality(quality: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

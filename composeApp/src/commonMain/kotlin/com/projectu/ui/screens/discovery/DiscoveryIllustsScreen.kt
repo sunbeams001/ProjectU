@@ -18,6 +18,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.ui.components.ArtworkCard
+import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
 import projectu.composeapp.generated.resources.discovery_recommended_illusts
@@ -36,13 +37,18 @@ class DiscoveryIllustsScreen : Screen {
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
+        // 惰性加载：只在首次显示且没有数据时加载
+        LaunchedEffect(Unit) {
+            viewModel.initLoadIfNeeded()
+        }
+        
         DiscoveryIllustsContent(
             state = state,
             onModeChange = viewModel::switchMode,
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
             onArtworkClick = { artwork ->
-                // TODO: 跳转到作品详情页
+                navigator.push(ArtworkDetailScreen(artwork.id))
             },
             onBackClick = { navigator.pop() }
         )

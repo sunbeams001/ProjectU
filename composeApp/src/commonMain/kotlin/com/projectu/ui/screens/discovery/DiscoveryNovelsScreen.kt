@@ -37,6 +37,11 @@ class DiscoveryNovelsScreen : Screen {
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
+        // 惰性加载：只在首次显示且没有数据时加载
+        LaunchedEffect(Unit) {
+            viewModel.initLoadIfNeeded()
+        }
+        
         DiscoveryNovelsContent(
             state = state,
             onModeChange = viewModel::switchMode,

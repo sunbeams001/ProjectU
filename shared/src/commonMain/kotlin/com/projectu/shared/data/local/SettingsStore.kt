@@ -87,6 +87,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置插画详情页首选图片质量
+     */
+    suspend fun setDetailImageQuality(quality: com.projectu.shared.domain.model.DetailImageQuality) {
+        settingsDao.updateDetailImageQuality(quality.name)
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

@@ -27,9 +27,6 @@ class DiscoveryNovelsViewModel(
     val state: StateFlow<DiscoveryNovelsState> = _state.asStateFlow()
     
     init {
-        // 初始加载
-        loadNovels()
-        
         // 监听全局状态变更事件
         screenModelScope.launch {
             stateCacheManager.stateChangeEvents.collect { event ->
@@ -40,6 +37,15 @@ class DiscoveryNovelsViewModel(
                     else -> {}
                 }
             }
+        }
+    }
+    
+    /**
+     * 初始化加载（惰性加载）
+     */
+    fun initLoadIfNeeded() {
+        if (_state.value.novels.isEmpty() && !_state.value.isLoading && _state.value.error == null) {
+            loadNovels()
         }
     }
     

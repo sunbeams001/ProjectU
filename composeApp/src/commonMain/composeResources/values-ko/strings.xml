@@ -122,9 +122,16 @@
     <string name="settings_image_quality">이미지 품질</string>
     <string name="settings_preferred_image_quality">읽스트 카드 이미지 품질</string>
     <string name="settings_preferred_image_quality_desc">목록과 그리드의 썸네일 품질</string>
+    <string name="settings_detail_image_quality">일러스트 상세 페이지 이미지 품질</string>
+    <string name="settings_detail_image_quality_desc">작품 상세 페이지의 이미지 품질</string>
     <string name="image_quality_square_medium">표준 (250×250)</string>
     <string name="image_quality_medium">중간 (360×360)</string>
     <string name="image_quality_large">크게 (540×540)</string>
     <string name="image_quality_master_1200">최대 (1200px)</string>
+    <string name="detail_image_quality_square_medium">표준 (250×250)</string>
+    <string name="detail_image_quality_medium">중간 (360×360)</string>
+    <string name="detail_image_quality_large">크게 (540×540)</string>
+    <string name="detail_image_quality_master_1200">최대 (1200px)</string>
+    <string name="detail_image_quality_original">원본</string>
 </resources>
 

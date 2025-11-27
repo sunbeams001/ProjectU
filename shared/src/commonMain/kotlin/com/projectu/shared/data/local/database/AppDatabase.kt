@@ -22,7 +22,7 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         UgoiraCacheEntity::class,
         SettingsEntity::class
     ],
-    version = 5, // 版本5: 在SettingsEntity中添加preferredImageQuality字段
+    version = 6, // 版本6: 在SettingsEntity中添加detailImageQuality字段
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)

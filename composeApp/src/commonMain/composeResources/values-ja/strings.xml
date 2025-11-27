@@ -122,9 +122,16 @@
     <string name="settings_image_quality">画質</string>
     <string name="settings_preferred_image_quality">イラストカードの画質設定</string>
     <string name="settings_preferred_image_quality_desc">リストとグリッド表示のサムネイル画質</string>
+    <string name="settings_detail_image_quality">イラスト詳細ページの画質設定</string>
+    <string name="settings_detail_image_quality_desc">作品詳細ページの画像品質</string>
     <string name="image_quality_square_medium">標準 (250×250)</string>
     <string name="image_quality_medium">中 (360×360)</string>
     <string name="image_quality_large">大 (540×540)</string>
     <string name="image_quality_master_1200">最大 (1200px)</string>
+    <string name="detail_image_quality_square_medium">標準 (250×250)</string>
+    <string name="detail_image_quality_medium">中 (360×360)</string>
+    <string name="detail_image_quality_large">大 (540×540)</string>
+    <string name="detail_image_quality_master_1200">最大 (1200px)</string>
+    <string name="detail_image_quality_original">オリジナル</string>
 </resources>
 

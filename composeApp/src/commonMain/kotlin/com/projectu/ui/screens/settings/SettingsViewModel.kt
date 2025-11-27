@@ -84,6 +84,15 @@ class SettingsViewModel(
     }
     
     /**
+     * 更新插画详情页首选图片质量
+     */
+    fun updateDetailImageQuality(quality: com.projectu.shared.domain.model.DetailImageQuality) {
+        viewModelScope.launch {
+            settingsRepository.updateDetailImageQuality(quality)
+        }
+    }
+    
+    /**
      * 重置设置
      */
     fun resetSettings() {

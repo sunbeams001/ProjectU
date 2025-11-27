@@ -28,9 +28,6 @@ class DiscoveryUsersViewModel(
     val state: StateFlow<DiscoveryUsersState> = _state.asStateFlow()
     
     init {
-        // 初始加载
-        loadUsers()
-        
         // 监听全局状态变更事件
         screenModelScope.launch {
             stateCacheManager.stateChangeEvents.collect { event ->
@@ -41,6 +38,15 @@ class DiscoveryUsersViewModel(
                     else -> {}
                 }
             }
+        }
+    }
+    
+    /**
+     * 初始化加载（惰性加载）
+     */
+    fun initLoadIfNeeded() {
+        if (_state.value.users.isEmpty() && !_state.value.isLoading && _state.value.error == null) {
+            loadUsers()
         }
     }
     

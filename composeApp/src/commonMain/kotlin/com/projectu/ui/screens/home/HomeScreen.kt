@@ -32,6 +32,7 @@ import projectu.composeapp.generated.resources.discovery_recommended_novels
 import com.projectu.ui.screens.discovery.DiscoveryContent
 import com.projectu.ui.screens.ranking.RankingContent
 import com.projectu.ui.screens.ranking.RankingViewModel
+import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import cafe.adriel.voyager.koin.koinScreenModel
 
 /**
@@ -297,6 +298,12 @@ object RankingTab : Tab {
     override fun Content() {
         val viewModel = koinScreenModel<RankingViewModel>()
         val state by viewModel.state.collectAsState()
+        val parentNavigator = LocalNavigator.current?.parent
+        
+        // 惰性加载：只在首次显示且没有数据时加载
+        LaunchedEffect(Unit) {
+            viewModel.initLoadIfNeeded()
+        }
         
         // 用于管理刷新或滚动到顶部的触发
         val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -316,8 +323,7 @@ object RankingTab : Tab {
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
             onArtworkClick = { artwork ->
-                // TODO: 跳转到作品详情页
-                println("点击作品: ${artwork.title}")
+                parentNavigator?.push(ArtworkDetailScreen(artwork.id))
             },
             onNovelClick = { novel ->
                 // TODO: 跳转到小说详情页

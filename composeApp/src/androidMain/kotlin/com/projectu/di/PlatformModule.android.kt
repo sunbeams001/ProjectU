@@ -56,15 +56,18 @@ actual val viewModelModule: Module = module {
     viewModel { ApiTestViewModel(get(), get()) }
     
     // 发现插画 ScreenModel
-    factory { DiscoveryIllustsViewModel(get(), get(), get()) }
+    single { DiscoveryIllustsViewModel(get(), get(), get()) }
     
     // 发现用户 ScreenModel
-    factory { DiscoveryUsersViewModel(get(), get(), get(), get()) }
+    single { DiscoveryUsersViewModel(get(), get(), get(), get()) }
     
     // 发现小说 ScreenModel
-    factory { DiscoveryNovelsViewModel(get(), get(), get()) }
+    single { DiscoveryNovelsViewModel(get(), get(), get()) }
     
     // 排行榜 ScreenModel
-    factory { com.projectu.ui.screens.ranking.RankingViewModel(get(), get(), get(), get(), get()) }
+    single { com.projectu.ui.screens.ranking.RankingViewModel(get(), get(), get(), get(), get()) }
+    
+    // 作品详情 ScreenModel
+    factory { com.projectu.ui.screens.artwork.ArtworkDetailViewModel(get(), get(), get(), get()) }
 }
 

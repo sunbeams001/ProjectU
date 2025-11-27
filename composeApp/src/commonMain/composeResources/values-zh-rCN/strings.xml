@@ -152,9 +152,16 @@
     <string name="settings_image_quality">图片质量</string>
     <string name="settings_preferred_image_quality">插画卡片首选图片质量</string>
     <string name="settings_preferred_image_quality_desc">用于列表和瀑布流中的缩略图质量</string>
+    <string name="settings_detail_image_quality">插画详情页首选图片质量</string>
+    <string name="settings_detail_image_quality_desc">用于作品详情页的图片质量</string>
     <string name="image_quality_square_medium">标准 (250×250)</string>
     <string name="image_quality_medium">中等 (360×360)</string>
     <string name="image_quality_large">大 (540×540)</string>
     <string name="image_quality_master_1200">最大 (1200px)</string>
+    <string name="detail_image_quality_square_medium">标准 (250×250)</string>
+    <string name="detail_image_quality_medium">中等 (360×360)</string>
+    <string name="detail_image_quality_large">大 (540×540)</string>
+    <string name="detail_image_quality_master_1200">最大 (1200px)</string>
+    <string name="detail_image_quality_original">原图</string>
 </resources>
 

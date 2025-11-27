@@ -45,6 +45,10 @@ class SettingsRepositoryImpl(
         settingsStore.setPreferredImageQuality(quality)
     }
     
+    override suspend fun updateDetailImageQuality(quality: com.projectu.shared.domain.model.DetailImageQuality) {
+        settingsStore.setDetailImageQuality(quality)
+    }
+    
     override suspend fun updateSettings(settings: AppSettings) {
         settingsStore.updateSettings(settings)
     }

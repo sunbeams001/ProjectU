@@ -1,13 +1,25 @@
 package com.projectu.shared.data.remote.dto.user
 
+import com.projectu.shared.data.remote.serializers.SocialLinksOrEmptyArraySerializer
 import kotlinx.serialization.Serializable
 
 /**
  * 用户信息响应体
+ * 
+ * 根据 full 参数返回不同的字段集合：
+ * - full=0: 返回基础字段（userId, name, image, imageBig, premium, isFollowed, isMypixiv, 
+ *           isBlocking, background, sketchLiveId, partial, sketchLives, commission）
+ * - full=1: 返回完整信息，包含上述基础字段 + 扩展字段（following, mypixivCount, followedBack,
+ *           comment, commentHtml, webpage, social, canSendMessage, region, age, birthDay,
+ *           gender, job, workspace, official, group）
+ * 
+ * partial 字段用于标识响应类型：0=基础信息，1=完整信息
+ * 
+ * 注意：social 字段在 API 响应中可能是对象（有数据）或空数组（无数据），使用自定义序列化器处理
  */
 @Serializable
 data class UserInfoBody(
-    val userId: String,  // 修改为 String 类型
+    val userId: String,
     val name: String,
     val image: String,
     val imageBig: String,
@@ -17,17 +29,18 @@ data class UserInfoBody(
     val isBlocking: Boolean = false,
     val background: Background? = null,
     val sketchLiveId: String? = null,
-    val partial: Int = 0,
-    val acceptRequest: Boolean = false,
+    val partial: Int = 0,  // 0=基础信息(full=0), 1=完整信息(full=1)
     val sketchLives: List<SketchLive>? = null,
     val commission: Commission? = null,
+    // 以下字段仅在 full=1 时返回
     val following: Int = 0,  // 关注数量
     val mypixivCount: Int = 0,  // 好P友数量
     val followedBack: Boolean = false,  // 是否被关注回
     val comment: String? = null,  // 用户简介（纯文本）
     val commentHtml: String? = null,  // 用户简介（HTML）
     val webpage: String? = null,  // 个人网站
-    val social: SocialLinks? = null,  // 社交媒体链接
+    @Serializable(with = SocialLinksOrEmptyArraySerializer::class)
+    val social: SocialLinks? = null,  // 社交媒体链接（可能为对象或空数组）
     val canSendMessage: Boolean = false,  // 是否可发送消息
     val region: UserRegion? = null,  // 地区信息
     val age: PrivacyField? = null,  // 年龄信息

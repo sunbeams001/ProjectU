@@ -112,7 +112,7 @@ fun UserInfoBody.toUser(): User {
         followedBack = followedBack,
         isPremium = premium,
         backgroundUrl = background?.url,
-        acceptCommissionRequest = acceptRequest,
+        acceptCommissionRequest = commission?.requestStatus != null,  // 根据 commission 状态判断
         followingCount = following,
         webpage = webpage,
         isOfficial = official,

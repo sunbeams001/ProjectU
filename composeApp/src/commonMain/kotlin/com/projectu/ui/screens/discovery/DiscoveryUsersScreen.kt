@@ -34,6 +34,11 @@ class DiscoveryUsersScreen : Screen {
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
+        // 惰性加载：只在首次显示且没有数据时加载
+        LaunchedEffect(Unit) {
+            viewModel.initLoadIfNeeded()
+        }
+        
         DiscoveryUsersContent(
             state = state,
             onLoadMore = viewModel::loadMore,
