@@ -1,19 +1,11 @@
 package com.projectu.shared.data.remote.api
 
-import com.projectu.shared.data.remote.dto.ranking.NovelRankingResponse
+import com.projectu.shared.data.remote.dto.ranking.NovelRankingBody
 import com.projectu.shared.data.remote.dto.ranking.RankingResponse
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.RankingMode
-import com.projectu.shared.data.remote.parser.NovelRankingParser
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.statement.bodyAsText
-
-/**
- * 平台特定的文件保存功能
- */
-internal expect fun saveHtmlToFile(html: String, filename: String)
 
 /**
  * 排行榜 API
@@ -28,6 +20,14 @@ class RankingApi(private val client: PixivApiClient) {
      * @param content 内容类型
      * @param date 日期（格式：yyyyMMdd，可选）
      * @return RankingResponse 排行榜响应数据
+     * 
+     * 📝 接口说明：
+     * - 端点：/ranking.php
+     * - 返回格式：JSON（直接返回RankingResponse对象，不包装在PixivResponse中）
+     * - 支持分页：p参数
+     * 
+     * 示例 URL：
+     * https://www.pixiv.net/ranking.php?mode=daily&content=all&p=1&format=json&lang=zh
      */
     suspend fun getIllustRanking(
         mode: RankingMode = RankingMode.DAILY,
@@ -43,52 +43,44 @@ class RankingApi(private val client: PixivApiClient) {
         )
         date?.let { params["date"] = it }
 
-        // 排行榜API直接返回RankingResponse，不包装在PixivResponse中
-        return client.get<RankingResponse>("/ranking.php", params).body ?: throw IllegalStateException("插画排行榜数据为空")
+        // 排行榜API直接返回RankingResponse，不包装在PixivResponse中，使用getRaw方法
+        return client.getRaw<RankingResponse>("/ranking.php", params)
     }
 
     /**
-     * 查询小说排行榜
-     * @param mode 排行榜模式（与插画排行榜相同）
-     * @param page 页码
-     * @param content 内容类型（小说排行榜可能不支持此参数，但保持接口一致性）
-     * @param date 日期（格式：yyyyMMdd，可选）
-     * @return NovelRankingResponse 解析后的小说排行榜数据
+     * 查询小说排行榜（JSON 接口）
      * 
-     * ⚠️ 注意：
-     * - 小说排行榜返回HTML格式，不支持JSON（即使添加format=json也无效）
-     * - 端点为 /novel/ranking.php
-     * - 内部会自动解析HTML提取小说信息
+     * @param mode 排行榜模式
+     * @param page 页码
+     * @param content 内容类型
+     * @param date 日期（格式：yyyyMMdd，可选）
+     * @return NovelRankingBody 小说排行榜数据
+     * 
+     * 📝 接口说明：
+     * - 端点：/ajax/ranking/novel
+     * - 返回格式：JSON（包装在PixivResponse中）
+     * - 支持分页：p参数
+     * - 支持所有小说排行榜模式
+     * 
+     * 示例 URL：
+     * https://www.pixiv.net/ajax/ranking/novel?mode=daily&content=novel&p=1&lang=zh
      */
-    suspend fun getNovelRanking(
+    suspend fun getNovelRankingJson(
         mode: RankingMode = RankingMode.DAILY,
         page: Int = 1,
-        content: RankingContent = RankingContent.ALL,
+        content: RankingContent = RankingContent.NOVEL,
         date: String? = null
-    ): NovelRankingResponse {
-        // 构建URL参数
-        val urlBuilder = StringBuilder("${client.host}/novel/ranking.php?lang=${client.langProvider()}")
-        urlBuilder.append("&mode=${mode.value}")
-        urlBuilder.append("&p=$page")
-        urlBuilder.append("&content=${content.value}")
-        date?.let { urlBuilder.append("&date=$it") }
-
-        // 直接使用 HttpClient 获取HTML文本
-        val html = client.httpClient.get(urlBuilder.toString()) {
-            header(PixivApiClient.HEADER_REFERER, PixivApiClient.DEFAULT_HOST)
-            header(PixivApiClient.HEADER_COOKIE, client.cookie)
-        }.bodyAsText()
+    ): NovelRankingBody {
+        val params = mutableMapOf<String, Any?>(
+            "mode" to mode.value,
+            "content" to content.value,
+            "p" to page
+        )
+        date?.let { params["date"] = it }
         
-        // 调试：将HTML保存到文件（仅用于调试，正式环境不需要）
-        // try {
-        //     saveHtmlToFile(html, "novel_ranking_response.html")
-        //     println("✅ HTML响应已保存到文件")
-        // } catch (e: Exception) {
-        //     println("⚠️ 保存HTML文件失败: ${e.message}")
-        // }
-        
-        // 使用解析器解析HTML
-        return NovelRankingParser.parseNovelRanking(html, mode.value)
+        // 小说排行榜JSON API返回标准的PixivResponse格式
+        val response = client.get<NovelRankingBody>("/ajax/ranking/novel", params)
+        return response.body ?: throw IllegalStateException("小说排行榜数据为空")
     }
 }
 

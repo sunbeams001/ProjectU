@@ -2,6 +2,7 @@ package com.projectu.shared.domain.repository
 
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.data.remote.model.RankingMode
+import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.UgoiraMetadata
 import kotlinx.coroutines.flow.Flow
@@ -48,12 +49,28 @@ interface ArtworkRepository {
     
     /**
      * 获取排行榜作品
+     * @param mode 排行榜模式
+     * @param content 内容类型（ALL, ILLUST, MANGA, UGOIRA）
+     * @param page 页码
+     * @param date 日期（格式：yyyyMMdd，可选）
      */
     suspend fun getRankingArtworks(
         mode: RankingMode = RankingMode.DAILY,
+        content: RankingContent = RankingContent.ALL,
         page: Int = 1,
         date: String? = null
     ): Result<List<Artwork>>
+    
+    /**
+     * 获取排行榜作品（包含日期信息）
+     * @return Pair<作品列表, 日期信息(date, prevDate, nextDate)>
+     */
+    suspend fun getRankingWithDateInfo(
+        mode: RankingMode = RankingMode.DAILY,
+        content: RankingContent = RankingContent.ALL,
+        page: Int = 1,
+        date: String? = null
+    ): Result<Pair<List<Artwork>, Triple<String?, String?, String?>>>
     
     /**
      * 添加收藏

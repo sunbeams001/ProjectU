@@ -62,5 +62,8 @@ actual val viewModelModule: Module = module {
     
     // 发现小说 ScreenModel
     factory { DiscoveryNovelsViewModel(get(), get(), get()) }
+    
+    // 排行榜 ScreenModel
+    factory { com.projectu.ui.screens.ranking.RankingViewModel(get(), get(), get(), get(), get()) }
 }
 

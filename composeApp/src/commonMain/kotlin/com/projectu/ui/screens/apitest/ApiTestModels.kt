@@ -369,7 +369,7 @@ sealed class ApiMethod(
     object GetNovelRanking : ApiMethod(
         module = ApiModule.RANKING,
         methodName = "getNovelRanking",
-        displayName = "获取小说排行榜",
+        displayName = "获取小说排行榜(JSON)",
         parameters = listOf(
             ApiParameter("mode", "排行榜模式", "daily", required = true,
                 options = listOf(
@@ -378,23 +378,24 @@ sealed class ApiMethod(
                     "weekly",     // 本周
                     "monthly",    // 本月
                     "rookie",     // 新人
-                    "original",   // 原创
-                    "daily_ai",   // AI生成
                     "male",       // 男性向
                     "female",     // 女性向
+                    // 小说专属排行榜
+                    "weekly_original",  // 本周原创（小说专属）
+                    "weekly_ai",        // 本周AI（小说专属）
                     // R-18 排行榜
                     "daily_r18",     // 今日R-18
                     "weekly_r18",    // 本周R-18
-                    "daily_r18_ai",  // AI生成R-18
                     "male_r18",      // 男性向R-18
                     "female_r18",    // 女性向R-18
+                    "weekly_r18_ai", // 本周R-18 AI（小说专属）
                     // R-18G 排行榜
                     "r18g"           // R-18G（猎奇向）
                 )
             ),
             ApiParameter("page", "页码", "1", required = false),
-            ApiParameter("content", "内容类型", "all", required = false,
-                options = listOf("all", "illust", "manga", "ugoira")
+            ApiParameter("content", "内容类型", "novel", required = false,
+                options = listOf("novel")
             ),
             ApiParameter("date", "日期(yyyyMMdd)", "", required = false)
         ),

@@ -40,6 +40,17 @@ enum class RankingMode(
     /** AI生成 */
     DAILY_AI("daily_ai", "AI生成", RankingCategory.GENERAL, RankingAiType.AI),
     
+    // ==================== 小说专属排行榜 ====================
+    
+    /** 本周原创（小说） */
+    WEEKLY_ORIGINAL("weekly_original", "本周原创", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    
+    /** 本周AI（小说） */
+    WEEKLY_AI("weekly_ai", "本周AI", RankingCategory.GENERAL, RankingAiType.AI),
+    
+    /** 本周R-18 AI（小说） */
+    WEEKLY_R18_AI("weekly_r18_ai", "本周R-18 AI", RankingCategory.R18, RankingAiType.AI),
+    
     // ==================== R-18 排行榜 - 普通 ====================
     
     /** 今日R-18 */
@@ -176,6 +187,36 @@ enum class RankingMode(
          */
         fun getAllModes(): List<RankingMode> {
             return entries
+        }
+        
+        // ==================== 内容类型兼容性查询 ====================
+        
+        /**
+         * 获取支持指定模式的所有内容类型
+         * 
+         * @param mode 排行榜模式
+         * @return 支持该模式的内容类型列表
+         */
+        fun getSupportedContents(mode: RankingMode): List<RankingContent> {
+            return RankingContentModeConfig.getSupportedContents(mode)
+        }
+        
+        /**
+         * 检查指定的 content 和 mode 组合是否兼容
+         * 
+         * @param content 内容类型
+         * @param mode 排行榜模式
+         * @return true 如果兼容，false 如果不兼容
+         */
+        fun isCompatible(content: RankingContent, mode: RankingMode): Boolean {
+            return RankingContentModeConfig.isCompatible(content, mode)
+        }
+        
+        /**
+         * 获取小说专属的排行榜模式
+         */
+        fun getNovelExclusiveModes(): List<RankingMode> {
+            return RankingContentModeConfig.getNovelExclusiveModes()
         }
     }
 }

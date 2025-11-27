@@ -1326,110 +1326,86 @@ class ApiTestViewModel(
     private suspend fun testGetNovelRanking() {
         val modeStr = getParam("mode")
         val page = getParam("page").toIntOrNull() ?: 1
-        val contentStr = getParam("content").ifBlank { "all" }
+        val contentStr = getParam("content").ifBlank { "novel" }
         val date = getParam("date").ifBlank { null }
         
         // 转换为枚举
         val mode = RankingMode.fromValue(modeStr) ?: RankingMode.DAILY
-        val content = RankingContent.fromValue(contentStr) ?: RankingContent.ALL
+        val content = RankingContent.fromValue(contentStr) ?: RankingContent.NOVEL
         
-        // 调用 API（小说排行榜返回解析后的数据）
-        val response = pixivApi.rankingApi.getNovelRanking(mode, page, content, date)
+        // 构建请求参数（用于显示）
+        val params = mutableMapOf<String, Any?>(
+            "mode" to mode.value,
+            "content" to content.value,
+            "p" to page
+        )
+        if (date != null) {
+            params["date"] = date
+        }
+        
+        // 调用 API（使用 getWithRaw 获取原始 JSON）
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.ranking.NovelRankingBody>(
+            "/ajax/ranking/novel",
+            params
+        )
+        val response = responseWithRaw.response
+        
+        // 获取 body
+        val body = response.body ?: throw IllegalStateException("小说排行榜数据为空")
         
         val summary = buildString {
-            appendLine("✅ ${mode.displayName}小说排行榜 获取成功")
+            appendLine("✅ ${mode.displayName}小说排行榜 获取成功 (JSON接口)")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("模式: ${mode.value} (${mode.displayName})")
-            appendLine("分类: ${if (mode.category == RankingCategory.GENERAL) "一般" else "R-18"}")
-            appendLine("页码: $page / ${response.totalPages}")
-            appendLine("排名范围: ${response.rankRange}")
-            appendLine("日期: ${response.date}")
+            appendLine("分类: ${when (mode.category) {
+                RankingCategory.GENERAL -> "一般"
+                RankingCategory.R18 -> "R-18"
+                RankingCategory.R18G -> "R-18G"
+            }}")
+            appendLine("页码: ${body.displayA.page}")
+            val hasNext = body.displayA.next != null
+            val hasPrev = body.displayA.prev != null
+            appendLine("分页: ${if (hasPrev) "← " else ""}第${body.displayA.page}页${if (hasNext) " →" else ""}")
+            body.date?.let { appendLine("日期: $it") }
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("小说数量: ${response.novels.size}")
+            appendLine("小说数量: ${body.displayA.rankA.size}")
+            appendLine("屏蔽数量: ${body.displayA.mutedCount}")
             appendLine("")
             
             // 显示前3条小说完整信息
-            response.novels.take(3).forEachIndexed { index, novel ->
+            body.displayA.rankA.take(3).forEachIndexed { index, novel ->
                 appendLine("【${novel.rank}位】${novel.title}")
-                appendLine("  ID: ${novel.novelId}")
-                appendLine("  作者: ${novel.author.userName} (ID: ${novel.author.userId})")
-                appendLine("  字数: ${novel.characterCount}")
+                appendLine("  ID: ${novel.id}")
+                appendLine("  作者: ${novel.userName} (ID: ${novel.userId})")
+                appendLine("  创建时间: ${novel.createDate}")
+                appendLine("  字数: ${novel.characterCount} (${novel.wordCount} 词)")
+                appendLine("  阅读时长: ${novel.readingTime} 秒")
                 appendLine("  书签: ${novel.bookmarkCount}")
-                val seriesInfo = novel.series
-                if (seriesInfo != null) {
-                    appendLine("  系列: ${seriesInfo.seriesTitle} (ID: ${seriesInfo.seriesId})")
+                appendLine("  语言: ${novel.language}")
+                appendLine("  AI类型: ${novel.aiType}")
+                if (novel.seriesId != null) {
+                    appendLine("  系列: ${novel.seriesTitle} (ID: ${novel.seriesId})")
                 }
-                appendLine("  标签: ${novel.tags.take(5).joinToString(", ")}")
+                appendLine("  标签: ${novel.tagA.take(5).joinToString(", ")}")
                 if (novel.isBookmarked) {
                     appendLine("  ⭐ 已收藏")
-                    if (novel.marker != null) {
-                        appendLine("  📖 阅读进度: ${novel.marker}")
-                    }
-                    if (novel.bookmarkRestrict == "1") {
-                        appendLine("  🔒 私密收藏")
-                    }
+                }
+                if (novel.comment.isNotBlank() && novel.comment.length > 50) {
+                    appendLine("  简介: ${novel.comment.take(50)}...")
                 }
                 if (index < 2) appendLine("")
             }
             
-            if (response.novels.size > 3) {
+            if (body.displayA.rankA.size > 3) {
                 appendLine("")
-                appendLine("... 还有 ${response.novels.size - 3} 条小说")
+                appendLine("... 还有 ${body.displayA.rankA.size - 3} 部小说")
             }
             
             appendLine("")
-            appendLine("📊 从 __NEXT_DATA__ JSON 解析")
-            appendLine("查看 JSON 标签页查看完整结果")
+            appendLine("💡 提示: 查看 JSON 标签页获取完整数据（含封面、完整简介等）")
         }
         
-        // 将解析后的数据转换为 JSON 字符串
-        val jsonString = buildString {
-            appendLine("{")
-            appendLine("  \"mode\": \"${response.mode}\",")
-            appendLine("  \"date\": \"${response.date}\",")
-            appendLine("  \"currentPage\": ${response.currentPage},")
-            appendLine("  \"totalPages\": ${response.totalPages},")
-            appendLine("  \"rankRange\": \"${response.rankRange}\",")
-            appendLine("  \"totalCount\": ${response.novels.size},")
-            appendLine("  \"novels\": [")
-            response.novels.forEachIndexed { index, novel ->
-                appendLine("    {")
-                appendLine("      \"rank\": ${novel.rank},")
-                appendLine("      \"novelId\": \"${novel.novelId}\",")
-                appendLine("      \"title\": \"${novel.title.replace("\"", "\\\"")}\",")
-                appendLine("      \"novelUrl\": \"${novel.novelUrl}\",")
-                appendLine("      \"author\": {")
-                appendLine("        \"userId\": \"${novel.author.userId}\",")
-                appendLine("        \"userName\": \"${novel.author.userName.replace("\"", "\\\"")}\",")
-                appendLine("        \"profileImageUrl\": \"${novel.author.profileImageUrl}\",")
-                appendLine("        \"novelListUrl\": \"${novel.author.novelListUrl}\"")
-                appendLine("      },")
-                appendLine("      \"coverImageUrl\": \"${novel.coverImageUrl}\",")
-                appendLine("      \"characterCount\": ${novel.characterCount},")
-                appendLine("      \"bookmarkCount\": ${novel.bookmarkCount},")
-                appendLine("      \"tags\": [${novel.tags.joinToString(", ") { "\"${it.replace("\"", "\\\"")}\"" }}],")
-                appendLine("      \"caption\": \"${novel.caption.take(100).replace("\"", "\\\"").replace("\n", "\\n")}...\",")
-                val seriesInfo = novel.series
-                if (seriesInfo != null) {
-                    appendLine("      \"series\": {")
-                    appendLine("        \"seriesId\": \"${seriesInfo.seriesId}\",")
-                    appendLine("        \"seriesTitle\": \"${seriesInfo.seriesTitle.replace("\"", "\\\"")}\",")
-                    appendLine("        \"seriesUrl\": \"${seriesInfo.seriesUrl}\"")
-                    appendLine("      },")
-                } else {
-                    appendLine("      \"series\": null,")
-                }
-                appendLine("      \"isBookmarked\": ${novel.isBookmarked},")
-                appendLine("      \"bookmarkId\": ${novel.bookmarkId?.let { "\"$it\"" } ?: "null"},")
-                appendLine("      \"bookmarkRestrict\": ${novel.bookmarkRestrict?.let { "\"$it\"" } ?: "null"},")
-                appendLine("      \"marker\": ${novel.marker ?: "null"}")
-                appendLine("    }${if (index < response.novels.size - 1) "," else ""}")
-            }
-            appendLine("  ]")
-            appendLine("}")
-        }
-        
-        updateResultWithRaw(jsonString, summary)
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
     // ==================== CommentApi 测试方法 ====================

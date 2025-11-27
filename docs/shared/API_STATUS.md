@@ -74,7 +74,7 @@
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
 | 获取插画排行榜 | `/ranking.php` | ✅ | ✅ | ✅ | 返回 JSON |
-| 获取小说排行榜 | `/novel/ranking.php` | ✅ | ✅ | ✅ | 返回 HTML，需解析 |
+| 获取小说排行榜 | `/ajax/ranking/novel` | ✅ | ✅ | ✅ | 返回 JSON 🆕 |
 
 **支持的排行榜模式** (RankingMode 枚举):
 - **一般排行榜**: `daily`, `weekly`, `monthly`, `rookie`, `original`, `daily_ai`, `male`, `female`

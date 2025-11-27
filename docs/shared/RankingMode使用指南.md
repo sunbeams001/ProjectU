@@ -21,21 +21,23 @@
 
 ## 🎨 排行榜模式列表
 
-### 一般向 - 非AI (7个)
-| 枚举值 | API值 | 显示名称 |
-|--------|-------|----------|
-| DAILY | daily | 今日 |
-| WEEKLY | weekly | 本周 |
-| MONTHLY | monthly | 本月 |
-| ROOKIE | rookie | 新人 |
-| ORIGINAL | original | 原创 |
-| MALE | male | 男性向 |
-| FEMALE | female | 女性向 |
+### 一般向 - 非AI (8个)
+| 枚举值 | API值 | 显示名称 | 备注 |
+|--------|-------|----------|------|
+| DAILY | daily | 今日 | |
+| WEEKLY | weekly | 本周 | |
+| MONTHLY | monthly | 本月 | |
+| ROOKIE | rookie | 新人 | |
+| ORIGINAL | original | 原创 | |
+| MALE | male | 男性向 | |
+| FEMALE | female | 女性向 | |
+| **WEEKLY_ORIGINAL** | **weekly_original** | **本周原创** | 🆕 小说专属 |
 
-### 一般向 - AI生成 (1个)
-| 枚举值 | API值 | 显示名称 |
-|--------|-------|----------|
-| DAILY_AI | daily_ai | AI生成 |
+### 一般向 - AI生成 (2个)
+| 枚举值 | API值 | 显示名称 | 备注 |
+|--------|-------|----------|------|
+| DAILY_AI | daily_ai | AI生成 | |
+| **WEEKLY_AI** | **weekly_ai** | **本周AI** | 🆕 小说专属 |
 
 ### R-18 - 非AI (4个)
 | 枚举值 | API值 | 显示名称 |
@@ -45,12 +47,18 @@
 | MALE_R18 | male_r18 | 男性向R-18 |
 | FEMALE_R18 | female_r18 | 女性向R-18 |
 
-### R-18 - AI生成 (1个)
+### R-18 - AI生成 (2个)
+| 枚举值 | API值 | 显示名称 | 备注 |
+|--------|-------|----------|------|
+| DAILY_R18_AI | daily_r18_ai | AI生成R-18 | |
+| **WEEKLY_R18_AI** | **weekly_r18_ai** | **本周R-18 AI** | 🆕 小说专属 |
+
+### R-18G (1个)
 | 枚举值 | API值 | 显示名称 |
 |--------|-------|----------|
-| DAILY_R18_AI | daily_r18_ai | AI生成R-18 |
+| R18G | r18g | R-18G |
 
-**总计**: 13 个排行榜模式
+**总计**: 18 个排行榜模式（其中 3 个为小说专属）
 
 ---
 

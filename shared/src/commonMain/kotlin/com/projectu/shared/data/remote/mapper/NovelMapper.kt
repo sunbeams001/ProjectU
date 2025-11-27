@@ -2,6 +2,7 @@ package com.projectu.shared.data.remote.mapper
 
 import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
 import com.projectu.shared.data.remote.dto.novel.NovelSimple
+import com.projectu.shared.data.remote.dto.ranking.NovelRankingItem
 import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.NovelGenre
@@ -153,4 +154,69 @@ fun NovelDetailBody.toNovel(ageLimitDeterminer: AgeLimitDeterminer): Novel {
         marker = null
     )
 }
+
+/**
+ * 将 NovelRankingItem 转换为 Novel
+ * 
+ * @param ageLimitDeterminer 年龄限制判定工具
+ */
+fun NovelRankingItem.toNovel(ageLimitDeterminer: AgeLimitDeterminer): Novel {
+    // 处理标签（排行榜返回的是简单的字符串列表）
+    val translatedTags = tagA.map { tagName ->
+        Tag(
+            name = tagName,
+            translatedName = null // 排行榜接口不返回翻译
+        )
+    }
+    
+    return Novel(
+        id = id,
+        title = title,
+        description = comment,
+        content = null, // 排行榜接口不返回正文
+        imageUrl = url, // 从DTO的url字段获取封面
+        userId = userId,
+        userName = userName,
+        userProfileImageUrl = profileImg,
+        tags = translatedTags,
+        viewCount = 0, // 排行榜接口不返回浏览数
+        likeCount = 0, // 排行榜接口不返回点赞数
+        bookmarkCount = bookmarkCount,
+        commentCount = 0, // 排行榜接口不返回评论数
+        markerCount = marker?.toIntOrNull() ?: 0,
+        createdTime = createDate ?: "",
+        updatedTime = createDate ?: "", // 排行榜只有创建日期
+        bookmarkStatus = if (isBookmarked) BookmarkStatus.PUBLIC else BookmarkStatus.NOT_BOOKMARKED,
+        bookmarkId = null, // 排行榜接口不返回收藏ID
+        isMasked = false, // 排行榜接口不返回此字段
+        isAiGenerated = aiType == "2",
+        isOriginal = isOriginal == "1",
+        isBungei = false, // 排行榜接口不返回此字段
+        textCount = characterCount,
+        wordCount = wordCount,
+        readingTime = readingTime,
+        useWordCount = true,
+        genre = NovelGenre.fromString(genre),
+        language = language,
+        ageLimit = ageLimitDeterminer.determine(
+            xRestrict = xRestrict.toIntOrNull() ?: 0,
+            tags = tagA
+        ),
+        seriesId = seriesId?.toString(),
+        seriesTitle = seriesTitle,
+        isUnlisted = false,
+        pageCount = 1,
+        marker = marker?.toIntOrNull()
+    )
+}
+
+/**
+ * 将 NovelRankingItem 列表转换为 Novel 列表
+ * 
+ * @param ageLimitDeterminer 年龄限制判定工具
+ */
+fun List<NovelRankingItem>.toNovelRankingList(ageLimitDeterminer: AgeLimitDeterminer): List<Novel> {
+    return this.map { it.toNovel(ageLimitDeterminer) }
+}
+
 

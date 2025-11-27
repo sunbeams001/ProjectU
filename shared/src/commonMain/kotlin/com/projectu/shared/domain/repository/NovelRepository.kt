@@ -1,6 +1,8 @@
 package com.projectu.shared.domain.repository
 
 import com.projectu.shared.data.remote.model.DiscoveryMode
+import com.projectu.shared.data.remote.model.RankingMode
+import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.domain.model.Novel
 
 /**
@@ -44,6 +46,32 @@ interface NovelRepository {
         mode: DiscoveryMode = DiscoveryMode.ALL,
         limit: Int = 100
     ): Result<List<Novel>>
+    
+    /**
+     * 获取小说排行榜
+     * @param mode 排行榜模式
+     * @param content 内容类型（应该是 NOVEL 或 ALL）
+     * @param page 页码
+     * @param date 日期（格式：yyyyMMdd，可选）
+     * @return 排行榜小说列表
+     */
+    suspend fun getRankingNovels(
+        mode: RankingMode = RankingMode.DAILY,
+        content: RankingContent = RankingContent.NOVEL,
+        page: Int = 1,
+        date: String? = null
+    ): Result<List<Novel>>
+    
+    /**
+     * 获取小说排行榜（包含日期信息）
+     * @return Pair<小说列表, 日期信息(currentDate, prevDate, nextDate)>
+     */
+    suspend fun getRankingWithDateInfo(
+        mode: RankingMode = RankingMode.DAILY,
+        content: RankingContent = RankingContent.NOVEL,
+        page: Int = 1,
+        date: String? = null
+    ): Result<Pair<List<Novel>, Triple<String?, String?, String?>>>
     
     /**
      * 添加小说收藏

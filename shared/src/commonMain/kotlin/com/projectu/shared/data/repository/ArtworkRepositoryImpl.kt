@@ -6,6 +6,7 @@ import com.projectu.shared.data.remote.mapper.toArtworkList
 import com.projectu.shared.data.remote.mapper.toUgoiraMetadata
 import com.projectu.shared.data.remote.mapper.updatePages
 import com.projectu.shared.data.remote.model.RankingMode
+import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.UgoiraMetadata
@@ -110,15 +111,34 @@ class ArtworkRepositoryImpl(
 
     override suspend fun getRankingArtworks(
         mode: RankingMode,
+        content: RankingContent,
         page: Int,
         date: String?
     ): Result<List<Artwork>> = runCatching {
         val response = pixivApi.rankingApi.getIllustRanking(
             mode = mode,
+            content = content,
             page = page,
             date = date
         )
         response.contents.toArtworkList(ageLimitDeterminer)
+    }
+    
+    override suspend fun getRankingWithDateInfo(
+        mode: RankingMode,
+        content: RankingContent,
+        page: Int,
+        date: String?
+    ): Result<Pair<List<Artwork>, Triple<String?, String?, String?>>> = runCatching {
+        val response = pixivApi.rankingApi.getIllustRanking(
+            mode = mode,
+            content = content,
+            page = page,
+            date = date
+        )
+        val artworks = response.contents.toArtworkList(ageLimitDeterminer)
+        val dateInfo = Triple(response.date, response.prev_date, response.next_date)
+        Pair(artworks, dateInfo)
     }
 
     override suspend fun addBookmark(

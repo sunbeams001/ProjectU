@@ -1,118 +1,284 @@
 package com.projectu.shared.data.remote.dto.ranking
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 /**
- * 小说排行榜条目数据类
- * 从HTML页面解析得到的小说信息
+ * 小说排行榜 JSON 响应（来自 /ajax/ranking/novel 接口）
+ */
+@Serializable
+data class NovelRankingJsonResponse(
+    @SerialName("error")
+    val error: Boolean,
+    
+    @SerialName("body")
+    val body: NovelRankingBody
+)
+
+/**
+ * 小说排行榜主体数据
+ */
+@Serializable
+data class NovelRankingBody(
+    @SerialName("display_a")
+    val displayA: NovelRankingDisplay,
+
+    @SerialName("start")
+    val start: String? = null,
+
+    @SerialName("end")
+    val end: String? = null,
+
+    @SerialName("date")
+    val date: String? = null,
+
+    @SerialName("h_title")
+    val hTitle: String? = null,
+
+    @SerialName("zoneConfig")
+    val zoneConfig: ZoneConfig? = null
+)
+
+@Serializable
+data class ZoneConfig(
+    @SerialName("header")
+    val header: ZoneConfigItem? = null,
+    @SerialName("footer")
+    val footer: ZoneConfigItem? = null,
+    @SerialName("logo")
+    val logo: ZoneConfigItem? = null,
+    @SerialName("ad_logo")
+    val adLogo: ZoneConfigItem? = null
+)
+
+@Serializable
+data class ZoneConfigItem(
+    @SerialName("url")
+    val url: String? = null
+)
+
+/**
+ * 自定义序列化器，处理 rank_a 可能是数组或对象的情况
+ * 
+ * - 某些 mode（如 daily, weekly 等）返回数组格式: [{...}, {...}]
+ * - 某些 mode（如 female, male_r18, female_r18）返回对象格式: {"0": {...}, "1": {...}}
+ */
+object RankASerializer : KSerializer<List<NovelRankingItem>> {
+    private val listSerializer = ListSerializer(NovelRankingItem.serializer())
+    private val mapSerializer = MapSerializer(String.serializer(), NovelRankingItem.serializer())
+    
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("RankA")
+    
+    override fun deserialize(decoder: Decoder): List<NovelRankingItem> {
+        require(decoder is JsonDecoder)
+        val element = decoder.decodeJsonElement()
+        
+        return when {
+            // 如果是数组格式，直接反序列化
+            element is kotlinx.serialization.json.JsonArray -> {
+                decoder.json.decodeFromJsonElement(listSerializer, element)
+            }
+            // 如果是对象格式，提取值并按键排序
+            element is kotlinx.serialization.json.JsonObject -> {
+                val map = decoder.json.decodeFromJsonElement(mapSerializer, element)
+                map.entries
+                    .sortedBy { it.key.toIntOrNull() ?: Int.MAX_VALUE }
+                    .map { it.value }
+            }
+            else -> emptyList()
+        }
+    }
+    
+    override fun serialize(encoder: Encoder, value: List<NovelRankingItem>) {
+        listSerializer.serialize(encoder, value)
+    }
+}
+
+/**
+ * 排行榜显示数据
+ */
+@Serializable
+data class NovelRankingDisplay(
+    @SerialName("rank_a")
+    @Serializable(with = RankASerializer::class)
+    val rankA: List<NovelRankingItem>,
+
+    @SerialName("mode")
+    val mode: String? = null,
+
+    @SerialName("page")
+    val page: Int? = null,
+
+    @SerialName("title")
+    val title: String? = null,
+
+    @SerialName("muted_count")
+    val mutedCount: Int? = null,
+
+    @SerialName("page_a")
+    val pageA: Map<String, String>? = null,
+
+    @SerialName("prev")
+    val prev: Int? = null,
+
+    @SerialName("next")
+    val next: Int? = null,
+
+    @SerialName("prev_date")
+    val prevDate: String? = null,
+
+    @SerialName("next_date")
+    val nextDate: String? = null,
+
+    @SerialName("x_restrict")
+    val xRestrict: String? = null,
+
+    @SerialName("is_r18_page")
+    val isR18Page: Boolean? = null,
+
+    @SerialName("header_bnr_ranking")
+    val headerBnrRanking: Int? = null,
+
+    @SerialName("meta_ogp")
+    val metaOgp: MetaOgp? = null,
+
+    @SerialName("twitter_card")
+    val twitterCard: TwitterCard? = null,
+
+    @SerialName("ranking_header")
+    val rankingHeader: RankingHeader? = null
+)
+
+@Serializable
+data class MetaOgp(
+    @SerialName("description")
+    val description: String? = null,
+    @SerialName("image")
+    val image: String? = null,
+    @SerialName("title")
+    val title: String? = null
+)
+
+@Serializable
+data class TwitterCard(
+    @SerialName("card")
+    val card: String? = null,
+    @SerialName("site")
+    val site: String? = null,
+    @SerialName("description")
+    val description: String? = null,
+    @SerialName("image")
+    val image: String? = null,
+    @SerialName("title")
+    val title: String? = null
+)
+
+@Serializable
+data class RankingHeader(
+    @SerialName("general")
+    val general: List<RankingHeaderItem>? = null,
+    @SerialName("r18")
+    val r18: List<RankingHeaderItem>? = null
+)
+
+@Serializable
+data class RankingHeaderItem(
+    @SerialName("mode")
+    val mode: String? = null,
+    @SerialName("name")
+    val name: String? = null,
+    @SerialName("url")
+    val url: String? = null
+)
+
+/**
+ * 小说排行榜项
  */
 @Serializable
 data class NovelRankingItem(
-    // 排行榜排名
+    @SerialName("rank")
     val rank: Int,
     
-    // 小说ID
-    val novelId: String,
+    @SerialName("id")
+    val id: String,
     
-    // 小说标题
+    @SerialName("title")
     val title: String,
     
-    // 作者信息
-    val author: AuthorInfo,
+    @SerialName("create_date")
+    val createDate: String? = null,
     
-    // 封面图片URL
-    val coverImageUrl: String,
-    
-    // 字符数
-    val characterCount: Int,
-    
-    // 书签数（收藏数）
-    val bookmarkCount: Int,
-    
-    // 标签列表
-    val tags: List<String>,
-    
-    // 简介/描述
-    val caption: String,
-    
-    // 系列信息（可选）
-    val series: SeriesInfo? = null,
-    
-    // 小说链接
-    val novelUrl: String,
-    
-    // 是否已收藏
-    val isBookmarked: Boolean = false,
-    
-    // 收藏ID（如果已收藏）
-    val bookmarkId: String? = null,
-    
-    // 收藏限制（0=公开，1=私密）
-    val bookmarkRestrict: String? = null,
-    
-    // 阅读进度标记（书签位置）
-    val marker: Int? = null
-)
-
-/**
- * 作者信息
- */
-@Serializable
-data class AuthorInfo(
-    // 作者ID
+    @SerialName("user_id")
     val userId: String,
     
-    // 作者名称
+    @SerialName("user_name")
     val userName: String,
     
-    // 作者头像URL
-    val profileImageUrl: String,
+    @SerialName("profile_img")
+    val profileImg: String,
     
-    // 作者小说列表链接
-    val novelListUrl: String
-)
-
-/**
- * 系列信息
- */
-@Serializable
-data class SeriesInfo(
-    // 系列ID
-    val seriesId: String,
+    @SerialName("comment")
+    val comment: String,
     
-    // 系列标题
-    val seriesTitle: String,
+    @SerialName("restrict")
+    val restrict: String,
     
-    // 系列链接
-    val seriesUrl: String
-)
-
-/**
- * 小说排行榜响应
- */
-@Serializable
-data class NovelRankingResponse(
-    // 排行榜类型（daily, weekly, monthly等）
-    val mode: String,
+    @SerialName("x_restrict")
+    val xRestrict: String,
     
-    // 排行榜日期
-    val date: String,
+    @SerialName("is_original")
+    val isOriginal: String,
     
-    // 当前页码
-    val currentPage: Int,
+    @SerialName("language")
+    val language: String,
     
-    // 总页数
-    val totalPages: Int,
+    @SerialName("character_count")
+    val characterCount: Int,
     
-    // 当前页的排名范围（如：#1 - #50）
-    val rankRange: String,
+    @SerialName("word_count")
+    val wordCount: Int,
     
-    // 小说列表
-    val novels: List<NovelRankingItem>,
+    @SerialName("ai_type")
+    val aiType: String,
     
-    // 下一页链接（可选）
-    val nextPageUrl: String? = null,
+    @SerialName("tag_a")
+    val tagA: List<String>,
     
-    // 上一页链接（可选）
-    val previousPageUrl: String? = null
+    @SerialName("url")
+    val url: String,
+    
+    @SerialName("series_id")
+    val seriesId: Long? = null,
+    
+    @SerialName("series_title")
+    val seriesTitle: String? = null,
+    
+    @SerialName("genre")
+    val genre: String,
+    
+    @SerialName("bookmark_count")
+    val bookmarkCount: Int,
+    
+    @SerialName("reading_time")
+    val readingTime: Int,
+    
+    @SerialName("is_bookmarked")
+    val isBookmarked: Boolean,
+    
+    @SerialName("bookmarkable")
+    val bookmarkable: Boolean,
+    
+    @SerialName("marker")
+    val marker: String? = null
 )

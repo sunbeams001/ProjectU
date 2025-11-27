@@ -30,6 +30,7 @@ ehthumbs.db
 
 # Kotlin
 *.kotlin_module
+.kotlin/
 
 # Compose
 *.compose

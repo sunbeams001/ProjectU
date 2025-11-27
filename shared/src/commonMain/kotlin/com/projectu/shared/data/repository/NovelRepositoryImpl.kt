@@ -3,7 +3,10 @@ package com.projectu.shared.data.repository
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.mapper.toNovel
 import com.projectu.shared.data.remote.mapper.toNovelList
+import com.projectu.shared.data.remote.mapper.toNovelRankingList
 import com.projectu.shared.data.remote.model.DiscoveryMode
+import com.projectu.shared.data.remote.model.RankingMode
+import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.util.AgeLimitDeterminer
@@ -79,6 +82,53 @@ class NovelRepositoryImpl(
                 ) ?: emptyList()
                 Result.success(novels)
             }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    override suspend fun getRankingNovels(
+        mode: RankingMode,
+        content: RankingContent,
+        page: Int,
+        date: String?
+    ): Result<List<Novel>> {
+        return try {
+            val response = pixivApi.rankingApi.getNovelRankingJson(
+                mode = mode,
+                content = content,
+                page = page,
+                date = date
+            )
+            
+            // 转换排行榜数据为小说列表
+            val novels = response.displayA.rankA.toNovelRankingList(ageLimitDeterminer)
+            Result.success(novels)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    override suspend fun getRankingWithDateInfo(
+        mode: RankingMode,
+        content: RankingContent,
+        page: Int,
+        date: String?
+    ): Result<Pair<List<Novel>, Triple<String?, String?, String?>>> {
+        return try {
+            val body = pixivApi.rankingApi.getNovelRankingJson(
+                mode = mode,
+                content = content,
+                page = page,
+                date = date
+            )
+            
+            // 转换排行榜数据为小说列表
+            val novels = body.displayA.rankA.toNovelRankingList(ageLimitDeterminer)
+            // 提取日期信息 (注意：小说排行榜的日期字段在body中，可能是start/end，也可能是date)
+            val currentDate = body.start ?: body.date
+            val dateInfo = Triple(currentDate, body.displayA.prevDate, body.displayA.nextDate)
+            Result.success(Pair(novels, dateInfo))
         } catch (e: Exception) {
             Result.failure(e)
         }

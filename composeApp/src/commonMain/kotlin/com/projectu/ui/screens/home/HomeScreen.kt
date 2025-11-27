@@ -32,6 +32,9 @@ import projectu.composeapp.generated.resources.discovery_recommended_novels
 import com.projectu.ui.screens.discovery.DiscoveryIllustsScreen
 import com.projectu.ui.screens.discovery.DiscoveryNovelsScreen
 import com.projectu.ui.screens.discovery.DiscoveryUsersScreen
+import com.projectu.ui.screens.ranking.RankingContent
+import com.projectu.ui.screens.ranking.RankingViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 
 /**
  * 主屏幕 - 包含底部导航栏的容器
@@ -305,26 +308,25 @@ object RankingTab : Tab {
     
     @Composable
     override fun Content() {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = stringResource(Res.string.nav_ranking),
-                    style = MaterialTheme.typography.headlineMedium
-                )
+        val viewModel = koinScreenModel<RankingViewModel>()
+        val state by viewModel.state.collectAsState()
+        
+        RankingContent(
+            state = state,
+            onContentTypeChange = viewModel::switchContentType,
+            onModeChange = viewModel::switchMode,
+            onDateChange = viewModel::switchDate,
+            onLoadMore = viewModel::loadMore,
+            onRefresh = viewModel::refresh,
+            onArtworkClick = { artwork ->
+                // TODO: 跳转到作品详情页
+                println("点击作品: ${artwork.title}")
+            },
+            onNovelClick = { novel ->
+                // TODO: 跳转到小说详情页
+                println("点击小说: ${novel.title}")
             }
-        }
+        )
     }
 }
 

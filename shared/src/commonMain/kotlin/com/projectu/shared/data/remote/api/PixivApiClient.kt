@@ -139,9 +139,21 @@ class PixivApiClient(
         url: String,
         queryParams: Map<String, Any?>? = null
     ): T {
-        return httpClient.get("$host$url") {
+        val httpResponse = httpClient.get("$host$url") {
             header(HEADER_REFERER, DEFAULT_HOST)
             header(HEADER_COOKIE, cookie)
+            // 添加完整的浏览器请求头以绕过 Cloudflare 验证（精确匹配 Chrome 142 真实请求）
+            header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36")
+            header("Accept", "*/*")
+            header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7,zh-TW;q=0.6,ja;q=0.5,ru;q=0.4")
+            header("Priority", "u=1, i")
+            header("Sec-Ch-Ua", "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\"")
+            header("Sec-Ch-Ua-Mobile", "?0")
+            header("Sec-Ch-Ua-Platform", "\"Windows\"")
+            header("Sec-Fetch-Dest", "empty")
+            header("Sec-Fetch-Mode", "cors")
+            header("Sec-Fetch-Site", "same-origin")
+            parameter("lang", langProvider())
             queryParams?.forEach { (key, value) ->
                 when (value) {
                     is Collection<*> -> {
@@ -157,7 +169,9 @@ class PixivApiClient(
                     }
                 }
             }
-        }.body()
+        }
+        
+        return httpResponse.body()
     }
 
     /**
