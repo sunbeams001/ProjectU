@@ -29,9 +29,7 @@ import projectu.composeapp.generated.resources.settings_title
 import projectu.composeapp.generated.resources.discovery_recommended_users
 import projectu.composeapp.generated.resources.discovery_recommended_illusts
 import projectu.composeapp.generated.resources.discovery_recommended_novels
-import com.projectu.ui.screens.discovery.DiscoveryIllustsScreen
-import com.projectu.ui.screens.discovery.DiscoveryNovelsScreen
-import com.projectu.ui.screens.discovery.DiscoveryUsersScreen
+import com.projectu.ui.screens.discovery.DiscoveryContent
 import com.projectu.ui.screens.ranking.RankingContent
 import com.projectu.ui.screens.ranking.RankingViewModel
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -98,7 +96,13 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                 )
                 NavigationRailItem(
                     selected = it.current == DiscoveryTab,
-                    onClick = { it.current = DiscoveryTab },
+                    onClick = { 
+                        if (it.current == DiscoveryTab) {
+                            DiscoveryTab.triggerScrollToTopOrRefresh()
+                        } else {
+                            it.current = DiscoveryTab
+                        }
+                    },
                     icon = { Icon(Icons.Default.Search, contentDescription = null) },
                     label = { Text(stringResource(Res.string.nav_discovery)) }
                 )
@@ -156,9 +160,12 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
     NavigationBarItem(
         selected = tabNavigator.current == tab,
         onClick = { 
-            if (tabNavigator.current == tab && tab == RankingTab) {
-                // 重复点击排行榜 Tab，触发刷新或滚动到顶部
-                RankingTab.triggerScrollToTopOrRefresh()
+            if (tabNavigator.current == tab) {
+                when (tab) {
+                    DiscoveryTab -> DiscoveryTab.triggerScrollToTopOrRefresh()
+                    RankingTab -> RankingTab.triggerScrollToTopOrRefresh()
+                    else -> {}
+                }
             } else {
                 tabNavigator.current = tab
             }
@@ -221,6 +228,14 @@ fun HomeTabContent() {
 
 // 发现标签
 object DiscoveryTab : Tab {
+    // 用于触发刷新或滚动到顶部的事件
+    private val _scrollToTopOrRefreshTrigger = mutableStateOf(0L)
+    val scrollToTopOrRefreshTrigger: State<Long> = _scrollToTopOrRefreshTrigger
+    
+    fun triggerScrollToTopOrRefresh() {
+        _scrollToTopOrRefreshTrigger.value = System.currentTimeMillis()
+    }
+    
     override val options: TabOptions
         @Composable
         get() {
@@ -237,70 +252,20 @@ object DiscoveryTab : Tab {
     
     @Composable
     override fun Content() {
-        DiscoveryTabContent()
-    }
-}
-
-@Composable
-fun DiscoveryTabContent() {
-    // 获取父级 Navigator（而不是 TabNavigator）
-    val parentNavigator = LocalNavigator.current?.parent
-    
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // 顶部按钮区域
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // 推荐用户按钮
-            Button(
-                onClick = {
-                    parentNavigator?.push(DiscoveryUsersScreen())
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(Res.string.discovery_recommended_users))
-            }
-            
-            // 推荐插画·漫画按钮
-            Button(
-                onClick = {
-                    parentNavigator?.push(DiscoveryIllustsScreen())
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(Res.string.discovery_recommended_illusts))
-            }
-            
-            // 推荐小说按钮
-            Button(
-                onClick = {
-                    parentNavigator?.push(DiscoveryNovelsScreen())
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(Res.string.discovery_recommended_novels))
+        val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
+        
+        // 监听触发器
+        LaunchedEffect(scrollToTopOrRefreshTrigger.value) {
+            if (scrollToTopOrRefreshTrigger.value > 0) {
+                scrollToTopOrRefreshCallback.value?.invoke()
             }
         }
         
-        // 内容区域占位
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "等待进一步指示...",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        DiscoveryContent(
+            onRegisterScrollToTopOrRefreshCallback = { callback ->
+                scrollToTopOrRefreshCallback.value = callback
+            }
+        )
     }
 }
 
