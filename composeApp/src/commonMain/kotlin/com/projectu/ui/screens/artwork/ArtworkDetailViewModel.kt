@@ -7,6 +7,7 @@ import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
+import com.projectu.shared.data.cache.ArtworkCacheManager
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.cache.StateCacheEvent
 import kotlinx.coroutines.flow.*
@@ -18,19 +19,22 @@ import kotlinx.coroutines.launch
  * 支持两种模式：
  * 1. 单个作品模式：只展示一个作品
  * 2. 列表导航模式：支持左右滑动浏览列表中的多个作品
+ * 
+ * 使用全局 ArtworkCacheManager 缓存作品详情，避免重复加载
  */
 class ArtworkDetailViewModel(
     private val artworkRepository: ArtworkRepository,
     private val userRepository: UserRepository,
     private val syncArtworkStatesUseCase: SyncArtworkStatesUseCase,
-    private val stateCacheManager: StateCacheManager
+    private val stateCacheManager: StateCacheManager,
+    private val artworkCacheManager: ArtworkCacheManager
 ) : ScreenModel {
 
     private val _state = MutableStateFlow(ArtworkDetailState())
     val state: StateFlow<ArtworkDetailState> = _state.asStateFlow()
     
-    // 作品缓存：artworkId -> Artwork
-    private val artworkCache = mutableMapOf<String, Artwork>()
+    // 本地会话缓存（用于当前详情页会话的快速访问）
+    private val sessionCache = mutableMapOf<String, Artwork>()
     
     // 失败作品的错误信息缓存：artworkId -> errorMessage
     private val failedArtworkErrors = mutableMapOf<String, String>()
@@ -47,12 +51,18 @@ class ArtworkDetailViewModel(
                         // 如果是当前作品，更新状态
                         val currentArtwork = _state.value.artwork
                         if (currentArtwork?.id == event.artworkId) {
+                            val updatedArtwork = currentArtwork.copy(
+                                bookmarkStatus = event.status,
+                                bookmarkId = event.bookmarkId
+                            )
                             _state.update {
+                                it.copy(artwork = updatedArtwork)
+                            }
+                            // 同步更新全局缓存
+                            artworkCacheManager.updateArtwork(event.artworkId) {
                                 it.copy(
-                                    artwork = currentArtwork.copy(
-                                        bookmarkStatus = event.status,
-                                        bookmarkId = event.bookmarkId
-                                    )
+                                    bookmarkStatus = event.status,
+                                    bookmarkId = event.bookmarkId
                                 )
                             }
                         }
@@ -121,16 +131,17 @@ class ArtworkDetailViewModel(
         
         // 从缓存加载或异步加载
         val artworkId = artworkIds[newIndex]
-        val cachedArtwork = artworkCache[artworkId]
         val cachedError = failedArtworkErrors[artworkId]
         
-        if (cachedArtwork != null) {
+        // 首先检查会话缓存
+        val sessionCachedArtwork = sessionCache[artworkId]
+        if (sessionCachedArtwork != null) {
             // 立即显示缓存的作品
             screenModelScope.launch {
-                val followStatus = getAuthorFollowStatus(cachedArtwork.userId)
+                val followStatus = getAuthorFollowStatus(sessionCachedArtwork.userId)
                 _state.update {
                     it.copy(
-                        artwork = cachedArtwork,
+                        artwork = sessionCachedArtwork,
                         authorFollowStatus = followStatus,
                         isLoading = false,
                         error = null
@@ -147,7 +158,7 @@ class ArtworkDetailViewModel(
                 )
             }
         } else {
-            // 从网络加载
+            // 尝试从全局缓存加载，或从网络加载
             loadArtworkDetail(artworkId)
         }
         
@@ -162,11 +173,18 @@ class ArtworkDetailViewModel(
 
     /**
      * 加载作品详情
+     * 
+     * 加载策略：
+     * 1. 首先检查全局缓存（ArtworkCacheManager）是否有已加载的详情
+     * 2. 如果全局缓存命中且已加载详情，直接使用缓存数据
+     * 3. 否则调用API加载详情，并缓存到全局缓存
+     * 
+     * @param artworkId 作品ID
      * @param silent 静默加载（预加载时使用，不显示加载状态）
      */
     fun loadArtworkDetail(artworkId: String, silent: Boolean = false) {
-        // 检查缓存
-        if (artworkCache.containsKey(artworkId)) {
+        // 检查会话缓存
+        if (sessionCache.containsKey(artworkId)) {
             return
         }
         
@@ -184,6 +202,32 @@ class ArtworkDetailViewModel(
         }
         
         screenModelScope.launch {
+            // 先检查全局缓存是否有完整详情
+            val globalCachedArtwork = artworkCacheManager.getDetailedArtwork(artworkId)
+            if (globalCachedArtwork != null) {
+                // 全局缓存命中，直接使用
+                sessionCache[artworkId] = globalCachedArtwork
+                
+                if (!silent) {
+                    val followStatus = getAuthorFollowStatus(globalCachedArtwork.userId)
+                    _state.update {
+                        it.copy(
+                            artwork = globalCachedArtwork,
+                            authorFollowStatus = followStatus,
+                            isLoading = false,
+                            error = null,
+                            artworkCache = sessionCache.toMap()
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(artworkCache = sessionCache.toMap())
+                    }
+                }
+                return@launch
+            }
+            
+            // 全局缓存未命中，需要从网络加载
             if (!silent) {
                 _state.update { it.copy(isLoading = true, error = null) }
             }
@@ -232,24 +276,27 @@ class ArtworkDetailViewModel(
                 val userStates = stateCacheManager.getUserStates(listOf(artwork.userId))
                 val followStatus = userStates[artwork.userId]?.followStatus ?: FollowStatus.NOT_FOLLOWING
 
-                // 6. 添加到缓存
-                artworkCache[artworkId] = artwork
+                // 6. 添加到全局缓存（标记为已加载详情）
+                artworkCacheManager.cacheArtworkDetail(artwork)
+                
+                // 7. 添加到会话缓存
+                sessionCache[artworkId] = artwork
 
-                // 7. 更新状态（仅当不是静默加载时）
+                // 8. 更新状态（仅当不是静默加载时）
                 if (!silent) {
                     _state.update {
                         it.copy(
                             artwork = artwork,
                             authorFollowStatus = followStatus,
                             isLoading = false,
-                            artworkCache = artworkCache.toMap()  // 更新缓存
+                            artworkCache = sessionCache.toMap()  // 更新缓存
                         )
                     }
                 } else {
                     // 静默加载时也要更新缓存
                     _state.update {
                         it.copy(
-                            artworkCache = artworkCache.toMap()
+                            artworkCache = sessionCache.toMap()
                         )
                     }
                 }
@@ -274,23 +321,30 @@ class ArtworkDetailViewModel(
     
     /**
      * 预加载相邻作品
+     * 
+     * 优化策略：
+     * 1. 先检查会话缓存
+     * 2. 再检查全局缓存是否有详情
+     * 3. 都没有才发起网络请求
      */
     private fun preloadAdjacentArtworks(currentIndex: Int) {
         val artworkIds = _state.value.artworkIds
         
-        // 预加载前一个
-        if (currentIndex > 0) {
-            val prevId = artworkIds[currentIndex - 1]
-            if (!artworkCache.containsKey(prevId)) {
-                loadArtworkDetail(prevId, silent = true)
+        screenModelScope.launch {
+            // 预加载前一个
+            if (currentIndex > 0) {
+                val prevId = artworkIds[currentIndex - 1]
+                if (!sessionCache.containsKey(prevId) && !artworkCacheManager.hasDetailLoaded(prevId)) {
+                    loadArtworkDetail(prevId, silent = true)
+                }
             }
-        }
-        
-        // 预加载后一个
-        if (currentIndex < artworkIds.size - 1) {
-            val nextId = artworkIds[currentIndex + 1]
-            if (!artworkCache.containsKey(nextId)) {
-                loadArtworkDetail(nextId, silent = true)
+            
+            // 预加载后一个
+            if (currentIndex < artworkIds.size - 1) {
+                val nextId = artworkIds[currentIndex + 1]
+                if (!sessionCache.containsKey(nextId) && !artworkCacheManager.hasDetailLoaded(nextId)) {
+                    loadArtworkDetail(nextId, silent = true)
+                }
             }
         }
     }
@@ -312,16 +366,24 @@ class ArtworkDetailViewModel(
             val currentId = artworkIds.getOrNull(_state.value.currentIndex)
             if (currentId != null) {
                 // 清除缓存中的失败数据
-                artworkCache.remove(currentId)
+                sessionCache.remove(currentId)
                 failedArtworkErrors.remove(currentId)
-                loadArtworkDetail(currentId, silent = false)
+                // 同时从全局缓存中移除，强制重新加载
+                screenModelScope.launch {
+                    artworkCacheManager.removeArtwork(currentId)
+                    loadArtworkDetail(currentId, silent = false)
+                }
             }
         } else {
             // 单个作品模式，从 state 中获取
             _state.value.artwork?.id?.let { artworkId ->
-                artworkCache.remove(artworkId)
+                sessionCache.remove(artworkId)
                 failedArtworkErrors.remove(artworkId)
-                loadArtworkDetail(artworkId, silent = false)
+                // 同时从全局缓存中移除，强制重新加载
+                screenModelScope.launch {
+                    artworkCacheManager.removeArtwork(artworkId)
+                    loadArtworkDetail(artworkId, silent = false)
+                }
             }
         }
     }

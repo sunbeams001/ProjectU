@@ -68,6 +68,6 @@ actual val viewModelModule: Module = module {
     single { com.projectu.ui.screens.ranking.RankingViewModel(get(), get(), get(), get(), get()) }
     
     // 作品详情 ScreenModel
-    factory { com.projectu.ui.screens.artwork.ArtworkDetailViewModel(get(), get(), get(), get()) }
+    factory { com.projectu.ui.screens.artwork.ArtworkDetailViewModel(get(), get(), get(), get(), get()) }
 }
 
