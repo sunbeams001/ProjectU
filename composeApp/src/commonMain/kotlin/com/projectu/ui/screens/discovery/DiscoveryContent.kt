@@ -1,7 +1,6 @@
 package com.projectu.ui.screens.discovery
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -14,7 +13,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
@@ -33,6 +31,7 @@ import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.UserCard
+import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -46,6 +45,7 @@ import projectu.composeapp.generated.resources.*
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DiscoveryContent(
+    scrollIndices: MutableMap<String, Int> = mutableMapOf(),
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
     val parentNavigator = LocalNavigator.current?.parent
@@ -126,19 +126,20 @@ fun DiscoveryContent(
     }
     
     Column(modifier = Modifier.fillMaxSize()) {
-        // 内容类型选择器
-        DiscoveryContentTypeSelector(
-            contentTypes = contentTypes,
-            currentTypeIndex = pagerState.currentPage,
-            onContentTypeChange = { type ->
-                val targetPage = contentTypes.indexOf(type)
-                if (targetPage >= 0) {
+        // 第1层导航：内容类型选择器
+        SimpleNavigationBar(
+            items = contentTypes,
+            selectedIndex = pagerState.currentPage,
+            onItemClick = { index ->
+                if (index == pagerState.currentPage) {
+                    scrollToTopOrRefresh()
+                } else {
                     coroutineScope.launch {
-                        pagerState.animateScrollToPage(targetPage)
+                        pagerState.animateScrollToPage(index)
                     }
                 }
             },
-            onRefreshOrScrollToTop = scrollToTopOrRefresh,
+            getItemLabel = { type -> type.displayName },
             modifier = Modifier.fillMaxWidth()
         )
         
@@ -157,6 +158,39 @@ fun DiscoveryContent(
                         listStates.getOrPut(contentType) { listState }
                     }
                     
+                    // 监听滚动索引变化，滚动到指定位置（这里是用户索引）
+                    val targetScrollIndex by remember(contentType) {
+                        derivedStateOf { scrollIndices["users"] }
+                    }
+                    
+                    LaunchedEffect(targetScrollIndex) {
+                        val scrollIndex = targetScrollIndex
+                        if (scrollIndex != null && scrollIndex > 0) {
+                            listState.animateScrollToItem(scrollIndex)
+                            scrollIndices.remove("users")
+                        }
+                    }
+                    
+                    // 创建响应式作品列表 State
+                    val userArtworkIdsState = remember {
+                        derivedStateOf {
+                            usersState.users.flatMap { it.illusts?.map { it.id } ?: emptyList() }
+                        }
+                    }
+                    
+                    // 创建作品索引到用户索引的映射
+                    val artworkToUserIndexMap = remember(usersState.users) {
+                        val map = mutableMapOf<Int, Int>()
+                        var artworkIndex = 0
+                        usersState.users.forEachIndexed { userIndex, user ->
+                            user.illusts?.forEach { _ ->
+                                map[artworkIndex] = userIndex
+                                artworkIndex++
+                            }
+                        }
+                        map
+                    }
+                    
                     DiscoveryUsersPage(
                         state = usersState,
                         onLoadMore = usersViewModel::loadMore,
@@ -166,8 +200,21 @@ fun DiscoveryContent(
                             // TODO: 跳转到用户详情页
                             println("点击用户: ${user.name}")
                         },
-                        onArtworkClick = { artwork ->
-                            parentNavigator?.push(ArtworkDetailScreen(artwork.id))
+                        onArtworkClick = { artwork, artworkIndex ->
+                            val userIndex = artworkToUserIndexMap[artworkIndex] ?: 0
+                            
+                            parentNavigator?.push(
+                                ArtworkDetailScreen(
+                                    artworkIds = userArtworkIdsState,
+                                    initialIndex = artworkIndex,
+                                    onLoadMore = { usersViewModel.loadMore() },
+                                    onReturnWithIndex = { lastArtworkIndex ->
+                                        // 将作品索引转换为用户索引
+                                        val targetUserIndex = artworkToUserIndexMap[lastArtworkIndex] ?: 0
+                                        scrollIndices["users"] = targetUserIndex
+                                    }
+                                )
+                            )
                         },
                         listState = listState as LazyListState
                     )
@@ -179,14 +226,48 @@ fun DiscoveryContent(
                         listStates.getOrPut(contentType) { listState }
                     }
                     
+                    val currentMode = illustsState.currentMode.name
+                    val scrollKey = "illusts_$currentMode"
+                    
+                    // 监听滚动索引变化，滚动到指定位置
+                    val targetScrollIndex by remember(contentType, currentMode) {
+                        derivedStateOf { scrollIndices[scrollKey] }
+                    }
+                    
+                    LaunchedEffect(targetScrollIndex) {
+                        val scrollIndex = targetScrollIndex
+                        if (scrollIndex != null && scrollIndex > 0) {
+                            listState.animateScrollToItem(scrollIndex)
+                            scrollIndices.remove(scrollKey)
+                        }
+                    }
+                    
+                    // 创建响应式作品列表 State
+                    val illustArtworkIdsState = remember {
+                        derivedStateOf {
+                            illustsState.artworks.map { it.id }
+                        }
+                    }
+                    
                     DiscoveryIllustsPage(
                         state = illustsState,
                         onModeChange = illustsViewModel::switchMode,
                         onLoadMore = illustsViewModel::loadMore,
                         onRefresh = illustsViewModel::refresh,
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
-                        onArtworkClick = { artwork ->
-                            parentNavigator?.push(ArtworkDetailScreen(artwork.id))
+                        onArtworkClick = { artwork, index ->
+                            val key = "illusts_$currentMode"
+                            
+                            parentNavigator?.push(
+                                ArtworkDetailScreen(
+                                    artworkIds = illustArtworkIdsState,
+                                    initialIndex = index,
+                                    onLoadMore = { illustsViewModel.loadMore() },
+                                    onReturnWithIndex = { lastIndex ->
+                                        scrollIndices[key] = lastIndex
+                                    }
+                                )
+                            )
                         },
                         listState = listState as LazyStaggeredGridState
                     )
@@ -217,60 +298,6 @@ fun DiscoveryContent(
 }
 
 /**
- * 内容类型选择器
- */
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun DiscoveryContentTypeSelector(
-    contentTypes: List<DiscoveryContentType>,
-    currentTypeIndex: Int,
-    onContentTypeChange: (DiscoveryContentType) -> Unit,
-    onRefreshOrScrollToTop: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val scrollState = rememberScrollState()
-    
-    // 当选中的类型变化时，自动滚动到可见位置
-    LaunchedEffect(currentTypeIndex, contentTypes) {
-        if (currentTypeIndex >= 0 && currentTypeIndex < contentTypes.size) {
-            val chipWidth = 150
-            val scrollPosition = (currentTypeIndex * chipWidth).coerceAtLeast(0)
-            scrollState.animateScrollTo(scrollPosition)
-        }
-    }
-    
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            contentTypes.forEachIndexed { index, type ->
-                FilterChip(
-                    selected = index == currentTypeIndex,
-                    onClick = {
-                        if (index == currentTypeIndex) {
-                            // 点击已选中的类型，触发刷新或滚动到顶部
-                            onRefreshOrScrollToTop()
-                        } else {
-                            // 切换到新的类型
-                            onContentTypeChange(type)
-                        }
-                    },
-                    label = { Text(type.displayName) }
-                )
-            }
-        }
-    }
-}
-
-/**
  * 推荐用户页面内容
  */
 @Composable
@@ -280,7 +307,7 @@ fun DiscoveryUsersPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onUserClick: (User) -> Unit,
-    onArtworkClick: (Artwork) -> Unit,
+    onArtworkClick: (Artwork, Int) -> Unit,
     listState: LazyListState
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -331,15 +358,29 @@ fun DiscoveryIllustsPage(
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
-    onArtworkClick: (Artwork) -> Unit,
+    onArtworkClick: (Artwork, Int) -> Unit,
     listState: LazyStaggeredGridState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        // Mode 选择器
-        DiscoveryModeSelector(
-            currentMode = state.currentMode,
-            onModeChange = onModeChange,
-            onRefreshOrScrollToTop = onRefreshOrScrollToTop,
+        // 第2层导航：Mode 选择器
+        SimpleNavigationBar(
+            items = DiscoveryMode.entries,
+            selectedIndex = DiscoveryMode.entries.indexOf(state.currentMode),
+            onItemClick = { index ->
+                val newMode = DiscoveryMode.entries[index]
+                if (newMode == state.currentMode) {
+                    onRefreshOrScrollToTop()
+                } else {
+                    onModeChange(newMode)
+                }
+            },
+            getItemLabel = { mode ->
+                when (mode) {
+                    DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
+                    DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
+                    DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
         
@@ -395,11 +436,25 @@ fun DiscoveryNovelsPage(
     listState: LazyListState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        // Mode 选择器
-        DiscoveryModeSelector(
-            currentMode = state.currentMode,
-            onModeChange = onModeChange,
-            onRefreshOrScrollToTop = onRefreshOrScrollToTop,
+        // 第2层导航：Mode 选择器
+        SimpleNavigationBar(
+            items = DiscoveryMode.entries,
+            selectedIndex = DiscoveryMode.entries.indexOf(state.currentMode),
+            onItemClick = { index ->
+                val newMode = DiscoveryMode.entries[index]
+                if (newMode == state.currentMode) {
+                    onRefreshOrScrollToTop()
+                } else {
+                    onModeChange(newMode)
+                }
+            },
+            getItemLabel = { mode ->
+                when (mode) {
+                    DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
+                    DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
+                    DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
         
@@ -442,69 +497,28 @@ fun DiscoveryNovelsPage(
 }
 
 /**
- * Discovery Mode 选择器（ALL/SAFE/R18）
- */
-@Composable
-fun DiscoveryModeSelector(
-    currentMode: DiscoveryMode,
-    onModeChange: (DiscoveryMode) -> Unit,
-    onRefreshOrScrollToTop: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val modes = remember { DiscoveryMode.entries }
-    
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        tonalElevation = 1.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            modes.forEach { mode ->
-                FilterChip(
-                    selected = currentMode == mode,
-                    onClick = {
-                        if (currentMode == mode) {
-                            // 点击已选中的 mode，触发刷新或滚动到顶部
-                            onRefreshOrScrollToTop()
-                        } else {
-                            // 切换到新的 mode
-                            onModeChange(mode)
-                        }
-                    },
-                    label = {
-                        Text(
-                            text = when (mode) {
-                                DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
-                                DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
-                                DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
-                            }
-                        )
-                    }
-                )
-            }
-        }
-    }
-}
-
-/**
  * 用户列表布局（带下拉刷新）
  */
 @Composable
 fun UserListLayout(
     users: List<User>,
     onUserClick: (User) -> Unit,
-    onArtworkClick: (Artwork) -> Unit,
+    onArtworkClick: (Artwork, Int) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyListState,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {}
 ) {
+    // 构建全局作品列表和索引映射
+    val allArtworks = remember(users) {
+        users.flatMap { it.illusts ?: emptyList() }
+    }
+    
+    val artworkIndexMap = remember(allArtworks) {
+        allArtworks.mapIndexed { index, artwork -> artwork.id to index }.toMap()
+    }
+    
     // 监听滚动，触发加载更多
     LaunchedEffect(listState) {
         snapshotFlow {
@@ -536,7 +550,10 @@ fun UserListLayout(
                 UserCard(
                     user = user,
                     onUserClick = { onUserClick(user) },
-                    onArtworkClick = onArtworkClick
+                    onArtworkClick = { artwork ->
+                        val index = artworkIndexMap[artwork.id] ?: 0
+                        onArtworkClick(artwork, index)
+                    }
                 )
             }
             
@@ -563,7 +580,7 @@ fun UserListLayout(
 @Composable
 fun ArtworkStaggeredGridLayout(
     artworks: List<Artwork>,
-    onArtworkClick: (Artwork) -> Unit,
+    onArtworkClick: (Artwork, Int) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyStaggeredGridState,
@@ -594,9 +611,10 @@ fun ArtworkStaggeredGridLayout(
             modifier = Modifier.fillMaxSize()
         ) {
             items(artworks, key = { it.id }) { artwork ->
+                val index = artworks.indexOf(artwork)
                 ArtworkCard(
                     artwork = artwork,
-                    onClick = { onArtworkClick(artwork) }
+                    onClick = { onArtworkClick(artwork, index) }
                 )
             }
             

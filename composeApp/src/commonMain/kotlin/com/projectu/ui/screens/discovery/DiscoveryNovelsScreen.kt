@@ -18,6 +18,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Novel
 import com.projectu.ui.components.NovelCard
+import com.projectu.ui.components.SimpleNavigationBar
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
@@ -86,10 +87,18 @@ fun DiscoveryNovelsContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Mode 切换导航（复用ModeSelector）
-            ModeSelector(
-                currentMode = state.currentMode,
-                onModeChange = onModeChange,
+            // Mode 切换导航
+            SimpleNavigationBar(
+                items = DiscoveryMode.entries,
+                selectedIndex = DiscoveryMode.entries.indexOf(state.currentMode),
+                onItemClick = { index -> onModeChange(DiscoveryMode.entries[index]) },
+                getItemLabel = { mode ->
+                    when (mode) {
+                        DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
+                        DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
+                        DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
             

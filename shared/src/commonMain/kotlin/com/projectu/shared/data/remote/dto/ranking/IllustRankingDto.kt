@@ -56,7 +56,9 @@ data class RankingContent(
     val attr: String = "",
     val is_masked: Boolean = false,
     val is_bookmarked: Boolean = false,
-    val bookmarkable: Boolean = true
+    val bookmarkable: Boolean = true,
+    val bookmark_id: String? = null,
+    val bookmark_illust_restrict: String? = null
 )
 
 @Serializable

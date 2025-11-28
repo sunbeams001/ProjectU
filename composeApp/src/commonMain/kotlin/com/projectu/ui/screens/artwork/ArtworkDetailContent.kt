@@ -1,10 +1,13 @@
 package com.projectu.ui.screens.artwork
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -21,22 +24,33 @@ import coil3.compose.AsyncImage
 import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.ArtworkType
+import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.getUrlByQuality
+import com.projectu.ui.components.ErrorDisplay
+import com.projectu.ui.components.RetryableAsyncImage
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 /**
  * 作品详情页主内容
+ * 
+ * 支持两种模式：
+ * 1. 单个作品模式：当 state.artworkIds 为空时
+ * 2. 列表导航模式：当 state.artworkIds 不为空时，使用 HorizontalPager 支持左右滑动
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ArtworkDetailContent(
     state: ArtworkDetailState,
     onBackClick: () -> Unit,
+    onPageChange: (Int) -> Unit = {},
+    onRetry: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         when {
-            state.isLoading -> {
+            state.isLoading && state.artwork == null -> {
+                // 初次加载
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -45,26 +59,35 @@ fun ArtworkDetailContent(
                 }
             }
 
-            state.error != null -> {
-                Box(
+            state.error != null && state.artwork == null -> {
+                // 错误状态 - 使用统一的ErrorDisplay组件
+                ErrorDisplay(
+                    message = state.error,
+                    onRetry = onRetry,
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = state.error,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+                    isFullScreen = true
+                )
             }
 
             state.artwork != null -> {
-                ArtworkDetailLayout(
-                    artwork = state.artwork,
-                    authorFollowStatus = state.authorFollowStatus,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding() // 为状态栏添加 padding（Android）
-                )
+                // 判断是列表导航模式还是单个作品模式
+                if (state.artworkIds.isNotEmpty()) {
+                    // 列表导航模式：使用 HorizontalPager
+                    ArtworkListPager(
+                        state = state,
+                        onPageChange = onPageChange,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    // 单个作品模式：直接展示
+                    ArtworkDetailLayout(
+                        artwork = state.artwork,
+                        authorFollowStatus = state.authorFollowStatus,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                    )
+                }
             }
         }
         
@@ -72,7 +95,7 @@ fun ArtworkDetailContent(
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
-                .statusBarsPadding() // 返回按钮也需要避开状态栏
+                .statusBarsPadding()
                 .padding(start = 4.dp, top = 4.dp)
                 .align(Alignment.TopStart)
         ) {
@@ -81,6 +104,106 @@ fun ArtworkDetailContent(
                 contentDescription = "返回",
                 tint = MaterialTheme.colorScheme.onSurface
             )
+        }
+    }
+}
+
+/**
+ * 作品列表分页器
+ * 使用 HorizontalPager 实现左右滑动浏览
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ArtworkListPager(
+    state: ArtworkDetailState,
+    onPageChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val pagerState = rememberPagerState(
+        initialPage = state.currentIndex,
+        pageCount = { state.artworkIds.size }
+    )
+    
+    val coroutineScope = rememberCoroutineScope()
+    
+    // 监听页面切换
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress && pagerState.currentPage != state.currentIndex) {
+            onPageChange(pagerState.currentPage)
+        }
+    }
+    
+    // 当状态中的索引改变时，同步 Pager（例如通过其他方式切换了作品）
+    LaunchedEffect(state.currentIndex) {
+        if (state.currentIndex != pagerState.currentPage) {
+            coroutineScope.launch {
+                pagerState.animateScrollToPage(state.currentIndex)
+            }
+        }
+    }
+    
+    HorizontalPager(
+        state = pagerState,
+        modifier = modifier,
+        key = { index -> state.artworkIds.getOrNull(index) ?: index }
+    ) { pageIndex ->
+        // 获取该页面对应的作品ID
+        val artworkId = state.artworkIds.getOrNull(pageIndex) ?: return@HorizontalPager
+        
+        // 尝试从缓存中获取作品
+        val cachedArtwork = state.artworkCache[artworkId]
+        
+        when {
+            cachedArtwork != null -> {
+                // 有缓存，直接显示
+                val followStatus = if (pageIndex == state.currentIndex) {
+                    state.authorFollowStatus
+                } else {
+                    FollowStatus.NOT_FOLLOWING
+                }
+                
+                ArtworkDetailLayout(
+                    artwork = cachedArtwork,
+                    authorFollowStatus = followStatus,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                )
+            }
+            
+            pageIndex == state.currentIndex && state.artwork != null && state.artwork.id == artworkId -> {
+                // 当前页面且作品ID匹配（确保显示的是正确的作品）
+                ArtworkDetailLayout(
+                    artwork = state.artwork,
+                    authorFollowStatus = state.authorFollowStatus,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                )
+            }
+            
+            else -> {
+                // 未加载或数据不匹配，显示加载指示器
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .background(MaterialTheme.colorScheme.background),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CircularProgressIndicator()
+                        Text(
+                            text = "加载中...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -174,11 +297,12 @@ private fun SinglePageDisplay(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
+        RetryableAsyncImage(
             model = imageUrl,
             contentDescription = contentDescription,
             contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            showErrorDetails = true
         )
     }
 }
@@ -219,13 +343,14 @@ private fun MultiPageDisplay(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(pages) { page ->
-                AsyncImage(
+                RetryableAsyncImage(
                     model = page.getUrlByQuality(imageQuality),
                     contentDescription = "$contentDescription - 第${page.page + 1}页",
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(page.width.toFloat() / page.height.toFloat())
+                        .aspectRatio(page.width.toFloat() / page.height.toFloat()),
+                    showErrorDetails = true
                 )
             }
         }

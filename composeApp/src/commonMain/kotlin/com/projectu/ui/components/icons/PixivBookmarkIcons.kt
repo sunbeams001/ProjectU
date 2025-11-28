@@ -1,5 +1,7 @@
 package com.projectu.ui.components.icons
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
@@ -16,10 +18,11 @@ import androidx.compose.ui.unit.dp
 object PixivBookmarkIcons {
     
     /**
-     * 未收藏状态 - 空心心形（#1f1f1f 描边，透明填充）
+     * 未收藏状态 - 空心心形（使用主题颜色描边，透明填充）
      */
-    val NotBookmarked: ImageVector by lazy {
-        ImageVector.Builder(
+    @Composable
+    fun notBookmarked(strokeColor: Color = MaterialTheme.colorScheme.onSurface): ImageVector {
+        return ImageVector.Builder(
             name = "PixivBookmarkNotBookmarked",
             defaultWidth = 32.dp,
             defaultHeight = 32.dp,
@@ -30,7 +33,7 @@ object PixivBookmarkIcons {
             path(
                 fill = SolidColor(Color.Transparent), // 透明填充
                 fillAlpha = 1f,
-                stroke = SolidColor(Color(0xFF1F1F1F)), // #1f1f1f 描边
+                stroke = SolidColor(strokeColor), // 使用主题颜色
                 strokeAlpha = 1f,
                 strokeLineWidth = 2f, // 描边宽度
                 strokeLineCap = StrokeCap.Butt,

@@ -68,7 +68,7 @@ fun BookmarkIndicator(
     
     // 根据状态选择图标
     val bookmarkIcon = when (currentStatus) {
-        BookmarkStatus.NOT_BOOKMARKED -> PixivBookmarkIcons.NotBookmarked
+        BookmarkStatus.NOT_BOOKMARKED -> PixivBookmarkIcons.notBookmarked()
         BookmarkStatus.PUBLIC -> PixivBookmarkIcons.PublicBookmarked
         BookmarkStatus.PRIVATE -> PixivBookmarkIcons.PrivateBookmarked
     }

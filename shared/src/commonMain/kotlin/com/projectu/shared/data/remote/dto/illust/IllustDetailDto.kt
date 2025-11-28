@@ -51,8 +51,8 @@ data class IllustDetailBody(
     val seriesNavData: SeriesNavData? = null,
     val descriptionBoothId: String? = null,
     val descriptionYoutubeId: String? = null,
-    val comicPromotion: String? = null,
-    val fanboxPromotion: String? = null,
+    val comicPromotion: ComicPromotion? = null,
+    val fanboxPromotion: FanboxPromotion? = null,
     val contestBanners: List<ContestBanner>? = null,
     val isBookmarkable: Boolean = true,
     val bookmarkData: BookmarkData? = null,
@@ -133,9 +133,40 @@ data class SeriesNavItem(
 )
 
 /**
+ * 漫画推广信息
+ */
+@Serializable
+data class ComicPromotion(
+    val userId: Long,
+    val author: String,
+    val title: String,
+    val workUrl: String,
+    val description: String,
+    val imgSrc: String,
+    val amazonUrl: String? = null,
+    val magazine: String? = null,
+    val magazineUrl: String? = null
+)
+
+/**
+ * Fanbox推广信息
+ */
+@Serializable
+data class FanboxPromotion(
+    val userName: String? = null,
+    val userImageUrl: String? = null,
+    val contentUrl: String? = null,
+    val description: String? = null,
+    val imageUrl: String? = null,
+    val imageUrlMobile: String? = null,
+    val hasAdultContent: Boolean = false
+)
+
+/**
  * 点赞响应体
  */
 @Serializable
 data class LikeBody(
     val isLiked: Boolean
 )
+

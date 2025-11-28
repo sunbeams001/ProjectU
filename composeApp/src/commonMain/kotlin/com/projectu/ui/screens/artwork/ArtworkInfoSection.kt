@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.User
+import com.projectu.shared.util.DateTimeFormatter
 import com.projectu.ui.components.BookmarkIndicator
 import com.projectu.ui.components.FollowIndicator
 
@@ -140,7 +141,7 @@ fun ArtworkInfoSection(
 
             // 第三行：投稿时间
             Text(
-                text = "投稿时间: ${artwork.createdTime}",
+                text = "投稿时间: ${DateTimeFormatter.formatToLocalDateTime(artwork.createdTime)}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

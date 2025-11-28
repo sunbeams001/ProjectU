@@ -222,8 +222,12 @@ fun RankingContent.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork {
         bookmarkCount = 0,
         commentCount = 0,
         createdTime = this.date,
-        bookmarkStatus = if (this.is_bookmarked) BookmarkStatus.PUBLIC else BookmarkStatus.NOT_BOOKMARKED,
-        bookmarkId = null,
+        bookmarkStatus = when {
+            !this.is_bookmarked -> BookmarkStatus.NOT_BOOKMARKED
+            this.bookmark_illust_restrict == "1" -> BookmarkStatus.PRIVATE
+            else -> BookmarkStatus.PUBLIC
+        },
+        bookmarkId = this.bookmark_id,
         isMuted = this.is_masked,
         isAiGenerated = isAiGeneratedArtwork(0, this.tags),
         totalView = this.view_count,

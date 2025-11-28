@@ -233,6 +233,9 @@ object DiscoveryTab : Tab {
     private val _scrollToTopOrRefreshTrigger = mutableStateOf(0L)
     val scrollToTopOrRefreshTrigger: State<Long> = _scrollToTopOrRefreshTrigger
     
+    // 将 scrollIndices 提升到 Tab 级别，避免导航时丢失
+    private val scrollIndices = mutableStateMapOf<String, Int>()
+    
     fun triggerScrollToTopOrRefresh() {
         _scrollToTopOrRefreshTrigger.value = System.currentTimeMillis()
     }
@@ -263,6 +266,7 @@ object DiscoveryTab : Tab {
         }
         
         DiscoveryContent(
+            scrollIndices = scrollIndices,
             onRegisterScrollToTopOrRefreshCallback = { callback ->
                 scrollToTopOrRefreshCallback.value = callback
             }
@@ -275,6 +279,9 @@ object RankingTab : Tab {
     // 用于触发刷新或滚动到顶部的事件
     private val _scrollToTopOrRefreshTrigger = mutableStateOf(0L)
     val scrollToTopOrRefreshTrigger: State<Long> = _scrollToTopOrRefreshTrigger
+    
+    // 将 scrollIndices 提升到 Tab 级别，避免导航时丢失
+    private val scrollIndices = mutableStateMapOf<String, Int>()
     
     fun triggerScrollToTopOrRefresh() {
         _scrollToTopOrRefreshTrigger.value = System.currentTimeMillis()
@@ -315,15 +322,37 @@ object RankingTab : Tab {
             }
         }
         
+        // 创建响应式的作品ID列表 State
+        val artworkIdsState by remember {
+            derivedStateOf {
+                state.modeDataCache[state.currentMode.value]?.artworks?.map { it.id } ?: emptyList()
+            }
+        }
+        
+        // 将列表包装为 mutableStateOf 以便传递
+        val artworkIdsStateWrapper = remember { mutableStateOf(artworkIdsState) }
+        artworkIdsStateWrapper.value = artworkIdsState
+        
         RankingContent(
             state = state,
+            scrollIndices = scrollIndices,
             onContentTypeChange = viewModel::switchContentType,
             onModeChange = viewModel::switchMode,
             onDateChange = viewModel::switchDate,
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
-            onArtworkClick = { artwork ->
-                parentNavigator?.push(ArtworkDetailScreen(artwork.id))
+            onArtworkClick = { artwork, index ->
+                parentNavigator?.push(
+                    ArtworkDetailScreen(
+                        artworkIds = artworkIdsStateWrapper,
+                        initialIndex = index,
+                        onLoadMore = { viewModel.loadMore() },
+                        onReturnWithIndex = { lastIndex ->
+                            // 返回时更新当前模式的滚动位置为最后浏览的作品
+                            scrollIndices[state.currentMode.value] = lastIndex
+                        }
+                    )
+                )
             },
             onNovelClick = { novel ->
                 // TODO: 跳转到小说详情页

@@ -49,7 +49,7 @@ fun ArtworkCard(
         Column {
             // 作品缩略图（只有上方圆角）
             Box {
-                AsyncImage(
+                RetryableAsyncImage(
                     model = imageUrl,
                     contentDescription = artwork.title,
                     modifier = Modifier
@@ -72,7 +72,8 @@ fun ArtworkCard(
                                 println("ArtworkCard: 长按图片 - ID: ${artwork.id}, 标题: ${artwork.title}")
                             }
                         ),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    showErrorDetails = false
                 )
                 
                 // 使用统一的标记组件

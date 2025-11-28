@@ -27,26 +27,23 @@ fun ArtworkBadges(
     alignment: Alignment = Alignment.TopEnd
 ) {
     Box(modifier = modifier) {
-        Column(
-            modifier = Modifier
-                .align(alignment)
-                .padding(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalAlignment = when (alignment) {
-                Alignment.TopEnd, Alignment.CenterEnd, Alignment.BottomEnd -> Alignment.End
-                Alignment.TopStart, Alignment.CenterStart, Alignment.BottomStart -> Alignment.Start
-                else -> Alignment.CenterHorizontally
-            }
-        ) {
-            // AI 标记
-            if (artwork.isAiGenerated) {
-                AiBadge()
-            }
-            
-            // 多页标记
-            if (artwork.pageCount > 1) {
-                PageCountBadge(pageCount = artwork.pageCount)
-            }
+        // AI 标记 - 左上角
+        if (artwork.isAiGenerated) {
+            AiBadge(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
+            )
+        }
+        
+        // 多页标记 - 右上角
+        if (artwork.pageCount > 1) {
+            PageCountBadge(
+                pageCount = artwork.pageCount,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+            )
         }
     }
 }
@@ -55,28 +52,17 @@ fun ArtworkBadges(
  * AI 生成标记
  */
 @Composable
-private fun AiBadge() {
+private fun AiBadge(modifier: Modifier = Modifier) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
-        shape = RoundedCornerShape(4.dp)
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+        shape = RoundedCornerShape(4.dp),
+        modifier = modifier
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.AutoAwesome,
-                contentDescription = "AI Generated",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(12.dp)
-            )
-            Text(
-                text = "AI",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
+        Text(
+            text = "AI",
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+        )
     }
 }
 
@@ -84,10 +70,11 @@ private fun AiBadge() {
  * 页数标记
  */
 @Composable
-private fun PageCountBadge(pageCount: Int) {
+private fun PageCountBadge(pageCount: Int, modifier: Modifier = Modifier) {
     Surface(
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-        shape = RoundedCornerShape(4.dp)
+        shape = RoundedCornerShape(4.dp),
+        modifier = modifier
     ) {
         Text(
             text = "${pageCount}P",

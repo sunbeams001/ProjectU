@@ -1,7 +1,7 @@
 package com.projectu.ui.screens.ranking
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
@@ -20,15 +19,17 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import com.projectu.shared.data.remote.model.RankingContent
 import kotlinx.coroutines.launch
 import com.projectu.shared.data.remote.model.RankingContentModeConfig
 import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.ui.components.ArtworkCard
+import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.NovelCard
+import com.projectu.ui.components.NavigationBar
+import com.projectu.ui.components.SimpleNavigationBar
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
@@ -39,12 +40,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun RankingContent(
     state: RankingState,
+    scrollIndices: MutableMap<String, Int> = mutableMapOf(),
     onContentTypeChange: (RankingContent) -> Unit,
     onModeChange: (RankingMode) -> Unit,
     onDateChange: (String?) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
-    onArtworkClick: (com.projectu.shared.domain.model.Artwork) -> Unit,
+    onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
@@ -163,6 +165,35 @@ fun RankingContent(
                 }
             }
             
+
+            
+            // 监听 scrollIndices 变化，滚动到指定位置
+            // 使用 derivedStateOf 建立响应式依赖
+            val targetScrollIndex by remember(mode.value) {
+                derivedStateOf { scrollIndices[mode.value] }
+            }
+            
+            LaunchedEffect(targetScrollIndex) {
+                val scrollIndex = targetScrollIndex
+                if (scrollIndex != null && scrollIndex > 0) {
+                    println("[RankingScreen] 开始滚动到索引: $scrollIndex")
+                    
+                    // 平滑滚动到目标位置
+                    when (listState) {
+                        is androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState -> {
+                            listState.animateScrollToItem(scrollIndex)
+                        }
+                        is androidx.compose.foundation.lazy.LazyListState -> {
+                            listState.animateScrollToItem(scrollIndex)
+                        }
+                    }
+
+                    
+                    // 清除标记，避免重复滚动
+                    scrollIndices.remove(mode.value)
+                }
+            }
+            
             // 内容区域
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
@@ -174,19 +205,12 @@ fun RankingContent(
                     }
                     state.error != null && modeData.artworks.isEmpty() && modeData.novels.isEmpty() -> {
                         // 错误状态
-                        Column(
+                        ErrorDisplay(
+                            message = state.error,
+                            onRetry = onRefresh,
                             modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = state.error,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Button(onClick = onRefresh) {
-                                Text("重试")
-                            }
-                        }
+                            isFullScreen = true
+                        )
                     }
                     state.currentContentType == RankingContent.NOVEL && modeData.novels.isNotEmpty() -> {
                         // 小说列表布局
@@ -230,9 +254,6 @@ fun ContentTypeSelector(
     onDateChange: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scrollState = rememberScrollState()
-    val density = LocalDensity.current
-    
     // 内容类型列表
     val contentTypes = listOf(
         RankingContent.ALL,
@@ -242,99 +263,18 @@ fun ContentTypeSelector(
         RankingContent.NOVEL
     )
     
-    // 存储Row容器的坐标信息
-    var rowCoordinates by remember { mutableStateOf<androidx.compose.ui.layout.LayoutCoordinates?>(null) }
-    // 存储每个chip的坐标信息
-    val chipCoordinatesList = remember { mutableStateMapOf<Int, androidx.compose.ui.layout.LayoutCoordinates>() }
-    
-    // 获取当前选中内容类型的索引
-    val currentContentTypeIndex = contentTypes.indexOf(currentContentType)
-    
-    // 当选中的内容类型变化且布局信息可用时，进行精确滚动
-    LaunchedEffect(currentContentTypeIndex, chipCoordinatesList.size) {
-        if (currentContentTypeIndex >= 0 && currentContentTypeIndex < contentTypes.size) {
-            // 稍微延迟以确保布局完成
-            kotlinx.coroutines.delay(50)
-            
-            val chipCoords = chipCoordinatesList[currentContentTypeIndex]
-            val rowCoords = rowCoordinates
-            
-            if (chipCoords != null && chipCoords.isAttached && rowCoords != null && rowCoords.isAttached) {
-                // 使用实际的布局信息
-                val chipPositionInRow = rowCoords.localPositionOf(chipCoords, androidx.compose.ui.geometry.Offset.Zero)
-                val chipX = chipPositionInRow.x
-                val chipWidth = chipCoords.size.width.toFloat()
-                val chipCenter = chipX + chipWidth / 2
-                val viewportWidth = scrollState.viewportSize.toFloat()
-                
-                // 计算滚动位置：让chip居中显示
-                val idealScrollPosition = chipCenter - viewportWidth / 2
-                val scrollPosition = idealScrollPosition.coerceIn(
-                    0f,
-                    scrollState.maxValue.toFloat()
-                ).toInt()
-                
-                scrollState.animateScrollTo(scrollPosition)
-            } else {
-                // 如果还没有布局信息，使用估算值
-                with(density) {
-                    val chipWidthDp = 80.dp.toPx()
-                    val spacingDp = 8.dp.toPx()
-                    val itemWidth = chipWidthDp + spacingDp
-                    
-                    val chipX = currentContentTypeIndex * itemWidth
-                    val chipCenter = chipX + chipWidthDp / 2
-                    val viewportWidth = scrollState.viewportSize.toFloat()
-                    
-                    val idealScrollPosition = chipCenter - viewportWidth / 2
-                    val scrollPosition = idealScrollPosition.coerceIn(
-                        0f,
-                        scrollState.maxValue.toFloat()
-                    ).toInt()
-                    
-                    scrollState.animateScrollTo(scrollPosition)
-                }
-            }
-        }
-    }
-    
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        tonalElevation = 1.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 左侧：可滚动的内容类型选择
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .horizontalScroll(scrollState)
-                    .onGloballyPositioned { coordinates ->
-                        rowCoordinates = coordinates
-                    },
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                contentTypes.forEachIndexed { index, contentType ->
-                    FilterChip(
-                        selected = currentContentType == contentType,
-                        onClick = { onContentTypeChange(contentType) },
-                        label = {
-                            Text(text = contentType.displayName)
-                        },
-                        modifier = Modifier.onGloballyPositioned { coordinates ->
-                            chipCoordinatesList[index] = coordinates
-                        }
-                    )
-                }
-            }
-            
-            // 右侧：固定位置的日期选择器
+    NavigationBar(
+        items = contentTypes,
+        selectedIndex = contentTypes.indexOf(currentContentType),
+        onItemClick = { index -> onContentTypeChange(contentTypes[index]) },
+        itemContent = { contentType, isSelected ->
+            FilterChip(
+                selected = isSelected,
+                onClick = { onContentTypeChange(contentType) },
+                label = { Text(text = contentType.displayName) }
+            )
+        },
+        trailingContent = {
             DateSelector(
                 selectedDate = selectedDate,
                 currentDate = state.currentDate,
@@ -342,8 +282,9 @@ fun ContentTypeSelector(
                 nextDate = state.nextDate,
                 onDateChange = onDateChange
             )
-        }
-    }
+        },
+        modifier = modifier
+    )
 }
 
 /**
@@ -453,15 +394,27 @@ fun DateSelector(
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            onDateChange(millisToDateString(millis))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // "最新日榜" 按钮 - 重置到 null
+                    TextButton(
+                        onClick = {
+                            onDateChange(null)
+                            showDatePicker = false
                         }
-                        showDatePicker = false
+                    ) {
+                        Text("最新日榜")
                     }
-                ) {
-                    Text("确定")
+                    // "确定" 按钮 - 使用选择的日期
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                onDateChange(millisToDateString(millis))
+                            }
+                            showDatePicker = false
+                        }
+                    ) {
+                        Text("确定")
+                    }
                 }
             },
             dismissButton = {
@@ -481,8 +434,12 @@ fun DateSelector(
                 headline = {
                     // 显示可用的日期范围提示
                     val hints = buildList {
-                        if (currentDate != null) {
-                            add("最新: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
+                        // 只有在未选择日期(selectedDate为null)时,currentDate才代表最新日榜日期
+                        // 否则currentDate只是当前显示的日期
+                        if (selectedDate == null && currentDate != null) {
+                            add("最新日榜: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
+                        } else if (currentDate != null) {
+                            add("当前: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
                         }
                         if (prevDate != null) {
                             add("前一天: ${prevDate.substring(4, 6)}/${prevDate.substring(6, 8)}")
@@ -517,104 +474,21 @@ fun RankingModeSelector(
     onRefreshOrScrollToTop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scrollState = rememberScrollState()
-    val currentMode = supportedModes.getOrNull(currentModeIndex)
-    val coroutineScope = rememberCoroutineScope()
-    val density = LocalDensity.current
-    
-    // 存储Row容器的坐标信息
-    var rowCoordinates by remember { mutableStateOf<androidx.compose.ui.layout.LayoutCoordinates?>(null) }
-    // 存储每个chip的坐标信息
-    val chipCoordinatesList = remember { mutableStateMapOf<Int, androidx.compose.ui.layout.LayoutCoordinates>() }
-    
-    // 当选中的mode变化且布局信息可用时，进行精确滚动
-    LaunchedEffect(currentModeIndex, chipCoordinatesList.size) {
-        if (currentModeIndex >= 0 && currentModeIndex < supportedModes.size) {
-            // 稍微延迟以确保布局完成
-            kotlinx.coroutines.delay(50)
-            
-            val chipCoords = chipCoordinatesList[currentModeIndex]
-            val rowCoords = rowCoordinates
-            
-            if (chipCoords != null && chipCoords.isAttached && rowCoords != null && rowCoords.isAttached) {
-                // 使用实际的布局信息
-                // 获取chip相对于Row的位置
-                val chipPositionInRow = rowCoords.localPositionOf(chipCoords, androidx.compose.ui.geometry.Offset.Zero)
-                val chipX = chipPositionInRow.x
-                val chipWidth = chipCoords.size.width.toFloat()
-                val chipCenter = chipX + chipWidth / 2
-                val viewportWidth = scrollState.viewportSize.toFloat()
-                
-                // 计算滚动位置：让chip居中显示
-                val idealScrollPosition = chipCenter - viewportWidth / 2
-                val scrollPosition = idealScrollPosition.coerceIn(
-                    0f,
-                    scrollState.maxValue.toFloat()
-                ).toInt()
-                
-                scrollState.animateScrollTo(scrollPosition)
+    SimpleNavigationBar(
+        items = supportedModes,
+        selectedIndex = currentModeIndex,
+        onItemClick = { index ->
+            if (index == currentModeIndex) {
+                // 点击已选中的 mode，触发刷新或滚动到顶部
+                onRefreshOrScrollToTop()
             } else {
-                // 如果还没有布局信息，使用估算值
-                with(density) {
-                    val chipWidthDp = 100.dp.toPx()
-                    val spacingDp = 8.dp.toPx()
-                    val itemWidth = chipWidthDp + spacingDp
-                    
-                    val chipX = currentModeIndex * itemWidth
-                    val chipCenter = chipX + chipWidthDp / 2
-                    val viewportWidth = scrollState.viewportSize.toFloat()
-                    
-                    val idealScrollPosition = chipCenter - viewportWidth / 2
-                    val scrollPosition = idealScrollPosition.coerceIn(
-                        0f,
-                        scrollState.maxValue.toFloat()
-                    ).toInt()
-                    
-                    scrollState.animateScrollTo(scrollPosition)
-                }
+                // 切换到新的 mode
+                onModeChange(supportedModes[index])
             }
-        }
-    }
-    
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 0.dp
-    ) {
-        // 使用可横向滚动的 Row 来显示所有模式
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .onGloballyPositioned { coordinates ->
-                    rowCoordinates = coordinates
-                },
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            supportedModes.forEachIndexed { index, mode ->
-                FilterChip(
-                    selected = index == currentModeIndex,
-                    onClick = { 
-                        if (index == currentModeIndex) {
-                            // 点击已选中的 mode，触发刷新或滚动到顶部
-                            onRefreshOrScrollToTop()
-                        } else {
-                            // 切换到新的 mode
-                            onModeChange(mode)
-                        }
-                    },
-                    label = {
-                        Text(text = mode.displayName)
-                    },
-                    modifier = Modifier.onGloballyPositioned { coordinates ->
-                        // 记录每个chip的坐标信息
-                        chipCoordinatesList[index] = coordinates
-                    }
-                )
-            }
-        }
-    }
+        },
+        getItemLabel = { mode -> mode.displayName },
+        modifier = modifier
+    )
 }
 
 /**
@@ -623,7 +497,7 @@ fun RankingModeSelector(
 @Composable
 fun ArtworkStaggeredGridLayout(
     artworks: List<com.projectu.shared.domain.model.Artwork>,
-    onArtworkClick: (com.projectu.shared.domain.model.Artwork) -> Unit,
+    onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState = rememberLazyStaggeredGridState(),
@@ -654,10 +528,14 @@ fun ArtworkStaggeredGridLayout(
             verticalItemSpacing = 8.dp,
             modifier = Modifier.fillMaxSize()
         ) {
-            items(artworks, key = { it.id }) { artwork ->
+            items(
+                items = artworks,
+                key = { it.id }
+            ) { artwork ->
+                val index = artworks.indexOf(artwork)
                 ArtworkCard(
                     artwork = artwork,
-                    onClick = { onArtworkClick(artwork) }
+                    onClick = { onArtworkClick(artwork, index) }
                 )
             }
             
@@ -719,7 +597,10 @@ fun NovelListLayout(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(novels, key = { it.id }) { novel ->
+            items(
+                items = novels,
+                key = { it.id }
+            ) { novel ->
                 NovelCard(
                     novel = novel,
                     onClick = { onNovelClick(novel) }
