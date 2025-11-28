@@ -6,7 +6,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.domain.model.Artwork
-import androidx.activity.compose.BackHandler
+import com.projectu.ui.util.PlatformBackHandler
 
 /**
  * 作品详情页面
@@ -71,7 +71,7 @@ data class ArtworkDetailScreen(
         }
         
         // 拦截系统返回键和手势返回
-        BackHandler(enabled = true, onBack = handleBack)
+        PlatformBackHandler(enabled = true, onBack = handleBack)
         
         ArtworkDetailContent(
             state = state,

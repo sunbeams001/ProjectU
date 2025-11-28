@@ -4,7 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
-import coil3.ImageLoader
+import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
 import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.repository.SettingsRepository
@@ -12,6 +12,9 @@ import com.projectu.ui.localization.LocalLocaleManager
 import com.projectu.ui.localization.LocaleManager
 import com.projectu.ui.screens.home.HomeScreen
 import com.projectu.ui.theme.AppTheme
+import com.projectu.ui.util.ImageCacheManager
+import com.projectu.ui.util.LocalImageCacheManager
+import com.projectu.ui.util.createImageCacheManager
 import com.projectu.ui.util.createImageLoader
 import org.koin.compose.koinInject
 
@@ -20,11 +23,30 @@ fun App() {
     val localeManager: LocaleManager = koinInject()
     val settingsRepository: SettingsRepository = koinInject()
     val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
-
-    // 配置 Coil ImageLoader，添加 Pixiv Referer 头
-    setSingletonImageLoaderFactory { context ->
-        createImageLoader(context)
+    
+    // 先获取初始设置来确定缓存大小
+    var initialSettings by remember { mutableStateOf<com.projectu.shared.data.local.AppSettings?>(null) }
+    
+    LaunchedEffect(Unit) {
+        initialSettings = settingsRepository.getCurrentSettings()
     }
+    
+    // 等待初始设置加载完成
+    val settings = initialSettings ?: return
+    
+    // 获取平台上下文用于创建 ImageLoader
+    val platformContext = LocalPlatformContext.current
+    
+    // 创建 ImageLoader 和 CacheManager 实例
+    val imageLoaderAndCacheManager = remember(settings.imageCacheSize) {
+        val loader = createImageLoader(platformContext, settings.imageCacheSize.sizeInBytes)
+        val manager = createImageCacheManager(loader, settings.imageCacheSize.sizeInBytes)
+        loader to manager
+    }
+    val (imageLoader, cacheManager) = imageLoaderAndCacheManager
+
+    // 配置 Coil ImageLoader
+    setSingletonImageLoaderFactory { imageLoader }
 
     // 等待语言初始化完成
     val isLanguageInitialized by localeManager.isInitialized.collectAsState()
@@ -56,6 +78,8 @@ fun App() {
             isLoadingSettings = false
             // 同步 App 语言到 LocaleManager
             localeManager.setLanguage(settings.appLanguage)
+            // 更新缓存管理器的配置
+            cacheManager?.updateCacheSize(settings.imageCacheSize)
         }
     }
 
@@ -69,8 +93,11 @@ fun App() {
 
     // 使用 key 来强制在语言变化时重新创建整个 UI 树
     key(currentLanguage) {
-        // 提供 LocaleManager 给整个应用
-        CompositionLocalProvider(LocalLocaleManager provides localeManager) {
+        // 提供 LocaleManager 和 ImageCacheManager 给整个应用
+        CompositionLocalProvider(
+            LocalLocaleManager provides localeManager,
+            LocalImageCacheManager provides cacheManager
+        ) {
             // 根据主题模式确定是否使用深色主题
             val systemInDarkTheme = isSystemInDarkTheme()
             val useDarkTheme = when (appSettings.themeMode) {

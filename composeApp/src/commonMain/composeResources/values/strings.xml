@@ -164,5 +164,20 @@
     <string name="detail_image_quality_large">Large (540×540)</string>
     <string name="detail_image_quality_master_1200">Master (1200px)</string>
     <string name="detail_image_quality_original">Original</string>
+    
+    <!-- Settings - Cache Management -->
+    <string name="settings_cache_management">Cache Management</string>
+    <string name="settings_image_cache_size">Image Cache Size</string>
+    <string name="settings_image_cache_size_desc">Maximum disk space for cached images</string>
+    <string name="settings_current_cache_size">Current Cache Size</string>
+    <string name="settings_clear_image_cache">Clear Image Cache</string>
+    <string name="settings_clear_cache_confirm_title">Clear Cache</string>
+    <string name="settings_clear_cache_confirm_message">Are you sure you want to clear all cached images? This cannot be undone.</string>
+    <string name="settings_cache_cleared">Cache cleared</string>
+    <string name="settings_cache_size_change_note">Note: Cache size changes will take effect after restarting the app</string>
+    <string name="cache_size_small">Small (256 MB)</string>
+    <string name="cache_size_medium">Medium (512 MB)</string>
+    <string name="cache_size_large">Large (1 GB)</string>
+    <string name="cache_size_extra_large">Extra Large (2 GB)</string>
 </resources>
 

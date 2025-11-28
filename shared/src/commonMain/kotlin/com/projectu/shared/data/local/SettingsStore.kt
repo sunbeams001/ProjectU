@@ -94,6 +94,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置图片磁盘缓存大小
+     */
+    suspend fun setImageCacheSize(size: com.projectu.shared.domain.model.CacheSize) {
+        settingsDao.updateImageCacheSize(size.name)
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

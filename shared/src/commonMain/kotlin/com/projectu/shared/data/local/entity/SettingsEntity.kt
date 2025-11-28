@@ -48,6 +48,11 @@ data class SettingsEntity(
     val detailImageQuality: String = "LARGE",
     
     /**
+     * 图片磁盘缓存大小
+     */
+    val imageCacheSize: String = "MEDIUM",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -63,7 +68,8 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         themeMode = this.themeMode.name,
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = this.preferredImageQuality.name,
-        detailImageQuality = this.detailImageQuality.name
+        detailImageQuality = this.detailImageQuality.name,
+        imageCacheSize = this.imageCacheSize.name
     )
 }
 
@@ -77,6 +83,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         themeMode = ThemeMode.valueOf(this.themeMode),
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = com.projectu.shared.domain.model.ImageQuality.fromName(this.preferredImageQuality),
-        detailImageQuality = com.projectu.shared.domain.model.DetailImageQuality.fromName(this.detailImageQuality)
+        detailImageQuality = com.projectu.shared.domain.model.DetailImageQuality.fromName(this.detailImageQuality),
+        imageCacheSize = com.projectu.shared.domain.model.CacheSize.fromName(this.imageCacheSize)
     )
 }

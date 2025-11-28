@@ -70,6 +70,12 @@ interface SettingsDao {
     suspend fun updateDetailImageQuality(quality: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新图片磁盘缓存大小
+     */
+    @Query("UPDATE app_settings SET imageCacheSize = :size, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateImageCacheSize(size: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

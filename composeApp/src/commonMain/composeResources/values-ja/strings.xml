@@ -133,5 +133,20 @@
     <string name="detail_image_quality_large">大 (540×540)</string>
     <string name="detail_image_quality_master_1200">最大 (1200px)</string>
     <string name="detail_image_quality_original">オリジナル</string>
+    
+    <!-- 設定 - キャッシュ管理 -->
+    <string name="settings_cache_management">キャッシュ管理</string>
+    <string name="settings_image_cache_size">画像キャッシュサイズ</string>
+    <string name="settings_image_cache_size_desc">キャッシュ画像の最大ディスク容量</string>
+    <string name="settings_current_cache_size">現在のキャッシュサイズ</string>
+    <string name="settings_clear_image_cache">画像キャッシュをクリア</string>
+    <string name="settings_clear_cache_confirm_title">キャッシュをクリア</string>
+    <string name="settings_clear_cache_confirm_message">キャッシュされたすべての画像をクリアしますか？この操作は元に戻せません。</string>
+    <string name="settings_cache_cleared">キャッシュをクリアしました</string>
+    <string name="settings_cache_size_change_note">注意：キャッシュサイズの変更はアプリを再起動すると有効になります</string>
+    <string name="cache_size_small">小 (256 MB)</string>
+    <string name="cache_size_medium">中 (512 MB)</string>
+    <string name="cache_size_large">大 (1 GB)</string>
+    <string name="cache_size_extra_large">特大 (2 GB)</string>
 </resources>
 

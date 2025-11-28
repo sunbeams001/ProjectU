@@ -6,6 +6,7 @@ import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.CacheSize
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -56,11 +57,15 @@ interface SettingsRepository {
     suspend fun updateDetailImageQuality(quality: DetailImageQuality)
     
     /**
+     * 更新图片缓存大小
+     * @param size 缓存大小设置
+     */
+    suspend fun updateImageCacheSize(size: CacheSize)
+
+    /**
      * 更新完整设置
      */
-    suspend fun updateSettings(settings: AppSettings)
-    
-    /**
+    suspend fun updateSettings(settings: AppSettings)    /**
      * 重置为默认设置
      */
     suspend fun resetSettings()

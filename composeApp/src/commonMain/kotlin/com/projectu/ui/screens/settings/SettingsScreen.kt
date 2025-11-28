@@ -21,8 +21,12 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.ui.util.ImageCacheManager
+import com.projectu.ui.util.LocalImageCacheManager
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
 import projectu.composeapp.generated.resources.settings_title
@@ -74,6 +78,19 @@ import projectu.composeapp.generated.resources.detail_image_quality_medium
 import projectu.composeapp.generated.resources.detail_image_quality_large
 import projectu.composeapp.generated.resources.detail_image_quality_master_1200
 import projectu.composeapp.generated.resources.detail_image_quality_original
+import projectu.composeapp.generated.resources.settings_cache_management
+import projectu.composeapp.generated.resources.settings_image_cache_size
+import projectu.composeapp.generated.resources.settings_image_cache_size_desc
+import projectu.composeapp.generated.resources.settings_current_cache_size
+import projectu.composeapp.generated.resources.settings_clear_image_cache
+import projectu.composeapp.generated.resources.settings_clear_cache_confirm_title
+import projectu.composeapp.generated.resources.settings_clear_cache_confirm_message
+import projectu.composeapp.generated.resources.settings_cache_cleared
+import projectu.composeapp.generated.resources.settings_cache_size_change_note
+import projectu.composeapp.generated.resources.cache_size_small
+import projectu.composeapp.generated.resources.cache_size_medium
+import projectu.composeapp.generated.resources.cache_size_large
+import projectu.composeapp.generated.resources.cache_size_extra_large
 import org.koin.compose.koinInject
 
 /**
@@ -88,11 +105,20 @@ class SettingsScreen : Screen {
         val settings by viewModel.settingsState.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
+        val cacheManager = LocalImageCacheManager.current
         
         // 观察登录状态和配置
         val isLoggedIn by authRepository.observeLoginState().collectAsState(initial = false)
         val pixivConfig by authRepository.observePixivConfig()
             .collectAsState(initial = com.projectu.shared.data.local.PixivConfig.DEFAULT)
+        
+        // 获取缓存大小
+        val currentCacheSize by cacheManager.currentCacheSize.collectAsState()
+        
+        // 初始化时刷新缓存大小
+        LaunchedEffect(Unit) {
+            cacheManager.refreshCacheSize()
+        }
         
         SettingsScreenContent(
             currentAppLanguage = settings.appLanguage,
@@ -104,12 +130,17 @@ class SettingsScreen : Screen {
             currentR18SanityThreshold = settings.r18SanityLevelThreshold,
             currentPreferredImageQuality = settings.preferredImageQuality,
             currentDetailImageQuality = settings.detailImageQuality,
+            currentImageCacheSize = settings.imageCacheSize,
+            currentCacheSizeBytes = currentCacheSize,
+            maxCacheSizeBytes = cacheManager.maxCacheSize,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
             onThemeModeChange = { viewModel.updateThemeMode(it) },
             onR18SanityThresholdChange = { viewModel.updateR18SanityLevelThreshold(it) },
             onPreferredImageQualityChange = { viewModel.updatePreferredImageQuality(it) },
             onDetailImageQualityChange = { viewModel.updateDetailImageQuality(it) },
+            onImageCacheSizeChange = { viewModel.updateImageCacheSize(it) },
+            onClearCache = { cacheManager.clearCache() },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
             onNavigateBack = { navigator.pop() },
@@ -130,12 +161,17 @@ private fun SettingsScreenContent(
     currentR18SanityThreshold: Int,
     currentPreferredImageQuality: ImageQuality,
     currentDetailImageQuality: DetailImageQuality,
+    currentImageCacheSize: CacheSize,
+    currentCacheSizeBytes: Long,
+    maxCacheSizeBytes: Long,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
     onR18SanityThresholdChange: (Int) -> Unit,
     onPreferredImageQualityChange: (ImageQuality) -> Unit,
     onDetailImageQualityChange: (DetailImageQuality) -> Unit,
+    onImageCacheSizeChange: (CacheSize) -> Unit,
+    onClearCache: suspend () -> Unit,
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -149,6 +185,12 @@ private fun SettingsScreenContent(
     var showDetailImageQualityDialog by remember { mutableStateOf(false) }
     var showEditPhpSessionIdDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
+    var showCacheSizeDialog by remember { mutableStateOf(false) }
+    var showClearCacheConfirmDialog by remember { mutableStateOf(false) }
+    
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val cacheClearedMessage = stringResource(Res.string.settings_cache_cleared)
     
     Scaffold(
         topBar = {
@@ -160,7 +202,8 @@ private fun SettingsScreenContent(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -264,6 +307,58 @@ private fun SettingsScreenContent(
                     description = stringResource(Res.string.settings_detail_image_quality_desc),
                     onClick = { showDetailImageQualityDialog = true }
                 )
+            }
+            
+            // 缓存管理设置分组
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_cache_management))
+            }
+            
+            // 缓存大小设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_image_cache_size),
+                    subtitle = when (currentImageCacheSize) {
+                        CacheSize.SMALL -> stringResource(Res.string.cache_size_small)
+                        CacheSize.MEDIUM -> stringResource(Res.string.cache_size_medium)
+                        CacheSize.LARGE -> stringResource(Res.string.cache_size_large)
+                        CacheSize.EXTRA_LARGE -> stringResource(Res.string.cache_size_extra_large)
+                    },
+                    description = stringResource(Res.string.settings_image_cache_size_desc),
+                    onClick = { showCacheSizeDialog = true }
+                )
+            }
+            
+            // 当前缓存大小显示
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_current_cache_size),
+                    subtitle = formatCacheSize(currentCacheSizeBytes) + " / " + formatCacheSize(maxCacheSizeBytes),
+                    onClick = { }
+                )
+            }
+            
+            // 清空缓存按钮
+            item {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showClearCacheConfirmDialog = true }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.settings_clear_image_cache),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+                HorizontalDivider()
             }
             
             // API 测试工具 (开发者选项)
@@ -446,6 +541,60 @@ private fun SettingsScreenContent(
                 }
             }
         )
+    }
+    
+    // 缓存大小选择对话框
+    if (showCacheSizeDialog) {
+        CacheSizeSelectionDialog(
+            currentSize = currentImageCacheSize,
+            onSelect = { size ->
+                onImageCacheSizeChange(size)
+                showCacheSizeDialog = false
+            },
+            onDismiss = { showCacheSizeDialog = false }
+        )
+    }
+    
+    // 清空缓存确认对话框
+    if (showClearCacheConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearCacheConfirmDialog = false },
+            title = { Text(stringResource(Res.string.settings_clear_cache_confirm_title)) },
+            text = { Text(stringResource(Res.string.settings_clear_cache_confirm_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            onClearCache()
+                            snackbarHostState.showSnackbar(cacheClearedMessage)
+                        }
+                        showClearCacheConfirmDialog = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(Res.string.settings_clear_image_cache),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearCacheConfirmDialog = false }) {
+                    Text(stringResource(Res.string.common_cancel))
+                }
+            }
+        )
+    }
+}
+
+/**
+ * 格式化缓存大小显示
+ */
+private fun formatCacheSize(bytes: Long): String {
+    return when {
+        bytes < 1024 -> "$bytes B"
+        bytes < 1024 * 1024 -> "${bytes / 1024} KB"
+        bytes < 1024 * 1024 * 1024 -> "${bytes / (1024 * 1024)} MB"
+        else -> String.format("%.2f GB", bytes / (1024.0 * 1024 * 1024))
     }
 }
 
@@ -887,6 +1036,69 @@ private fun DetailImageQualitySelectionDialog(
                         }
                     }
                 }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 缓存大小选择对话框
+ */
+@Composable
+private fun CacheSizeSelectionDialog(
+    currentSize: CacheSize,
+    onSelect: (CacheSize) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sizes = listOf(
+        CacheSize.SMALL to stringResource(Res.string.cache_size_small),
+        CacheSize.MEDIUM to stringResource(Res.string.cache_size_medium),
+        CacheSize.LARGE to stringResource(Res.string.cache_size_large),
+        CacheSize.EXTRA_LARGE to stringResource(Res.string.cache_size_extra_large)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_image_cache_size)) },
+        text = {
+            Column {
+                sizes.forEach { (size, name) ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(size) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = size == currentSize,
+                                onClick = { onSelect(size) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+                
+                // 提示信息
+                Text(
+                    text = stringResource(Res.string.settings_cache_size_change_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                )
             }
         },
         confirmButton = {

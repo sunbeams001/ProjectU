@@ -2,6 +2,7 @@ package com.projectu.shared.data.local
 
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.CacheSize
 
 /**
  * 应用设置数据模型
@@ -51,7 +52,14 @@ data class AppSettings(
      * 用于作品详情页的图片显示
      * 默认：LARGE (540x540)
      */
-    val detailImageQuality: DetailImageQuality = DetailImageQuality.LARGE
+    val detailImageQuality: DetailImageQuality = DetailImageQuality.LARGE,
+    
+    /**
+     * 图片磁盘缓存大小
+     * 用于控制 Coil 图片缓存的磁盘空间占用
+     * 默认：MEDIUM (512MB)
+     */
+    val imageCacheSize: CacheSize = CacheSize.DEFAULT
 ) {
     companion object {
         /**

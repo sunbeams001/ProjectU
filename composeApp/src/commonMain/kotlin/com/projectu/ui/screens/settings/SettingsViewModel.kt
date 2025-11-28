@@ -7,6 +7,7 @@ import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.AppSettings
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.SettingsRepository
@@ -89,6 +90,16 @@ class SettingsViewModel(
     fun updateDetailImageQuality(quality: com.projectu.shared.domain.model.DetailImageQuality) {
         viewModelScope.launch {
             settingsRepository.updateDetailImageQuality(quality)
+        }
+    }
+    
+    /**
+     * 更新图片缓存大小
+     * 注意：缓存大小变更需要重启应用才能完全生效
+     */
+    fun updateImageCacheSize(size: CacheSize) {
+        viewModelScope.launch {
+            settingsRepository.updateImageCacheSize(size)
         }
     }
     

@@ -133,5 +133,20 @@
     <string name="detail_image_quality_large">크게 (540×540)</string>
     <string name="detail_image_quality_master_1200">최대 (1200px)</string>
     <string name="detail_image_quality_original">원본</string>
+    
+    <!-- 설정 - 캐시 관리 -->
+    <string name="settings_cache_management">캐시 관리</string>
+    <string name="settings_image_cache_size">이미지 캐시 크기</string>
+    <string name="settings_image_cache_size_desc">캐시된 이미지의 최대 디스크 공간</string>
+    <string name="settings_current_cache_size">현재 캐시 크기</string>
+    <string name="settings_clear_image_cache">이미지 캐시 삭제</string>
+    <string name="settings_clear_cache_confirm_title">캐시 삭제</string>
+    <string name="settings_clear_cache_confirm_message">캐시된 모든 이미지를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.</string>
+    <string name="settings_cache_cleared">캐시가 삭제되었습니다</string>
+    <string name="settings_cache_size_change_note">참고: 캐시 크기 변경은 앱을 다시 시작한 후에 적용됩니다</string>
+    <string name="cache_size_small">작음 (256 MB)</string>
+    <string name="cache_size_medium">중간 (512 MB)</string>
+    <string name="cache_size_large">큼 (1 GB)</string>
+    <string name="cache_size_extra_large">매우 큼 (2 GB)</string>
 </resources>
 

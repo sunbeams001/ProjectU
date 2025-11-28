@@ -133,5 +133,20 @@
     <string name="detail_image_quality_large">大 (540×540)</string>
     <string name="detail_image_quality_master_1200">最大 (1200px)</string>
     <string name="detail_image_quality_original">原始</string>
+    
+    <!-- 設定 - 快取管理 -->
+    <string name="settings_cache_management">快取管理</string>
+    <string name="settings_image_cache_size">圖片快取大小</string>
+    <string name="settings_image_cache_size_desc">用於快取圖片的最大磁碟空間</string>
+    <string name="settings_current_cache_size">目前快取大小</string>
+    <string name="settings_clear_image_cache">清空圖片快取</string>
+    <string name="settings_clear_cache_confirm_title">清空快取</string>
+    <string name="settings_clear_cache_confirm_message">確定要清空所有快取的圖片嗎？此操作無法復原。</string>
+    <string name="settings_cache_cleared">快取已清空</string>
+    <string name="settings_cache_size_change_note">注意：快取大小變更將在重新啟動應用程式後生效</string>
+    <string name="cache_size_small">小 (256 MB)</string>
+    <string name="cache_size_medium">中 (512 MB)</string>
+    <string name="cache_size_large">大 (1 GB)</string>
+    <string name="cache_size_extra_large">超大 (2 GB)</string>
 </resources>
 

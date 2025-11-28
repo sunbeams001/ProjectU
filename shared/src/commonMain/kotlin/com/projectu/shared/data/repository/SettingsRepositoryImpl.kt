@@ -5,6 +5,7 @@ import com.projectu.shared.data.local.AppSettings
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -47,6 +48,10 @@ class SettingsRepositoryImpl(
     
     override suspend fun updateDetailImageQuality(quality: com.projectu.shared.domain.model.DetailImageQuality) {
         settingsStore.setDetailImageQuality(quality)
+    }
+    
+    override suspend fun updateImageCacheSize(size: CacheSize) {
+        settingsStore.setImageCacheSize(size)
     }
     
     override suspend fun updateSettings(settings: AppSettings) {
