@@ -237,6 +237,17 @@ sealed class ApiMethod(
         priority = 1
     )
     
+    object GetUserNovels : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getProfileNovels",
+        displayName = "用户小说作品",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "18662946", required = true),
+            ApiParameter("novelIds", "小说ID列表(逗号分隔)", "26469344,26469328,25637544", required = true)
+        ),
+        priority = 1
+    )
+    
     // ==================== BookmarkApi ====================
     
     // 插画收藏
@@ -702,7 +713,7 @@ sealed class ApiMethod(
             GetIllustDetail, SearchIllust, GetRecommendInit, 
             GetRecommendIllusts, GetDiscoveryIllust, GetUgoiraMetadata, GetIllustPages,
             // UserApi
-            GetUserInfo, GetUserFullInfo, GetUserIllusts, 
+            GetUserInfo, GetUserFullInfo, GetUserIllusts, GetUserNovels,
             GetUserBookmarks, GetUserFollowing, GetUserFollowers,
             GetRecommendUsers, GetDiscoveryUsers, FollowUser, UnfollowUser,
             GetUserFollowDetail,

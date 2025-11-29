@@ -4,17 +4,17 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserWorkspace(
-    val userWorkspacePc: String? = null,
-    val userWorkspaceMonitor: String? = null,
-    val userWorkspaceTool: String? = null,
-    val userWorkspaceScanner: String? = null,
-    val userWorkspaceTablet: String? = null,
-    val userWorkspaceMouse: String? = null,
-    val userWorkspacePrinter: String? = null,
-    val userWorkspaceDesktop: String? = null,
-    val userWorkspaceMusic: String? = null,
-    val userWorkspaceDesk: String? = null,
-    val userWorkspaceChair: String? = null,
-    val userWorkspaceComment: String? = null,
-    val userWorkspaceImageUrl: String? = null
+    val pc: String? = null,
+    val monitor: String? = null,
+    val tool: String? = null,
+    val scanner: String? = null,
+    val tablet: String? = null,
+    val mouse: String? = null,
+    val printer: String? = null,
+    val desktop: String? = null,
+    val music: String? = null,
+    val desk: String? = null,
+    val chair: String? = null,
+    val comment: String? = null,
+    val imageUrl: String? = null
 )

@@ -39,12 +39,19 @@ import org.koin.compose.koinInject
  * - 字数
  * - 收藏数
  * - 系列标题（如果有）
+ * 
+ * @param novel 小说对象
+ * @param onClick 点击小说回调
+ * @param onUserClick 点击用户区域回调（头像或用户名），为null时不响应用户点击
+ * @param modifier 修饰符
+ * @param settingsCache 设置缓存
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NovelCard(
     novel: Novel,
     onClick: () -> Unit,
+    onUserClick: ((userId: Long) -> Unit)? = null,
     modifier: Modifier = Modifier,
     settingsCache: SettingsCache = koinInject()
 ) {
@@ -322,13 +329,14 @@ fun NovelCard(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .weight(1f)
-                            .combinedClickable(
-                                onClick = { 
-                                    println("NovelCard: 点击作者 - ${novel.userName} (ID: ${novel.userId})") 
-                                },
-                                onLongClick = { 
-                                    println("NovelCard: 长按作者 - ${novel.userName} (ID: ${novel.userId})") 
-                                }
+                            .then(
+                                if (onUserClick != null) {
+                                    Modifier.combinedClickable(
+                                        onClick = {
+                                            novel.userId.toLongOrNull()?.let { onUserClick(it) }
+                                        }
+                                    )
+                                } else Modifier
                             )
                     ) {
                         // 作者头像

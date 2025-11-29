@@ -254,35 +254,38 @@ class ArtworkDetailViewModel(
                     artwork = artworkRepository.getArtworkPages(artwork).getOrThrow()
                 }
 
-                // 3. 如果头像URL为空，从用户信息接口获取
-                if (artwork.userProfileImageUrl.isEmpty()) {
-                    try {
-                        val userId = artwork.userId.toLongOrNull()
-                        if (userId != null) {
-                            val userInfo = userRepository.getUserById(userId).getOrNull()
-                            if (userInfo != null && userInfo.profileImageUrl.isNotEmpty()) {
+                // 3. 获取用户信息（包含关注状态和头像）
+                var followStatus = FollowStatus.NOT_FOLLOWING
+                try {
+                    val userId = artwork.userId.toLongOrNull()
+                    if (userId != null) {
+                        val userInfo = userRepository.getUserById(userId).getOrNull()
+                        if (userInfo != null) {
+                            // 更新头像（如果为空）
+                            if (artwork.userProfileImageUrl.isEmpty() && userInfo.profileImageUrl.isNotEmpty()) {
                                 artwork = artwork.copy(userProfileImageUrl = userInfo.profileImageUrl)
                             }
+                            // 获取关注状态并同步到缓存
+                            followStatus = userInfo.followStatus
+                            stateCacheManager.updateUserFollowStatus(artwork.userId, followStatus)
                         }
-                    } catch (e: Exception) {
-                        // 不影响主流程，继续执行
                     }
+                } catch (e: Exception) {
+                    // 不影响主流程，继续执行，使用缓存的关注状态
+                    val userStates = stateCacheManager.getUserStates(listOf(artwork.userId))
+                    followStatus = userStates[artwork.userId]?.followStatus ?: FollowStatus.NOT_FOLLOWING
                 }
 
-                // 4. 同步全局状态缓存
+                // 4. 同步全局状态缓存（作品收藏状态）
                 syncArtworkStatesUseCase(listOf(artwork))
 
-                // 5. 获取作者关注状态（从缓存）
-                val userStates = stateCacheManager.getUserStates(listOf(artwork.userId))
-                val followStatus = userStates[artwork.userId]?.followStatus ?: FollowStatus.NOT_FOLLOWING
-
-                // 6. 添加到全局缓存（标记为已加载详情）
+                // 5. 添加到全局缓存（标记为已加载详情）
                 artworkCacheManager.cacheArtworkDetail(artwork)
                 
-                // 7. 添加到会话缓存
+                // 6. 添加到会话缓存
                 sessionCache[artworkId] = artwork
 
-                // 8. 更新状态（仅当不是静默加载时）
+                // 7. 更新状态（仅当不是静默加载时）
                 if (!silent) {
                     _state.update {
                         it.copy(

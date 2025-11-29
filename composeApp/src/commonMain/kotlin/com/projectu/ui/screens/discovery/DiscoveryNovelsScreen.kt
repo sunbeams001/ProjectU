@@ -19,6 +19,7 @@ import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Novel
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
@@ -52,6 +53,9 @@ class DiscoveryNovelsScreen : Screen {
                 // TODO: 跳转到小说详情页
                 println("点击小说: ${novel.title}")
             },
+            onUserClick = { userId ->
+                navigator.push(UserScreen(userId))
+            },
             onBackClick = { navigator.pop() }
         )
     }
@@ -65,6 +69,7 @@ fun DiscoveryNovelsContent(
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -132,6 +137,7 @@ fun DiscoveryNovelsContent(
                         NovelList(
                             novels = state.novels,
                             onNovelClick = onNovelClick,
+                            onUserClick = onUserClick,
                             onLoadMore = onLoadMore,
                             isLoadingMore = state.isLoadingMore
                         )
@@ -149,6 +155,7 @@ fun DiscoveryNovelsContent(
 fun NovelList(
     novels: List<Novel>,
     onNovelClick: (Novel) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean
 ) {
@@ -180,7 +187,8 @@ fun NovelList(
         items(novels, key = { it.id }) { novel ->
             NovelCard(
                 novel = novel,
-                onClick = { onNovelClick(novel) }
+                onClick = { onNovelClick(novel) },
+                onUserClick = onUserClick
             )
         }
         

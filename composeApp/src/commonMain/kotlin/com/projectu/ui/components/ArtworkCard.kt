@@ -22,12 +22,21 @@ import org.koin.compose.koinInject
 /**
  * 作品卡片组件 - Material Design 3 风格
  * 用于瀑布流展示
+ * 
+ * @param artwork 作品对象
+ * @param onClick 点击作品回调
+ * @param onUserClick 点击用户区域回调（头像或用户名），为null时不响应用户点击
+ * @param showUserInfo 是否显示用户信息（头像和用户名），默认true。用户主页场景可设为false
+ * @param modifier 修饰符
+ * @param settingsCache 设置缓存
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArtworkCard(
     artwork: Artwork,
     onClick: () -> Unit,
+    onUserClick: ((userId: Long) -> Unit)? = null,
+    showUserInfo: Boolean = true,
     modifier: Modifier = Modifier,
     settingsCache: SettingsCache = koinInject()
 ) {
@@ -124,31 +133,43 @@ fun ArtworkCard(
                     )
                 }
                 
-                // 作者信息（头像 + 名称）
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // 作者头像
-                    AsyncImage(
-                        model = artwork.userProfileImageUrl,
-                        contentDescription = artwork.userName,
+                // 作者信息（头像 + 名称）- 可选显示
+                if (showUserInfo) {
+                    Row(
                         modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    
-                    // 作者名
-                    Text(
-                        text = artwork.userName,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
+                            .fillMaxWidth()
+                            .then(
+                                if (onUserClick != null) {
+                                    Modifier.combinedClickable(
+                                        onClick = {
+                                            artwork.userId.toLongOrNull()?.let { onUserClick(it) }
+                                        }
+                                    )
+                                } else Modifier
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // 作者头像
+                        AsyncImage(
+                            model = artwork.userProfileImageUrl,
+                            contentDescription = artwork.userName,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                        
+                        // 作者名
+                        Text(
+                            text = artwork.userName,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
         }

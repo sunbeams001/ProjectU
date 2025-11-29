@@ -30,6 +30,7 @@ import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NavigationBar
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
@@ -48,6 +49,7 @@ fun RankingContent(
     onRefresh: () -> Unit,
     onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
     // 获取当前内容类型支持的所有模式
@@ -217,6 +219,7 @@ fun RankingContent(
                         NovelListLayout(
                             novels = modeData.novels,
                             onNovelClick = onNovelClick,
+                            onUserClick = onUserClick,
                             onLoadMore = onLoadMore,
                             isLoadingMore = modeData.isLoadingMore,
                             listState = listState as androidx.compose.foundation.lazy.LazyListState,
@@ -229,6 +232,7 @@ fun RankingContent(
                         ArtworkStaggeredGridLayout(
                             artworks = modeData.artworks,
                             onArtworkClick = onArtworkClick,
+                            onUserClick = onUserClick,
                             onLoadMore = onLoadMore,
                             isLoadingMore = modeData.isLoadingMore,
                             listState = listState as androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState,
@@ -498,6 +502,7 @@ fun RankingModeSelector(
 fun ArtworkStaggeredGridLayout(
     artworks: List<com.projectu.shared.domain.model.Artwork>,
     onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState = rememberLazyStaggeredGridState(),
@@ -535,7 +540,8 @@ fun ArtworkStaggeredGridLayout(
                 val index = artworks.indexOf(artwork)
                 ArtworkCard(
                     artwork = artwork,
-                    onClick = { onArtworkClick(artwork, index) }
+                    onClick = { onArtworkClick(artwork, index) },
+                    onUserClick = onUserClick
                 )
             }
             
@@ -563,6 +569,7 @@ fun ArtworkStaggeredGridLayout(
 fun NovelListLayout(
     novels: List<com.projectu.shared.domain.model.Novel>,
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: androidx.compose.foundation.lazy.LazyListState = rememberLazyListState(),
@@ -603,7 +610,8 @@ fun NovelListLayout(
             ) { novel ->
                 NovelCard(
                     novel = novel,
-                    onClick = { onNovelClick(novel) }
+                    onClick = { onNovelClick(novel) },
+                    onUserClick = onUserClick
                 )
             }
             

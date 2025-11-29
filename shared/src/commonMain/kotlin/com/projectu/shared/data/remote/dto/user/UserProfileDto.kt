@@ -5,6 +5,7 @@ import com.projectu.shared.data.remote.dto.common.TitleCaptionTranslation
 import com.projectu.shared.data.remote.dto.common.ZoneConfig
 import com.projectu.shared.data.remote.dto.common.ExtraData
 import com.projectu.shared.data.remote.dto.illust.IllustSimple
+import com.projectu.shared.data.remote.dto.novel.NovelSimple
 import com.projectu.shared.data.remote.serializers.MapOrEmptyArraySerializer
 import kotlinx.serialization.Serializable
 
@@ -166,6 +167,26 @@ data class ProfileBookmarkCountDetail(
 @Serializable
 data class ProfileIllustsBody(
     val works: Map<String, IllustSimple?>? = null,
+    val zoneConfig: ZoneConfig? = null,
+    val extraData: ExtraData? = null
+)
+
+/**
+ * 用户小说作品响应体
+ * 
+ * 使用场景：
+ * - 查询用户的小说作品 (/ajax/user/{userId}/profile/novels)
+ * 
+ * 请求示例：
+ * GET /ajax/user/18662946/profile/novels?ids[]=26469344&ids[]=26469328&...&lang=zh
+ * 
+ * 特点：
+ * - works 是一个 Map，key 为小说ID，value 为 NovelSimple 对象
+ * - 与 ProfileIllustsBody 结构类似，但使用 NovelSimple 而非 IllustSimple
+ */
+@Serializable
+data class ProfileNovelsBody(
+    val works: Map<String, NovelSimple?>? = null,
     val zoneConfig: ZoneConfig? = null,
     val extraData: ExtraData? = null
 )

@@ -23,6 +23,7 @@ import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.user.UserScreen
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
 import projectu.composeapp.generated.resources.discovery_recommended_illusts
@@ -80,6 +81,9 @@ class DiscoveryIllustsScreen : Screen {
                     )
                 )
             },
+            onUserClick = { userId ->
+                navigator.push(UserScreen(userId))
+            },
             onBackClick = { navigator.pop() }
         )
     }
@@ -95,6 +99,7 @@ fun DiscoveryIllustsContent(
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -155,6 +160,7 @@ fun DiscoveryIllustsContent(
                         ArtworkStaggeredGrid(
                             artworks = state.artworks,
                             onArtworkClick = onArtworkClick,
+                            onUserClick = onUserClick,
                             onLoadMore = onLoadMore,
                             isLoadingMore = state.isLoadingMore,
                             scrollToIndex = scrollToIndex,
@@ -174,6 +180,7 @@ fun DiscoveryIllustsContent(
 fun ArtworkStaggeredGrid(
     artworks: List<com.projectu.shared.domain.model.Artwork>,
     onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     scrollToIndex: Int? = null,
@@ -219,7 +226,8 @@ fun ArtworkStaggeredGrid(
             val index = artworks.indexOf(artwork)
             ArtworkCard(
                 artwork = artwork,
-                onClick = { onArtworkClick(artwork, index) }
+                onClick = { onArtworkClick(artwork, index) },
+                onUserClick = onUserClick
             )
         }
         

@@ -44,8 +44,8 @@ data class IllustDetailBody(
     val bookStyle: String = "0",  // 注意：这是字符串类型
     val isHowto: Boolean = false,
     val isOriginal: Boolean = false,
-    val imageResponseOutData: List<String>? = null,
-    val imageResponseData: List<String>? = null,
+    val imageResponseOutData: List<ImageResponseOutData>? = null,
+    val imageResponseData: List<IllustSimple>? = null,
     val imageResponseCount: Int = 0,
     val pollData: String? = null,
     val seriesNavData: SeriesNavData? = null,
@@ -160,6 +160,18 @@ data class FanboxPromotion(
     val imageUrl: String? = null,
     val imageUrlMobile: String? = null,
     val hasAdultContent: Boolean = false
+)
+
+/**
+ * 图片响应外部数据（其他用户对该作品的响应/参考作品信息）
+ */
+@Serializable
+data class ImageResponseOutData(
+    val type: String,  // "illust" 等
+    val workId: String,
+    val title: String,
+    val userName: String,
+    val imageUrl: String
 )
 
 /**

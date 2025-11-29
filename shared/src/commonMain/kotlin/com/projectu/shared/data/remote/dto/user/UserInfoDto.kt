@@ -77,7 +77,8 @@ data class SocialLinks(
     val twitter: SocialLink? = null,
     val pawoo: SocialLink? = null,
     val instagram: SocialLink? = null,
-    val tumblr: SocialLink? = null
+    val tumblr: SocialLink? = null,
+    val circlems: SocialLink? = null  // Circle.ms (同人志即卖会)
 )
 
 @Serializable

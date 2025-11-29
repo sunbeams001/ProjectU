@@ -33,6 +33,7 @@ import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.UserCard
 import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -41,11 +42,18 @@ import projectu.composeapp.generated.resources.*
 /**
  * 发现页面统一内容区域
  * 参照排行榜设计，支持横向滑动切换内容类型
+ * 
+ * @param scrollIndices 滚动位置缓存
+ * @param initialPageIndex 初始页面索引
+ * @param onPageChanged 页面切换回调，用于保存当前页面索引
+ * @param onRegisterScrollToTopOrRefreshCallback 注册滚动到顶部或刷新的回调
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DiscoveryContent(
     scrollIndices: MutableMap<String, Int> = mutableMapOf(),
+    initialPageIndex: Int = 1,
+    onPageChanged: ((Int) -> Unit)? = null,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
     val parentNavigator = LocalNavigator.current?.parent
@@ -68,16 +76,19 @@ fun DiscoveryContent(
     
     val coroutineScope = rememberCoroutineScope()
     
-    // 创建 Pager 状态，默认进入第二个页面（推荐插画·漫画）
+    // 创建 Pager 状态，使用传入的初始页面索引
     val pagerState = rememberPagerState(
-        initialPage = 1, // 默认进入 ILLUSTS
+        initialPage = initialPageIndex,
         pageCount = { contentTypes.size }
     )
     
     val currentContentType = contentTypes[pagerState.currentPage]
     
-    // 监听页面切换，触发惰性加载
+    // 监听页面切换，触发惰性加载并通知外部
     LaunchedEffect(pagerState.currentPage) {
+        // 通知外部保存当前页面索引
+        onPageChanged?.invoke(pagerState.currentPage)
+        
         when (contentTypes[pagerState.currentPage]) {
             DiscoveryContentType.USERS -> usersViewModel.initLoadIfNeeded()
             DiscoveryContentType.ILLUSTS -> illustsViewModel.initLoadIfNeeded()
@@ -197,8 +208,8 @@ fun DiscoveryContent(
                         onRefresh = usersViewModel::refresh,
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onUserClick = { user ->
-                            // TODO: 跳转到用户详情页
-                            println("点击用户: ${user.name}")
+                            // 跳转到用户详情页
+                            parentNavigator?.push(UserScreen(user.id.toLong()))
                         },
                         onArtworkClick = { artwork, artworkIndex ->
                             val userIndex = artworkToUserIndexMap[artworkIndex] ?: 0
@@ -269,6 +280,9 @@ fun DiscoveryContent(
                                 )
                             )
                         },
+                        onUserClick = { userId ->
+                            parentNavigator?.push(UserScreen(userId))
+                        },
                         listState = listState as LazyStaggeredGridState
                     )
                 }
@@ -288,6 +302,9 @@ fun DiscoveryContent(
                         onNovelClick = { novel ->
                             // TODO: 跳转到小说详情页
                             println("点击小说: ${novel.title}")
+                        },
+                        onUserClick = { userId ->
+                            parentNavigator?.push(UserScreen(userId))
                         },
                         listState = listState as LazyListState
                     )
@@ -359,6 +376,7 @@ fun DiscoveryIllustsPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onArtworkClick: (Artwork, Int) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     listState: LazyStaggeredGridState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -410,6 +428,7 @@ fun DiscoveryIllustsPage(
                     ArtworkStaggeredGridLayout(
                         artworks = state.artworks,
                         onArtworkClick = onArtworkClick,
+                        onUserClick = onUserClick,
                         onLoadMore = onLoadMore,
                         isLoadingMore = state.isLoadingMore,
                         listState = listState,
@@ -433,6 +452,7 @@ fun DiscoveryNovelsPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     listState: LazyListState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -484,6 +504,7 @@ fun DiscoveryNovelsPage(
                     NovelListLayout(
                         novels = state.novels,
                         onNovelClick = onNovelClick,
+                        onUserClick = onUserClick,
                         onLoadMore = onLoadMore,
                         isLoadingMore = state.isLoadingMore,
                         listState = listState,
@@ -581,6 +602,7 @@ fun UserListLayout(
 fun ArtworkStaggeredGridLayout(
     artworks: List<Artwork>,
     onArtworkClick: (Artwork, Int) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyStaggeredGridState,
@@ -614,7 +636,8 @@ fun ArtworkStaggeredGridLayout(
                 val index = artworks.indexOf(artwork)
                 ArtworkCard(
                     artwork = artwork,
-                    onClick = { onArtworkClick(artwork, index) }
+                    onClick = { onArtworkClick(artwork, index) },
+                    onUserClick = onUserClick
                 )
             }
             
@@ -642,6 +665,7 @@ fun ArtworkStaggeredGridLayout(
 fun NovelListLayout(
     novels: List<Novel>,
     onNovelClick: (Novel) -> Unit,
+    onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyListState,
@@ -678,7 +702,8 @@ fun NovelListLayout(
             items(novels, key = { it.id }) { novel ->
                 NovelCard(
                     novel = novel,
-                    onClick = { onNovelClick(novel) }
+                    onClick = { onNovelClick(novel) },
+                    onUserClick = onUserClick
                 )
             }
             

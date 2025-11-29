@@ -1,5 +1,6 @@
 package com.projectu.ui.screens.artwork
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -33,11 +34,17 @@ import com.projectu.ui.components.FollowIndicator
  * - 作者名
  * - 关注按钮
  * - 投稿时间
+ * 
+ * @param artwork 作品对象
+ * @param authorFollowStatus 作者关注状态
+ * @param onUserClick 点击用户区域回调（头像或用户名）
+ * @param modifier 修饰符
  */
 @Composable
 fun ArtworkInfoSection(
     artwork: Artwork,
     authorFollowStatus: FollowStatus,
+    onUserClick: ((userId: Long) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -85,7 +92,14 @@ fun ArtworkInfoSection(
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .clip(CircleShape),
+                        .clip(CircleShape)
+                        .then(
+                            if (onUserClick != null) {
+                                Modifier.clickable {
+                                    artwork.userId.toLongOrNull()?.let { onUserClick(it) }
+                                }
+                            } else Modifier
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     if (artwork.userProfileImageUrl.isNotEmpty()) {
@@ -124,7 +138,15 @@ fun ArtworkInfoSection(
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(
+                            if (onUserClick != null) {
+                                Modifier.clickable {
+                                    artwork.userId.toLongOrNull()?.let { onUserClick(it) }
+                                }
+                            } else Modifier
+                        )
                 )
 
                 // 关注状态指示器（内置关注逻辑）

@@ -18,6 +18,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.UserCard
+import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
@@ -44,8 +45,8 @@ class DiscoveryUsersScreen : Screen {
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
             onUserClick = { user ->
-                // TODO: 跳转到用户详情页
-                println("点击用户: ${user.name}")
+                // 跳转到用户主页
+                navigator.push(UserScreen(user.id.toLong()))
             },
             onArtworkClick = { artwork ->
                 // TODO: 跳转到作品详情页

@@ -6,6 +6,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.domain.model.Artwork
+import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.util.PlatformBackHandler
 
 /**
@@ -77,7 +78,10 @@ data class ArtworkDetailScreen(
             state = state,
             onBackClick = handleBack,
             onPageChange = { index -> viewModel.onPageChanged(index) },
-            onRetry = { viewModel.retry() }
+            onRetry = { viewModel.retry() },
+            onUserClick = { userId ->
+                navigator.push(UserScreen(userId))
+            }
         )
     }
 }

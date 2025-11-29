@@ -33,6 +33,7 @@ import com.projectu.ui.screens.discovery.DiscoveryContent
 import com.projectu.ui.screens.ranking.RankingContent
 import com.projectu.ui.screens.ranking.RankingViewModel
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.user.UserScreen
 import cafe.adriel.voyager.koin.koinScreenModel
 
 /**
@@ -236,6 +237,9 @@ object DiscoveryTab : Tab {
     // 将 scrollIndices 提升到 Tab 级别，避免导航时丢失
     private val scrollIndices = mutableStateMapOf<String, Int>()
     
+    // 保存当前选中的内容类型页面索引，避免切换 Tab 时重置
+    private var currentPageIndex = mutableIntStateOf(1) // 默认为 ILLUSTS (索引1)
+    
     fun triggerScrollToTopOrRefresh() {
         _scrollToTopOrRefreshTrigger.value = System.currentTimeMillis()
     }
@@ -267,6 +271,8 @@ object DiscoveryTab : Tab {
         
         DiscoveryContent(
             scrollIndices = scrollIndices,
+            initialPageIndex = currentPageIndex.intValue,
+            onPageChanged = { index -> currentPageIndex.intValue = index },
             onRegisterScrollToTopOrRefreshCallback = { callback ->
                 scrollToTopOrRefreshCallback.value = callback
             }
@@ -357,6 +363,9 @@ object RankingTab : Tab {
             onNovelClick = { novel ->
                 // TODO: 跳转到小说详情页
                 println("点击小说: ${novel.title}")
+            },
+            onUserClick = { userId ->
+                parentNavigator?.push(UserScreen(userId))
             },
             onRegisterScrollToTopOrRefreshCallback = { callback ->
                 scrollToTopOrRefreshCallback.value = callback

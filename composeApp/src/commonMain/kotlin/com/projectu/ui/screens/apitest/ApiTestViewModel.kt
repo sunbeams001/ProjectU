@@ -30,6 +30,7 @@ import com.projectu.shared.data.remote.dto.tag.SearchSuggestionBody
 import com.projectu.shared.data.remote.dto.tag.TagInfoBody
 import com.projectu.shared.data.remote.dto.tag.TagSuggestBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
+import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
 import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
 import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
 import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
@@ -189,6 +190,7 @@ class ApiTestViewModel(
                         ApiMethod.GetUserInfo -> testGetUserInfo()
                         ApiMethod.GetUserFullInfo -> testGetUserFullInfo()
                         ApiMethod.GetUserIllusts -> testGetUserIllusts()
+                        ApiMethod.GetUserNovels -> testGetUserNovels()
                         ApiMethod.GetUserBookmarks -> testGetUserBookmarks()
                         ApiMethod.GetUserFollowing -> testGetUserFollowing()
                         ApiMethod.GetUserFollowers -> testGetUserFollowers()
@@ -582,6 +584,67 @@ class ApiTestViewModel(
         updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
+    private suspend fun testGetUserNovels() {
+        val userId = getParam("userId").toLongOrNull() ?: 18662946L
+        val novelIdsStr = getParam("novelIds")
+        val novelIds = novelIdsStr.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        
+        if (novelIds.isEmpty()) {
+            _state.update {
+                it.copy(
+                    testResult = TestResult.Error(
+                        message = "参数错误：请提供至少一个小说ID\n格式：用逗号分隔多个ID\n示例：26469344,26469328,25637544"
+                    )
+                )
+            }
+            return
+        }
+        
+        // 调用 getProfileNovels 获取用户小说作品详情
+        val responseWithRaw = pixivApi.client.getWithRaw<ProfileNovelsBody>(
+            "/ajax/user/$userId/profile/novels",
+            mapOf("ids[]" to novelIds)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 用户小说作品获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("请求小说数: ${novelIds.size}")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            
+            response.body?.let { body ->
+                val works = body.works
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("📚 返回小说数: ${works?.size ?: 0}")
+                
+                works?.entries?.take(5)?.forEach { (id, novel) ->
+                    novel?.let {
+                        appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                        appendLine("ID: $id")
+                        appendLine("标题: ${it.title}")
+                        appendLine("作者: ${it.userName}")
+                        appendLine("字数: ${it.textCount}")
+                        appendLine("收藏数: ${it.bookmarkCount}")
+                        appendLine("创建时间: ${it.createDate}")
+                    }
+                }
+                
+                if ((works?.size ?: 0) > 5) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("... 还有 ${(works?.size ?: 0) - 5} 篇小说")
+                }
+            }
+            
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+
     private suspend fun testGetUserBookmarks() {
         val userId = getParam("userId").toLongOrNull() ?: 11L
         val tag = getParam("tag")

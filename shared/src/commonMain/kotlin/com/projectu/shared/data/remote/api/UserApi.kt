@@ -4,6 +4,7 @@ import com.projectu.shared.data.remote.dto.common.PixivResponse
 import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.ProfileIllustsBody
+import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
 import com.projectu.shared.data.remote.dto.user.UnfollowUserResponse
 import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
 import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
@@ -56,6 +57,30 @@ class UserApi(private val client: PixivApiClient) {
             "ids[]" to ids,
             "work_category" to workCategory,
             "is_first_page" to isFirstPage
+        ))
+    }
+
+    /**
+     * 查询用户的小说作品
+     * 
+     * @param uid 用户ID
+     * @param ids 小说ID列表（从 getProfileAll 接口获取）
+     * 
+     * 请求示例：
+     * GET /ajax/user/18662946/profile/novels?ids[]=26469344&ids[]=26469328&...&lang=zh
+     * 
+     * 使用流程：
+     * 1. 先调用 getProfileAll 获取用户的所有小说ID列表
+     * 2. 再调用本接口获取小说详细信息
+     * 
+     * @return 包含小说详细信息的响应体，works 为 Map<小说ID, NovelSimple>
+     */
+    suspend fun getProfileNovels(
+        uid: Long,
+        ids: List<String>
+    ): PixivResponse<ProfileNovelsBody> {
+        return client.get("/ajax/user/$uid/profile/novels", mapOf(
+            "ids[]" to ids
         ))
     }
 
