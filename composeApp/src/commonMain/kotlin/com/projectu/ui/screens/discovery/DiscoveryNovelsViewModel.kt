@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 /**
  * 发现小说页面 ViewModel
- * MVI 架构模式
+ * MVI 架构模式，支持多模式数据缓存
  */
 class DiscoveryNovelsViewModel(
     private val novelRepository: NovelRepository,
@@ -42,15 +42,20 @@ class DiscoveryNovelsViewModel(
     
     /**
      * 初始化加载（惰性加载）
+     * 只在当前模式没有数据时才加载
      */
     fun initLoadIfNeeded() {
-        if (_state.value.novels.isEmpty() && !_state.value.isLoading && _state.value.error == null) {
+        val currentMode = _state.value.currentMode
+        val modeData = _state.value.modeDataCache[currentMode]
+        
+        if (modeData == null && !_state.value.isLoading) {
             loadNovels()
         }
     }
     
     /**
      * 切换模式
+     * 不清空数据，保持各模式独立的缓存
      */
     fun switchMode(mode: DiscoveryMode) {
         if (_state.value.currentMode == mode) return
@@ -58,32 +63,50 @@ class DiscoveryNovelsViewModel(
         _state.update {
             it.copy(
                 currentMode = mode,
-                novels = emptyList(),
-                isLoading = true,
                 error = null
             )
         }
+        
+        // 只在该模式没有数据时才加载
+        loadNovelsIfNeeded()
+    }
+    
+    /**
+     * 只在当前模式没有数据时加载
+     */
+    private fun loadNovelsIfNeeded() {
+        val currentState = _state.value
+        val modeData = currentState.modeDataCache[currentState.currentMode]
+        
+        // 如果已有数据，不加载
+        if (modeData != null && modeData.novels.isNotEmpty()) {
+            return
+        }
+        
+        // 否则开始加载
+        _state.update { it.copy(isLoading = true, error = null) }
         loadNovels()
     }
     
     /**
      * 加载更多小说
-     * 注意：发现接口不支持分页，每次调用返回新的推荐结果
+     * 由于发现接口不支持分页，这里不实现加载更多
      */
     fun loadMore() {
-        if (_state.value.isLoading || _state.value.isLoadingMore) return
-        
-        _state.update { it.copy(isLoadingMore = true) }
-        loadNovels(append = true)
+        // 发现接口不支持分页，不加载更多
     }
     
     /**
-     * 刷新数据
+     * 刷新当前模式的数据
      */
     fun refresh() {
+        val currentMode = _state.value.currentMode
+        
         _state.update {
+            val updatedCache = it.modeDataCache.toMutableMap()
+            updatedCache.remove(currentMode) // 移除当前模式的缓存
             it.copy(
-                novels = emptyList(),
+                modeDataCache = updatedCache,
                 isLoading = true,
                 error = null
             )
@@ -94,10 +117,12 @@ class DiscoveryNovelsViewModel(
     /**
      * 加载小说
      */
-    private fun loadNovels(append: Boolean = false) {
+    private fun loadNovels() {
         screenModelScope.launch {
+            val currentMode = _state.value.currentMode
+            
             novelRepository.getDiscoveryNovels(
-                mode = _state.value.currentMode,
+                mode = currentMode,
                 limit = 100
             )
                 .onSuccess { newNovels ->
@@ -105,19 +130,12 @@ class DiscoveryNovelsViewModel(
                     val syncedNovels = syncNovelStatesUseCase(newNovels)
                     
                     _state.update { currentState ->
-                        // 如果是追加模式，需要去重
-                        val updatedNovels = if (append) {
-                            val existingIds = currentState.novels.map { it.id }.toSet()
-                            val uniqueNewNovels = syncedNovels.filter { it.id !in existingIds }
-                            currentState.novels + uniqueNewNovels
-                        } else {
-                            syncedNovels
-                        }
+                        val updatedCache = currentState.modeDataCache.toMutableMap()
+                        updatedCache[currentMode] = NovelsModeData(novels = syncedNovels)
                         
                         currentState.copy(
-                            novels = updatedNovels,
+                            modeDataCache = updatedCache,
                             isLoading = false,
-                            isLoadingMore = false,
                             error = null
                         )
                     }
@@ -126,7 +144,6 @@ class DiscoveryNovelsViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            isLoadingMore = false,
                             error = error.message ?: "未知错误"
                         )
                     }
@@ -135,7 +152,7 @@ class DiscoveryNovelsViewModel(
     }
     
     /**
-     * 更新列表中小说的收藏状态
+     * 更新所有模式缓存中小说的收藏状态
      * 由全局状态变更事件触发
      */
     private fun updateNovelBookmarkStatus(
@@ -144,31 +161,51 @@ class DiscoveryNovelsViewModel(
         bookmarkId: String?
     ) {
         _state.update { currentState ->
-            currentState.copy(
-                novels = currentState.novels.map { novel ->
-                    if (novel.id == novelId) {
-                        novel.copy(
-                            bookmarkStatus = status,
-                            bookmarkId = bookmarkId
-                        )
-                    } else {
-                        novel
+            val updatedCache = currentState.modeDataCache.mapValues { (_, modeData) ->
+                modeData.copy(
+                    novels = modeData.novels.map { novel ->
+                        if (novel.id == novelId) {
+                            novel.copy(
+                                bookmarkStatus = status,
+                                bookmarkId = bookmarkId
+                            )
+                        } else {
+                            novel
+                        }
                     }
-                }
-            )
+                )
+            }
+            currentState.copy(modeDataCache = updatedCache)
         }
     }
 }
 
 /**
+ * 模式数据（每个模式独立的数据缓存）
+ */
+data class NovelsModeData(
+    val novels: List<Novel> = emptyList()
+)
+
+/**
  * 发现小说页面状态
  */
 data class DiscoveryNovelsState(
-    val novels: List<Novel> = emptyList(),
     val currentMode: DiscoveryMode = DiscoveryMode.ALL,
+    val modeDataCache: Map<DiscoveryMode, NovelsModeData> = emptyMap(),
     val isLoading: Boolean = false,
-    val isLoadingMore: Boolean = false,
     val error: String? = null
-)
+) {
+    /**
+     * 获取当前模式的小说列表
+     */
+    val novels: List<Novel>
+        get() = modeDataCache[currentMode]?.novels ?: emptyList()
+    
+    /**
+     * 当前模式是否正在加载更多（发现接口不支持分页，始终为false）
+     */
+    val isLoadingMore: Boolean = false
+}
 
 

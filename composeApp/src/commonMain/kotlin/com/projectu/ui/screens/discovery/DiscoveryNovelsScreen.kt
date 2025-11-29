@@ -139,7 +139,8 @@ fun DiscoveryNovelsContent(
                             onNovelClick = onNovelClick,
                             onUserClick = onUserClick,
                             onLoadMore = onLoadMore,
-                            isLoadingMore = state.isLoadingMore
+                            isLoadingMore = state.isLoadingMore,
+                            currentMode = state.currentMode
                         )
                     }
                 }
@@ -157,9 +158,32 @@ fun NovelList(
     onNovelClick: (Novel) -> Unit,
     onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
-    isLoadingMore: Boolean
+    isLoadingMore: Boolean,
+    currentMode: DiscoveryMode = DiscoveryMode.ALL
 ) {
-    val listState = rememberLazyListState()
+    // 为每个模式保存独立的滚动位置
+    val scrollPositions = remember { mutableStateMapOf<DiscoveryMode, Int>() }
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = scrollPositions[currentMode] ?: 0
+    )
+    
+    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
+    var previousMode by remember { mutableStateOf(currentMode) }
+    LaunchedEffect(currentMode) {
+        if (previousMode != currentMode) {
+            // 保存上一个模式的滚动位置
+            scrollPositions[previousMode] = listState.firstVisibleItemIndex
+            
+            // 恢复目标模式的滚动位置
+            val targetIndex = scrollPositions[currentMode] ?: 0
+            if (targetIndex > 0) {
+                listState.scrollToItem(targetIndex)
+            } else {
+                listState.scrollToItem(0)
+            }
+            previousMode = currentMode
+        }
+    }
     
     // 监听滚动，触发加载更多
     LaunchedEffect(listState, novels.size, isLoadingMore) {

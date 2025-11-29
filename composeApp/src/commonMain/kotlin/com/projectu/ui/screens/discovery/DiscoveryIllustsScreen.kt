@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -164,7 +163,8 @@ fun DiscoveryIllustsContent(
                             onLoadMore = onLoadMore,
                             isLoadingMore = state.isLoadingMore,
                             scrollToIndex = scrollToIndex,
-                            onScrollComplete = onScrollComplete
+                            onScrollComplete = onScrollComplete,
+                            currentMode = state.currentMode
                         )
                     }
                 }
@@ -184,9 +184,32 @@ fun ArtworkStaggeredGrid(
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     scrollToIndex: Int? = null,
-    onScrollComplete: () -> Unit = {}
+    onScrollComplete: () -> Unit = {},
+    currentMode: DiscoveryMode = DiscoveryMode.ALL
 ) {
-    val listState = rememberLazyStaggeredGridState()
+    // 为每个模式保存独立的滚动位置
+    val scrollPositions = remember { mutableStateMapOf<DiscoveryMode, Int>() }
+    val listState = rememberLazyStaggeredGridState(
+        initialFirstVisibleItemIndex = scrollPositions[currentMode] ?: 0
+    )
+    
+    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
+    var previousMode by remember { mutableStateOf(currentMode) }
+    LaunchedEffect(currentMode) {
+        if (previousMode != currentMode) {
+            // 保存上一个模式的滚动位置
+            scrollPositions[previousMode] = listState.firstVisibleItemIndex
+            
+            // 恢复目标模式的滚动位置
+            val targetIndex = scrollPositions[currentMode] ?: 0
+            if (targetIndex > 0) {
+                listState.scrollToItem(targetIndex)
+            } else {
+                listState.scrollToItem(0)
+            }
+            previousMode = currentMode
+        }
+    }
     
     // 监听 scrollToIndex 变化，滚动到指定位置
     LaunchedEffect(scrollToIndex) {

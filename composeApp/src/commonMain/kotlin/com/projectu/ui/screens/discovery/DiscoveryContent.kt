@@ -232,15 +232,33 @@ fun DiscoveryContent(
                 }
                 
                 DiscoveryContentType.ILLUSTS -> {
-                    val listState = rememberLazyStaggeredGridState()
+                    // 为每个模式保存独立的滚动位置
+                    val scrollPositions = remember { mutableStateMapOf<DiscoveryMode, Int>() }
+                    val listState = rememberLazyStaggeredGridState(
+                        initialFirstVisibleItemIndex = scrollPositions[illustsState.currentMode] ?: 0
+                    )
                     remember(contentType) {
                         listStates.getOrPut(contentType) { listState }
                     }
                     
-                    val currentMode = illustsState.currentMode.name
-                    val scrollKey = "illusts_$currentMode"
+                    val currentMode = illustsState.currentMode
+                    val scrollKey = "illusts_${currentMode.name}"
                     
-                    // 监听滚动索引变化，滚动到指定位置
+                    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
+                    var previousMode by remember { mutableStateOf(currentMode) }
+                    LaunchedEffect(currentMode) {
+                        if (previousMode != currentMode) {
+                            // 保存上一个模式的滚动位置
+                            scrollPositions[previousMode] = listState.firstVisibleItemIndex
+                            
+                            // 恢复目标模式的滚动位置
+                            val targetIndex = scrollPositions[currentMode] ?: 0
+                            listState.scrollToItem(targetIndex)
+                            previousMode = currentMode
+                        }
+                    }
+                    
+                    // 监听滚动索引变化，滚动到指定位置（从详情页返回时）
                     val targetScrollIndex by remember(contentType, currentMode) {
                         derivedStateOf { scrollIndices[scrollKey] }
                     }
@@ -267,7 +285,7 @@ fun DiscoveryContent(
                         onRefresh = illustsViewModel::refresh,
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onArtworkClick = { artwork, index ->
-                            val key = "illusts_$currentMode"
+                            val key = "illusts_${currentMode.name}"
                             
                             parentNavigator?.push(
                                 ArtworkDetailScreen(
@@ -288,9 +306,29 @@ fun DiscoveryContent(
                 }
                 
                 DiscoveryContentType.NOVELS -> {
-                    val listState = rememberLazyListState()
+                    // 为每个模式保存独立的滚动位置
+                    val scrollPositions = remember { mutableStateMapOf<DiscoveryMode, Int>() }
+                    val listState = rememberLazyListState(
+                        initialFirstVisibleItemIndex = scrollPositions[novelsState.currentMode] ?: 0
+                    )
                     remember(contentType) {
                         listStates.getOrPut(contentType) { listState }
+                    }
+                    
+                    val currentMode = novelsState.currentMode
+                    
+                    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
+                    var previousMode by remember { mutableStateOf(currentMode) }
+                    LaunchedEffect(currentMode) {
+                        if (previousMode != currentMode) {
+                            // 保存上一个模式的滚动位置
+                            scrollPositions[previousMode] = listState.firstVisibleItemIndex
+                            
+                            // 恢复目标模式的滚动位置
+                            val targetIndex = scrollPositions[currentMode] ?: 0
+                            listState.scrollToItem(targetIndex)
+                            previousMode = currentMode
+                        }
                     }
                     
                     DiscoveryNovelsPage(
