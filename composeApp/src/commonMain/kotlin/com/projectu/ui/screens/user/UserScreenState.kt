@@ -48,7 +48,13 @@ data class TabData(
  */
 data class MangaSeriesItem(
     val id: String,
-    val title: String
+    val title: String,
+    val description: String? = null,
+    val caption: String? = null,
+    val total: Int = 0,             // 总篇数
+    val coverUrl: String? = null,   // 封面URL
+    val isWatched: Boolean = false, // 是否已追更
+    val updateDate: String? = null  // 更新日期
 )
 
 /**
@@ -59,7 +65,14 @@ data class NovelSeriesItem(
     val title: String,
     val caption: String? = null,
     val contentCount: Int = 0,
-    val coverUrl: String? = null
+    val coverUrl: String? = null,
+    val tags: List<String> = emptyList(),
+    val totalCharacterCount: Int = 0,  // 总字数
+    val totalWordCount: Int = 0,       // 总单词数
+    val readingTime: Int = 0,          // 预计阅读时间（分钟）
+    val xRestrict: Int = 0,            // 年龄限制：0=全年龄, 1=R-18, 2=R-18G
+    val isOriginal: Boolean = false,   // 是否原创
+    val isConcluded: Boolean = false   // 是否已完结
 )
 
 /**

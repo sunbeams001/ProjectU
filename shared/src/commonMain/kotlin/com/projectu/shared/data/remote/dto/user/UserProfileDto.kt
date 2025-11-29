@@ -34,8 +34,23 @@ data class ProfileAllBody(
 
 @Serializable
 data class MangaSeriesInfo(
-    val id: String,  // 改为 String，与实际返回一致
-    val title: String
+    val id: String,
+    val userId: String? = null,
+    val title: String,
+    val description: String? = null,
+    val caption: String? = null,
+    val total: Int = 0,
+    @Suppress("PropertyName")
+    val content_order: String? = null,
+    val url: String? = null,
+    val coverImageSl: Int = 0,
+    val firstIllustId: String? = null,
+    val latestIllustId: String? = null,
+    val createDate: String? = null,
+    val updateDate: String? = null,
+    val watchCount: Int? = null,
+    val isWatched: Boolean = false,
+    val isNotifying: Boolean = false
 )
 
 @Serializable
@@ -100,32 +115,44 @@ data class NovelSeriesCoverUrls(
 data class PickupInfo(
     val id: String,
     val title: String,
-    val illustType: Int = 0,
+    // 插画特有字段
+    val illustType: Int? = null,
     val xRestrict: Int = 0,
     val restrict: Int = 0,
     val sl: Int = 0,
-    val url: String,
+    val url: String? = null,
     val description: String? = null,
     val tags: List<String>? = null,
-    val userId: String,
-    val userName: String,
-    val width: Int = 0,
-    val height: Int = 0,
-    val pageCount: Int = 0,
-    val isBookmarkable: Boolean = false,
+    val userId: String? = null,
+    val userName: String? = null,
+    val width: Int? = null,
+    val height: Int? = null,
+    val pageCount: Int? = null,
+    val isBookmarkable: Boolean? = null,
     val bookmarkData: BookmarkData? = null,
     val alt: String? = null,
     val titleCaptionTranslation: TitleCaptionTranslation? = null,
     val createDate: String? = null,
     val updateDate: String? = null,
-    val isUnlisted: Boolean = false,
-    val isMasked: Boolean = false,
-    val aiType: Int = 0,
-    val visibilityScope: Int = 0,
-    val type: String? = null,
+    val isUnlisted: Boolean? = null,
+    val isMasked: Boolean? = null,
+    val aiType: Int? = null,
+    val visibilityScope: Int? = null,
+    val type: String? = null,  // "illust" 或 "illustSeries"
     val deletable: Boolean = false,
     val draggable: Boolean = false,
-    val contentUrl: String? = null
+    val contentUrl: String? = null,
+    // 漫画系列特有字段
+    val caption: String? = null,
+    val total: Int? = null,
+    @Suppress("PropertyName")
+    val content_order: String? = null,
+    val coverImageSl: Int? = null,
+    val firstIllustId: String? = null,
+    val latestIllustId: String? = null,
+    val watchCount: Int? = null,
+    val isWatched: Boolean? = null,
+    val isNotifying: Boolean? = null
 )
 
 @Serializable

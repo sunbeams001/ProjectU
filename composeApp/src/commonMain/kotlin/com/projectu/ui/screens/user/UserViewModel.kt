@@ -161,8 +161,17 @@ class UserViewModel(
                         availableTabs = availableTabs,
                         currentTab = availableTabs.firstOrNull() ?: UserProfileTab.ILLUSTS,
                         tabDataCache = tabDataCache,
-                        mangaSeries = mangaSeriesList.map { 
-                            MangaSeriesItem(id = it.id, title = it.title) 
+                        mangaSeries = mangaSeriesList.map { series ->
+                            MangaSeriesItem(
+                                id = series.id,
+                                title = series.title,
+                                description = series.description,
+                                caption = series.caption,
+                                total = series.total,
+                                coverUrl = series.url,
+                                isWatched = series.isWatched,
+                                updateDate = series.updateDate
+                            )
                         },
                         novelSeries = novelSeriesList.map { series ->
                             NovelSeriesItem(
@@ -170,7 +179,14 @@ class UserViewModel(
                                 title = series.title,
                                 caption = series.caption,
                                 contentCount = series.publishedContentCount,
-                                coverUrl = series.cover?.urls?.`240mw`
+                                coverUrl = series.cover?.urls?.`240mw`,
+                                tags = series.tags ?: emptyList(),
+                                totalCharacterCount = series.publishedTotalCharacterCount,
+                                totalWordCount = series.publishedTotalWordCount,
+                                readingTime = series.publishedReadingTime,
+                                xRestrict = series.xRestrict,
+                                isOriginal = series.isOriginal,
+                                isConcluded = series.isConcluded
                             )
                         },
                         isLoadingProfile = false,
@@ -210,11 +226,13 @@ class UserViewModel(
     }
     
     /**
-     * 加载Tab数据
+     * 加载Tab数据（也用于重试）
      */
-    private fun loadTabData(tab: UserProfileTab) {
+    fun loadTabData(tab: UserProfileTab) {
         val tabData = _state.value.tabDataCache[tab] ?: return
-        if (tabData.isLoading || tabData.allIds.isEmpty()) return
+        // 移除 allIds.isEmpty() 检查，允许在有数据时重试
+        if (tabData.isLoading) return
+        if (tabData.allIds.isEmpty()) return // 没有ID则无法加载
         
         screenModelScope.launch {
             updateTabData(tab) { it.copy(isLoading = true, error = null) }
@@ -433,6 +451,12 @@ class UserViewModel(
      * 刷新当前Tab
      */
     fun refresh() {
+        // 如果用户信息加载失败，重新加载用户信息
+        if (_state.value.profileError != null && _state.value.userProfile.userId.isEmpty()) {
+            retryLoadUser()
+            return
+        }
+        
         val currentTab = _state.value.currentTab
         
         // 重置Tab数据
@@ -448,6 +472,18 @@ class UserViewModel(
         
         // 重新加载
         loadTabData(currentTab)
+    }
+    
+    /**
+     * 重试加载用户信息（用于初始加载失败后的重试）
+     */
+    fun retryLoadUser() {
+        val userId = currentUserId
+        if (userId != 0L) {
+            // 重置状态以允许重新加载
+            currentUserId = 0L
+            loadUser(userId)
+        }
     }
     
     /**

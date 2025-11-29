@@ -1,7 +1,9 @@
 package com.projectu.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.FlowRow
@@ -11,6 +13,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -286,14 +292,28 @@ fun NovelCard(
                         }
                     }
                     
-                    // 描述（如果有）
+                    // 描述（如果有） - 支持点击展开/收起
                     if (novel.description.isNotBlank()) {
-                        Text(
-                            text = novel.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis
+                        var isExpanded by remember { mutableStateOf(false) }
+                        val plainText = remember(novel.description) {
+                            htmlToPlainText(novel.description)
+                        }
+                        // 判断是否需要展开功能（文本超过3行约60个字符时）
+                        val needsExpansion = plainText.length > 60 || plainText.count { it == '\n' } >= 2
+                        
+                        HtmlText(
+                            html = novel.description,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateContentSize(),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
+                            maxLines = if (isExpanded) null else 3,
+                            overflow = TextOverflow.Ellipsis,
+                            onClick = if (needsExpansion) {
+                                { isExpanded = !isExpanded }
+                            } else null
                         )
                     }
                     
@@ -305,16 +325,20 @@ fun NovelCard(
                             color = MaterialTheme.colorScheme.primary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.combinedClickable(
-                                onClick = { 
-                                    println("NovelCard: 点击系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
-                                },
-                                onLongClick = { 
-                                    println("NovelCard: 长按系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
-                                }
-                            )
+                            modifier = Modifier
+                                .combinedClickable(
+                                    onClick = { 
+                                        println("NovelCard: 点击系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
+                                    },
+                                    onLongClick = { 
+                                        println("NovelCard: 长按系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
+                                    }
+                                )
                         )
                     }
+                    
+                    // 增加与下方作者信息的间距
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
                 
                 // 下部：作者信息 + 统计信息（在右下角）

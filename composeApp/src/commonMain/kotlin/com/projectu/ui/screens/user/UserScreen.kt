@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -39,12 +40,36 @@ import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.ArtworkCard
+import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.FollowIndicator
+import com.projectu.ui.components.MangaSeriesCard
 import com.projectu.ui.components.NovelCard
+import com.projectu.ui.components.NovelSeriesCard
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import cafe.adriel.voyager.koin.koinScreenModel
+
+/**
+ * 列表滚动状态的封装，用于统一管理不同类型列表的滚动
+ */
+sealed class ListScrollState {
+    data class StaggeredGrid(val state: LazyStaggeredGridState) : ListScrollState()
+    data class LazyList(val state: LazyListState) : ListScrollState()
+    
+    val isAtTop: Boolean
+        get() = when (this) {
+            is StaggeredGrid -> state.firstVisibleItemIndex == 0 && state.firstVisibleItemScrollOffset == 0
+            is LazyList -> state.firstVisibleItemIndex == 0 && state.firstVisibleItemScrollOffset == 0
+        }
+    
+    suspend fun animateScrollToTop() {
+        when (this) {
+            is StaggeredGrid -> state.animateScrollToItem(0)
+            is LazyList -> state.animateScrollToItem(0)
+        }
+    }
+}
 
 /**
  * 用户页面
@@ -82,6 +107,7 @@ class UserScreen(
             onTabChange = viewModel::switchTab,
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
+            onRetryTab = viewModel::loadTabData,
             scrollIndices = scrollIndices,
             onArtworkClick = { artwork, index ->
                 // 跳转到作品详情页
@@ -119,6 +145,7 @@ fun UserScreenContent(
     onTabChange: (UserProfileTab) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
+    onRetryTab: (UserProfileTab) -> Unit,
     scrollIndices: MutableMap<UserProfileTab, Int>,
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
@@ -126,6 +153,9 @@ fun UserScreenContent(
     onBackClick: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    
+    // 每个Tab的列表滚动状态
+    val tabListStates = remember { mutableStateMapOf<UserProfileTab, ListScrollState>() }
     
     // Pager状态
     val pagerState = rememberPagerState(
@@ -148,6 +178,29 @@ fun UserScreenContent(
         val targetPage = state.availableTabs.indexOf(state.currentTab)
         if (targetPage >= 0 && targetPage != pagerState.currentPage) {
             pagerState.animateScrollToPage(targetPage)
+        }
+    }
+    
+    // Tab点击处理：如果点击已选中的Tab，滚动到顶部或刷新
+    val handleTabClick: (Int) -> Unit = { index ->
+        val clickedTab = state.availableTabs.getOrNull(index)
+        if (index == pagerState.currentPage && clickedTab != null) {
+            // 点击了当前Tab，检查是否在顶部
+            val scrollState = tabListStates[clickedTab]
+            if (scrollState?.isAtTop == true) {
+                // 在顶部，刷新
+                onRefresh()
+            } else {
+                // 不在顶部，滚动到顶部
+                coroutineScope.launch {
+                    scrollState?.animateScrollToTop()
+                }
+            }
+        } else {
+            // 点击了其他Tab，切换
+            coroutineScope.launch {
+                pagerState.animateScrollToPage(index)
+            }
         }
     }
     
@@ -217,11 +270,7 @@ fun UserScreenContent(
                             UserProfileTabRow(
                                 tabs = state.availableTabs,
                                 currentTabIndex = pagerState.currentPage,
-                                onTabClick = { index ->
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(index)
-                                    }
-                                }
+                                onTabClick = handleTabClick
                             )
                             
                             // 内容区域 - HorizontalPager
@@ -239,9 +288,11 @@ fun UserScreenContent(
                                     mangaSeries = state.mangaSeries,
                                     novelSeries = state.novelSeries,
                                     scrollIndices = scrollIndices,
+                                    tabListStates = tabListStates,
                                     onArtworkClick = onArtworkClick,
                                     onNovelClick = onNovelClick,
-                                    onLoadMore = onLoadMore
+                                    onLoadMore = onLoadMore,
+                                    onRetry = { onRetryTab(tab) }
                                 )
                             }
                         } else {
@@ -382,28 +433,25 @@ fun UserTabContent(
     mangaSeries: List<MangaSeriesItem>,
     novelSeries: List<NovelSeriesItem>,
     scrollIndices: MutableMap<UserProfileTab, Int>,
+    tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    onRetry: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         when {
             tabData.isLoading && tabData.artworks.isEmpty() && tabData.novels.isEmpty() -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                CircularProgressIndicator()
             }
             tabData.error != null && tabData.artworks.isEmpty() && tabData.novels.isEmpty() -> {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = tabData.error,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+                ErrorDisplay(
+                    message = tabData.error,
+                    onRetry = onRetry
+                )
             }
             else -> {
                 when (tab) {
@@ -413,6 +461,7 @@ fun UserTabContent(
                             artworks = tabData.artworks,
                             tab = tab,
                             scrollIndices = scrollIndices,
+                            tabListStates = tabListStates,
                             onArtworkClick = onArtworkClick,
                             onLoadMore = onLoadMore,
                             isLoading = tabData.isLoading
@@ -422,6 +471,8 @@ fun UserTabContent(
                         // 列表展示小说
                         NovelList(
                             novels = tabData.novels,
+                            tab = tab,
+                            tabListStates = tabListStates,
                             onNovelClick = onNovelClick,
                             onLoadMore = onLoadMore,
                             isLoading = tabData.isLoading
@@ -431,6 +482,8 @@ fun UserTabContent(
                         // 漫画系列列表
                         MangaSeriesList(
                             series = mangaSeries,
+                            tab = tab,
+                            tabListStates = tabListStates,
                             onClick = { /* TODO: 跳转到系列详情 */ }
                         )
                     }
@@ -438,6 +491,8 @@ fun UserTabContent(
                         // 小说系列列表
                         NovelSeriesList(
                             series = novelSeries,
+                            tab = tab,
+                            tabListStates = tabListStates,
                             onClick = { /* TODO: 跳转到系列详情 */ }
                         )
                     }
@@ -464,12 +519,18 @@ fun ArtworkStaggeredGrid(
     artworks: List<Artwork>,
     tab: UserProfileTab,
     scrollIndices: MutableMap<UserProfileTab, Int>,
+    tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onArtworkClick: (Artwork, Int) -> Unit,
     onLoadMore: () -> Unit,
     isLoading: Boolean
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val coroutineScope = rememberCoroutineScope()
+    
+    // 注册滚动状态
+    LaunchedEffect(gridState) {
+        tabListStates[tab] = ListScrollState.StaggeredGrid(gridState)
+    }
     
     // 每次重组时检查是否需要滚动
     val pendingScrollIndex = scrollIndices[tab]
@@ -544,11 +605,18 @@ fun ArtworkStaggeredGrid(
 @Composable
 fun NovelList(
     novels: List<Novel>,
+    tab: UserProfileTab,
+    tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onNovelClick: (Novel) -> Unit,
     onLoadMore: () -> Unit,
     isLoading: Boolean
 ) {
     val listState = rememberLazyListState()
+    
+    // 注册滚动状态
+    LaunchedEffect(listState) {
+        tabListStates[tab] = ListScrollState.LazyList(listState)
+    }
     
     // 监听滚动，触发加载更多
     LaunchedEffect(listState, novels.size, isLoading) {
@@ -601,26 +669,28 @@ fun NovelList(
 @Composable
 fun MangaSeriesList(
     series: List<MangaSeriesItem>,
+    tab: UserProfileTab,
+    tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onClick: (MangaSeriesItem) -> Unit
 ) {
+    val listState = rememberLazyListState()
+    
+    // 注册滚动状态
+    LaunchedEffect(listState) {
+        tabListStates[tab] = ListScrollState.LazyList(listState)
+    }
+    
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         items(series, key = { it.id }) { item ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClick(item) },
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = item.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            MangaSeriesCard(
+                series = item,
+                onClick = { onClick(item) }
+            )
         }
     }
 }
@@ -631,66 +701,28 @@ fun MangaSeriesList(
 @Composable
 fun NovelSeriesList(
     series: List<NovelSeriesItem>,
+    tab: UserProfileTab,
+    tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onClick: (NovelSeriesItem) -> Unit
 ) {
+    val listState = rememberLazyListState()
+    
+    // 注册滚动状态
+    LaunchedEffect(listState) {
+        tabListStates[tab] = ListScrollState.LazyList(listState)
+    }
+    
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         items(series, key = { it.id }) { item ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClick(item) },
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // 封面
-                    item.coverUrl?.let { url ->
-                        AsyncImage(
-                            model = url,
-                            contentDescription = item.title,
-                            modifier = Modifier
-                                .size(60.dp, 80.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    
-                    // 信息
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "共 ${item.contentCount} 篇",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        item.caption?.takeIf { it.isNotBlank() }?.let { caption ->
-                            Text(
-                                text = caption,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
-            }
+            NovelSeriesCard(
+                series = item,
+                onClick = { onClick(item) }
+            )
         }
     }
 }
