@@ -276,6 +276,12 @@ data class NovelRankingItem(
     @SerialName("is_bookmarked")
     val isBookmarked: Boolean,
     
+    @SerialName("bookmark_id")
+    val bookmarkId: String? = null,
+    
+    @SerialName("bookmark_restrict")
+    val bookmarkRestrict: String? = null,
+    
     @SerialName("bookmarkable")
     val bookmarkable: Boolean,
     

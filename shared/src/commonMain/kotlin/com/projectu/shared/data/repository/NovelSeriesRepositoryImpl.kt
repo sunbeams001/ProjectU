@@ -6,12 +6,14 @@ import com.projectu.shared.data.remote.mapper.toNovelSeries
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.NovelSeries
 import com.projectu.shared.domain.repository.NovelSeriesRepository
+import com.projectu.shared.util.AgeLimitDeterminer
 
 /**
  * 小说系列仓库实现
  */
 class NovelSeriesRepositoryImpl(
-    private val pixivApi: PixivApi
+    private val pixivApi: PixivApi,
+    private val ageLimitDeterminer: AgeLimitDeterminer
 ) : NovelSeriesRepository {
     
     override suspend fun getSeriesDetail(seriesId: Long): Result<NovelSeries> {
@@ -55,7 +57,7 @@ class NovelSeriesRepositoryImpl(
                 // 将 thumbnails 转换为 Novel，并设置正确的顺序
                 val novels = thumbnails.mapIndexed { index, thumbnail ->
                     val order = contentOrderMap[thumbnail.id] ?: (index + 1)
-                    thumbnail.toNovel(order)
+                    thumbnail.toNovel(ageLimitDeterminer, order)
                 }.sortedBy { it.seriesOrder }
                 
                 Result.success(novels)

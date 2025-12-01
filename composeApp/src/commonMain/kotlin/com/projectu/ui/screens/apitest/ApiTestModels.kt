@@ -140,22 +140,7 @@ sealed class ApiMethod(
         ),
         priority = 1
     )
-    
-    object GetUserBookmarks : ApiMethod(
-        module = ApiModule.USER,
-        methodName = "getUserBookmarks",
-        displayName = "用户收藏",
-        parameters = listOf(
-            ApiParameter("userId", "用户ID", "11", required = true),
-            ApiParameter("tag", "标签", "", required = false),
-            ApiParameter("rest", "公开性", "show", required = false,
-                options = listOf("show", "hide")),
-            ApiParameter("offset", "偏移", "0", required = false),
-            ApiParameter("limit", "数量", "48", required = false)
-        ),
-        priority = 1
-    )
-    
+
     object GetUserFollowing : ApiMethod(
         module = ApiModule.USER,
         methodName = "getUserFollowing",
@@ -249,6 +234,37 @@ sealed class ApiMethod(
     )
     
     // ==================== BookmarkApi ====================
+
+    // 查询收藏
+    object GetUserBookmarkIllusts : ApiMethod(
+        module = ApiModule.BOOKMARK,
+        methodName = "getUserBookmarkIllusts",
+        displayName = "查询用户收藏的插画·漫画",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "11", required = true),
+            ApiParameter("tag", "标签", "", required = false),
+            ApiParameter("rest", "公开性", "show", required = false,
+                options = listOf("show", "hide")),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "48", required = false)
+        ),
+        priority = 1
+    )
+
+    object GetUserBookmarkNovels : ApiMethod(
+        module = ApiModule.BOOKMARK,
+        methodName = "getUserBookmarkNovels",
+        displayName = "查询用户收藏的小说",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "11", required = true),
+            ApiParameter("tag", "标签", "", required = false),
+            ApiParameter("rest", "公开性", "show", required = false,
+                options = listOf("show", "hide")),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "30", required = false)
+        ),
+        priority = 1
+    )
     
     // 插画收藏
     object AddBookmark : ApiMethod(
@@ -714,10 +730,11 @@ sealed class ApiMethod(
             GetRecommendIllusts, GetDiscoveryIllust, GetUgoiraMetadata, GetIllustPages,
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, GetUserNovels,
-            GetUserBookmarks, GetUserFollowing, GetUserFollowers,
+            GetUserFollowing, GetUserFollowers,
             GetRecommendUsers, GetDiscoveryUsers, FollowUser, UnfollowUser,
             GetUserFollowDetail,
             // BookmarkApi
+            GetUserBookmarkIllusts, GetUserBookmarkNovels,
             AddBookmark, DeleteBookmark, DeleteBookmarks, GetIllustBookmarkTags,
             AddNovelBookmark, DeleteNovelBookmark, DeleteNovelBookmarks, GetNovelBookmarkTags,
             // RankingApi

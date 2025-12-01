@@ -146,7 +146,8 @@ val repositoryModule = module {
     // 小说系列仓储
     single<NovelSeriesRepository> {
         NovelSeriesRepositoryImpl(
-            pixivApi = get()
+            pixivApi = get(),
+            ageLimitDeterminer = get()
         )
     }
     

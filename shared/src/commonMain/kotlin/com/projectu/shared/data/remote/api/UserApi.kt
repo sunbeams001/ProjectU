@@ -6,7 +6,6 @@ import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.ProfileIllustsBody
 import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
 import com.projectu.shared.data.remote.dto.user.UnfollowUserResponse
-import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
 import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
@@ -81,29 +80,6 @@ class UserApi(private val client: PixivApiClient) {
     ): PixivResponse<ProfileNovelsBody> {
         return client.get("/ajax/user/$uid/profile/novels", mapOf(
             "ids[]" to ids
-        ))
-    }
-
-    /**
-     * 查询用户收藏的插画
-     * @param uid 用户ID
-     * @param tag 标签过滤（空字符串表示不过滤）
-     * @param offset 偏移量
-     * @param limit 返回数量（最大100）
-     * @param rest 公开状态：show(公开), hide(私密)
-     */
-    suspend fun getUserBookmarkIllusts(
-        uid: Long,
-        tag: String = "",
-        offset: Int = 0,
-        limit: Int = 48,
-        rest: String = "show"
-    ): PixivResponse<UserBookmarkBody> {
-        return client.get("/ajax/user/$uid/illusts/bookmarks", mapOf(
-            "tag" to tag,
-            "offset" to offset,
-            "limit" to limit,
-            "rest" to rest
         ))
     }
 

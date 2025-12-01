@@ -8,6 +8,7 @@ import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.NovelGenre
 import com.projectu.shared.domain.model.NovelSeries
 import com.projectu.shared.domain.model.Tag
+import com.projectu.shared.util.AgeLimitDeterminer
 
 /**
  * 小说系列 DTO 到 Domain 模型的映射器
@@ -58,22 +59,16 @@ fun NovelSeriesBody.toNovelSeries(): NovelSeries {
  * 
  * NovelThumbnail 包含了完整的小说信息，用于显示系列内小说列表
  * 
+ * @param ageLimitDeterminer 年龄限制判定工具
  * @param order 在系列中的顺序号
  */
-fun NovelThumbnail.toNovel(order: Int = 0): Novel {
+fun NovelThumbnail.toNovel(ageLimitDeterminer: AgeLimitDeterminer, order: Int = 0): Novel {
     // 转换标签
     val translatedTags = tags.map { tagName ->
         Tag(
             name = tagName,
             translatedName = null // 系列内容接口不返回翻译
         )
-    }
-    
-    // 判断年龄限制
-    val ageLimit = when (xRestrict) {
-        1 -> AgeLimit.R18
-        2 -> AgeLimit.R18G
-        else -> AgeLimit.ALL_AGE
     }
     
     return Novel(
@@ -93,10 +88,14 @@ fun NovelThumbnail.toNovel(order: Int = 0): Novel {
         markerCount = 0,
         createdTime = createDate,
         updatedTime = updateDate,
-        bookmarkStatus = if (bookmarkData != null) BookmarkStatus.PUBLIC else BookmarkStatus.NOT_BOOKMARKED,
-        bookmarkId = null,
+        bookmarkStatus = when {
+            bookmarkData == null -> BookmarkStatus.NOT_BOOKMARKED
+            bookmarkData.private -> BookmarkStatus.PRIVATE
+            else -> BookmarkStatus.PUBLIC
+        },
+        bookmarkId = bookmarkData?.id,
         isMasked = isMasked,
-        isAiGenerated = aiType == 2,
+        isAiGenerated = aiType == 2 || tags.contains("AI小説"),
         isOriginal = isOriginal,
         isBungei = false,
         textCount = textCount,
@@ -105,7 +104,10 @@ fun NovelThumbnail.toNovel(order: Int = 0): Novel {
         useWordCount = useWordCount,
         genre = NovelGenre.fromString(genre),
         language = language ?: "ja",
-        ageLimit = ageLimit,
+        ageLimit = ageLimitDeterminer.determine(
+            xRestrict = xRestrict,
+            tags = tags
+        ),
         seriesId = seriesId,
         seriesTitle = seriesTitle,
         isUnlisted = isUnlisted,
@@ -118,12 +120,16 @@ fun NovelThumbnail.toNovel(order: Int = 0): Novel {
 /**
  * 将 NovelThumbnail 列表转换为 Novel 列表
  * 
+ * @param ageLimitDeterminer 年龄限制判定工具
  * @param contentOrderMap ID 到序号的映射表
  */
-fun List<NovelThumbnail>.toNovelListForSeries(contentOrderMap: Map<String, Int>): List<Novel> {
+fun List<NovelThumbnail>.toNovelListForSeries(
+    ageLimitDeterminer: AgeLimitDeterminer,
+    contentOrderMap: Map<String, Int>
+): List<Novel> {
     return this.mapIndexed { index, thumbnail ->
         val order = contentOrderMap[thumbnail.id] ?: (index + 1)
-        thumbnail.toNovel(order)
+        thumbnail.toNovel(ageLimitDeterminer, order)
     }.sortedBy { it.seriesOrder }
 }
 

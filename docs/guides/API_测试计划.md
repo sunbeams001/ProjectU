@@ -53,7 +53,6 @@
 | `getUserInfo` | `/ajax/user/{userId}` | P0 | ✅ | 获取用户基本信息 |
 | `getProfileAll` | `/ajax/user/{userId}/profile/all` | P0 | ✅ | 用户作品概况（作品ID列表） |
 | `getProfileIllusts` | `/ajax/user/{userId}/profile/illusts` | P1 | ✅ | 用户作品详细信息 |
-| `getUserBookmarkIllusts` | `/ajax/user/{userId}/illusts/bookmarks` | P1 | ✅ | 用户收藏的插画 |
 | `getUserFollowing` | `/ajax/user/{userId}/following` | P2 | ✅ | 用户关注列表 |
 | `getUserFollowers` | `/ajax/user/{userId}/followers` | P2 | ✅ | 用户粉丝列表 |
 | `getRecommendUsers` | `/ajax/user/{userId}/recommends` | P2 | ✅ | 推荐用户 |
@@ -66,6 +65,13 @@
 
 > 📁 文件: `shared/data/remote/api/BookmarkApi.kt`  
 > ✅ 状态: 已集成，已测试
+
+#### 查询用户收藏 API
+
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `getUserBookmarkIllusts` | `GET /ajax/user/{userId}/illusts/bookmarks` | P1 | ✅ | 查询用户收藏的插画·漫画 |
+| `getUserBookmarkNovels` | `GET /ajax/user/{userId}/novels/bookmarks` | P1 | ✅ | 查询用户收藏的小说 |
 
 #### 插画收藏 API
 

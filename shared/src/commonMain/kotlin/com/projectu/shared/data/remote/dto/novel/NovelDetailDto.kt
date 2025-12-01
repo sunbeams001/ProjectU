@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.dto.novel
 
+import com.projectu.shared.data.remote.dto.common.BookmarkData
 import com.projectu.shared.data.remote.dto.common.PixivTag
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -38,5 +39,6 @@ data class NovelDetailBody(
     val restrict: Int,
     @SerialName("userId") val userId: String,
     @SerialName("userName") val userName: String,
-    val tags: NovelTagInfo
+    val tags: NovelTagInfo,
+    @SerialName("bookmarkData") val bookmarkData: BookmarkData? = null
 )

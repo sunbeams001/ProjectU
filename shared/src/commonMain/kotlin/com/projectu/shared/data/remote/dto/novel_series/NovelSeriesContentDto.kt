@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.dto.novel_series
 
+import com.projectu.shared.data.remote.dto.common.BookmarkData
 import com.projectu.shared.data.remote.dto.common.TitleCaptionTranslation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -51,7 +52,7 @@ data class NovelThumbnail(
     @SerialName("useWordCount") val useWordCount: Boolean = false,
     val description: String? = null,
     @SerialName("isBookmarkable") val isBookmarkable: Boolean = true,
-    @SerialName("bookmarkData") val bookmarkData: JsonObject? = null,
+    @SerialName("bookmarkData") val bookmarkData: BookmarkData? = null,
     @SerialName("bookmarkCount") val bookmarkCount: Int = 0,
     @SerialName("isOriginal") val isOriginal: Boolean = false,
     @SerialName("marker") val marker: JsonObject? = null,

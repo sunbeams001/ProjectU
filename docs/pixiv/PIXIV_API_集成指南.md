@@ -249,7 +249,6 @@ fun pixivApiModule(phpSessionId: String, token: String? = null) = module {
 | `getUserInfo()` | 用户信息 | uid |
 | `getProfileAll()` | 用户作品概况 | uid |
 | `getProfileIllusts()` | 用户作品列表 | uid, ids |
-| `getUserBookmarkIllusts()` | 用户收藏 | uid, tag, offset |
 | `getRecommendUsers()` | 推荐用户 | uid, userNum |
 | `followUser()` | 关注用户 | userId |
 | `unfollowUser()` | 取关用户 | userId |
@@ -258,6 +257,8 @@ fun pixivApiModule(phpSessionId: String, token: String? = null) = module {
 
 | 方法 | 功能 | 参数 |
 |-----|------|------|
+| `getUserBookmarkIllusts()` | 查询用户收藏的插画·漫画 | uid, tag, offset, limit |
+| `getUserBookmarkNovels()` | 查询用户收藏的小说 | uid, tag, offset, limit |
 | `addIllust()` | 收藏作品 | illustId, restrict, tags |
 | `deleteIllust()` | 删除收藏 | bookmarkId |
 | `deleteIllusts()` | 批量删除 | bookmarkIds |

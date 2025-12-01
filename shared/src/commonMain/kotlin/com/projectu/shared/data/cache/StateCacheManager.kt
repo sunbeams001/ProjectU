@@ -50,7 +50,10 @@ class StateCacheManager(
     
     /**
      * 应用状态到作品列表
-     * 从缓存中获取状态并更新作品的bookmarkStatus和bookmarkId字段
+     * 
+     * 双向同步逻辑：
+     * 1. 如果缓存中有状态 → 用缓存覆盖传入的数据
+     * 2. 如果缓存中没有状态但传入数据有收藏状态 → 将传入数据的状态写入缓存
      */
     suspend fun applyStatesToArtworks(artworks: List<Artwork>): List<Artwork> {
         if (artworks.isEmpty()) return artworks
@@ -61,10 +64,19 @@ class StateCacheManager(
         return artworks.map { artwork ->
             val state = states[artwork.id]
             if (state != null) {
+                // 缓存中有状态，使用缓存状态覆盖
                 artwork.copy(
                     bookmarkStatus = state.bookmarkStatus,
                     bookmarkId = state.bookmarkId
                 )
+            } else if (artwork.bookmarkStatus != BookmarkStatus.NOT_BOOKMARKED && artwork.bookmarkId != null) {
+                // 缓存中没有状态，但传入数据有收藏状态，将其写入缓存
+                stateCacheRepository.updateArtworkBookmarkStatus(
+                    artwork.id,
+                    artwork.bookmarkStatus,
+                    artwork.bookmarkId
+                )
+                artwork
             } else {
                 artwork
             }
@@ -135,6 +147,10 @@ class StateCacheManager(
     
     /**
      * 应用状态到小说列表
+     * 
+     * 双向同步逻辑：
+     * 1. 如果缓存中有状态 → 用缓存覆盖传入的数据
+     * 2. 如果缓存中没有状态但传入数据有收藏状态 → 将传入数据的状态写入缓存
      */
     suspend fun applyStatesToNovels(novels: List<Novel>): List<Novel> {
         if (novels.isEmpty()) return novels
@@ -145,10 +161,19 @@ class StateCacheManager(
         return novels.map { novel ->
             val state = states[novel.id]
             if (state != null) {
+                // 缓存中有状态，使用缓存状态覆盖
                 novel.copy(
                     bookmarkStatus = state.bookmarkStatus,
                     bookmarkId = state.bookmarkId
                 )
+            } else if (novel.bookmarkStatus != BookmarkStatus.NOT_BOOKMARKED && novel.bookmarkId != null) {
+                // 缓存中没有状态，但传入数据有收藏状态，将其写入缓存
+                stateCacheRepository.updateNovelBookmarkStatus(
+                    novel.id,
+                    novel.bookmarkStatus,
+                    novel.bookmarkId
+                )
+                novel
             } else {
                 novel
             }

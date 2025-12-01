@@ -32,7 +32,8 @@ import com.projectu.shared.data.remote.dto.tag.TagSuggestBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
 import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
-import com.projectu.shared.data.remote.dto.user.UserBookmarkBody
+import com.projectu.shared.data.remote.dto.bookmark.UserBookmarkIllustsBody
+import com.projectu.shared.data.remote.dto.bookmark.UserBookmarkNovelsBody
 import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
@@ -191,7 +192,6 @@ class ApiTestViewModel(
                         ApiMethod.GetUserFullInfo -> testGetUserFullInfo()
                         ApiMethod.GetUserIllusts -> testGetUserIllusts()
                         ApiMethod.GetUserNovels -> testGetUserNovels()
-                        ApiMethod.GetUserBookmarks -> testGetUserBookmarks()
                         ApiMethod.GetUserFollowing -> testGetUserFollowing()
                         ApiMethod.GetUserFollowers -> testGetUserFollowers()
                         ApiMethod.GetRecommendUsers -> testGetRecommendUsers()
@@ -201,6 +201,8 @@ class ApiTestViewModel(
                         ApiMethod.GetUserFollowDetail -> testGetUserFollowDetail()
                         
                         // ==================== BookmarkApi ====================
+                        ApiMethod.GetUserBookmarkIllusts -> testGetUserBookmarkIllusts()
+                        ApiMethod.GetUserBookmarkNovels -> testGetUserBookmarkNovels()
                         ApiMethod.AddBookmark -> testAddBookmark()
                         ApiMethod.DeleteBookmark -> testDeleteBookmark()
                         ApiMethod.DeleteBookmarks -> testDeleteBookmarks()
@@ -645,24 +647,14 @@ class ApiTestViewModel(
         updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
 
-    private suspend fun testGetUserBookmarks() {
+    private suspend fun testGetUserBookmarkIllusts() {
         val userId = getParam("userId").toLongOrNull() ?: 11L
         val tag = getParam("tag")
         val rest = getParam("rest").ifBlank { "show" }
         val offset = getParam("offset").toIntOrNull() ?: 0
         val limit = getParam("limit").toIntOrNull() ?: 48
         
-        // 使用 UserApi 的方法
-        val response = pixivApi.userApi.getUserBookmarkIllusts(
-            uid = userId,
-            tag = tag,
-            offset = offset,
-            limit = limit,
-            rest = rest
-        )
-        
-        // 获取带原始JSON的响应用于显示
-        val responseWithRaw = pixivApi.client.getWithRaw<UserBookmarkBody>(
+        val responseWithRaw = pixivApi.client.getWithRaw<UserBookmarkIllustsBody>(
             "/ajax/user/$userId/illusts/bookmarks",
             mapOf(
                 "tag" to tag,
@@ -671,9 +663,10 @@ class ApiTestViewModel(
                 "rest" to rest
             )
         )
+        val response = responseWithRaw.response
         
         val summary = buildString {
-            appendLine("✅ 用户收藏获取成功")
+            appendLine("✅ 用户收藏的插画·漫画获取成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("用户ID: $userId")
             appendLine("标签: ${tag.ifBlank { "全部" }}")
@@ -682,6 +675,60 @@ class ApiTestViewModel(
             appendLine("限制: $limit")
             appendLine("错误: ${response.error}")
             appendLine("消息: ${response.message}")
+            response.body?.let { body ->
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("📚 总数: ${body.total}")
+                appendLine("📖 返回数: ${body.works.size}")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+
+    private suspend fun testGetUserBookmarkNovels() {
+        val userId = getParam("userId").toLongOrNull() ?: 11L
+        val tag = getParam("tag")
+        val rest = getParam("rest").ifBlank { "show" }
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 30
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<UserBookmarkNovelsBody>(
+            "/ajax/user/$userId/novels/bookmarks",
+            mapOf(
+                "tag" to tag,
+                "offset" to offset,
+                "limit" to limit,
+                "rest" to rest
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 用户收藏的小说获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("标签: ${tag.ifBlank { "全部" }}")
+            appendLine("公开性: $rest")
+            appendLine("偏移: $offset")
+            appendLine("限制: $limit")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            response.body?.let { body ->
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("📚 总数: ${body.total}")
+                appendLine("📖 返回数: ${body.works.size}")
+                if (body.works.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("📝 前3篇小说:")
+                    body.works.take(3).forEach { novel ->
+                        appendLine("  • ${novel.title}")
+                        appendLine("    ID: ${novel.id} | 作者: ${novel.userName}")
+                        appendLine("    字数: ${novel.textCount} | 收藏数: ${novel.bookmarkCount}")
+                    }
+                }
+            }
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整结果")
         }

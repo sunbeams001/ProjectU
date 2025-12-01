@@ -5,6 +5,8 @@ import com.projectu.shared.data.remote.dto.bookmark.BookmarkRequest
 import com.projectu.shared.data.remote.dto.bookmark.BookmarkTag
 import com.projectu.shared.data.remote.dto.bookmark.BookmarkTagsResponse
 import com.projectu.shared.data.remote.dto.bookmark.NovelBookmarkRequest
+import com.projectu.shared.data.remote.dto.bookmark.UserBookmarkIllustsBody
+import com.projectu.shared.data.remote.dto.bookmark.UserBookmarkNovelsBody
 import com.projectu.shared.data.remote.dto.common.EmptyArrayResponse
 import com.projectu.shared.data.remote.dto.common.PixivResponse
 
@@ -13,6 +15,54 @@ import com.projectu.shared.data.remote.dto.common.PixivResponse
  * 提供作品收藏、取消收藏等功能
  */
 class BookmarkApi(private val client: PixivApiClient) {
+
+    // ==================== 查询用户收藏 ====================
+
+    /**
+     * 查询用户收藏的插画·漫画
+     * @param uid 用户ID
+     * @param tag 标签过滤（空字符串表示不过滤）
+     * @param offset 偏移量
+     * @param limit 返回数量（最大100）
+     * @param rest 公开状态：show(公开), hide(私密)
+     */
+    suspend fun getUserBookmarkIllusts(
+        uid: Long,
+        tag: String = "",
+        offset: Int = 0,
+        limit: Int = 48,
+        rest: String = "show"
+    ): PixivResponse<UserBookmarkIllustsBody> {
+        return client.get("/ajax/user/$uid/illusts/bookmarks", mapOf(
+            "tag" to tag,
+            "offset" to offset,
+            "limit" to limit,
+            "rest" to rest
+        ))
+    }
+
+    /**
+     * 查询用户收藏的小说
+     * @param uid 用户ID
+     * @param tag 标签过滤（空字符串表示不过滤）
+     * @param offset 偏移量
+     * @param limit 返回数量（最大100）
+     * @param rest 公开状态：show(公开), hide(私密)
+     */
+    suspend fun getUserBookmarkNovels(
+        uid: Long,
+        tag: String = "",
+        offset: Int = 0,
+        limit: Int = 30,
+        rest: String = "show"
+    ): PixivResponse<UserBookmarkNovelsBody> {
+        return client.get("/ajax/user/$uid/novels/bookmarks", mapOf(
+            "tag" to tag,
+            "offset" to offset,
+            "limit" to limit,
+            "rest" to rest
+        ))
+    }
 
     // ==================== 插画收藏 ====================
 

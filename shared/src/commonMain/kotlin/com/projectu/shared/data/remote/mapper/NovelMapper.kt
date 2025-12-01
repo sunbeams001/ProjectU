@@ -131,8 +131,12 @@ fun NovelDetailBody.toNovel(ageLimitDeterminer: AgeLimitDeterminer): Novel {
         markerCount = markerCount,
         createdTime = createDate,
         updatedTime = uploadDate,
-        bookmarkStatus = BookmarkStatus.NOT_BOOKMARKED, // 需要单独查询
-        bookmarkId = null,
+        bookmarkStatus = when {
+            bookmarkData == null -> BookmarkStatus.NOT_BOOKMARKED
+            bookmarkData.private -> BookmarkStatus.PRIVATE
+            else -> BookmarkStatus.PUBLIC
+        },
+        bookmarkId = bookmarkData?.id,
         isMasked = false,
         isAiGenerated = isAiGeneratedNovel(0, tags.tags.map { it.tag }),
         isOriginal = isOriginal,
@@ -186,8 +190,12 @@ fun NovelRankingItem.toNovel(ageLimitDeterminer: AgeLimitDeterminer): Novel {
         markerCount = marker?.toIntOrNull() ?: 0,
         createdTime = createDate ?: "",
         updatedTime = createDate ?: "", // 排行榜只有创建日期
-        bookmarkStatus = if (isBookmarked) BookmarkStatus.PUBLIC else BookmarkStatus.NOT_BOOKMARKED,
-        bookmarkId = null, // 排行榜接口不返回收藏ID
+        bookmarkStatus = when {
+            !isBookmarked -> BookmarkStatus.NOT_BOOKMARKED
+            bookmarkRestrict == "1" -> BookmarkStatus.PRIVATE
+            else -> BookmarkStatus.PUBLIC
+        },
+        bookmarkId = bookmarkId,
         isMasked = false, // 排行榜接口不返回此字段
         isAiGenerated = aiType == "2",
         isOriginal = isOriginal == "1",

@@ -47,21 +47,35 @@ data class NovelSeries(
 ) {
     /**
      * 判断系列是否为 R-18
+     * 检查 xRestrict/maxXRestrict 标识或 R-18 相关标签
      */
     val isR18: Boolean
-        get() = xRestrict == 1 || maxXRestrict == 1
+        get() = xRestrict == 1 || maxXRestrict == 1 || tags.contains("R-18")
     
     /**
      * 判断系列是否为 R-18G
+     * 检查 xRestrict/maxXRestrict 标识或 R-18G 相关标签
      */
     val isR18G: Boolean
-        get() = xRestrict == 2 || maxXRestrict == 2
+        get() = xRestrict == 2 || maxXRestrict == 2 || tags.contains("R-18G")
+    
+    /**
+     * 获取年龄限制等级
+     * 统一的年龄限制判断，考虑 xRestrict、maxXRestrict 和标签
+     */
+    val ageLimit: AgeLimit
+        get() = when {
+            isR18G -> AgeLimit.R18G
+            isR18 -> AgeLimit.R18
+            else -> AgeLimit.ALL_AGE
+        }
     
     /**
      * 判断是否为 AI 生成
+     * 检查 aiType 标识或 AI 相关标签
      */
     val isAiGenerated: Boolean
-        get() = aiType == 2
+        get() = aiType == 2 || tags.contains("AI小説")
     
     /**
      * 预计阅读时间（分钟）- 用于显示
