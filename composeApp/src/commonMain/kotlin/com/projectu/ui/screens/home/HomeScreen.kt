@@ -18,6 +18,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.projectu.ui.components.SimpleAdaptiveLayout
 import com.projectu.ui.screens.settings.SettingsScreen
 import com.projectu.ui.util.WindowSize
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
 import projectu.composeapp.generated.resources.nav_home
@@ -328,17 +329,6 @@ object RankingTab : Tab {
             }
         }
         
-        // 创建响应式的作品ID列表 State
-        val artworkIdsState by remember {
-            derivedStateOf {
-                state.modeDataCache[state.currentMode.value]?.artworks?.map { it.id } ?: emptyList()
-            }
-        }
-        
-        // 将列表包装为 mutableStateOf 以便传递
-        val artworkIdsStateWrapper = remember { mutableStateOf(artworkIdsState) }
-        artworkIdsStateWrapper.value = artworkIdsState
-        
         RankingContent(
             state = state,
             scrollIndices = scrollIndices,
@@ -348,15 +338,25 @@ object RankingTab : Tab {
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
             onArtworkClick = { artwork, index ->
+                val currentMode = state.currentMode.value
+                val currentArtworkIds = state.modeDataCache[currentMode]?.artworks?.map { it.id } ?: emptyList()
+                
+                // 创建绑定到当前 mode 的列表源
+                val listSource = viewModel.createArtworkListSource(currentMode)
+                
+                // 创建导航上下文
+                val contextKey = com.projectu.ui.navigation.NavigationContextManager.createContext(
+                    listSource = listSource,
+                    onReturnWithIndex = { lastIndex ->
+                        scrollIndices[state.currentMode.value] = lastIndex
+                    }
+                )
+                
                 parentNavigator?.push(
                     ArtworkDetailScreen(
-                        artworkIds = artworkIdsStateWrapper,
+                        artworkIds = currentArtworkIds,
                         initialIndex = index,
-                        onLoadMore = { viewModel.loadMore() },
-                        onReturnWithIndex = { lastIndex ->
-                            // 返回时更新当前模式的滚动位置为最后浏览的作品
-                            scrollIndices[state.currentMode.value] = lastIndex
-                        }
+                        contextKey = contextKey
                     )
                 )
             },

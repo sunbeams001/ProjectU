@@ -32,6 +32,7 @@ import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.UserCard
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -213,17 +214,25 @@ fun DiscoveryContent(
                         },
                         onArtworkClick = { artwork, artworkIndex ->
                             val userIndex = artworkToUserIndexMap[artworkIndex] ?: 0
+                            val currentArtworkIds = userArtworkIdsState.value
+                            
+                            // 创建列表源
+                            val listSource = usersViewModel.createArtworkListSource()
+                            
+                            // 创建导航上下文
+                            val contextKey = NavigationContextManager.createContext(
+                                listSource = listSource,
+                                onReturnWithIndex = { lastArtworkIndex ->
+                                    val targetUserIndex = artworkToUserIndexMap[lastArtworkIndex] ?: 0
+                                    scrollIndices["users"] = targetUserIndex
+                                }
+                            )
                             
                             parentNavigator?.push(
                                 ArtworkDetailScreen(
-                                    artworkIds = userArtworkIdsState,
+                                    artworkIds = currentArtworkIds,
                                     initialIndex = artworkIndex,
-                                    onLoadMore = { usersViewModel.loadMore() },
-                                    onReturnWithIndex = { lastArtworkIndex ->
-                                        // 将作品索引转换为用户索引
-                                        val targetUserIndex = artworkToUserIndexMap[lastArtworkIndex] ?: 0
-                                        scrollIndices["users"] = targetUserIndex
-                                    }
+                                    contextKey = contextKey
                                 )
                             )
                         },
@@ -271,13 +280,6 @@ fun DiscoveryContent(
                         }
                     }
                     
-                    // 创建响应式作品列表 State
-                    val illustArtworkIdsState = remember {
-                        derivedStateOf {
-                            illustsState.artworks.map { it.id }
-                        }
-                    }
-                    
                     DiscoveryIllustsPage(
                         state = illustsState,
                         onModeChange = illustsViewModel::switchMode,
@@ -286,15 +288,24 @@ fun DiscoveryContent(
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onArtworkClick = { artwork, index ->
                             val key = "illusts_${currentMode.name}"
+                            val currentArtworkIds = illustsState.artworks.map { it.id }
+                            
+                            // 创建绑定到当前模式的列表源
+                            val listSource = illustsViewModel.createArtworkListSource(currentMode)
+                            
+                            // 创建导航上下文
+                            val contextKey = NavigationContextManager.createContext(
+                                listSource = listSource,
+                                onReturnWithIndex = { lastIndex ->
+                                    scrollIndices[key] = lastIndex
+                                }
+                            )
                             
                             parentNavigator?.push(
                                 ArtworkDetailScreen(
-                                    artworkIds = illustArtworkIdsState,
+                                    artworkIds = currentArtworkIds,
                                     initialIndex = index,
-                                    onLoadMore = { illustsViewModel.loadMore() },
-                                    onReturnWithIndex = { lastIndex ->
-                                        scrollIndices[key] = lastIndex
-                                    }
+                                    contextKey = contextKey
                                 )
                             )
                         },

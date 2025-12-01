@@ -21,6 +21,7 @@ import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 import org.jetbrains.compose.resources.stringResource
@@ -49,17 +50,6 @@ class DiscoveryIllustsScreen : Screen {
             viewModel.initLoadIfNeeded()
         }
         
-        // 创建响应式的作品ID列表 State
-        val artworkIdsState by remember {
-            derivedStateOf {
-                state.artworks.map { it.id }
-            }
-        }
-        
-        // 将列表包装为 mutableStateOf 以便传递
-        val artworkIdsStateWrapper = remember { mutableStateOf(artworkIdsState) }
-        artworkIdsStateWrapper.value = artworkIdsState
-        
         DiscoveryIllustsContent(
             state = state,
             scrollToIndex = scrollToIndex.value,
@@ -68,15 +58,25 @@ class DiscoveryIllustsScreen : Screen {
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
             onArtworkClick = { artwork, index ->
+                val currentArtworkIds = state.artworks.map { it.id }
+                val currentMode = state.currentMode
+                
+                // 创建绑定到当前模式的列表源
+                val listSource = viewModel.createArtworkListSource(currentMode)
+                
+                // 创建导航上下文
+                val contextKey = NavigationContextManager.createContext(
+                    listSource = listSource,
+                    onReturnWithIndex = { lastIndex ->
+                        scrollToIndex.value = lastIndex
+                    }
+                )
+                
                 navigator.push(
                     ArtworkDetailScreen(
-                        artworkIds = artworkIdsStateWrapper,
+                        artworkIds = currentArtworkIds,
                         initialIndex = index,
-                        onLoadMore = { viewModel.loadMore() },
-                        onReturnWithIndex = { lastIndex ->
-                            // 返回时设置滚动目标
-                            scrollToIndex.value = lastIndex
-                        }
+                        contextKey = contextKey
                     )
                 )
             },

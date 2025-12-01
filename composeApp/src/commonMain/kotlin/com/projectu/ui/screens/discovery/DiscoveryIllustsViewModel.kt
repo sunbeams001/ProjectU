@@ -9,6 +9,7 @@ import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
+import com.projectu.ui.navigation.ArtworkListSource
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -36,6 +37,28 @@ class DiscoveryIllustsViewModel(
                     }
                     else -> {}
                 }
+            }
+        }
+    }
+    
+    /**
+     * 创建绑定到指定模式的 ArtworkListSource
+     * 
+     * @param mode 发现模式
+     * @return 绑定到指定模式的 ArtworkListSource
+     */
+    fun createArtworkListSource(mode: DiscoveryMode): ArtworkListSource {
+        return object : ArtworkListSource {
+            override val artworkIdsFlow: StateFlow<List<String>> = state.map { currentState ->
+                currentState.modeDataCache[mode]?.artworks?.map { it.id } ?: emptyList()
+            }.stateIn(
+                scope = screenModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = state.value.modeDataCache[mode]?.artworks?.map { it.id } ?: emptyList()
+            )
+            
+            override fun loadMoreArtworks() {
+                loadMore()
             }
         }
     }

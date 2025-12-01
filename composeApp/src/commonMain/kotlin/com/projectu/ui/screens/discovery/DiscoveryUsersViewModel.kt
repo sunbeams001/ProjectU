@@ -9,6 +9,7 @@ import com.projectu.shared.domain.model.User
 import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.usecase.SyncUserFollowDetailsUseCase
 import com.projectu.shared.domain.usecase.SyncUserStatesUseCase
+import com.projectu.ui.navigation.ArtworkListSource
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -37,6 +38,34 @@ class DiscoveryUsersViewModel(
                     }
                     else -> {}
                 }
+            }
+        }
+    }
+    
+    /**
+     * 创建用户作品预览的 ArtworkListSource
+     * 
+     * 用户卡片上显示的作品预览，点击后需要导航到作品详情页。
+     * 这个方法返回包含所有用户作品预览ID的列表源。
+     * 
+     * @return 包含所有用户作品预览的 ArtworkListSource
+     */
+    fun createArtworkListSource(): ArtworkListSource {
+        return object : ArtworkListSource {
+            override val artworkIdsFlow: StateFlow<List<String>> = state.map { currentState ->
+                currentState.users.flatMap { user ->
+                    user.illusts?.map { it.id } ?: emptyList()
+                }
+            }.stateIn(
+                scope = screenModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = state.value.users.flatMap { user ->
+                    user.illusts?.map { it.id } ?: emptyList()
+                }
+            )
+            
+            override fun loadMoreArtworks() {
+                loadMore()
             }
         }
     }

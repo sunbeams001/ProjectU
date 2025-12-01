@@ -93,6 +93,7 @@ fun App() {
 
     // 使用 key 来强制在语言变化时重新创建整个 UI 树
     key(currentLanguage) {
+        
         // 提供 LocaleManager 和 ImageCacheManager 给整个应用
         CompositionLocalProvider(
             LocalLocaleManager provides localeManager,

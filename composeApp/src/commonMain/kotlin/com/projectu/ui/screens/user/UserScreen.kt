@@ -45,6 +45,7 @@ import com.projectu.ui.components.FollowIndicator
 import com.projectu.ui.components.MangaSeriesCard
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NovelSeriesCard
+import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -74,14 +75,14 @@ sealed class ListScrollState {
 /**
  * 用户页面
  * 
+ * 注意：所有类级别的属性必须是可序列化的，以支持 Activity 状态恢复
+ * scrollIndices 通过 NavigationContextManager 管理，确保跨导航保持滚动位置
+ * 
  * @param userId 用户ID
  */
-class UserScreen(
+data class UserScreen(
     private val userId: Long
 ) : Screen {
-    
-    // 将 scrollIndices 提升到类级别，避免在导航时丢失
-    private val scrollIndices = mutableStateMapOf<UserProfileTab, Int>()
     
     @Composable
     override fun Content() {
@@ -89,17 +90,12 @@ class UserScreen(
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
+        // 使用 NavigationContextManager 管理滚动位置，确保从详情页返回时恢复
+        val scrollIndices = NavigationContextManager.getOrCreateUserScrollIndices(userId)
+        
         // 加载用户数据
         LaunchedEffect(userId) {
             viewModel.loadUser(userId)
-        }
-        
-        // 当前Tab的作品ID列表（State类型，用于ArtworkDetailScreen）
-        val currentTabArtworkIdsState: State<List<String>> = remember {
-            derivedStateOf {
-                val tabData = state.tabDataCache[state.currentTab]
-                tabData?.artworks?.map { it.id } ?: emptyList()
-            }
         }
         
         UserScreenContent(
@@ -110,16 +106,27 @@ class UserScreen(
             onRetryTab = viewModel::loadTabData,
             scrollIndices = scrollIndices,
             onArtworkClick = { artwork, index ->
+                // 获取当前 Tab 的作品列表
+                val currentArtworkIds = state.tabDataCache[state.currentTab]?.artworks?.map { it.id } ?: emptyList()
+                val currentTab = state.currentTab
+                
+                // 创建绑定到当前 Tab 的列表源
+                val listSource = viewModel.createArtworkListSource(currentTab)
+                
+                // 创建导航上下文
+                val contextKey = NavigationContextManager.createContext(
+                    listSource = listSource,
+                    onReturnWithIndex = { returnIndex ->
+                        scrollIndices[currentTab] = returnIndex
+                    }
+                )
+                
                 // 跳转到作品详情页
                 navigator.push(
                     ArtworkDetailScreen(
-                        artworkIds = currentTabArtworkIdsState,
+                        artworkIds = currentArtworkIds,
                         initialIndex = index,
-                        onLoadMore = { viewModel.loadMore() },
-                        onReturnWithIndex = { returnIndex ->
-                            // 记忆返回时的索引，用于列表定位
-                            scrollIndices[state.currentTab] = returnIndex
-                        }
+                        contextKey = contextKey
                     )
                 )
             },

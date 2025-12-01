@@ -14,10 +14,8 @@ import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
 import com.projectu.shared.util.AgeLimitDeterminer
 import com.projectu.shared.util.TagTranslationUtil
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.projectu.ui.navigation.ArtworkListSource
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -58,6 +56,31 @@ class UserViewModel(
                     }
                     else -> {}
                 }
+            }
+        }
+    }
+    
+    /**
+     * 创建绑定到指定 Tab 的 ArtworkListSource
+     * 
+     * 用于用户作品列表页面的列表导航功能。当用户点击某个 Tab 下的作品时，
+     * 创建一个绑定该 Tab 的列表源，使详情页可以响应式地获取列表更新。
+     * 
+     * @param tab 用户页面的 Tab
+     * @return 绑定到指定 Tab 的 ArtworkListSource
+     */
+    fun createArtworkListSource(tab: UserProfileTab): ArtworkListSource {
+        return object : ArtworkListSource {
+            override val artworkIdsFlow: StateFlow<List<String>> = state.map { currentState ->
+                currentState.tabDataCache[tab]?.artworks?.map { it.id } ?: emptyList()
+            }.stateIn(
+                scope = screenModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = state.value.tabDataCache[tab]?.artworks?.map { it.id } ?: emptyList()
+            )
+            
+            override fun loadMoreArtworks() {
+                loadMore()
             }
         }
     }

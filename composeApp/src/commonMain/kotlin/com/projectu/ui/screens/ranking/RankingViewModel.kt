@@ -14,6 +14,7 @@ import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
+import com.projectu.ui.navigation.ArtworkListSource
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -46,6 +47,31 @@ class RankingViewModel(
                     }
                     else -> {}
                 }
+            }
+        }
+    }
+    
+    /**
+     * 创建绑定到指定 mode 的 ArtworkListSource
+     * 
+     * 用于作品详情页的列表导航功能。当用户点击某个 mode 下的作品时，
+     * 创建一个绑定该 mode 的列表源，使详情页可以响应式地获取列表更新。
+     * 
+     * @param modeKey 排行榜模式的 key (RankingMode.value)
+     * @return 绑定到指定 mode 的 ArtworkListSource
+     */
+    fun createArtworkListSource(modeKey: String): ArtworkListSource {
+        return object : ArtworkListSource {
+            override val artworkIdsFlow: StateFlow<List<String>> = state.map { currentState ->
+                currentState.modeDataCache[modeKey]?.artworks?.map { it.id } ?: emptyList()
+            }.stateIn(
+                scope = screenModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = state.value.modeDataCache[modeKey]?.artworks?.map { it.id } ?: emptyList()
+            )
+            
+            override fun loadMoreArtworks() {
+                loadMore()
             }
         }
     }
