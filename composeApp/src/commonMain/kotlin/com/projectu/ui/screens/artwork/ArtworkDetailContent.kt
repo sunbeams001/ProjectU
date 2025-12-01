@@ -28,6 +28,7 @@ import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.getUrlByQuality
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.RetryableAsyncImage
+import com.projectu.ui.components.UgoiraDisplay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -261,11 +262,10 @@ private fun ArtworkDisplayArea(
     val pages = artwork.imageUrls.pages
 
     when {
-        // 动图类型（暂时简单展示第一页）
+        // 动图类型 - 使用 UgoiraDisplay 组件
         artwork.type == ArtworkType.UGOIRA -> {
-            SinglePageDisplay(
-                imageUrl = pages.firstOrNull()?.getUrlByQuality(imageQuality) ?: "",
-                contentDescription = artwork.title,
+            UgoiraDisplay(
+                artworkId = artwork.id,
                 modifier = modifier
             )
         }

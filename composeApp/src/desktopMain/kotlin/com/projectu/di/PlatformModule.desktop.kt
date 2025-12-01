@@ -1,5 +1,6 @@
 package com.projectu.di
 
+import com.projectu.shared.data.cache.UgoiraCache
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.database.AppDatabase
@@ -8,12 +9,15 @@ import com.projectu.shared.data.local.database.getRoomDatabase
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
+import com.projectu.ui.components.UgoiraLoaderManager
 import com.projectu.ui.screens.apitest.ApiTestViewModel
 import com.projectu.ui.screens.settings.SettingsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryIllustsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryNovelsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryUsersViewModel
 import io.ktor.client.engine.cio.*
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -41,7 +45,22 @@ actual val repositoryModule: Module = module {
 }
 
 actual val useCaseModule: Module = module {
-    // TODO: UseCase实现
+    // Ugoira 缓存管理器
+    single {
+        // Desktop 使用用户目录下的缓存目录
+        val userHome = System.getProperty("user.home")
+        val cacheDir = "$userHome/.projectu/cache".toPath()
+        UgoiraCache(FileSystem.SYSTEM, cacheDir)
+    }
+    
+    // Ugoira 加载管理器
+    factory {
+        UgoiraLoaderManager(
+            artworkRepository = get(),
+            ugoiraCache = get(),
+            httpClient = get()
+        )
+    }
 }
 
 actual val viewModelModule: Module = module {
