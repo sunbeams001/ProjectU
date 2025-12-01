@@ -30,6 +30,7 @@ import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NavigationBar
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -49,6 +50,7 @@ fun RankingContent(
     onRefresh: () -> Unit,
     onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
+    onSeriesClick: (Long) -> Unit,
     onUserClick: (userId: Long) -> Unit,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
@@ -219,6 +221,7 @@ fun RankingContent(
                         NovelListLayout(
                             novels = modeData.novels,
                             onNovelClick = onNovelClick,
+                            onSeriesClick = onSeriesClick,
                             onUserClick = onUserClick,
                             onLoadMore = onLoadMore,
                             isLoadingMore = modeData.isLoadingMore,
@@ -569,6 +572,7 @@ fun ArtworkStaggeredGridLayout(
 fun NovelListLayout(
     novels: List<com.projectu.shared.domain.model.Novel>,
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
+    onSeriesClick: (Long) -> Unit,
     onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
@@ -611,6 +615,7 @@ fun NovelListLayout(
                 NovelCard(
                     novel = novel,
                     onClick = { onNovelClick(novel) },
+                    onSeriesClick = onSeriesClick,
                     onUserClick = onUserClick
                 )
             }

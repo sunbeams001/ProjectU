@@ -34,6 +34,7 @@ import com.projectu.ui.components.UserCard
 import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -352,6 +353,9 @@ fun DiscoveryContent(
                             // TODO: 跳转到小说详情页
                             println("点击小说: ${novel.title}")
                         },
+                        onSeriesClick = { seriesId ->
+                            parentNavigator?.push(NovelSeriesScreen(seriesId))
+                        },
                         onUserClick = { userId ->
                             parentNavigator?.push(UserScreen(userId))
                         },
@@ -501,6 +505,7 @@ fun DiscoveryNovelsPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onSeriesClick: (Long) -> Unit,
     onUserClick: (userId: Long) -> Unit,
     listState: LazyListState
 ) {
@@ -553,6 +558,7 @@ fun DiscoveryNovelsPage(
                     NovelListLayout(
                         novels = state.novels,
                         onNovelClick = onNovelClick,
+                        onSeriesClick = onSeriesClick,
                         onUserClick = onUserClick,
                         onLoadMore = onLoadMore,
                         isLoadingMore = state.isLoadingMore,
@@ -714,6 +720,7 @@ fun ArtworkStaggeredGridLayout(
 fun NovelListLayout(
     novels: List<Novel>,
     onNovelClick: (Novel) -> Unit,
+    onSeriesClick: (Long) -> Unit,
     onUserClick: (userId: Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
@@ -752,6 +759,7 @@ fun NovelListLayout(
                 NovelCard(
                     novel = novel,
                     onClick = { onNovelClick(novel) },
+                    onSeriesClick = onSeriesClick,
                     onUserClick = onUserClick
                 )
             }

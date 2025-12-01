@@ -19,7 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.projectu.ui.screens.user.NovelSeriesItem
+import com.projectu.shared.domain.model.NovelSeries
+import com.projectu.shared.util.DateTimeFormatter
 
 /**
  * 小说系列卡片组件 - Material Design 3 风格
@@ -38,7 +39,7 @@ import com.projectu.ui.screens.user.NovelSeriesItem
  */
 @Composable
 fun NovelSeriesCard(
-    series: NovelSeriesItem,
+    series: NovelSeries,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -136,20 +137,20 @@ fun NovelSeriesCard(
                     )
                     
                     // 标签（使用FlowRow，类似小说卡片）
-                    if (series.tags.isNotEmpty() || series.xRestrict > 0) {
+                    if (series.tags.isNotEmpty() || series.isR18 || series.isR18G || series.isOriginal || series.isAiGenerated) {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             // R-18/R-18G 标签
-                            if (series.xRestrict == 1) {
+                            if (series.isR18) {
                                 TagChip(
                                     text = "R-18",
                                     textColor = r18Color,
                                     backgroundColor = r18Color.copy(alpha = 0.15f)
                                 )
-                            } else if (series.xRestrict == 2) {
+                            } else if (series.isR18G) {
                                 TagChip(
                                     text = "R-18G",
                                     textColor = r18Color,
@@ -163,6 +164,15 @@ fun NovelSeriesCard(
                                     text = "原创",
                                     textColor = MaterialTheme.colorScheme.primary,
                                     backgroundColor = MaterialTheme.colorScheme.primaryContainer
+                                )
+                            }
+                            
+                            // AI 生成标签
+                            if (series.isAiGenerated) {
+                                TagChip(
+                                    text = "AI",
+                                    textColor = MaterialTheme.colorScheme.tertiary,
+                                    backgroundColor = MaterialTheme.colorScheme.tertiaryContainer
                                 )
                             }
                             
@@ -182,15 +192,15 @@ fun NovelSeriesCard(
                     }
                     
                     // 简介（支持展开/收起，解析HTML）
-                    series.caption?.takeIf { it.isNotBlank() }?.let { caption ->
+                    if (series.caption.isNotBlank()) {
                         var isExpanded by remember { mutableStateOf(false) }
-                        val plainText = remember(caption) {
-                            htmlToPlainText(caption)
+                        val plainText = remember(series.caption) {
+                            htmlToPlainText(series.caption)
                         }
                         val needsExpansion = plainText.length > 60 || plainText.count { it == '\n' } >= 2
                         
                         HtmlText(
-                            html = caption,
+                            html = series.caption,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .animateContentSize(),
@@ -223,18 +233,18 @@ fun NovelSeriesCard(
                     )
                     
                     // 字数
-                    if (series.totalCharacterCount > 0) {
+                    series.totalCharacterCount?.takeIf { it > 0 }?.let { count ->
                         Text(
-                            text = "${formatWordCount(series.totalCharacterCount)}字",
+                            text = "${formatWordCount(count)}字",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
                     // 预计阅读时间
-                    if (series.readingTime > 0) {
+                    series.readingTimeSeconds?.takeIf { it > 0 }?.let { seconds ->
                         Text(
-                            text = "约${formatReadingTime(series.readingTime)}",
+                            text = "约${DateTimeFormatter.formatReadingTimeFromSeconds(seconds)}",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -285,19 +295,5 @@ private fun formatWordCount(count: Int): String {
         count >= 10000 -> String.format("%.1f万", count / 10000.0)
         count >= 1000 -> String.format("%.1fk", count / 1000.0)
         else -> count.toString()
-    }
-}
-
-/**
- * 格式化阅读时间
- */
-private fun formatReadingTime(minutes: Int): String {
-    return when {
-        minutes >= 60 -> {
-            val hours = minutes / 60
-            val mins = minutes % 60
-            if (mins > 0) "${hours}小时${mins}分钟" else "${hours}小时"
-        }
-        else -> "${minutes}分钟"
     }
 }

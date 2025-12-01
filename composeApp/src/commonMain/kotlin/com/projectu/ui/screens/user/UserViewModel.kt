@@ -6,7 +6,9 @@ import com.projectu.shared.data.cache.StateCacheEvent
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.mapper.toArtwork
+import com.projectu.shared.data.remote.mapper.toMangaSeries
 import com.projectu.shared.data.remote.mapper.toNovel
+import com.projectu.shared.data.remote.mapper.toNovelSeries
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.model.Novel
@@ -185,32 +187,10 @@ class UserViewModel(
                         currentTab = availableTabs.firstOrNull() ?: UserProfileTab.ILLUSTS,
                         tabDataCache = tabDataCache,
                         mangaSeries = mangaSeriesList.map { series ->
-                            MangaSeriesItem(
-                                id = series.id,
-                                title = series.title,
-                                description = series.description,
-                                caption = series.caption,
-                                total = series.total,
-                                coverUrl = series.url,
-                                isWatched = series.isWatched,
-                                updateDate = series.updateDate
-                            )
+                            series.toMangaSeries()
                         },
                         novelSeries = novelSeriesList.map { series ->
-                            NovelSeriesItem(
-                                id = series.id,
-                                title = series.title,
-                                caption = series.caption,
-                                contentCount = series.publishedContentCount,
-                                coverUrl = series.cover?.urls?.`240mw`,
-                                tags = series.tags ?: emptyList(),
-                                totalCharacterCount = series.publishedTotalCharacterCount,
-                                totalWordCount = series.publishedTotalWordCount,
-                                readingTime = series.publishedReadingTime,
-                                xRestrict = series.xRestrict,
-                                isOriginal = series.isOriginal,
-                                isConcluded = series.isConcluded
-                            )
+                            series.toNovelSeries()
                         },
                         isLoadingProfile = false,
                         profileError = null

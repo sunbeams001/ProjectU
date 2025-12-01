@@ -49,6 +49,7 @@ import org.koin.compose.koinInject
  * @param novel 小说对象
  * @param onClick 点击小说回调
  * @param onUserClick 点击用户区域回调（头像或用户名），为null时不响应用户点击
+ * @param onSeriesClick 点击系列标题回调，为null时不响应系列点击
  * @param modifier 修饰符
  * @param settingsCache 设置缓存
  */
@@ -58,6 +59,8 @@ fun NovelCard(
     novel: Novel,
     onClick: () -> Unit,
     onUserClick: ((userId: Long) -> Unit)? = null,
+    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
+    showSeriesInfo: Boolean = true,
     modifier: Modifier = Modifier,
     settingsCache: SettingsCache = koinInject()
 ) {
@@ -317,8 +320,8 @@ fun NovelCard(
                         )
                     }
                     
-                    // 系列标题（如果有）
-                    if (novel.seriesTitle != null) {
+                    // 系列标题（如果有且需要显示）
+                    if (showSeriesInfo && novel.seriesTitle != null && novel.seriesId != null) {
                         Text(
                             text = "系列: ${novel.seriesTitle}",
                             style = MaterialTheme.typography.labelSmall,
@@ -329,6 +332,9 @@ fun NovelCard(
                                 .combinedClickable(
                                     onClick = { 
                                         println("NovelCard: 点击系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
+                                        novel.seriesId?.toLongOrNull()?.let { seriesId ->
+                                            onSeriesClick?.invoke(seriesId)
+                                        }
                                     },
                                     onLongClick = { 
                                         println("NovelCard: 长按系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 

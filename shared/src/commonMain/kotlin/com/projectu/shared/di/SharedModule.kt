@@ -11,12 +11,14 @@ import com.projectu.shared.data.remote.api.PixivApiClient
 import com.projectu.shared.data.repository.ArtworkRepositoryImpl
 import com.projectu.shared.data.repository.AuthRepositoryImpl
 import com.projectu.shared.data.repository.NovelRepositoryImpl
+import com.projectu.shared.data.repository.NovelSeriesRepositoryImpl
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.data.repository.StateCacheRepositoryInMemory
 import com.projectu.shared.data.repository.UserRepositoryImpl
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.NovelRepository
+import com.projectu.shared.domain.repository.NovelSeriesRepository
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.repository.StateCacheRepository
 import com.projectu.shared.domain.repository.UserRepository
@@ -138,6 +140,13 @@ val repositoryModule = module {
         NovelRepositoryImpl(
             pixivApi = get(),
             ageLimitDeterminer = get()
+        )
+    }
+    
+    // 小说系列仓储
+    single<NovelSeriesRepository> {
+        NovelSeriesRepositoryImpl(
+            pixivApi = get()
         )
     }
     

@@ -1,7 +1,9 @@
 package com.projectu.ui.screens.user
 
 import com.projectu.shared.domain.model.Artwork
+import com.projectu.shared.domain.model.MangaSeries
 import com.projectu.shared.domain.model.Novel
+import com.projectu.shared.domain.model.NovelSeries
 
 /**
  * 用户页面Tab类型
@@ -44,38 +46,6 @@ data class TabData(
 )
 
 /**
- * 漫画系列信息
- */
-data class MangaSeriesItem(
-    val id: String,
-    val title: String,
-    val description: String? = null,
-    val caption: String? = null,
-    val total: Int = 0,             // 总篇数
-    val coverUrl: String? = null,   // 封面URL
-    val isWatched: Boolean = false, // 是否已追更
-    val updateDate: String? = null  // 更新日期
-)
-
-/**
- * 小说系列信息
- */
-data class NovelSeriesItem(
-    val id: String,
-    val title: String,
-    val caption: String? = null,
-    val contentCount: Int = 0,
-    val coverUrl: String? = null,
-    val tags: List<String> = emptyList(),
-    val totalCharacterCount: Int = 0,  // 总字数
-    val totalWordCount: Int = 0,       // 总单词数
-    val readingTime: Int = 0,          // 预计阅读时间（分钟）
-    val xRestrict: Int = 0,            // 年龄限制：0=全年龄, 1=R-18, 2=R-18G
-    val isOriginal: Boolean = false,   // 是否原创
-    val isConcluded: Boolean = false   // 是否已完结
-)
-
-/**
  * 用户页面状态
  */
 data class UserScreenState(
@@ -93,11 +63,11 @@ data class UserScreenState(
     // 各Tab的数据缓存
     val tabDataCache: Map<UserProfileTab, TabData> = emptyMap(),
     
-    // 漫画系列数据
-    val mangaSeries: List<MangaSeriesItem> = emptyList(),
-    
-    // 小说系列数据
-    val novelSeries: List<NovelSeriesItem> = emptyList()
+    // 漫画系列数据（使用领域模型）
+    val mangaSeries: List<MangaSeries> = emptyList(),
+
+    // 小说系列数据（使用领域模型）
+    val novelSeries: List<NovelSeries> = emptyList()
 ) {
     /**
      * 获取当前Tab的数据

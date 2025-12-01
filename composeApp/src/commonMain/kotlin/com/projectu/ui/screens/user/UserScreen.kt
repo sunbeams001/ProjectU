@@ -37,7 +37,9 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.FollowStatus
+import com.projectu.shared.domain.model.MangaSeries
 import com.projectu.shared.domain.model.Novel
+import com.projectu.shared.domain.model.NovelSeries
 import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.ErrorDisplay
@@ -47,6 +49,7 @@ import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NovelSeriesCard
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -134,6 +137,10 @@ data class UserScreen(
                 // TODO: 跳转到小说详情页
                 println("点击小说: ${novel.title}")
             },
+            onNovelSeriesClick = { seriesId ->
+                // 跳转到小说系列详情页
+                navigator.push(NovelSeriesScreen(seriesId))
+            },
             onUserClick = { clickedUserId ->
                 // 跳转到用户页面
                 if (clickedUserId.toLongOrNull() != userId) {
@@ -156,6 +163,7 @@ fun UserScreenContent(
     scrollIndices: MutableMap<UserProfileTab, Int>,
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onNovelSeriesClick: (Long) -> Unit,
     onUserClick: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -298,6 +306,7 @@ fun UserScreenContent(
                                     tabListStates = tabListStates,
                                     onArtworkClick = onArtworkClick,
                                     onNovelClick = onNovelClick,
+                                    onNovelSeriesClick = onNovelSeriesClick,
                                     onLoadMore = onLoadMore,
                                     onRetry = { onRetryTab(tab) }
                                 )
@@ -437,12 +446,13 @@ fun UserProfileTabRow(
 fun UserTabContent(
     tab: UserProfileTab,
     tabData: TabData,
-    mangaSeries: List<MangaSeriesItem>,
-    novelSeries: List<NovelSeriesItem>,
+    mangaSeries: List<MangaSeries>,
+    novelSeries: List<NovelSeries>,
     scrollIndices: MutableMap<UserProfileTab, Int>,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onNovelSeriesClick: (Long) -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
@@ -481,6 +491,7 @@ fun UserTabContent(
                             tab = tab,
                             tabListStates = tabListStates,
                             onNovelClick = onNovelClick,
+                            onSeriesClick = onNovelSeriesClick,
                             onLoadMore = onLoadMore,
                             isLoading = tabData.isLoading
                         )
@@ -500,7 +511,9 @@ fun UserTabContent(
                             series = novelSeries,
                             tab = tab,
                             tabListStates = tabListStates,
-                            onClick = { /* TODO: 跳转到系列详情 */ }
+                            onClick = { item -> 
+                                item.id.toLongOrNull()?.let { id -> onNovelSeriesClick(id) }
+                            }
                         )
                     }
                     UserProfileTab.BOOKMARKS -> {
@@ -615,6 +628,7 @@ fun NovelList(
     tab: UserProfileTab,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onNovelClick: (Novel) -> Unit,
+    onSeriesClick: (Long) -> Unit,
     onLoadMore: () -> Unit,
     isLoading: Boolean
 ) {
@@ -650,7 +664,8 @@ fun NovelList(
         items(novels, key = { it.id }) { novel ->
             NovelCard(
                 novel = novel,
-                onClick = { onNovelClick(novel) }
+                onClick = { onNovelClick(novel) },
+                onSeriesClick = onSeriesClick
             )
         }
         
@@ -675,10 +690,10 @@ fun NovelList(
  */
 @Composable
 fun MangaSeriesList(
-    series: List<MangaSeriesItem>,
+    series: List<MangaSeries>,
     tab: UserProfileTab,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
-    onClick: (MangaSeriesItem) -> Unit
+    onClick: (MangaSeries) -> Unit
 ) {
     val listState = rememberLazyListState()
     
@@ -707,10 +722,10 @@ fun MangaSeriesList(
  */
 @Composable
 fun NovelSeriesList(
-    series: List<NovelSeriesItem>,
+    series: List<NovelSeries>,
     tab: UserProfileTab,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
-    onClick: (NovelSeriesItem) -> Unit
+    onClick: (NovelSeries) -> Unit
 ) {
     val listState = rememberLazyListState()
     

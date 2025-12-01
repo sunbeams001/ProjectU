@@ -44,6 +44,7 @@ data class Novel(
     // 系列信息
     val seriesId: String? = null,
     val seriesTitle: String? = null,
+    val seriesOrder: Int? = null, // 在系列中的顺序（仅在系列详情中使用）
     // 其他
     val isUnlisted: Boolean = false, // 是否为非公开作品
     val pageCount: Int = 1, // 页数（用于分章节小说）

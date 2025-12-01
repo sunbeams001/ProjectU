@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.projectu.ui.screens.user.MangaSeriesItem
+import com.projectu.shared.domain.model.MangaSeries
 
 /**
  * 漫画系列卡片组件 - Material Design 3 风格
@@ -35,7 +35,7 @@ import com.projectu.ui.screens.user.MangaSeriesItem
  */
 @Composable
 fun MangaSeriesCard(
-    series: MangaSeriesItem,
+    series: MangaSeries,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -34,6 +34,7 @@ import com.projectu.ui.screens.discovery.DiscoveryContent
 import com.projectu.ui.screens.ranking.RankingContent
 import com.projectu.ui.screens.ranking.RankingViewModel
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import cafe.adriel.voyager.koin.koinScreenModel
 
@@ -363,6 +364,9 @@ object RankingTab : Tab {
             onNovelClick = { novel ->
                 // TODO: 跳转到小说详情页
                 println("点击小说: ${novel.title}")
+            },
+            onSeriesClick = { seriesId ->
+                parentNavigator?.push(NovelSeriesScreen(seriesId))
             },
             onUserClick = { userId ->
                 parentNavigator?.push(UserScreen(userId))
