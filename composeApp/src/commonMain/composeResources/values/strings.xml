@@ -288,6 +288,8 @@
     <string name="novel_add_marker">Add bookmark</string>
     <string name="novel_collapse">Collapse</string>
     <string name="novel_expand">Expand</string>
+    <string name="novel_friends_only">Friends Only</string>
+    <string name="novel_friends_only_desc">This content is only visible to my pixiv friends</string>
     
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d hours %2$d minutes</string>

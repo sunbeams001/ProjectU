@@ -57,13 +57,28 @@ data class Novel(
     val seriesId: String? = null,
     val seriesTitle: String? = null,
     val seriesOrder: Int? = null, // 在系列中的顺序（仅在系列详情中使用）
+    // 可见性
+    val viewableType: Int = 0, // 0=公开, 2=好P友限定
     // 其他
     val isUnlisted: Boolean = false, // 是否为非公开作品
     val pageCount: Int = 1, // 页数（用于分章节小说）
     val marker: Int? = null, // 当前阅读标记位置
     // 内嵌图片（仅在详情接口返回）
     val embeddedImages: Map<String, NovelEmbeddedImageInfo> = emptyMap()
-)
+) {
+    /**
+     * 判断该小说是否可查看
+     * viewableType: 0=公开, 2=好P友限定
+     */
+    val isViewable: Boolean
+        get() = viewableType == 0
+    
+    /**
+     * 判断是否为好P友限定作品
+     */
+    val isFriendsOnly: Boolean
+        get() = viewableType == 2
+}
 
 /**
  * 小说类型枚举

@@ -68,6 +68,15 @@ fun NovelCard(
     modifier: Modifier = Modifier,
     settingsCache: SettingsCache = koinInject()
 ) {
+    // 检查是否为好P友限定作品
+    if (novel.isFriendsOnly) {
+        RestrictedNovelCard(
+            novel = novel,
+            modifier = modifier
+        )
+        return
+    }
+    
     // R-18和R18G标签颜色
     val r18Color = Color(0xFFFF4060)
     Card(
@@ -423,4 +432,90 @@ fun NovelCard(
     }
 }
 
-
+/**
+ * 好P友限定小说卡片
+ * 显示受限作品的占位卡片
+ */
+@Composable
+private fun RestrictedNovelCard(
+    novel: Novel,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 1.dp
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 左侧：锁定图标占位
+            Box(
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                )
+            }
+            
+            // 右侧：受限提示
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 120.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                // 序号（如果有）
+                novel.seriesOrder?.let { order ->
+                    Text(
+                        text = "#$order",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // 好P友限定提示
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.novel_friends_only),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                // 说明文字
+                Text(
+                    text = stringResource(Res.string.novel_friends_only_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}

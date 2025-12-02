@@ -78,31 +78,39 @@ data class NovelSeriesPage(
 
 /**
  * 小说系列内容项
+ * 注意：对于 viewableType=2 (好P友限定) 的作品，响应体只包含 id、userId 和 series 字段
  */
 @Serializable
 data class NovelSeriesContent(
     val id: String,
     @SerialName("userId") val userId: String,
     val series: NovelSeriesInfo? = null,
-    val title: String,
+    val title: String? = null,
     @SerialName("commentHtml") val commentHtml: String? = null,
     val tags: List<String> = emptyList(),
     val restrict: Int = 0,
     @SerialName("xRestrict") val xRestrict: Int = 0,
     @SerialName("isOriginal") val isOriginal: Boolean = false,
-    @SerialName("textLength") val textLength: Int,
-    @SerialName("characterCount") val characterCount: Int,
-    @SerialName("wordCount") val wordCount: Int,
+    @SerialName("textLength") val textLength: Int = 0,
+    @SerialName("characterCount") val characterCount: Int = 0,
+    @SerialName("wordCount") val wordCount: Int = 0,
     @SerialName("useWordCount") val useWordCount: Boolean = false,
-    @SerialName("readingTime") val readingTime: Int,
+    @SerialName("readingTime") val readingTime: Int = 0,
     @SerialName("bookmarkCount") val bookmarkCount: Int = 0,
     val url: String? = null,
-    @SerialName("uploadTimestamp") val uploadTimestamp: Long,
-    @SerialName("reuploadTimestamp") val reuploadTimestamp: Long,
+    @SerialName("uploadTimestamp") val uploadTimestamp: Long = 0,
+    @SerialName("reuploadTimestamp") val reuploadTimestamp: Long = 0,
     @SerialName("isBookmarkable") val isBookmarkable: Boolean = true,
     @SerialName("bookmarkData") val bookmarkData: JsonObject? = null,
     @SerialName("aiType") val aiType: Int = 0
-)
+) {
+    /**
+     * 判断该内容是否可查看
+     * viewableType: 0=公开, 2=好P友限定
+     */
+    val isViewable: Boolean
+        get() = series?.viewableType == 0 || series?.viewableType == null
+}
 
 /**
  * 小说系列标题项
