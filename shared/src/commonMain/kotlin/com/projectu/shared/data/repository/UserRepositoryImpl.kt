@@ -21,7 +21,7 @@ class UserRepositoryImpl(
     override suspend fun login(username: String, password: String): Result<User> {
         // Pixiv Web API 使用 cookie 认证，不支持直接登录
         // 需要用户在浏览器中登录后获取 PHPSESSID
-        return Result.failure(UnsupportedOperationException("Web API 不支持直接登录，请使用 PHPSESSID"))
+        return Result.failure(UnsupportedOperationException("Web API does not support direct login, please use PHPSESSID"))
     }
 
     override suspend fun logout(): Result<Unit> {
@@ -36,7 +36,7 @@ class UserRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        val body = response.body ?: throw IllegalStateException("用户信息为空")
+        val body = response.body ?: throw IllegalStateException("User info is empty")
         body.toUser()
     }
 
@@ -45,7 +45,7 @@ class UserRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        val body = response.body ?: throw IllegalStateException("用户信息为空")
+        val body = response.body ?: throw IllegalStateException("User info is empty")
         body.toUser()
     }
 
@@ -73,7 +73,7 @@ class UserRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        val body = response.body ?: throw IllegalStateException("发现用户数据为空")
+        val body = response.body ?: throw IllegalStateException("Discovery users data is empty")
         body.toUsersWithArtworks(ageLimitDeterminer)
     }
 }

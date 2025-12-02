@@ -27,6 +27,8 @@ import com.projectu.shared.domain.model.ArtworkType
 import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.getUrlByQuality
 import com.projectu.ui.components.ErrorDisplay
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import com.projectu.ui.components.RetryableAsyncImage
 import com.projectu.ui.components.UgoiraDisplay
 import kotlinx.coroutines.launch
@@ -105,7 +107,7 @@ fun ArtworkDetailContent(
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "返回",
+                contentDescription = stringResource(Res.string.nav_back),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
@@ -204,7 +206,7 @@ private fun ArtworkListPager(
                     ) {
                         CircularProgressIndicator()
                         Text(
-                            text = "加载中...",
+                            text = stringResource(Res.string.common_loading),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -353,7 +355,7 @@ private fun MultiPageDisplay(
             items(pages) { page ->
                 RetryableAsyncImage(
                     model = page.getUrlByQuality(imageQuality),
-                    contentDescription = "$contentDescription - 第${page.page + 1}页",
+                    contentDescription = "$contentDescription - ${stringResource(Res.string.novel_page_number, page.page + 1)}",
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .fillMaxWidth()

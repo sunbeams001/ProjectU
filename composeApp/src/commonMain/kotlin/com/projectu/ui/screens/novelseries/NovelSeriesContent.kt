@@ -31,10 +31,14 @@ import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.NovelSeries
 import com.projectu.shared.util.DateTimeFormatter
 import com.projectu.ui.components.ErrorDisplay
+import com.projectu.ui.util.formatNumber
+import com.projectu.ui.util.formatReadingTime
 import com.projectu.ui.components.HtmlText
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.htmlToPlainText
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 小说系列详情页内容
@@ -76,7 +80,7 @@ fun NovelSeriesContent(
             TopAppBar(
                 title = { 
                     Text(
-                        text = state.series?.title ?: "小说系列",
+                        text = state.series?.title ?: stringResource(Res.string.novel_series),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -85,7 +89,7 @@ fun NovelSeriesContent(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = stringResource(Res.string.nav_back)
                         )
                     }
                 },
@@ -94,7 +98,7 @@ fun NovelSeriesContent(
                     IconButton(onClick = onRefresh) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "刷新"
+                            contentDescription = stringResource(Res.string.nav_refresh)
                         )
                     }
                 }
@@ -149,7 +153,7 @@ fun NovelSeriesContent(
                                 HorizontalDivider()
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "作品列表（共 ${state.series.contentCount} 篇）",
+                                    text = stringResource(Res.string.series_works_list, state.series.contentCount),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -287,7 +291,7 @@ private fun NovelSeriesHeaderCard(
                             MaterialTheme.colorScheme.tertiaryContainer
                     ) {
                         Text(
-                            text = if (series.isConcluded) "完结" else "连载",
+                            text = if (series.isConcluded) stringResource(Res.string.series_concluded) else stringResource(Res.string.series_ongoing),
                             style = MaterialTheme.typography.labelSmall,
                             color = if (series.isConcluded)
                                 MaterialTheme.colorScheme.onPrimaryContainer
@@ -319,7 +323,7 @@ private fun NovelSeriesHeaderCard(
                     ) {
                         // 篇数
                         Text(
-                            text = "共 ${series.contentCount} 篇",
+                            text = stringResource(Res.string.series_total_episodes, series.contentCount),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -328,7 +332,7 @@ private fun NovelSeriesHeaderCard(
                         series.totalCharacterCount?.let { count ->
                             if (count > 0) {
                                 Text(
-                                    text = "${formatWordCount(count)}字",
+                                    text = stringResource(Res.string.series_word_count, formatWordCount(count)),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -340,7 +344,7 @@ private fun NovelSeriesHeaderCard(
                     series.readingTimeSeconds?.let { seconds ->
                         if (seconds > 0) {
                             Text(
-                                text = "约需 ${DateTimeFormatter.formatReadingTimeFromSeconds(seconds)}",
+                                text = formatReadingTime(seconds),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -401,7 +405,7 @@ private fun NovelSeriesHeaderCard(
                 // 原创标签
                 if (series.isOriginal) {
                     TagChip(
-                        text = "原创",
+                        text = stringResource(Res.string.series_original),
                         textColor = MaterialTheme.colorScheme.primary,
                         backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
@@ -456,7 +460,7 @@ private fun NovelSeriesHeaderCard(
             
             // 更新时间 - 使用本地时区时间，显示到秒
             Text(
-                text = "最后更新: ${DateTimeFormatter.formatToDetailedLocalDateTime(series.updateDate)}",
+                text = stringResource(Res.string.series_last_update, DateTimeFormatter.formatToDetailedLocalDateTime(series.updateDate)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -488,7 +492,7 @@ private fun NovelSeriesHeaderCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (series.isWatched) "取消追更" else "加入追更"
+                        text = if (series.isWatched) stringResource(Res.string.series_remove_watch) else stringResource(Res.string.series_add_watch)
                     )
                 }
             }
@@ -533,19 +537,8 @@ private fun TagChip(
  */
 private fun formatWordCount(count: Int): String {
     return when {
-        count >= 10000 -> String.format("%.1f万", count / 10000.0)
+        count >= 10000 -> String.format("%.1fw", count / 10000.0)
         count >= 1000 -> String.format("%.1fk", count / 1000.0)
         else -> count.toString()
-    }
-}
-
-/**
- * 格式化数字
- */
-private fun formatNumber(number: Int): String {
-    return when {
-        number >= 10000 -> String.format("%.1f万", number / 10000.0)
-        number >= 1000 -> String.format("%.1fk", number / 1000.0)
-        else -> number.toString()
     }
 }

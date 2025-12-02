@@ -91,6 +91,13 @@ import projectu.composeapp.generated.resources.cache_size_small
 import projectu.composeapp.generated.resources.cache_size_medium
 import projectu.composeapp.generated.resources.cache_size_large
 import projectu.composeapp.generated.resources.cache_size_extra_large
+import projectu.composeapp.generated.resources.settings_api_test_tool
+import projectu.composeapp.generated.resources.settings_api_test_subtitle
+import projectu.composeapp.generated.resources.settings_api_test_desc
+import projectu.composeapp.generated.resources.login_password_hide
+import projectu.composeapp.generated.resources.login_password_show
+import projectu.composeapp.generated.resources.settings_phpsessid_empty
+import projectu.composeapp.generated.resources.settings_phpsessid_invalid_format
 import org.koin.compose.koinInject
 
 /**
@@ -364,9 +371,9 @@ private fun SettingsScreenContent(
             // API 测试工具 (开发者选项)
             item {
                 SettingsItem(
-                    title = "API 测试工具 🛠️",
-                    subtitle = "调试 Pixiv API 接口",
-                    description = "系统化测试所有已集成的 Pixiv API",
+                    title = stringResource(Res.string.settings_api_test_tool),
+                    subtitle = stringResource(Res.string.settings_api_test_subtitle),
+                    description = stringResource(Res.string.settings_api_test_desc),
                     onClick = onNavigateToApiTest
                 )
             }
@@ -811,7 +818,7 @@ private fun EditPhpSessionIdDialog(
                                     Icons.Default.Visibility 
                                 else 
                                     Icons.Default.VisibilityOff,
-                                contentDescription = if (passwordVisible) "隐藏" else "显示"
+                                contentDescription = if (passwordVisible) stringResource(Res.string.login_password_hide) else stringResource(Res.string.login_password_show)
                             )
                         }
                     },
@@ -831,16 +838,18 @@ private fun EditPhpSessionIdDialog(
             }
         },
         confirmButton = {
+            val phpsessidEmptyError = stringResource(Res.string.settings_phpsessid_empty)
+            val phpsessidInvalidFormatError = stringResource(Res.string.settings_phpsessid_invalid_format)
             TextButton(
                 onClick = {
                     if (phpSessionId.isBlank()) {
-                        errorMessage = "PHPSESSID 不能为空"
+                        errorMessage = phpsessidEmptyError
                     } else if (!phpSessionId.contains("_")) {
-                        errorMessage = "格式无效，应为: userid_xxxxx"
+                        errorMessage = phpsessidInvalidFormatError
                     } else {
                         val parts = phpSessionId.split("_")
                         if (parts.size < 2 || parts[0].toLongOrNull() == null) {
-                            errorMessage = "格式无效，应为: userid_xxxxx"
+                            errorMessage = phpsessidInvalidFormatError
                         } else {
                             onConfirm(phpSessionId)
                         }

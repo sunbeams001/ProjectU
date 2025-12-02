@@ -32,8 +32,25 @@
     <string name="ranking_monthly">Monthly</string>
     <string name="ranking_rookie">Rookie</string>
     <string name="ranking_original">Original</string>
-    <string name="ranking_male">Male</string>
-    <string name="ranking_female">Female</string>
+    <string name="ranking_male">Popular among male users</string>
+    <string name="ranking_female">Popular among female users</string>
+    <string name="ranking_ai">AI-generated</string>
+    <string name="ranking_weekly_original">Weekly Original</string>
+    <string name="ranking_weekly_ai">Weekly AI</string>
+    <string name="ranking_weekly_r18_ai">Weekly R-18 AI</string>
+    <string name="ranking_daily_r18">Daily R-18</string>
+    <string name="ranking_weekly_r18">Weekly R-18</string>
+    <string name="ranking_male_r18">Popular among male users R-18</string>
+    <string name="ranking_female_r18">Popular among female users R-18</string>
+    <string name="ranking_ai_r18">AI-generated R-18</string>
+    <string name="ranking_r18g">R-18G</string>
+    
+    <!-- Ranking Content Types -->
+    <string name="ranking_content_all">Overall</string>
+    <string name="ranking_content_illust">Illustrations</string>
+    <string name="ranking_content_manga">Manga</string>
+    <string name="ranking_content_ugoira">Ugoira</string>
+    <string name="ranking_content_novel">Novels</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">Bookmarks</string>
@@ -179,5 +196,171 @@
     <string name="cache_size_medium">Medium (512 MB)</string>
     <string name="cache_size_large">Large (1 GB)</string>
     <string name="cache_size_extra_large">Extra Large (2 GB)</string>
+    
+    <!-- Bookmark Status -->
+    <string name="bookmark_not_bookmarked">Not bookmarked</string>
+    <string name="bookmark_public">Public bookmark</string>
+    <string name="bookmark_private">Private bookmark</string>
+    
+    <!-- Follow Status -->
+    <string name="follow_follow">Follow</string>
+    <string name="follow_unfollow">Unfollow</string>
+    <string name="follow_unfollow_private">Cancel private follow</string>
+    
+    <!-- Error Messages -->
+    <string name="error_icon_desc">Error</string>
+    <string name="error_load_failed">Load failed</string>
+    <string name="error_image_load_failed">Image load failed</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_network">Network error</string>
+    <string name="error_data_empty">Data is empty</string>
+    <string name="error_invalid_artwork_id">Invalid artwork ID</string>
+    <string name="error_cannot_load_frames">Cannot load frames</string>
+    
+    <!-- Series -->
+    <string name="series_watching">Following</string>
+    <string name="series_total_episodes">Total %1$d episodes</string>
+    <string name="series_update">Update: %1$s</string>
+    <string name="series_concluded">Completed</string>
+    <string name="series_ongoing">Ongoing</string>
+    <string name="series_original">Original</string>
+    <string name="series_word_count">%1$s words</string>
+    <string name="series_works_list">Works List (Total %1$d)</string>
+    <string name="series_last_update">Last update: %1$s</string>
+    <string name="series_add_watch">Add to watchlist</string>
+    <string name="series_remove_watch">Remove from watchlist</string>
+    <string name="series_label">Series: %1$s</string>
+    <string name="novel_series">Novel Series</string>
+    
+    <!-- Content Types -->
+    <string name="content_illusts">Illusts</string>
+    <string name="content_manga">Manga</string>
+    <string name="content_novels">Novels</string>
+    <string name="content_manga_series">Manga Series</string>
+    <string name="content_novel_series">Novel Series</string>
+    <string name="content_bookmark_illusts_public">Public Bookmarks (Illusts)</string>
+    <string name="content_bookmark_illusts_private">Private Bookmarks (Illusts)</string>
+    <string name="content_bookmark_novels_public">Public Bookmarks (Novels)</string>
+    <string name="content_bookmark_novels_private">Private Bookmarks (Novels)</string>
+    <string name="content_all">All</string>
+    <string name="content_ugoira">Ugoira</string>
+    
+    <!-- Ranking (Additional) -->
+    <string name="ranking_category_general">General</string>
+    <string name="ranking_ai_type_normal">Normal</string>
+    <string name="ranking_ai_type_ai">AI Generated</string>
+    <string name="ranking_select_date">Select date</string>
+    <string name="ranking_latest">Latest ranking</string>
+    <string name="ranking_current">Current: %1$s</string>
+    <string name="ranking_previous_day">Previous day: %1$s</string>
+    <string name="ranking_next_day">Next day: %1$s</string>
+    <string name="ranking_select_ranking_date">Select ranking date</string>
+    
+    <!-- Ugoira Player -->
+    <string name="ugoira_playback_speed">Playback speed</string>
+    <string name="ugoira_getting_info">Getting ugoira info...</string>
+    <string name="ugoira_downloading_file">Downloading animation file...</string>
+    <string name="ugoira_extracting_frames">Extracting frames...</string>
+    <string name="ugoira_loading_frames">Loading frames %1$d/%2$d</string>
+    <string name="ugoira_loading_frames_percent">Loading frames... %1$d%%</string>
+    <string name="ugoira_load_failed">Load failed: %1$s</string>
+    
+    <!-- Navigation -->
+    <string name="nav_back">Back</string>
+    <string name="nav_refresh">Refresh</string>
+    
+    <!-- Novel -->
+    <string name="novel_page_number">Page %1$d</string>
+    <string name="novel_no_content">No content</string>
+    <string name="novel_pixiv_illust">Pixiv Illust %1$s</string>
+    <string name="novel_illust">Illust %1$s</string>
+    <string name="novel_illust_image">Novel illustration</string>
+    <string name="novel_text_count">%1$s words</string>
+    <string name="novel_page_count">Total %1$d pages</string>
+    <string name="novel_stat_views">Views</string>
+    <string name="novel_stat_likes">Likes</string>
+    <string name="novel_stat_bookmarks">Bookmarks</string>
+    <string name="novel_stat_comments">Comments</string>
+    <string name="novel_description">Description</string>
+    <string name="novel_tags">Tags</string>
+    <string name="novel_publish_time">Publish time: %1$s</string>
+    <string name="novel_remove_marker">Remove bookmark</string>
+    <string name="novel_add_marker">Add bookmark</string>
+    <string name="novel_collapse">Collapse</string>
+    <string name="novel_expand">Expand</string>
+    
+    <!-- Time Format -->
+    <string name="time_hours_minutes">%1$d hours %2$d minutes</string>
+    <string name="time_hours">%1$d hours</string>
+    <string name="time_minutes">%1$d minutes</string>
+    <string name="time_less_than_minute">Less than 1 minute</string>
+    
+    <!-- Login -->
+    <string name="login_in_app">In-app Login</string>
+    <string name="login_in_development">This feature is under development, stay tuned!</string>
+    <string name="login_password_hide">Hide</string>
+    <string name="login_password_show">Show</string>
+    <string name="login_phpsessid_login">PHPSESSID Login</string>
+    <string name="login_failed">Login failed</string>
+    <string name="login_failed_check_format">Login failed, please check PHPSESSID format</string>
+    <string name="login_failed_with_message">Login failed: %1$s</string>
+    
+    <!-- User -->
+    <string name="user_no_works">This user has no works</string>
+    <string name="user_following_count">Following %1$d</string>
+    <string name="user_load_info_failed">Failed to load user info</string>
+    <string name="user_info_empty">User info is empty</string>
+    <string name="user_load_works_failed">Failed to load works list</string>
+    <string name="user_works_empty">Works overview is empty</string>
+    <string name="user_load_more_failed">Failed to load more</string>
+    
+    <!-- User Profile Tabs -->
+    <string name="user_tab_illusts">Illusts</string>
+    <string name="user_tab_manga">Manga</string>
+    <string name="user_tab_novels">Novels</string>
+    <string name="user_tab_manga_series">Manga Series</string>
+    <string name="user_tab_novel_series">Novel Series</string>
+    <string name="user_tab_bookmark_illusts_public">Public Bookmarks (Illusts)</string>
+    <string name="user_tab_bookmark_illusts_private">Private Bookmarks (Illusts)</string>
+    <string name="user_tab_bookmark_novels_public">Public Bookmarks (Novels)</string>
+    <string name="user_tab_bookmark_novels_private">Private Bookmarks (Novels)</string>
+    <string name="user_network_error">Network error</string>
+    <string name="user_load_failed">Failed to load</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_publish_time">Published: %1$s</string>
+    <string name="artwork_detail_empty">Artwork detail is empty</string>
+    <string name="artwork_not_bookmarked">Artwork is not bookmarked</string>
+    <string name="artwork_ugoira_meta_empty">Ugoira metadata is empty</string>
+    <string name="artwork_pages_empty">Multi-page artwork detail is empty</string>
+    
+    <!-- Settings Debug -->
+    <string name="settings_api_test_tool">API Test Tool 🔧</string>
+    <string name="settings_api_test_subtitle">Debug Pixiv API</string>
+    <string name="settings_api_test_desc">Systematically test all integrated Pixiv APIs</string>
+    <string name="settings_phpsessid_empty">PHPSESSID cannot be empty</string>
+    <string name="settings_phpsessid_invalid_format">Invalid format, expected: userid_xxxxx</string>
+    
+    <!-- API Errors -->
+    <string name="api_post_comment_failed">Failed to post comment</string>
+    <string name="api_delete_comment_failed">Failed to delete comment</string>
+    <string name="api_unknown_title">Unknown title</string>
+    <string name="api_unknown_author">Unknown author</string>
+    <string name="api_cannot_get_csrf">Cannot get CSRF Token</string>
+    <string name="api_novel_ranking_empty">Novel ranking data is empty</string>
+    <string name="api_get_novel_detail_failed">Failed to get novel detail</string>
+    <string name="api_search_novel_failed">Failed to search novels</string>
+    <string name="api_get_recommended_novels_failed">Failed to get recommended novels</string>
+    <string name="api_add_bookmark_failed">Failed to add bookmark</string>
+    <string name="api_get_series_detail_failed">Failed to get series detail</string>
+    <string name="api_get_series_contents_failed">Failed to get series contents</string>
+    <string name="api_watch_failed">Failed to add to watchlist</string>
+    <string name="api_unwatch_failed">Failed to remove from watchlist</string>
+    <string name="api_operation_failed">Operation failed</string>
+    <string name="api_web_login_not_supported">Web API does not support direct login, please use PHPSESSID</string>
+    <string name="api_user_info_empty">User info is empty</string>
+    <string name="api_discovery_users_empty">Discovery users data is empty</string>
+    <string name="api_load_series_detail_failed">Failed to load series detail</string>
+    <string name="api_load_series_contents_failed">Failed to load series contents</string>
 </resources>
 

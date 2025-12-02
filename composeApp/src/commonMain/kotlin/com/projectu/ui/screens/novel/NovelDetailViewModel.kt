@@ -283,7 +283,7 @@ class NovelDetailViewModel(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                val errorMessage = e.message ?: "加载失败"
+                val errorMessage = e.message ?: "Load failed"
                 
                 failedNovelErrors[novelId] = errorMessage
                 

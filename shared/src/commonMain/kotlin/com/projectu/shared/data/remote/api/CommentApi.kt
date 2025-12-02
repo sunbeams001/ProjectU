@@ -89,10 +89,10 @@ class CommentApi(private val client: PixivApiClient) {
                 // 使用正则表达式提取 message 字段
                 val messagePattern = """"message":"([^"]+)"""".toRegex()
                 val matchResult = messagePattern.find(e.message ?: "")
-                val errorMessage = matchResult?.groupValues?.get(1) ?: "发表评论失败"
+                val errorMessage = matchResult?.groupValues?.get(1) ?: "Failed to post comment"
                 PostCommentResult.Error(errorMessage)
             } catch (ex: Exception) {
-                PostCommentResult.Error("发表评论失败")
+                PostCommentResult.Error("Failed to post comment")
             }
         }
     }
@@ -131,11 +131,11 @@ class CommentApi(private val client: PixivApiClient) {
                 } else {
                     val errorPattern = """"message":"([^"]+)"""".toRegex()
                     val errorMatch = errorPattern.find(e.message ?: "")
-                    val errorMessage = errorMatch?.groupValues?.get(1) ?: "删除评论失败"
+                    val errorMessage = errorMatch?.groupValues?.get(1) ?: "Failed to delete comment"
                     DeleteCommentResult.Error(errorMessage)
                 }
             } catch (ex: Exception) {
-                DeleteCommentResult.Error("删除评论失败")
+                DeleteCommentResult.Error("Failed to delete comment")
             }
         }
     }
@@ -215,10 +215,10 @@ class CommentApi(private val client: PixivApiClient) {
                 // 使用正则表达式提取 message 字段
                 val messagePattern = """"message":"([^"]+)"""".toRegex()
                 val matchResult = messagePattern.find(e.message ?: "")
-                val errorMessage = matchResult?.groupValues?.get(1) ?: "发表评论失败"
+                val errorMessage = matchResult?.groupValues?.get(1) ?: "Failed to post comment"
                 PostCommentResult.Error(errorMessage)
             } catch (ex: Exception) {
-                PostCommentResult.Error("发表评论失败")
+                PostCommentResult.Error("Failed to post comment")
             }
         }
     }
@@ -256,11 +256,11 @@ class CommentApi(private val client: PixivApiClient) {
                 } else {
                     val errorPattern = """"message":"([^"]+)"""".toRegex()
                     val errorMatch = errorPattern.find(e.message ?: "")
-                    val errorMessage = errorMatch?.groupValues?.get(1) ?: "删除评论失败"
+                    val errorMessage = errorMatch?.groupValues?.get(1) ?: "Failed to delete comment"
                     DeleteCommentResult.Error(errorMessage)
                 }
             } catch (ex: Exception) {
-                DeleteCommentResult.Error("删除评论失败")
+                DeleteCommentResult.Error("Failed to delete comment")
             }
         }
     }

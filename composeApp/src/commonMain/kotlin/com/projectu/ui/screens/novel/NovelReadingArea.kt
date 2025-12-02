@@ -36,6 +36,8 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import com.projectu.shared.domain.model.NovelEmbeddedImageInfo
 import com.projectu.ui.util.NovelContentParser
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 小说阅读区域
@@ -164,7 +166,7 @@ fun NovelReadingArea(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "暂无内容",
+                        text = stringResource(Res.string.novel_no_content),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -379,7 +381,7 @@ private fun ContentElementDisplay(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Pixiv 插图 ${element.illustId}",
+                            text = stringResource(Res.string.novel_pixiv_illust, element.illustId),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -404,7 +406,7 @@ private fun ContentElementDisplay(
                 ) {
                     AsyncImage(
                         model = imageUrl,
-                        contentDescription = "小说插图",
+                        contentDescription = stringResource(Res.string.novel_illust_image),
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 100.dp, max = 400.dp),
@@ -447,7 +449,7 @@ private fun ContentElementDisplay(
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "图片加载失败",
+                                        text = stringResource(Res.string.error_image_load_failed),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -482,7 +484,7 @@ private fun ContentElementDisplay(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "插图 ${element.imageId}",
+                                text = stringResource(Res.string.novel_illust, element.imageId),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

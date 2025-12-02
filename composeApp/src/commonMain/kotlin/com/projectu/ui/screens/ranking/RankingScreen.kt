@@ -33,6 +33,8 @@ import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 排行榜内容区域
@@ -180,7 +182,7 @@ fun RankingContent(
             LaunchedEffect(targetScrollIndex) {
                 val scrollIndex = targetScrollIndex
                 if (scrollIndex != null && scrollIndex > 0) {
-                    println("[RankingScreen] 开始滚动到索引: $scrollIndex")
+                    println("[RankingScreen] Scrolling to index: $scrollIndex")
                     
                     // 平滑滚动到目标位置
                     when (listState) {
@@ -278,7 +280,7 @@ fun ContentTypeSelector(
             FilterChip(
                 selected = isSelected,
                 onClick = { onContentTypeChange(contentType) },
-                label = { Text(text = contentType.displayName) }
+                label = { Text(text = contentType.getLocalizedDisplayName()) }
             )
         },
         trailingContent = {
@@ -331,7 +333,7 @@ fun DateSelector(
                 }
                 Icon(
                     imageVector = Icons.Default.DateRange,
-                    contentDescription = "选择日期",
+                    contentDescription = stringResource(Res.string.ranking_select_date),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -409,7 +411,7 @@ fun DateSelector(
                             showDatePicker = false
                         }
                     ) {
-                        Text("最新榜单")
+                        Text(stringResource(Res.string.ranking_latest))
                     }
                     // "确定" 按钮 - 使用选择的日期
                     TextButton(
@@ -420,13 +422,13 @@ fun DateSelector(
                             showDatePicker = false
                         }
                     ) {
-                        Text("确定")
+                        Text(stringResource(Res.string.common_confirm))
                     }
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("取消")
+                    Text(stringResource(Res.string.common_cancel))
                 }
             }
         ) {
@@ -434,25 +436,30 @@ fun DateSelector(
                 state = datePickerState,
                 title = {
                     Text(
-                        text = "选择排行榜日期",
+                        text = stringResource(Res.string.ranking_select_ranking_date),
                         modifier = Modifier.padding(start = 24.dp, top = 16.dp)
                     )
                 },
                 headline = {
                     // 显示可用的日期范围提示
+                    val latestText = stringResource(Res.string.ranking_latest)
+                    val currentText = stringResource(Res.string.ranking_current, "")
+                    val prevText = stringResource(Res.string.ranking_previous_day, "")
+                    val nextText = stringResource(Res.string.ranking_next_day, "")
+                    
                     val hints = buildList {
                         // 只有在未选择日期(selectedDate为null)时,currentDate才代表最新榜单日期
                         // 否则currentDate只是当前显示的日期
                         if (selectedDate == null && currentDate != null) {
-                            add("最新榜单: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
+                            add("$latestText: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
                         } else if (currentDate != null) {
-                            add("当前: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
+                            add(stringResource(Res.string.ranking_current, "${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}"))
                         }
                         if (prevDate != null) {
-                            add("前一天: ${prevDate.substring(4, 6)}/${prevDate.substring(6, 8)}")
+                            add(stringResource(Res.string.ranking_previous_day, "${prevDate.substring(4, 6)}/${prevDate.substring(6, 8)}"))
                         }
                         if (nextDate != null) {
-                            add("后一天: ${nextDate.substring(4, 6)}/${nextDate.substring(6, 8)}")
+                            add(stringResource(Res.string.ranking_next_day, "${nextDate.substring(4, 6)}/${nextDate.substring(6, 8)}"))
                         }
                     }
                     if (hints.isNotEmpty()) {
@@ -493,7 +500,7 @@ fun RankingModeSelector(
                 onModeChange(supportedModes[index])
             }
         },
-        getItemLabel = { mode -> mode.displayName },
+        getItemLabel = { mode -> mode.getLocalizedDisplayName() },
         modifier = modifier
     )
 }
@@ -634,5 +641,45 @@ fun NovelListLayout(
                 }
             }
         }
+    }
+}
+
+/**
+ * 获取 RankingMode 的本地化显示名称
+ */
+@Composable
+fun RankingMode.getLocalizedDisplayName(): String {
+    return when (this) {
+        RankingMode.DAILY -> stringResource(Res.string.ranking_daily)
+        RankingMode.WEEKLY -> stringResource(Res.string.ranking_weekly)
+        RankingMode.MONTHLY -> stringResource(Res.string.ranking_monthly)
+        RankingMode.ROOKIE -> stringResource(Res.string.ranking_rookie)
+        RankingMode.ORIGINAL -> stringResource(Res.string.ranking_original)
+        RankingMode.MALE -> stringResource(Res.string.ranking_male)
+        RankingMode.FEMALE -> stringResource(Res.string.ranking_female)
+        RankingMode.DAILY_AI -> stringResource(Res.string.ranking_ai)
+        RankingMode.WEEKLY_ORIGINAL -> stringResource(Res.string.ranking_weekly_original)
+        RankingMode.WEEKLY_AI -> stringResource(Res.string.ranking_weekly_ai)
+        RankingMode.WEEKLY_R18_AI -> stringResource(Res.string.ranking_weekly_r18_ai)
+        RankingMode.DAILY_R18 -> stringResource(Res.string.ranking_daily_r18)
+        RankingMode.WEEKLY_R18 -> stringResource(Res.string.ranking_weekly_r18)
+        RankingMode.MALE_R18 -> stringResource(Res.string.ranking_male_r18)
+        RankingMode.FEMALE_R18 -> stringResource(Res.string.ranking_female_r18)
+        RankingMode.DAILY_R18_AI -> stringResource(Res.string.ranking_ai_r18)
+        RankingMode.R18G -> stringResource(Res.string.ranking_r18g)
+    }
+}
+
+/**
+ * 获取 RankingContent 的本地化显示名称
+ */
+@Composable
+fun RankingContent.getLocalizedDisplayName(): String {
+    return when (this) {
+        RankingContent.ALL -> stringResource(Res.string.ranking_content_all)
+        RankingContent.ILLUST -> stringResource(Res.string.ranking_content_illust)
+        RankingContent.MANGA -> stringResource(Res.string.ranking_content_manga)
+        RankingContent.UGOIRA -> stringResource(Res.string.ranking_content_ugoira)
+        RankingContent.NOVEL -> stringResource(Res.string.ranking_content_novel)
     }
 }

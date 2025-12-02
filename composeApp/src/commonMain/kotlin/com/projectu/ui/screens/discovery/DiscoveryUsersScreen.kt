@@ -21,8 +21,7 @@ import com.projectu.ui.components.UserCard
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
-import projectu.composeapp.generated.resources.Res
-import projectu.composeapp.generated.resources.discovery_recommended_users
+import projectu.composeapp.generated.resources.*
 
 /**
  * 发现用户页面
@@ -75,7 +74,7 @@ fun DiscoveryUsersContent(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = stringResource(Res.string.nav_back)
                         )
                     }
                 }
@@ -106,7 +105,7 @@ fun DiscoveryUsersContent(
                             color = MaterialTheme.colorScheme.error
                         )
                         Button(onClick = onRefresh) {
-                            Text("重试")
+                            Text(stringResource(Res.string.common_retry))
                         }
                     }
                 }

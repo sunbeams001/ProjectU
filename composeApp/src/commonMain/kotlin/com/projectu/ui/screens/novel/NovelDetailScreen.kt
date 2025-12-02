@@ -28,7 +28,9 @@ import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.util.PlatformBackHandler
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import projectu.composeapp.generated.resources.*
 
 /**
  * 小说详情页面
@@ -236,7 +238,7 @@ private fun NovelDetailContent(
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "返回",
+                contentDescription = stringResource(Res.string.nav_back),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }

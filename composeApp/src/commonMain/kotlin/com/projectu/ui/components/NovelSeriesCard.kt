@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,7 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.projectu.shared.domain.model.NovelSeries
-import com.projectu.shared.util.DateTimeFormatter
+import com.projectu.ui.util.formatReadingTime
 
 /**
  * 小说系列卡片组件 - Material Design 3 风格
@@ -105,7 +107,7 @@ fun NovelSeriesCard(
                         MaterialTheme.colorScheme.tertiaryContainer
                 ) {
                     Text(
-                        text = if (series.isConcluded) "完结" else "连载",
+                        text = if (series.isConcluded) stringResource(Res.string.series_concluded) else stringResource(Res.string.series_ongoing),
                         style = MaterialTheme.typography.labelSmall,
                         color = if (series.isConcluded) 
                             MaterialTheme.colorScheme.onPrimaryContainer 
@@ -161,7 +163,7 @@ fun NovelSeriesCard(
                             // 原创标签
                             if (series.isOriginal) {
                                 TagChip(
-                                    text = "原创",
+                                    text = stringResource(Res.string.series_original),
                                     textColor = MaterialTheme.colorScheme.primary,
                                     backgroundColor = MaterialTheme.colorScheme.primaryContainer
                                 )
@@ -227,7 +229,7 @@ fun NovelSeriesCard(
                 ) {
                     // 篇数
                     Text(
-                        text = "共 ${series.contentCount} 篇",
+                        text = stringResource(Res.string.series_total_episodes, series.contentCount),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -235,7 +237,7 @@ fun NovelSeriesCard(
                     // 字数
                     series.totalCharacterCount?.takeIf { it > 0 }?.let { count ->
                         Text(
-                            text = "${formatWordCount(count)}字",
+                            text = stringResource(Res.string.series_word_count, formatWordCount(count)),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -244,7 +246,7 @@ fun NovelSeriesCard(
                     // 预计阅读时间
                     series.readingTimeSeconds?.takeIf { it > 0 }?.let { seconds ->
                         Text(
-                            text = "约${DateTimeFormatter.formatReadingTimeFromSeconds(seconds)}",
+                            text = formatReadingTime(seconds),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -292,7 +294,7 @@ private fun TagChip(
  */
 private fun formatWordCount(count: Int): String {
     return when {
-        count >= 10000 -> String.format("%.1f万", count / 10000.0)
+        count >= 10000 -> String.format("%.1fw", count / 10000.0)
         count >= 1000 -> String.format("%.1fk", count / 1000.0)
         else -> count.toString()
     }

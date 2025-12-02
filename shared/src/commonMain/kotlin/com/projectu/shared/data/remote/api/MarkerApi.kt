@@ -169,13 +169,13 @@ class MarkerApi(private val client: PixivApiClient) {
                 ?.trim()
                 ?.replace(Regex("""<.*?>"""), "")
                 ?.replace(Regex("""\s+"""), " ")
-                ?: "未知标题"
+                ?: "Unknown title"
 
             // 用户ID和用户名
             val userIdMatch = Regex("""data-user_id="(\d+)"""").find(html)
             val userNameMatch = Regex("""data-user_name="([^"]*)"""").find(html)
             val userId = userIdMatch?.groupValues?.get(1) ?: "0"
-            val userName = userNameMatch?.groupValues?.get(1) ?: "未知作者"
+            val userName = userNameMatch?.groupValues?.get(1) ?: "Unknown author"
 
             // 封面URL
             val coverMatch = Regex("""data-src="(https://i\.pximg\.net/[^"]+)"""").find(html)

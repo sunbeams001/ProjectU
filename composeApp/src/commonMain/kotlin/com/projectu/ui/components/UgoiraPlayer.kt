@@ -16,7 +16,9 @@ import androidx.compose.ui.unit.dp
 import com.projectu.shared.domain.model.UgoiraMetadata
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import projectu.composeapp.generated.resources.*
 
 /**
  * Ugoira动图播放器组件
@@ -106,7 +108,7 @@ fun UgoiraPlayer(
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "暂停" else "播放",
+                        contentDescription = if (isPlaying) stringResource(Res.string.ugoira_pause) else stringResource(Res.string.ugoira_play),
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(24.dp)
                     )
@@ -136,7 +138,7 @@ fun UgoiraPlayer(
                         contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
                     ) {
                         Text(
-                            text = "倍速",
+                            text = stringResource(Res.string.ugoira_playback_speed),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -197,7 +199,7 @@ fun UgoiraDisplay(
                 ) {
                     CircularProgressIndicator()
                     Text(
-                        text = "获取动图信息...",
+                        text = stringResource(Res.string.ugoira_getting_info),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -218,7 +220,7 @@ fun UgoiraDisplay(
                         CircularProgressIndicator()
                     }
                     Text(
-                        text = "下载动画文件...",
+                        text = stringResource(Res.string.ugoira_downloading_file),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -232,7 +234,7 @@ fun UgoiraDisplay(
                 ) {
                     CircularProgressIndicator()
                     Text(
-                        text = "解压帧图片...",
+                        text = stringResource(Res.string.ugoira_extracting_frames),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -250,7 +252,7 @@ fun UgoiraDisplay(
                         modifier = Modifier.width(200.dp)
                     )
                     Text(
-                        text = "加载帧图片 ${state.current}/${state.total}",
+                        text = stringResource(Res.string.ugoira_loading_frames, state.current, state.total),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -271,7 +273,7 @@ fun UgoiraDisplay(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = "加载失败: ${state.message}",
+                        text = stringResource(Res.string.ugoira_load_failed, state.message),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -280,7 +282,7 @@ fun UgoiraDisplay(
                             loaderManager.retry()
                         }
                     }) {
-                        Text("重试")
+                        Text(stringResource(Res.string.common_retry))
                     }
                 }
             }
@@ -326,7 +328,7 @@ fun UgoiraPlayerWithLoader(
                 ) {
                     CircularProgressIndicator()
                     Text(
-                        text = "下载动画文件...",
+                        text = stringResource(Res.string.ugoira_downloading_file),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -339,7 +341,7 @@ fun UgoiraPlayerWithLoader(
                 ) {
                     CircularProgressIndicator()
                     Text(
-                        text = "解压帧图片...",
+                        text = stringResource(Res.string.ugoira_extracting_frames),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -355,7 +357,7 @@ fun UgoiraPlayerWithLoader(
                         modifier = Modifier.width(200.dp)
                     )
                     Text(
-                        text = "加载帧图片... ${(loadState.progress * 100).toInt()}%",
+                        text = stringResource(Res.string.ugoira_loading_frames_percent, (loadState.progress * 100).toInt()),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -375,12 +377,12 @@ fun UgoiraPlayerWithLoader(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = "加载失败: ${loadState.message}",
+                        text = stringResource(Res.string.ugoira_load_failed, loadState.message),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error
                     )
                     Button(onClick = onRetry) {
-                        Text("重试")
+                        Text(stringResource(Res.string.common_retry))
                     }
                 }
             }

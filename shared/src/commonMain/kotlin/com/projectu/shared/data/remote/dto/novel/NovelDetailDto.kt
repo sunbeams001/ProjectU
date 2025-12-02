@@ -96,7 +96,7 @@ data class NovelDetailBody(
     @SerialName("coverUrl") val coverUrl: String? = null,
     @SerialName("characterCount") val characterCount: Int? = null,  // 总字符数
     @SerialName("wordCount") val wordCount: Int? = null,  // 单词/词语数
-    @SerialName("readingTime") val readingTime: Int? = null,  // 预计阅读时间（分钟）
+    @SerialName("readingTime") val readingTime: Int? = null,  // 预计阅读时间（秒）
     @SerialName("useWordCount") val useWordCount: Boolean = false,
     val language: String? = null,  // 语言代码，如 "zh-cn"
     val genre: String? = null,  // 小说类型

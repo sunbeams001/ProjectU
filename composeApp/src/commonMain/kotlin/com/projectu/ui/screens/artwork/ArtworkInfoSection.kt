@@ -22,6 +22,8 @@ import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.User
 import com.projectu.shared.util.DateTimeFormatter
 import com.projectu.ui.components.BookmarkIndicator
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import com.projectu.ui.components.FollowIndicator
 
 /**
@@ -163,7 +165,7 @@ fun ArtworkInfoSection(
 
             // 第三行：投稿时间
             Text(
-                text = "投稿时间: ${DateTimeFormatter.formatToLocalDateTime(artwork.createdTime)}",
+                text = stringResource(Res.string.artwork_publish_time, DateTimeFormatter.formatToLocalDateTime(artwork.createdTime)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

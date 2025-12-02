@@ -51,23 +51,4 @@ object DateTimeFormatter {
             isoString
         }
     }
-    
-    /**
-     * 从秒转换为阅读时间显示
-     * 
-     * @param seconds 秒数
-     * @return 格式化的阅读时间，例如："5分钟"、"1小时30分钟"
-     */
-    fun formatReadingTimeFromSeconds(seconds: Int): String {
-        val totalMinutes = (seconds + 59) / 60 // 向上取整到分钟
-        return when {
-            totalMinutes >= 60 -> {
-                val hours = totalMinutes / 60
-                val mins = totalMinutes % 60
-                if (mins > 0) "${hours}小时${mins}分钟" else "${hours}小时"
-            }
-            totalMinutes > 0 -> "${totalMinutes}分钟"
-            else -> "不到1分钟"
-        }
-    }
 }

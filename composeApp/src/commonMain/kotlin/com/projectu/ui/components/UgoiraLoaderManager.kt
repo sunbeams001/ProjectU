@@ -69,7 +69,7 @@ class UgoiraLoaderManager(
         
         try {
             val artworkIdLong = artworkId.toLongOrNull()
-                ?: throw IllegalArgumentException("无效的作品ID")
+                ?: throw IllegalArgumentException("Invalid artwork ID")
             
             // 1. 检查是否有完整缓存（元数据 + 帧图片）
             val hasCachedFrames = ugoiraCache.isCached(artworkId)
@@ -125,7 +125,7 @@ class UgoiraLoaderManager(
             val frames = loadFramesFromPaths(framePaths, metadata)
             
             if (frames.isEmpty()) {
-                _loadingState.value = UgoiraLoadingState.Error("无法加载帧图片")
+                _loadingState.value = UgoiraLoadingState.Error("Unable to load frame images")
                 return
             }
             
@@ -133,7 +133,7 @@ class UgoiraLoaderManager(
             
         } catch (e: Exception) {
             e.printStackTrace()
-            _loadingState.value = UgoiraLoadingState.Error(e.message ?: "加载失败")
+            _loadingState.value = UgoiraLoadingState.Error(e.message ?: "Load failed")
         }
     }
     

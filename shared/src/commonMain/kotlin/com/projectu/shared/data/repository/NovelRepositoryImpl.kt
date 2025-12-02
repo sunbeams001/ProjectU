@@ -23,7 +23,7 @@ class NovelRepositoryImpl(
         return try {
             val response = pixivApi.novelApi.getDetail(novelId.toLong())
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "获取小说详情失败"))
+                Result.failure(Exception(response.message ?: "Failed to get novel detail"))
             } else {
                 val novel = response.body!!.toNovel(ageLimitDeterminer)
                 Result.success(novel)
@@ -50,7 +50,7 @@ class NovelRepositoryImpl(
             )
             
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "搜索小说失败"))
+                Result.failure(Exception(response.message ?: "Failed to search novels"))
             } else {
                 val novels = response.body!!.novel.data.toNovelList(
                     tagTranslation = response.body!!.tagTranslation,
@@ -74,7 +74,7 @@ class NovelRepositoryImpl(
             )
             
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "获取推荐小说失败"))
+                Result.failure(Exception(response.message ?: "Failed to get recommended novels"))
             } else {
                 val novels = response.body!!.thumbnails.novel?.toNovelList(
                     tagTranslation = response.body!!.tagTranslation,
@@ -146,7 +146,7 @@ class NovelRepositoryImpl(
                 tags = tags
             )
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "添加收藏失败"))
+                Result.failure(Exception(response.message ?: "Failed to add bookmark"))
             } else {
                 Result.success(response.body!!) // 返回 bookmarkId
             }

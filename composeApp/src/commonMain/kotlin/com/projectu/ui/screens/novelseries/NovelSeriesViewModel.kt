@@ -61,7 +61,7 @@ class NovelSeriesViewModel(
                     _state.update { 
                         it.copy(
                             isLoadingSeries = false,
-                            seriesError = e.message ?: "加载系列详情失败"
+                            seriesError = e.message ?: "Failed to load series detail"
                         ) 
                     }
                 }
@@ -118,7 +118,7 @@ class NovelSeriesViewModel(
                 _state.update { 
                     it.copy(
                         isLoadingContents = false,
-                        contentsError = e.message ?: "加载系列内容失败"
+                        contentsError = e.message ?: "Failed to load series contents"
                     ) 
                 }
             }
@@ -163,7 +163,7 @@ class NovelSeriesViewModel(
                     _state.update { 
                         it.copy(
                             isWatchLoading = false,
-                            watchError = e.message ?: "操作失败"
+                            watchError = e.message ?: "Operation failed"
                         ) 
                     }
                 }
@@ -210,7 +210,7 @@ class NovelSeriesViewModel(
                         _state.update { 
                             it.copy(
                                 isLoadingSeries = false,
-                                seriesError = e.message ?: "加载系列详情失败"
+                                seriesError = e.message ?: "Failed to load series detail"
                             ) 
                         }
                     }

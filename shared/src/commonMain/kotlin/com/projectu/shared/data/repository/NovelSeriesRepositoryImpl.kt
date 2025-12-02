@@ -20,7 +20,7 @@ class NovelSeriesRepositoryImpl(
         return try {
             val response = pixivApi.novelSeriesApi.getDetail(seriesId)
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "获取系列详情失败"))
+                Result.failure(Exception(response.message ?: "Failed to get series detail"))
             } else {
                 val series = response.body!!.toNovelSeries()
                 Result.success(series)
@@ -44,7 +44,7 @@ class NovelSeriesRepositoryImpl(
                 orderBy = orderBy
             )
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "获取系列内容失败"))
+                Result.failure(Exception(response.message ?: "Failed to get series contents"))
             } else {
                 // 从 thumbnails.novel 获取详细信息
                 val thumbnails = response.body!!.thumbnails?.novel ?: emptyList()
@@ -71,7 +71,7 @@ class NovelSeriesRepositoryImpl(
         return try {
             val response = pixivApi.novelSeriesApi.watch(seriesId)
             if (response.error) {
-                Result.failure(Exception(response.message ?: "追更失败"))
+                Result.failure(Exception(response.message ?: "Failed to watch series"))
             } else {
                 Result.success(Unit)
             }
@@ -84,7 +84,7 @@ class NovelSeriesRepositoryImpl(
         return try {
             val response = pixivApi.novelSeriesApi.unwatch(seriesId)
             if (response.error) {
-                Result.failure(Exception(response.message ?: "取消追更失败"))
+                Result.failure(Exception(response.message ?: "Failed to unwatch series"))
             } else {
                 Result.success(Unit)
             }

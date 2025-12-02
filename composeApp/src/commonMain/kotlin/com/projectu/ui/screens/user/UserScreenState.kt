@@ -4,20 +4,22 @@ import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.MangaSeries
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.NovelSeries
+import org.jetbrains.compose.resources.StringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 用户页面Tab类型
  */
-enum class UserProfileTab(val displayName: String) {
-    ILLUSTS("插画"),
-    MANGA("漫画"),
-    NOVELS("小说"),
-    MANGA_SERIES("漫画系列"),
-    NOVEL_SERIES("小说系列"),
-    BOOKMARK_ILLUSTS_PUBLIC("公开收藏·插画"),
-    BOOKMARK_ILLUSTS_PRIVATE("私人收藏·插画"),
-    BOOKMARK_NOVELS_PUBLIC("公开收藏·小说"),
-    BOOKMARK_NOVELS_PRIVATE("私人收藏·小说")
+enum class UserProfileTab(val displayNameRes: StringResource) {
+    ILLUSTS(Res.string.user_tab_illusts),
+    MANGA(Res.string.user_tab_manga),
+    NOVELS(Res.string.user_tab_novels),
+    MANGA_SERIES(Res.string.user_tab_manga_series),
+    NOVEL_SERIES(Res.string.user_tab_novel_series),
+    BOOKMARK_ILLUSTS_PUBLIC(Res.string.user_tab_bookmark_illusts_public),
+    BOOKMARK_ILLUSTS_PRIVATE(Res.string.user_tab_bookmark_illusts_private),
+    BOOKMARK_NOVELS_PUBLIC(Res.string.user_tab_bookmark_novels_public),
+    BOOKMARK_NOVELS_PRIVATE(Res.string.user_tab_bookmark_novels_private)
 }
 
 /**

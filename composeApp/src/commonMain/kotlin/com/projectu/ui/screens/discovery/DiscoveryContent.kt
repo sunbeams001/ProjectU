@@ -153,7 +153,7 @@ fun DiscoveryContent(
                     }
                 }
             },
-            getItemLabel = { type -> type.displayName },
+            getItemLabel = { type -> stringResource(type.displayNameRes) },
             modifier = Modifier.fillMaxWidth()
         )
         
@@ -399,7 +399,7 @@ fun DiscoveryUsersPage(
                         color = MaterialTheme.colorScheme.error
                     )
                     Button(onClick = onRefresh) {
-                        Text("重试")
+                        Text(stringResource(Res.string.common_retry))
                     }
                 }
             }
@@ -474,7 +474,7 @@ fun DiscoveryIllustsPage(
                             color = MaterialTheme.colorScheme.error
                         )
                         Button(onClick = onRefresh) {
-                            Text("重试")
+                            Text(stringResource(Res.string.common_retry))
                         }
                     }
                 }
@@ -551,7 +551,7 @@ fun DiscoveryNovelsPage(
                             color = MaterialTheme.colorScheme.error
                         )
                         Button(onClick = onRefresh) {
-                            Text("重试")
+                            Text(stringResource(Res.string.common_retry))
                         }
                     }
                 }

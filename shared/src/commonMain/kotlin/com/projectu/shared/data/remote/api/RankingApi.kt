@@ -80,7 +80,7 @@ class RankingApi(private val client: PixivApiClient) {
         
         // 小说排行榜JSON API返回标准的PixivResponse格式
         val response = client.get<NovelRankingBody>("/ajax/ranking/novel", params)
-        return response.body ?: throw IllegalStateException("小说排行榜数据为空")
+        return response.body ?: throw IllegalStateException("Novel ranking data is empty")
     }
 }
 

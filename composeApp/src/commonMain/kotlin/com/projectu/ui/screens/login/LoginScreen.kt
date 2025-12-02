@@ -193,7 +193,7 @@ private fun PhpSessionIdLoginForm(
                         Icon(
                             imageVector = if (passwordVisible) Icons.Default.Visibility 
                                 else Icons.Default.VisibilityOff,
-                            contentDescription = if (passwordVisible) "隐藏" else "显示"
+                            contentDescription = if (passwordVisible) stringResource(Res.string.login_password_hide) else stringResource(Res.string.login_password_show)
                         )
                     }
                 },
@@ -243,12 +243,12 @@ private fun AppLoginForm() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "应用内登录",
+                text = stringResource(Res.string.login_in_app),
                 style = MaterialTheme.typography.titleMedium
             )
             
             Text(
-                text = "此功能正在开发中，敬请期待！",
+                text = stringResource(Res.string.login_in_development),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -271,14 +271,14 @@ private fun SegmentedButton(
         FilterChip(
             selected = currentMode == LoginMode.PHPSESSID,
             onClick = { onModeChange(LoginMode.PHPSESSID) },
-            label = { Text("PHPSESSID 登录") },
+            label = { Text(stringResource(Res.string.login_phpsessid_login)) },
             modifier = Modifier.weight(1f)
         )
         
         FilterChip(
             selected = currentMode == LoginMode.APP_LOGIN,
             onClick = { onModeChange(LoginMode.APP_LOGIN) },
-            label = { Text("应用内登录") },
+            label = { Text(stringResource(Res.string.login_in_app)) },
             modifier = Modifier.weight(1f)
         )
     }

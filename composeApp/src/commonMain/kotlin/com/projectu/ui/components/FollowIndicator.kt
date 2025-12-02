@@ -26,7 +26,9 @@ import com.projectu.shared.domain.usecase.FollowUserUseCase
 import com.projectu.shared.domain.usecase.UnfollowUserUseCase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import projectu.composeapp.generated.resources.*
 
 /**
  * 关注状态指示器组件（带内置关注逻辑）
@@ -166,7 +168,7 @@ fun FollowIndicator(
             FollowStatus.NOT_FOLLOWING -> {
                 Icon(
                     imageVector = Icons.Default.PersonAdd,
-                    contentDescription = "关注",
+                    contentDescription = stringResource(Res.string.follow_follow),
                     tint = notFollowedColor,
                     modifier = Modifier.size(size * 0.7f)
                 )
@@ -174,7 +176,7 @@ fun FollowIndicator(
             FollowStatus.PUBLIC -> {
                 Icon(
                     imageVector = Icons.Default.PersonRemove,
-                    contentDescription = "取消关注",
+                    contentDescription = stringResource(Res.string.follow_unfollow),
                     tint = followedColor,
                     modifier = Modifier.size(size * 0.7f)
                 )
@@ -183,7 +185,7 @@ fun FollowIndicator(
                 // 悄悄关注：PersonRemove 图标 + VisibilityOff 覆盖层
                 Icon(
                     imageVector = Icons.Default.PersonRemove,
-                    contentDescription = "取消悄悄关注",
+                    contentDescription = stringResource(Res.string.follow_unfollow_private),
                     tint = privateFollowedColor,
                     modifier = Modifier.size(size * 0.7f)
                 )

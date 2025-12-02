@@ -46,7 +46,7 @@ data class Novel(
     // 阅读信息
     val textCount: Int, // 文本字数
     val wordCount: Int, // 单词数
-    val readingTime: Int, // 预计阅读时间（分钟）
+    val readingTime: Int, // 预计阅读时间（秒）
     val useWordCount: Boolean = false,
     // 分类和类型
     val genre: NovelGenre,

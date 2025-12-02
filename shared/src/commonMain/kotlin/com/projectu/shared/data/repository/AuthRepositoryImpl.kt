@@ -29,7 +29,7 @@ class AuthRepositoryImpl(
         return try {
             // 验证 PHPSESSID 格式
             if (!isValidPhpSessionId(phpSessionId)) {
-                return Result.failure(IllegalArgumentException("PHPSESSID 格式无效，格式应为: userid_xxxxx"))
+                return Result.failure(IllegalArgumentException("Invalid PHPSESSID format, should be: userid_xxxxx"))
             }
             
             // 保存凭据

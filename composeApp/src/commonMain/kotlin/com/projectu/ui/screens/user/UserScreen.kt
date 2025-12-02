@@ -39,6 +39,8 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.MangaSeries
@@ -240,7 +242,7 @@ fun UserScreenContent(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = stringResource(Res.string.nav_back)
                         )
                     }
                 },
@@ -281,7 +283,7 @@ fun UserScreenContent(
                             color = MaterialTheme.colorScheme.error
                         )
                         Button(onClick = onRefresh) {
-                            Text("重试")
+                            Text(stringResource(Res.string.common_retry))
                         }
                     }
                 }
@@ -332,7 +334,7 @@ fun UserScreenContent(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "该用户暂无作品",
+                                    text = stringResource(Res.string.user_no_works),
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -393,7 +395,7 @@ fun UserProfileHeader(
         
         // 关注数
         Text(
-            text = "关注 ${profile.following}",
+            text = stringResource(Res.string.user_following_count, profile.following),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -483,7 +485,7 @@ fun UserProfileTabRow(
             Tab(
                 selected = index == safeTabIndex,
                 onClick = { onTabClick(index) },
-                text = { Text(tab.displayName) },
+                text = { Text(stringResource(tab.displayNameRes)) },
                 modifier = Modifier.onSizeChanged { size ->
                     tabWidths[index] = size.width
                 }

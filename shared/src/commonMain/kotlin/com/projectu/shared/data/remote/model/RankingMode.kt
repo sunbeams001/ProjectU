@@ -15,60 +15,60 @@ enum class RankingMode(
     // ==================== 一般排行榜 - 普通 ====================
     
     /** 今日 */
-    DAILY("daily", "今日", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    DAILY("daily", "Daily", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     /** 本周 */
-    WEEKLY("weekly", "本周", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    WEEKLY("weekly", "Weekly", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     /** 本月 */
-    MONTHLY("monthly", "本月", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    MONTHLY("monthly", "Monthly", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     /** 新人 */
-    ROOKIE("rookie", "新人", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    ROOKIE("rookie", "Rookie", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     /** 原创 */
-    ORIGINAL("original", "原创", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    ORIGINAL("original", "Original", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     /** 男性向 */
-    MALE("male", "男性向", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    MALE("male", "Male", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     /** 女性向 */
-    FEMALE("female", "女性向", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    FEMALE("female", "Female", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     // ==================== 一般排行榜 - AI生成 ====================
     
     /** AI生成 */
-    DAILY_AI("daily_ai", "AI生成", RankingCategory.GENERAL, RankingAiType.AI),
+    DAILY_AI("daily_ai", "AI", RankingCategory.GENERAL, RankingAiType.AI),
     
     // ==================== 小说专属排行榜 ====================
     
     /** 本周原创（小说） */
-    WEEKLY_ORIGINAL("weekly_original", "本周原创", RankingCategory.GENERAL, RankingAiType.NON_AI),
+    WEEKLY_ORIGINAL("weekly_original", "Weekly Original", RankingCategory.GENERAL, RankingAiType.NON_AI),
     
     /** 本周AI（小说） */
-    WEEKLY_AI("weekly_ai", "本周AI", RankingCategory.GENERAL, RankingAiType.AI),
+    WEEKLY_AI("weekly_ai", "Weekly AI", RankingCategory.GENERAL, RankingAiType.AI),
     
     /** 本周R-18 AI（小说） */
-    WEEKLY_R18_AI("weekly_r18_ai", "本周R-18 AI", RankingCategory.R18, RankingAiType.AI),
+    WEEKLY_R18_AI("weekly_r18_ai", "Weekly R-18 AI", RankingCategory.R18, RankingAiType.AI),
     
     // ==================== R-18 排行榜 - 普通 ====================
     
     /** 今日R-18 */
-    DAILY_R18("daily_r18", "今日R-18", RankingCategory.R18, RankingAiType.NON_AI),
+    DAILY_R18("daily_r18", "Daily R-18", RankingCategory.R18, RankingAiType.NON_AI),
     
     /** 本周R-18 */
-    WEEKLY_R18("weekly_r18", "本周R-18", RankingCategory.R18, RankingAiType.NON_AI),
+    WEEKLY_R18("weekly_r18", "Weekly R-18", RankingCategory.R18, RankingAiType.NON_AI),
     
     /** 男性向R-18 */
-    MALE_R18("male_r18", "男性向R-18", RankingCategory.R18, RankingAiType.NON_AI),
+    MALE_R18("male_r18", "Male R-18", RankingCategory.R18, RankingAiType.NON_AI),
     
     /** 女性向R-18 */
-    FEMALE_R18("female_r18", "女性向R-18", RankingCategory.R18, RankingAiType.NON_AI),
+    FEMALE_R18("female_r18", "Female R-18", RankingCategory.R18, RankingAiType.NON_AI),
     
     // ==================== R-18 排行榜 - AI生成 ====================
     
     /** AI生成R-18 */
-    DAILY_R18_AI("daily_r18_ai", "AI生成R-18", RankingCategory.R18, RankingAiType.AI),
+    DAILY_R18_AI("daily_r18_ai", "AI R-18", RankingCategory.R18, RankingAiType.AI),
     
     // ==================== R-18G 排行榜 ====================
     
@@ -226,7 +226,7 @@ enum class RankingMode(
  */
 enum class RankingCategory(val displayName: String) {
     /** 一般 */
-    GENERAL("一般"),
+    GENERAL("General"),
     /** R-18 */
     R18("R-18"),
     /** R-18G（猎奇向） */
@@ -238,7 +238,7 @@ enum class RankingCategory(val displayName: String) {
  */
 enum class RankingAiType(val displayName: String) {
     /** 非AI生成（普通） */
-    NON_AI("普通"),
+    NON_AI("Non-AI"),
     /** AI生成 */
-    AI("AI生成")
+    AI("AI")
 }

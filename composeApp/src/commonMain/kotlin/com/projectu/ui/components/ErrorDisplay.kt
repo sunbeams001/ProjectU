@@ -10,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 统一的错误显示组件
@@ -58,7 +60,7 @@ fun FullScreenError(
     ) {
         Icon(
             imageVector = Icons.Default.Warning,
-            contentDescription = "错误",
+            contentDescription = stringResource(Res.string.error_icon_desc),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(64.dp)
         )
@@ -86,7 +88,7 @@ fun FullScreenError(
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("重试")
+            Text(stringResource(Res.string.common_retry))
         }
     }
 }
@@ -111,7 +113,7 @@ fun InlineError(
         ) {
             Icon(
                 imageVector = Icons.Default.Warning,
-                contentDescription = "加载失败",
+                contentDescription = stringResource(Res.string.error_load_failed),
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(32.dp)
             )
@@ -132,7 +134,7 @@ fun InlineError(
             ) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = "重试",
+                    contentDescription = stringResource(Res.string.common_retry),
                     modifier = Modifier.size(20.dp)
                 )
             }

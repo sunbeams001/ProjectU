@@ -255,7 +255,7 @@ class ArtworkDetailViewModel(
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                error = "无效的作品ID"
+                                error = "Invalid artwork ID"
                             )
                         }
                     }
@@ -321,7 +321,7 @@ class ArtworkDetailViewModel(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                val errorMessage = e.message ?: "加载失败"
+                val errorMessage = e.message ?: "Load failed"
                 
                 // 缓存错误信息（即使是静默加载也要缓存）
                 failedArtworkErrors[artworkId] = errorMessage

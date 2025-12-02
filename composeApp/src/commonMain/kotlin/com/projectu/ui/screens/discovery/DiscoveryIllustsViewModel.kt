@@ -167,7 +167,7 @@ class DiscoveryIllustsViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = error.message ?: "未知错误"
+                            error = error.message ?: "Unknown error"
                         )
                     }
                 }

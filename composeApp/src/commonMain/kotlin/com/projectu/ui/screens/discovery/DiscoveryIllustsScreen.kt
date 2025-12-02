@@ -25,11 +25,7 @@ import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 import org.jetbrains.compose.resources.stringResource
-import projectu.composeapp.generated.resources.Res
-import projectu.composeapp.generated.resources.discovery_recommended_illusts
-import projectu.composeapp.generated.resources.discovery_mode_all
-import projectu.composeapp.generated.resources.discovery_mode_safe
-import projectu.composeapp.generated.resources.discovery_mode_r18
+import projectu.composeapp.generated.resources.*
 
 /**
  * 发现插画页面
@@ -109,7 +105,7 @@ fun DiscoveryIllustsContent(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = stringResource(Res.string.nav_back)
                         )
                     }
                 }

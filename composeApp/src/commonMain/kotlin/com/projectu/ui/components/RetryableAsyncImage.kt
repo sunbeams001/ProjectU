@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 带错误处理和重试功能的图片组件
@@ -59,13 +61,13 @@ fun RetryableAsyncImage(
                     ) {
                         Icon(
                             imageVector = Icons.Default.BrokenImage,
-                            contentDescription = "加载失败",
+                            contentDescription = stringResource(Res.string.error_load_failed),
                             tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(32.dp)
                         )
                         
                         Text(
-                            text = "图片加载失败",
+                            text = stringResource(Res.string.error_image_load_failed),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -75,7 +77,7 @@ fun RetryableAsyncImage(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "重试",
+                                contentDescription = stringResource(Res.string.common_retry),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -88,7 +90,7 @@ fun RetryableAsyncImage(
                     ) {
                         Icon(
                             imageVector = Icons.Default.BrokenImage,
-                            contentDescription = "加载失败",
+                            contentDescription = stringResource(Res.string.error_load_failed),
                             tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
                             modifier = Modifier.size(24.dp)
                         )
@@ -101,7 +103,7 @@ fun RetryableAsyncImage(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "重试",
+                                contentDescription = stringResource(Res.string.common_retry),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )

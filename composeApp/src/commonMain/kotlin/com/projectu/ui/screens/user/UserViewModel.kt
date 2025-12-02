@@ -111,7 +111,7 @@ class UserViewModel(
                     _state.update { 
                         it.copy(
                             isLoadingProfile = false, 
-                            profileError = userInfoResponse.message ?: "加载用户信息失败"
+                            profileError = userInfoResponse.message ?: "Failed to load user info"
                         ) 
                     }
                     return@launch
@@ -119,7 +119,7 @@ class UserViewModel(
                 
                 val userInfo = userInfoResponse.body ?: run {
                     _state.update { 
-                        it.copy(isLoadingProfile = false, profileError = "用户信息为空") 
+                        it.copy(isLoadingProfile = false, profileError = "User info is empty") 
                     }
                     return@launch
                 }
@@ -130,7 +130,7 @@ class UserViewModel(
                     _state.update { 
                         it.copy(
                             isLoadingProfile = false, 
-                            profileError = profileAllResponse.message ?: "加载作品列表失败"
+                            profileError = profileAllResponse.message ?: "Failed to load works list"
                         ) 
                     }
                     return@launch
@@ -138,7 +138,7 @@ class UserViewModel(
                 
                 val profileAll = profileAllResponse.body ?: run {
                     _state.update { 
-                        it.copy(isLoadingProfile = false, profileError = "作品概况为空") 
+                        it.copy(isLoadingProfile = false, profileError = "Works overview is empty") 
                     }
                     return@launch
                 }
@@ -245,7 +245,7 @@ class UserViewModel(
                 _state.update { 
                     it.copy(
                         isLoadingProfile = false, 
-                        profileError = e.message ?: "网络错误"
+                        profileError = e.message ?: "Network error"
                     ) 
                 }
             }
@@ -291,7 +291,7 @@ class UserViewModel(
                         }
                     } catch (e: Exception) {
                         updateTabData(tab) { 
-                            it.copy(isLoading = false, error = e.message ?: "加载失败") 
+                            it.copy(isLoading = false, error = e.message ?: "Failed to load") 
                         }
                     }
                 }
@@ -329,7 +329,7 @@ class UserViewModel(
                 }
             } catch (e: Exception) {
                 updateTabData(tab) { 
-                    it.copy(isLoading = false, error = e.message ?: "加载失败") 
+                    it.copy(isLoading = false, error = e.message ?: "Failed to load") 
                 }
             }
         }
@@ -369,14 +369,14 @@ class UserViewModel(
                 }
             } catch (e: Exception) {
                 updateTabData(currentTab) { 
-                    it.copy(isLoading = false, error = e.message ?: "加载更多失败") 
+                    it.copy(isLoading = false, error = e.message ?: "Failed to load more") 
                 }
             }
         }
     }
     
     /**
-     * 加载插画或漫�?
+     * 加载插画或漫画
      */
     private suspend fun loadIllustOrManga(tab: UserProfileTab) {
         val tabData = _state.value.tabDataCache[tab] ?: return
@@ -407,7 +407,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "加载失败") 
+                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
             }
             return
         }
@@ -458,7 +458,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "加载失败") 
+                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
             }
             return
         }
@@ -507,13 +507,13 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "加载失败") 
+                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
             }
             return
         }
         
         val body = response.body ?: run {
-            updateTabData(tab) { it.copy(isLoading = false, error = "数据为空") }
+            updateTabData(tab) { it.copy(isLoading = false, error = "Data is empty") }
             return
         }
         
@@ -565,13 +565,13 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "加载失败") 
+                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
             }
             return
         }
         
         val body = response.body ?: run {
-            updateTabData(tab) { it.copy(isLoading = false, error = "数据为空") }
+            updateTabData(tab) { it.copy(isLoading = false, error = "Data is empty") }
             return
         }
         

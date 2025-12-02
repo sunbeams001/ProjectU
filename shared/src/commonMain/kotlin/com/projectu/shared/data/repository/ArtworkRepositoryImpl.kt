@@ -31,7 +31,7 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.toArtwork(ageLimitDeterminer) ?: throw IllegalStateException("作品详情为空")
+        response.body?.toArtwork(ageLimitDeterminer) ?: throw IllegalStateException("Artwork detail is empty")
     }
 
     override suspend fun getRecommendedArtworks(
@@ -163,7 +163,7 @@ class ArtworkRepositoryImpl(
             throw IllegalStateException(detailResponse.message)
         }
         val bookmarkId = detailResponse.body?.bookmarkData?.id
-            ?: throw IllegalStateException("作品未收藏")
+            ?: throw IllegalStateException("Artwork is not bookmarked")
         
         val response = pixivApi.bookmarkApi.deleteIllust(bookmarkId.toString())
         if (response.error) {
@@ -176,7 +176,7 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        val body = response.body ?: throw IllegalStateException("Ugoira元数据为空")
+        val body = response.body ?: throw IllegalStateException("Ugoira metadata is empty")
         body.toUgoiraMetadata()
     }
 
@@ -192,7 +192,7 @@ class ArtworkRepositoryImpl(
             throw IllegalStateException(response.message)
         }
         
-        val pages = response.body ?: throw IllegalStateException("多页作品详情为空")
+        val pages = response.body ?: throw IllegalStateException("Multi-page artwork detail is empty")
         artwork.updatePages(pages)
     }
 

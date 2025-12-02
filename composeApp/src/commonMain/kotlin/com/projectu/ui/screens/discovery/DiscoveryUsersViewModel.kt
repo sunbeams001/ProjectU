@@ -140,7 +140,7 @@ class DiscoveryUsersViewModel(
                         it.copy(
                             isLoading = false,
                             isLoadingMore = false,
-                            error = error.message ?: "未知错误"
+                            error = error.message ?: "Unknown error"
                         )
                     }
                 }

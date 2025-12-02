@@ -18,7 +18,9 @@ import com.projectu.shared.domain.usecase.UnbookmarkNovelUseCase
 import com.projectu.ui.components.icons.PixivBookmarkIcons
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import projectu.composeapp.generated.resources.*
 
 /**
  * 小说收藏状态指示器组件（带内置收藏逻辑）
@@ -76,9 +78,9 @@ fun NovelBookmarkIndicator(
     Icon(
         imageVector = bookmarkIcon,
         contentDescription = when (currentStatus) {
-            BookmarkStatus.NOT_BOOKMARKED -> "未收藏"
-            BookmarkStatus.PUBLIC -> "公开收藏"
-            BookmarkStatus.PRIVATE -> "私人收藏"
+            BookmarkStatus.NOT_BOOKMARKED -> stringResource(Res.string.bookmark_not_bookmarked)
+            BookmarkStatus.PUBLIC -> stringResource(Res.string.bookmark_public)
+            BookmarkStatus.PRIVATE -> stringResource(Res.string.bookmark_private)
         },
         tint = androidx.compose.ui.graphics.Color.Unspecified, // 使用图标自带颜色
         modifier = modifier

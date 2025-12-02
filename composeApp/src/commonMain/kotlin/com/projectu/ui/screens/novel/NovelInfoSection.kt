@@ -35,6 +35,10 @@ import com.projectu.shared.util.DateTimeFormatter
 import com.projectu.ui.components.FollowIndicator
 import com.projectu.ui.components.HtmlText
 import com.projectu.ui.components.NovelBookmarkIndicator
+import com.projectu.ui.util.formatNumber
+import com.projectu.ui.util.formatReadingTime
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 小说信息展示区域
@@ -117,7 +121,7 @@ fun NovelInfoSection(
                         } else {
                             Icon(
                                 imageVector = if (hasMarker) Icons.Default.BookmarkAdded else Icons.Default.BookmarkAdd,
-                                contentDescription = if (hasMarker) "移除书签" else "添加书签",
+                                contentDescription = if (hasMarker) stringResource(Res.string.novel_remove_marker) else stringResource(Res.string.novel_add_marker),
                                 tint = if (hasMarker) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(24.dp)
                             )
@@ -133,7 +137,7 @@ fun NovelInfoSection(
                     // 展开/收缩图标
                     Icon(
                         imageVector = if (isExpanded) Icons.Default.ExpandMore else Icons.Default.ExpandLess,
-                        contentDescription = if (isExpanded) "收起" else "展开",
+                        contentDescription = if (isExpanded) stringResource(Res.string.novel_collapse) else stringResource(Res.string.novel_expand),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -245,7 +249,7 @@ fun NovelInfoSection(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Text(
-                                    text = "📝 ${formatNumber(novel.textCount)}字",
+                                    text = "📝 " + stringResource(Res.string.novel_text_count, formatNumber(novel.textCount)),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -259,7 +263,7 @@ fun NovelInfoSection(
                             // 页数
                             if (novel.pageCount > 1) {
                                 Text(
-                                    text = "📄 共${novel.pageCount}页",
+                                    text = "📄 " + stringResource(Res.string.novel_page_count, novel.pageCount),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -274,22 +278,22 @@ fun NovelInfoSection(
                     ) {
                         StatItem(
                             icon = Icons.Default.Visibility,
-                            label = "浏览",
+                            label = stringResource(Res.string.novel_stat_views),
                             value = formatNumber(novel.viewCount)
                         )
                         StatItem(
                             icon = Icons.Default.SentimentSatisfied,
-                            label = "点赞",
+                            label = stringResource(Res.string.novel_stat_likes),
                             value = formatNumber(novel.likeCount)
                         )
                         StatItem(
                             icon = Icons.Default.Favorite,
-                            label = "收藏",
+                            label = stringResource(Res.string.novel_stat_bookmarks),
                             value = formatNumber(novel.bookmarkCount)
                         )
                         StatItem(
                             icon = Icons.AutoMirrored.Filled.Comment,
-                            label = "评论",
+                            label = stringResource(Res.string.novel_stat_comments),
                             value = formatNumber(novel.commentCount)
                         )
                     }
@@ -302,7 +306,7 @@ fun NovelInfoSection(
                         
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(
-                                text = "简介",
+                                text = stringResource(Res.string.novel_description),
                                 style = MaterialTheme.typography.titleSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -328,7 +332,7 @@ fun NovelInfoSection(
                     if (novel.tags.isNotEmpty()) {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(
-                                text = "标签",
+                                text = stringResource(Res.string.novel_tags),
                                 style = MaterialTheme.typography.titleSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -442,7 +446,7 @@ fun NovelInfoSection(
                     
                     // 发布时间
                     Text(
-                        text = "发布时间: ${DateTimeFormatter.formatToLocalDateTime(novel.createdTime)}",
+                        text = stringResource(Res.string.novel_publish_time, DateTimeFormatter.formatToLocalDateTime(novel.createdTime)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -517,32 +521,6 @@ private fun TagChip(
             color = textColor,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
         )
-    }
-}
-
-/**
- * 格式化数字
- */
-private fun formatNumber(number: Int): String {
-    return when {
-        number >= 10000 -> String.format("%.1fw", number / 10000.0)
-        number >= 1000 -> String.format("%.1fk", number / 1000.0)
-        else -> number.toString()
-    }
-}
-
-/**
- * 格式化阅读时间
- */
-private fun formatReadingTime(minutes: Int): String {
-    return when {
-        minutes >= 60 -> {
-            val hours = minutes / 60
-            val mins = minutes % 60
-            if (mins > 0) "${hours}小时${mins}分钟" else "${hours}小时"
-        }
-        minutes > 0 -> "${minutes}分钟"
-        else -> "不到1分钟"
     }
 }
 

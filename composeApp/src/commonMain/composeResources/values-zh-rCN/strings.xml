@@ -26,13 +26,30 @@
     <string name="discovery_mode_r18">R-18</string>
     
     <!-- Ranking Screen -->
-    <string name="ranking_daily">日榜</string>
-    <string name="ranking_weekly">周榜</string>
-    <string name="ranking_monthly">月榜</string>
+    <string name="ranking_daily">今日</string>
+    <string name="ranking_weekly">本周</string>
+    <string name="ranking_monthly">本月</string>
     <string name="ranking_rookie">新人</string>
     <string name="ranking_original">原创</string>
-    <string name="ranking_male">男性向</string>
-    <string name="ranking_female">女性向</string>
+    <string name="ranking_male">受男性欢迎</string>
+    <string name="ranking_female">受女性欢迎</string>
+    <string name="ranking_ai">AI生成</string>
+    <string name="ranking_weekly_original">本周原创</string>
+    <string name="ranking_weekly_ai">本周AI</string>
+    <string name="ranking_weekly_r18_ai">本周R-18 AI</string>
+    <string name="ranking_daily_r18">今日R-18</string>
+    <string name="ranking_weekly_r18">本周R-18</string>
+    <string name="ranking_male_r18">受男性欢迎R-18</string>
+    <string name="ranking_female_r18">受女性欢迎R-18</string>
+    <string name="ranking_ai_r18">AI生成R-18</string>
+    <string name="ranking_r18g">R-18G</string>
+    
+    <!-- Ranking Content Types -->
+    <string name="ranking_content_all">综合</string>
+    <string name="ranking_content_illust">插画</string>
+    <string name="ranking_content_manga">漫画</string>
+    <string name="ranking_content_ugoira">动图</string>
+    <string name="ranking_content_novel">小说</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">收藏</string>
@@ -178,5 +195,171 @@
     <string name="cache_size_medium">中 (512 MB)</string>
     <string name="cache_size_large">大 (1 GB)</string>
     <string name="cache_size_extra_large">超大 (2 GB)</string>
+    
+    <!-- Bookmark Status -->
+    <string name="bookmark_not_bookmarked">未收藏</string>
+    <string name="bookmark_public">公开收藏</string>
+    <string name="bookmark_private">私人收藏</string>
+    
+    <!-- Follow Status -->
+    <string name="follow_follow">关注</string>
+    <string name="follow_unfollow">取消关注</string>
+    <string name="follow_unfollow_private">取消悄悄关注</string>
+    
+    <!-- Error Messages -->
+    <string name="error_icon_desc">错误</string>
+    <string name="error_load_failed">加载失败</string>
+    <string name="error_image_load_failed">图片加载失败</string>
+    <string name="error_unknown">未知错误</string>
+    <string name="error_network">网络错误</string>
+    <string name="error_data_empty">数据为空</string>
+    <string name="error_invalid_artwork_id">无效的作品ID</string>
+    <string name="error_cannot_load_frames">无法加载帧图片</string>
+    
+    <!-- Series -->
+    <string name="series_watching">追更中</string>
+    <string name="series_total_episodes">共 %1$d 篇</string>
+    <string name="series_update">更新: %1$s</string>
+    <string name="series_concluded">完结</string>
+    <string name="series_ongoing">连载</string>
+    <string name="series_original">原创</string>
+    <string name="series_word_count">%1$s字</string>
+    <string name="series_works_list">作品列表（共 %1$d 篇）</string>
+    <string name="series_last_update">最后更新: %1$s</string>
+    <string name="series_add_watch">加入追更</string>
+    <string name="series_remove_watch">取消追更</string>
+    <string name="series_label">系列: %1$s</string>
+    <string name="novel_series">小说系列</string>
+    
+    <!-- Content Types -->
+    <string name="content_illusts">插画</string>
+    <string name="content_manga">漫画</string>
+    <string name="content_novels">小说</string>
+    <string name="content_manga_series">漫画系列</string>
+    <string name="content_novel_series">小说系列</string>
+    <string name="content_bookmark_illusts_public">公开收藏·插画</string>
+    <string name="content_bookmark_illusts_private">私人收藏·插画</string>
+    <string name="content_bookmark_novels_public">公开收藏·小说</string>
+    <string name="content_bookmark_novels_private">私人收藏·小说</string>
+    <string name="content_all">全部</string>
+    <string name="content_ugoira">动图</string>
+    
+    <!-- Ranking (Additional) -->
+    <string name="ranking_category_general">一般</string>
+    <string name="ranking_ai_type_normal">普通</string>
+    <string name="ranking_ai_type_ai">AI生成</string>
+    <string name="ranking_select_date">选择日期</string>
+    <string name="ranking_latest">最新榜单</string>
+    <string name="ranking_current">当前: %1$s</string>
+    <string name="ranking_previous_day">前一天: %1$s</string>
+    <string name="ranking_next_day">后一天: %1$s</string>
+    <string name="ranking_select_ranking_date">选择排行榜日期</string>
+    
+    <!-- Ugoira Player -->
+    <string name="ugoira_playback_speed">倍速</string>
+    <string name="ugoira_getting_info">获取动图信息...</string>
+    <string name="ugoira_downloading_file">下载动画文件...</string>
+    <string name="ugoira_extracting_frames">解压帧图片...</string>
+    <string name="ugoira_loading_frames">加载帧图片 %1$d/%2$d</string>
+    <string name="ugoira_loading_frames_percent">加载帧图片... %1$d%%</string>
+    <string name="ugoira_load_failed">加载失败: %1$s</string>
+    
+    <!-- Navigation -->
+    <string name="nav_back">返回</string>
+    <string name="nav_refresh">刷新</string>
+    
+    <!-- Novel -->
+    <string name="novel_page_number">第%1$d页</string>
+    <string name="novel_no_content">暂无内容</string>
+    <string name="novel_pixiv_illust">Pixiv 插图 %1$s</string>
+    <string name="novel_illust">插图 %1$s</string>
+    <string name="novel_illust_image">小说插图</string>
+    <string name="novel_text_count">%1$s字</string>
+    <string name="novel_page_count">共%1$d页</string>
+    <string name="novel_stat_views">浏览</string>
+    <string name="novel_stat_likes">点赞</string>
+    <string name="novel_stat_bookmarks">收藏</string>
+    <string name="novel_stat_comments">评论</string>
+    <string name="novel_description">简介</string>
+    <string name="novel_tags">标签</string>
+    <string name="novel_publish_time">发布时间: %1$s</string>
+    <string name="novel_remove_marker">移除书签</string>
+    <string name="novel_add_marker">添加书签</string>
+    <string name="novel_collapse">收起</string>
+    <string name="novel_expand">展开</string>
+    
+    <!-- Time Format -->
+    <string name="time_hours_minutes">%1$d小时%2$d分钟</string>
+    <string name="time_hours">%1$d小时</string>
+    <string name="time_minutes">%1$d分钟</string>
+    <string name="time_less_than_minute">不到1分钟</string>
+    
+    <!-- Login -->
+    <string name="login_in_app">应用内登录</string>
+    <string name="login_in_development">此功能正在开发中，敬请期待！</string>
+    <string name="login_password_hide">隐藏</string>
+    <string name="login_password_show">显示</string>
+    <string name="login_phpsessid_login">PHPSESSID 登录</string>
+    <string name="login_failed">登录失败</string>
+    <string name="login_failed_check_format">登录失败，请检查 PHPSESSID 格式</string>
+    <string name="login_failed_with_message">登录失败: %1$s</string>
+    
+    <!-- User -->
+    <string name="user_no_works">该用户暂无作品</string>
+    <string name="user_following_count">关注 %1$d</string>
+    <string name="user_load_info_failed">加载用户信息失败</string>
+    <string name="user_info_empty">用户信息为空</string>
+    <string name="user_load_works_failed">加载作品列表失败</string>
+    <string name="user_works_empty">作品概况为空</string>
+    <string name="user_load_more_failed">加载更多失败</string>
+    
+    <!-- User Profile Tabs -->
+    <string name="user_tab_illusts">插画</string>
+    <string name="user_tab_manga">漫画</string>
+    <string name="user_tab_novels">小说</string>
+    <string name="user_tab_manga_series">漫画系列</string>
+    <string name="user_tab_novel_series">小说系列</string>
+    <string name="user_tab_bookmark_illusts_public">公开收藏·插画</string>
+    <string name="user_tab_bookmark_illusts_private">私人收藏·插画</string>
+    <string name="user_tab_bookmark_novels_public">公开收藏·小说</string>
+    <string name="user_tab_bookmark_novels_private">私人收藏·小说</string>
+    <string name="user_network_error">网络错误</string>
+    <string name="user_load_failed">加载失败</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_publish_time">投稿时间: %1$s</string>
+    <string name="artwork_detail_empty">作品详情为空</string>
+    <string name="artwork_not_bookmarked">作品未收藏</string>
+    <string name="artwork_ugoira_meta_empty">Ugoira元数据为空</string>
+    <string name="artwork_pages_empty">多页作品详情为空</string>
+    
+    <!-- Settings Debug -->
+    <string name="settings_api_test_tool">API 测试工具 🔧</string>
+    <string name="settings_api_test_subtitle">调试 Pixiv API 接口</string>
+    <string name="settings_api_test_desc">系统化测试所有已集成的 Pixiv API</string>
+    <string name="settings_phpsessid_empty">PHPSESSID 不能为空</string>
+    <string name="settings_phpsessid_invalid_format">格式无效，应为: userid_xxxxx</string>
+    
+    <!-- API Errors -->
+    <string name="api_post_comment_failed">发表评论失败</string>
+    <string name="api_delete_comment_failed">删除评论失败</string>
+    <string name="api_unknown_title">未知标题</string>
+    <string name="api_unknown_author">未知作者</string>
+    <string name="api_cannot_get_csrf">无法获取CSRF Token</string>
+    <string name="api_novel_ranking_empty">小说排行榜数据为空</string>
+    <string name="api_get_novel_detail_failed">获取小说详情失败</string>
+    <string name="api_search_novel_failed">搜索小说失败</string>
+    <string name="api_get_recommended_novels_failed">获取推荐小说失败</string>
+    <string name="api_add_bookmark_failed">添加收藏失败</string>
+    <string name="api_get_series_detail_failed">获取系列详情失败</string>
+    <string name="api_get_series_contents_failed">获取系列内容失败</string>
+    <string name="api_watch_failed">追更失败</string>
+    <string name="api_unwatch_failed">取消追更失败</string>
+    <string name="api_operation_failed">操作失败</string>
+    <string name="api_web_login_not_supported">Web API 不支持直接登录，请使用 PHPSESSID</string>
+    <string name="api_user_info_empty">用户信息为空</string>
+    <string name="api_discovery_users_empty">发现用户数据为空</string>
+    <string name="api_load_series_detail_failed">加载系列详情失败</string>
+    <string name="api_load_series_contents_failed">加载系列内容失败</string>
 </resources>
 

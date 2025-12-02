@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,7 +98,7 @@ fun MangaSeriesCard(
                         color = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         Text(
-                            text = "追更中",
+                            text = stringResource(Res.string.series_watching),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
@@ -159,7 +161,7 @@ fun MangaSeriesCard(
                 ) {
                     // 篇数
                     Text(
-                        text = "共 ${series.total} 篇",
+                        text = stringResource(Res.string.series_total_episodes, series.total),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -169,7 +171,7 @@ fun MangaSeriesCard(
                         // 只显示日期部分（去掉时间和时区）
                         val displayDate = date.substringBefore("T")
                         Text(
-                            text = "更新: $displayDate",
+                            text = stringResource(Res.string.series_update, displayDate),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

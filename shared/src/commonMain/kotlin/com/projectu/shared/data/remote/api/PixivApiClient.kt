@@ -462,7 +462,7 @@ class PixivApiClient(
         val matchResult = regex.find(html)
         
         val token = matchResult?.groupValues?.get(1)
-            ?: throw IllegalStateException("无法获取CSRF Token")
+            ?: throw IllegalStateException("Unable to get CSRF Token")
         
         // 保存 token 到存储
         onTokenUpdated?.invoke(token)

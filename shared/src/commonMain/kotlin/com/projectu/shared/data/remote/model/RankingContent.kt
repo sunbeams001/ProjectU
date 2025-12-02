@@ -8,19 +8,19 @@ enum class RankingContent(
     val displayName: String
 ) {
     /** 全部 */
-    ALL("all", "全部"),
+    ALL("all", "All"),
     
     /** 插画 */
-    ILLUST("illust", "插画"),
+    ILLUST("illust", "Illust"),
     
     /** 漫画 */
-    MANGA("manga", "漫画"),
+    MANGA("manga", "Manga"),
     
     /** 动图 */
-    UGOIRA("ugoira", "动图"),
+    UGOIRA("ugoira", "Ugoira"),
     
     /** 小说 */
-    NOVEL("novel", "小说");
+    NOVEL("novel", "Novel");
     
     companion object {
         /**

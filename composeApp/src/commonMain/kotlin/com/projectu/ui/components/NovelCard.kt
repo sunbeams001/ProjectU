@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +32,7 @@ import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.domain.model.AgeLimit
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.getUrlByQuality
+import com.projectu.ui.util.formatNumber
 import org.koin.compose.koinInject
 
 /**
@@ -324,7 +327,7 @@ fun NovelCard(
                     // 系列标题（如果有且需要显示）
                     if (showSeriesInfo && novel.seriesTitle != null && novel.seriesId != null) {
                         Text(
-                            text = "系列: ${novel.seriesTitle}",
+                            text = stringResource(Res.string.series_label, novel.seriesTitle!!),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.primary,
                             maxLines = 1,
@@ -402,7 +405,7 @@ fun NovelCard(
                     ) {
                         // 字数
                         Text(
-                            text = "${formatNumber(novel.textCount)}字",
+                            text = stringResource(Res.string.novel_text_count, formatNumber(novel.textCount)),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -417,17 +420,6 @@ fun NovelCard(
                 }
             }
         }
-    }
-}
-
-/**
- * 格式化数字（千位分隔）
- */
-private fun formatNumber(number: Int): String {
-    return when {
-        number >= 10000 -> String.format("%.1fw", number / 10000.0)
-        number >= 1000 -> String.format("%.1fk", number / 1000.0)
-        else -> number.toString()
     }
 }
 

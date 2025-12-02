@@ -55,7 +55,7 @@ class LoginViewModel(
         
         // 验证输入
         if (currentState.phpSessionId.isBlank()) {
-            _state.update { it.copy(errorMessage = "请输入 PHPSESSID") }
+            _state.update { it.copy(errorMessage = "Please enter PHPSESSID") }
             return
         }
         
@@ -75,7 +75,7 @@ class LoginViewModel(
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessage = error.message ?: "登录失败，请检查 PHPSESSID 格式"
+                                errorMessage = error.message ?: "Login failed, please check PHPSESSID format"
                             )
                         }
                     }
@@ -84,7 +84,7 @@ class LoginViewModel(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = "登录失败: ${e.message}"
+                        errorMessage = "Login failed: ${e.message}"
                     )
                 }
             }
