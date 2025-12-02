@@ -75,6 +75,7 @@ data class Commission(
 @Serializable
 data class SocialLinks(
     val twitter: SocialLink? = null,
+    val facebook: SocialLink? = null,
     val pawoo: SocialLink? = null,
     val instagram: SocialLink? = null,
     val tumblr: SocialLink? = null,

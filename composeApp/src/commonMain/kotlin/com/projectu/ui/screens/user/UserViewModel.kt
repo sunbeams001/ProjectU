@@ -41,6 +41,10 @@ class UserViewModel(
     private val ILLUST_PAGE_SIZE = 48
     // 小说每页加载数量
     private val NOVEL_PAGE_SIZE = 30
+    // 收藏插画每页加载数量
+    private val BOOKMARK_ILLUST_PAGE_SIZE = 48
+    // 收藏小说每页加载数量
+    private val BOOKMARK_NOVEL_PAGE_SIZE = 30
     
     // 当前用户ID
     private var currentUserId: Long = 0
@@ -146,6 +150,9 @@ class UserViewModel(
                 val mangaSeriesList = profileAll.mangaSeries ?: emptyList()
                 val novelSeriesList = profileAll.novelSeries ?: emptyList()
                 
+                // 解析收藏数量
+                val bookmarkCount = profileAll.bookmarkCount
+                
                 // 4. 构建可用的Tab列表
                 val availableTabs = mutableListOf<UserProfileTab>()
                 val tabDataCache = mutableMapOf<UserProfileTab, TabData>()
@@ -167,6 +174,38 @@ class UserViewModel(
                 }
                 if (novelSeriesList.isNotEmpty()) {
                     availableTabs.add(UserProfileTab.NOVEL_SERIES)
+                }
+                
+                // 添加收藏Tab（根据收藏数量动态生成）
+                if (bookmarkCount != null) {
+                    // 公开收藏·插画
+                    if (bookmarkCount.public.illust > 0) {
+                        availableTabs.add(UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC)
+                        tabDataCache[UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC] = TabData(
+                            total = bookmarkCount.public.illust
+                        )
+                    }
+                    // 私人收藏·插画
+                    if (bookmarkCount.private.illust > 0) {
+                        availableTabs.add(UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE)
+                        tabDataCache[UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE] = TabData(
+                            total = bookmarkCount.private.illust
+                        )
+                    }
+                    // 公开收藏·小说
+                    if (bookmarkCount.public.novel > 0) {
+                        availableTabs.add(UserProfileTab.BOOKMARK_NOVELS_PUBLIC)
+                        tabDataCache[UserProfileTab.BOOKMARK_NOVELS_PUBLIC] = TabData(
+                            total = bookmarkCount.public.novel
+                        )
+                    }
+                    // 私人收藏·小说
+                    if (bookmarkCount.private.novel > 0) {
+                        availableTabs.add(UserProfileTab.BOOKMARK_NOVELS_PRIVATE)
+                        tabDataCache[UserProfileTab.BOOKMARK_NOVELS_PRIVATE] = TabData(
+                            total = bookmarkCount.private.novel
+                        )
+                    }
                 }
                 
                 // 5. 更新状�?
@@ -232,10 +271,37 @@ class UserViewModel(
      * 加载Tab数据（也用于重试）
      */
     fun loadTabData(tab: UserProfileTab) {
-        val tabData = _state.value.tabDataCache[tab] ?: return
-        // 移除 allIds.isEmpty() 检查，允许在有数据时重试
+        val tabData = _state.value.tabDataCache[tab]
+        if (tabData == null) {
+            // 收藏Tab在切换时才创建缓存条目
+            if (tab.isBookmarkTab()) {
+                screenModelScope.launch {
+                    updateTabData(tab) { TabData(isLoading = true) }
+                    try {
+                        when (tab) {
+                            UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                            UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> {
+                                loadBookmarkIllusts(tab)
+                            }
+                            UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+                            UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
+                                loadBookmarkNovels(tab)
+                            }
+                            else -> {}
+                        }
+                    } catch (e: Exception) {
+                        updateTabData(tab) { 
+                            it.copy(isLoading = false, error = e.message ?: "加载失败") 
+                        }
+                    }
+                }
+            }
+            return
+        }
+        
         if (tabData.isLoading) return
-        if (tabData.allIds.isEmpty()) return // 没有ID则无法加载
+        // 对于收藏Tab，不检查 allIds，而是检查 total
+        if (!tab.isBookmarkTab() && tabData.allIds.isEmpty()) return
         
         screenModelScope.launch {
             updateTabData(tab) { it.copy(isLoading = true, error = null) }
@@ -248,8 +314,16 @@ class UserViewModel(
                     UserProfileTab.NOVELS -> {
                         loadNovels(tab)
                     }
+                    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                    UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> {
+                        loadBookmarkIllusts(tab)
+                    }
+                    UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+                    UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
+                        loadBookmarkNovels(tab)
+                    }
                     else -> {
-                        // 系列类型的Tab不需要分页加�?
+                        // 系列类型的Tab不需要分页加载
                         updateTabData(tab) { it.copy(isLoading = false) }
                     }
                 }
@@ -262,7 +336,7 @@ class UserViewModel(
     }
     
     /**
-     * 加载更多（当前Tab�?
+     * 加载更多（当前Tab）
      */
     fun loadMore() {
         val currentTab = _state.value.currentTab
@@ -280,6 +354,14 @@ class UserViewModel(
                     }
                     UserProfileTab.NOVELS -> {
                         loadNovels(currentTab)
+                    }
+                    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                    UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> {
+                        loadBookmarkIllusts(currentTab)
+                    }
+                    UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+                    UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
+                        loadBookmarkNovels(currentTab)
                     }
                     else -> {
                         updateTabData(currentTab) { it.copy(isLoading = false) }
@@ -403,6 +485,121 @@ class UserViewModel(
     }
     
     /**
+     * 加载收藏的插画·漫画
+     */
+    private suspend fun loadBookmarkIllusts(tab: UserProfileTab) {
+        val tabData = _state.value.tabDataCache[tab] ?: TabData()
+        val currentOffset = tabData.offset
+        
+        val rest = when (tab) {
+            UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC -> "show"
+            UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> "hide"
+            else -> return
+        }
+        
+        val response = pixivApi.bookmarkApi.getUserBookmarkIllusts(
+            uid = currentUserId,
+            tag = "",
+            offset = currentOffset,
+            limit = BOOKMARK_ILLUST_PAGE_SIZE,
+            rest = rest
+        )
+        
+        if (response.error) {
+            updateTabData(tab) { 
+                it.copy(isLoading = false, error = response.message ?: "加载失败") 
+            }
+            return
+        }
+        
+        val body = response.body ?: run {
+            updateTabData(tab) { it.copy(isLoading = false, error = "数据为空") }
+            return
+        }
+        
+        val newArtworks = body.works.map { illust ->
+            illust.toArtwork(
+                tagTranslationUtil = tagTranslationUtil,
+                tagTranslation = null,
+                ageLimitDeterminer = ageLimitDeterminer
+            )
+        }
+        
+        // 同步全局状态缓存
+        val syncedArtworks = syncArtworkStatesUseCase(newArtworks)
+        
+        val newOffset = currentOffset + syncedArtworks.size
+        val hasMore = newOffset < body.total
+        
+        updateTabData(tab) {
+            it.copy(
+                artworks = it.artworks + syncedArtworks,
+                offset = newOffset,
+                total = body.total,
+                isLoading = false,
+                hasMore = hasMore
+            )
+        }
+    }
+    
+    /**
+     * 加载收藏的小说
+     */
+    private suspend fun loadBookmarkNovels(tab: UserProfileTab) {
+        val tabData = _state.value.tabDataCache[tab] ?: TabData()
+        val currentOffset = tabData.offset
+        
+        val rest = when (tab) {
+            UserProfileTab.BOOKMARK_NOVELS_PUBLIC -> "show"
+            UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> "hide"
+            else -> return
+        }
+        
+        val response = pixivApi.bookmarkApi.getUserBookmarkNovels(
+            uid = currentUserId,
+            tag = "",
+            offset = currentOffset,
+            limit = BOOKMARK_NOVEL_PAGE_SIZE,
+            rest = rest
+        )
+        
+        if (response.error) {
+            updateTabData(tab) { 
+                it.copy(isLoading = false, error = response.message ?: "加载失败") 
+            }
+            return
+        }
+        
+        val body = response.body ?: run {
+            updateTabData(tab) { it.copy(isLoading = false, error = "数据为空") }
+            return
+        }
+        
+        val newNovels = body.works.map { novel ->
+            novel.toNovel(
+                tagTranslation = null,
+                ageLimitDeterminer = ageLimitDeterminer
+            )
+        }
+        
+        // 同步全局状态缓存
+        val syncedNovels = syncNovelStatesUseCase(newNovels)
+        
+        val newOffset = currentOffset + syncedNovels.size
+        val hasMore = newOffset < body.total
+        
+        updateTabData(tab) {
+            it.copy(
+                novels = it.novels + syncedNovels,
+                offset = newOffset,
+                total = body.total,
+                isLoading = false,
+                hasMore = hasMore
+            )
+        }
+    }
+    
+    /**
      * 更新列表中作品的收藏状态
      * 由全局状态变更事件触发
      */
@@ -469,7 +666,8 @@ class UserViewModel(
                 artworks = emptyList(),
                 novels = emptyList(),
                 hasMore = true,
-                error = null
+                error = null,
+                offset = 0  // 重置收藏Tab的偏移量
             )
         }
         
@@ -501,4 +699,15 @@ class UserViewModel(
             )
         }
     }
+}
+
+/**
+ * 判断Tab是否为收藏类型
+ */
+fun UserProfileTab.isBookmarkTab(): Boolean = when (this) {
+    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+    UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE,
+    UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+    UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> true
+    else -> false
 }

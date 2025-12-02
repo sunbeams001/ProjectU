@@ -402,14 +402,14 @@ fun DateSelector(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // "最新日榜" 按钮 - 重置到 null
+                    // "最新榜单" 按钮 - 重置到 null（使用API默认的最新日期）
                     TextButton(
                         onClick = {
                             onDateChange(null)
                             showDatePicker = false
                         }
                     ) {
-                        Text("最新日榜")
+                        Text("最新榜单")
                     }
                     // "确定" 按钮 - 使用选择的日期
                     TextButton(
@@ -441,10 +441,10 @@ fun DateSelector(
                 headline = {
                     // 显示可用的日期范围提示
                     val hints = buildList {
-                        // 只有在未选择日期(selectedDate为null)时,currentDate才代表最新日榜日期
+                        // 只有在未选择日期(selectedDate为null)时,currentDate才代表最新榜单日期
                         // 否则currentDate只是当前显示的日期
                         if (selectedDate == null && currentDate != null) {
-                            add("最新日榜: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
+                            add("最新榜单: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
                         } else if (currentDate != null) {
                             add("当前: ${currentDate.substring(4, 6)}/${currentDate.substring(6, 8)}")
                         }

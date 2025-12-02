@@ -9,7 +9,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
 
 /**
  * Ktor HTTP客户端工厂
@@ -18,13 +17,9 @@ object NetworkClient {
     
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
-            // JSON序列化配置
+            // JSON序列化配置 - 使用全局统一配置
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    prettyPrint = true
-                })
+                json(AppJson)
             }
             
             // 日志配置

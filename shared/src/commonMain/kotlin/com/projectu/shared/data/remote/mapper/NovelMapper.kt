@@ -55,7 +55,7 @@ fun NovelSimple.toNovel(
         tags = translatedTags,
         viewCount = 0, // NovelSimple 不包含浏览数
         likeCount = 0, // NovelSimple 不包含点赞数
-        bookmarkCount = bookmarkCount,
+        bookmarkCount = bookmarkCount ?: 0, // 被删除作品可能返回 null
         commentCount = 0, // NovelSimple 不包含评论数
         markerCount = marker ?: 0,
         createdTime = createDate,

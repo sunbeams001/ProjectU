@@ -2,6 +2,7 @@ package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.common.PixivResponse
 import com.projectu.shared.data.remote.dto.common.PixivResponseWithRaw
+import com.projectu.shared.util.AppJson
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.submitForm
@@ -14,7 +15,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 
@@ -47,14 +47,11 @@ class PixivApiClient(
         const val HEADER_CSRF_TOKEN = "x-csrf-token"
         
         /**
-         * 用于解析原始JSON的Json实例（需要忽略未知字段）
+         * 用于解析原始JSON的Json实例 - 使用全局统一配置
          * @suppress - Internal use only for inline functions
          */
         @PublishedApi
-        internal val jsonParser = Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-        }
+        internal val jsonParser = AppJson
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.serializers
 
+import com.projectu.shared.util.AppJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -113,6 +114,7 @@ object NestedMapOrEmptyArraySerializer : KSerializer<Map<String, Map<String, Str
  */
 object SocialLinksOrEmptyArraySerializer : KSerializer<com.projectu.shared.data.remote.dto.user.SocialLinks?> {
     private val delegateSerializer = com.projectu.shared.data.remote.dto.user.SocialLinks.serializer()
+    
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("SocialLinksOrEmptyArray")
 
     override fun deserialize(decoder: Decoder): com.projectu.shared.data.remote.dto.user.SocialLinks? {
@@ -121,8 +123,8 @@ object SocialLinksOrEmptyArraySerializer : KSerializer<com.projectu.shared.data.
         
         return when {
             element is JsonObject -> {
-                // 对象类型，正常解析
-                Json.decodeFromJsonElement(delegateSerializer, element)
+                // 对象类型，使用全局统一的 json 配置解析
+                AppJson.decodeFromJsonElement(delegateSerializer, element)
             }
             element is JsonArray && element.isEmpty() -> {
                 // 空数组返回 null

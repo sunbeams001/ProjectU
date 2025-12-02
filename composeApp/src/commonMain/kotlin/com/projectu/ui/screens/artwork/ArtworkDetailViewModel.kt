@@ -41,6 +41,9 @@ class ArtworkDetailViewModel(
     
     // 加载更多回调
     private var onLoadMoreCallback: (() -> Unit)? = null
+    
+    // 是否已初始化（防止返回时重复初始化导致 currentIndex 被重置）
+    private var isInitialized = false
 
     init {
         // 监听全局状态变更
@@ -82,6 +85,9 @@ class ArtworkDetailViewModel(
 
     /**
      * 初始化：列表导航模式
+     * 
+     * 注意：如果已经初始化过，会跳过重置 currentIndex，只更新回调
+     * 这是为了防止从其他页面（如作者页面）返回时，currentIndex 被重置为初始值
      */
     fun initWithArtworkList(
         artworkIds: List<String>, 
@@ -89,6 +95,16 @@ class ArtworkDetailViewModel(
         onLoadMore: (() -> Unit)? = null
     ) {
         onLoadMoreCallback = onLoadMore
+        
+        // 如果已经初始化过，只更新 artworkIds（可能有新加载的），保持当前位置
+        if (isInitialized) {
+            // 更新列表但保持当前索引
+            _state.update { it.copy(artworkIds = artworkIds) }
+            return
+        }
+        
+        // 首次初始化
+        isInitialized = true
         
         _state.update {
             it.copy(

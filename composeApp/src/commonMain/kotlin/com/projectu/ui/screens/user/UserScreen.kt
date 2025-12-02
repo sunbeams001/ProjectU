@@ -28,10 +28,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
@@ -87,6 +91,9 @@ sealed class ListScrollState {
 data class UserScreen(
     private val userId: Long
 ) : Screen {
+    
+    // 每个用户页面需要独立的 key，确保 ScreenModel 不会被错误复用
+    override val key: ScreenKey = "UserScreen_$userId"
     
     @Composable
     override fun Content() {
@@ -173,16 +180,21 @@ fun UserScreenContent(
     // 每个Tab的列表滚动状态
     val tabListStates = remember { mutableStateMapOf<UserProfileTab, ListScrollState>() }
     
-    // Pager状态
-    val pagerState = rememberPagerState(
-        initialPage = state.availableTabs.indexOf(state.currentTab).coerceAtLeast(0),
-        pageCount = { state.availableTabs.size }
-    )
+    // Pager状态 - 使用 availableTabs 的 key 来确保在 tabs 变化时重建 pager
+    val pagerState = key(state.availableTabs) {
+        rememberPagerState(
+            initialPage = state.availableTabs.indexOf(state.currentTab).coerceAtLeast(0),
+            pageCount = { state.availableTabs.size }
+        )
+    }
+    
+    // 安全的当前页索引，确保不超出范围
+    val safeCurrentPage = pagerState.currentPage.coerceIn(0, (state.availableTabs.size - 1).coerceAtLeast(0))
     
     // 同步Pager和Tab
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+    LaunchedEffect(safeCurrentPage, pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress) {
-            val newTab = state.availableTabs.getOrNull(pagerState.currentPage)
+            val newTab = state.availableTabs.getOrNull(safeCurrentPage)
             if (newTab != null && newTab != state.currentTab) {
                 onTabChange(newTab)
             }
@@ -190,9 +202,9 @@ fun UserScreenContent(
     }
     
     // 当外部切换Tab时，同步到Pager
-    LaunchedEffect(state.currentTab) {
+    LaunchedEffect(state.currentTab, state.availableTabs) {
         val targetPage = state.availableTabs.indexOf(state.currentTab)
-        if (targetPage >= 0 && targetPage != pagerState.currentPage) {
+        if (targetPage >= 0 && targetPage != pagerState.currentPage && state.availableTabs.isNotEmpty()) {
             pagerState.animateScrollToPage(targetPage)
         }
     }
@@ -285,7 +297,7 @@ fun UserScreenContent(
                         if (state.availableTabs.isNotEmpty()) {
                             UserProfileTabRow(
                                 tabs = state.availableTabs,
-                                currentTabIndex = pagerState.currentPage,
+                                currentTabIndex = safeCurrentPage,
                                 onTabClick = handleTabClick
                             )
                             
@@ -293,7 +305,7 @@ fun UserScreenContent(
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
-                                key = { state.availableTabs[it].name }
+                                key = { state.availableTabs.getOrNull(it)?.name ?: it }
                             ) { page ->
                                 val tab = state.availableTabs[page]
                                 val tabData = state.tabDataCache[tab] ?: TabData()
@@ -308,6 +320,7 @@ fun UserScreenContent(
                                     onArtworkClick = onArtworkClick,
                                     onNovelClick = onNovelClick,
                                     onNovelSeriesClick = onNovelSeriesClick,
+                                    onUserClick = { userId -> onUserClick(userId.toString()) },
                                     onLoadMore = onLoadMore,
                                     onRetry = { onRetryTab(tab) }
                                 )
@@ -417,23 +430,63 @@ fun UserProfile.toUser(): User = User(
 
 /**
  * Tab导航栏
+ * 使用 SecondaryScrollableTabRow 支持滑动
+ * 当Tab数量较少时，通过计算edgePadding实现居中效果
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileTabRow(
     tabs: List<UserProfileTab>,
     currentTabIndex: Int,
     onTabClick: (Int) -> Unit
 ) {
-    TabRow(
-        selectedTabIndex = currentTabIndex,
-        modifier = Modifier.fillMaxWidth(),
+    // 防止空列表或索引越界
+    if (tabs.isEmpty()) return
+    
+    // 安全的索引，确保在有效范围内
+    val safeTabIndex = currentTabIndex.coerceIn(0, tabs.size - 1)
+    
+    val density = LocalDensity.current
+    var containerWidthPx by remember { mutableIntStateOf(0) }
+    val tabWidths = remember(tabs) { mutableStateMapOf<Int, Int>() }
+    
+    // 计算所有Tab的总宽度
+    val totalTabsWidthPx = remember(tabWidths.size, tabs.size) {
+        if (tabWidths.size == tabs.size && tabs.isNotEmpty()) {
+            tabWidths.values.sum()
+        } else {
+            0
+        }
+    }
+    
+    // 计算居中所需的边距
+    val edgePadding = remember(containerWidthPx, totalTabsWidthPx) {
+        if (totalTabsWidthPx > 0 && containerWidthPx > totalTabsWidthPx) {
+            with(density) { ((containerWidthPx - totalTabsWidthPx) / 2).toDp() }
+        } else {
+            // 使用默认的 52.dp，这是 Material 3 ScrollableTabRow 的默认值
+            52.dp
+        }
+    }
+    
+    SecondaryScrollableTabRow(
+        selectedTabIndex = safeTabIndex,
+        modifier = Modifier
+            .fillMaxWidth()
+            .onSizeChanged { size ->
+                containerWidthPx = size.width
+            },
+        edgePadding = edgePadding,
         divider = {}
     ) {
         tabs.forEachIndexed { index, tab ->
             Tab(
-                selected = index == currentTabIndex,
+                selected = index == safeTabIndex,
                 onClick = { onTabClick(index) },
-                text = { Text(tab.displayName) }
+                text = { Text(tab.displayName) },
+                modifier = Modifier.onSizeChanged { size ->
+                    tabWidths[index] = size.width
+                }
             )
         }
     }
@@ -454,6 +507,7 @@ fun UserTabContent(
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
     onNovelSeriesClick: (Long) -> Unit,
+    onUserClick: (Long) -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
@@ -474,7 +528,7 @@ fun UserTabContent(
             else -> {
                 when (tab) {
                     UserProfileTab.ILLUSTS, UserProfileTab.MANGA -> {
-                        // 瀑布流展示插画/漫画
+                        // 瀑布流展示插画/漫画（用户自己的作品，不显示作者信息）
                         ArtworkStaggeredGrid(
                             artworks = tabData.artworks,
                             tab = tab,
@@ -482,11 +536,12 @@ fun UserTabContent(
                             tabListStates = tabListStates,
                             onArtworkClick = onArtworkClick,
                             onLoadMore = onLoadMore,
-                            isLoading = tabData.isLoading
+                            isLoading = tabData.isLoading,
+                            showUserInfo = false
                         )
                     }
                     UserProfileTab.NOVELS -> {
-                        // 列表展示小说
+                        // 列表展示小说（用户自己的作品，不显示作者信息）
                         NovelList(
                             novels = tabData.novels,
                             tab = tab,
@@ -494,7 +549,8 @@ fun UserTabContent(
                             onNovelClick = onNovelClick,
                             onSeriesClick = onNovelSeriesClick,
                             onLoadMore = onLoadMore,
-                            isLoading = tabData.isLoading
+                            isLoading = tabData.isLoading,
+                            showUserInfo = false
                         )
                     }
                     UserProfileTab.MANGA_SERIES -> {
@@ -517,14 +573,35 @@ fun UserTabContent(
                             }
                         )
                     }
-                    UserProfileTab.BOOKMARKS -> {
-                        // 收藏列表（暂未实现）
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("收藏功能开发中...")
-                        }
+                    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                    UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> {
+                        // 收藏的插画·漫画（瀑布流展示，显示作者信息）
+                        ArtworkStaggeredGrid(
+                            artworks = tabData.artworks,
+                            tab = tab,
+                            scrollIndices = scrollIndices,
+                            tabListStates = tabListStates,
+                            onArtworkClick = onArtworkClick,
+                            onUserClick = onUserClick,
+                            onLoadMore = onLoadMore,
+                            isLoading = tabData.isLoading,
+                            showUserInfo = true
+                        )
+                    }
+                    UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+                    UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
+                        // 收藏的小说（列表展示，显示作者信息）
+                        NovelList(
+                            novels = tabData.novels,
+                            tab = tab,
+                            tabListStates = tabListStates,
+                            onNovelClick = onNovelClick,
+                            onSeriesClick = onNovelSeriesClick,
+                            onUserClick = onUserClick,
+                            onLoadMore = onLoadMore,
+                            isLoading = tabData.isLoading,
+                            showUserInfo = true
+                        )
                     }
                 }
             }
@@ -542,8 +619,10 @@ fun ArtworkStaggeredGrid(
     scrollIndices: MutableMap<UserProfileTab, Int>,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onArtworkClick: (Artwork, Int) -> Unit,
+    onUserClick: ((Long) -> Unit)? = null,
     onLoadMore: () -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    showUserInfo: Boolean = false
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val coroutineScope = rememberCoroutineScope()
@@ -600,7 +679,8 @@ fun ArtworkStaggeredGrid(
             ArtworkCard(
                 artwork = artwork,
                 onClick = { onArtworkClick(artwork, index) },
-                showUserInfo = false  // 用户主页不显示作者信息（都是同一用户的作品）
+                onUserClick = onUserClick,
+                showUserInfo = showUserInfo
             )
         }
         
@@ -630,8 +710,10 @@ fun NovelList(
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onNovelClick: (Novel) -> Unit,
     onSeriesClick: (Long) -> Unit,
+    onUserClick: ((Long) -> Unit)? = null,
     onLoadMore: () -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    showUserInfo: Boolean = true
 ) {
     val listState = rememberLazyListState()
     
@@ -666,7 +748,9 @@ fun NovelList(
             NovelCard(
                 novel = novel,
                 onClick = { onNovelClick(novel) },
-                onSeriesClick = onSeriesClick
+                onSeriesClick = onSeriesClick,
+                onUserClick = onUserClick,
+                showUserInfo = showUserInfo
             )
         }
         

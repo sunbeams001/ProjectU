@@ -61,6 +61,7 @@ fun NovelCard(
     onUserClick: ((userId: Long) -> Unit)? = null,
     onSeriesClick: ((seriesId: Long) -> Unit)? = null,
     showSeriesInfo: Boolean = true,
+    showUserInfo: Boolean = true,
     modifier: Modifier = Modifier,
     settingsCache: SettingsCache = koinInject()
 ) {
@@ -353,40 +354,45 @@ fun NovelCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 左侧：作者信息（头像 + 名称）
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .weight(1f)
-                            .then(
-                                if (onUserClick != null) {
-                                    Modifier.combinedClickable(
-                                        onClick = {
-                                            novel.userId.toLongOrNull()?.let { onUserClick(it) }
-                                        }
-                                    )
-                                } else Modifier
-                            )
-                    ) {
-                        // 作者头像
-                        AsyncImage(
-                            model = novel.userProfileImageUrl,
-                            contentDescription = novel.userName,
+                    // 左侧：作者信息（头像 + 名称）- 仅在 showUserInfo 为 true 时显示
+                    if (showUserInfo) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .size(18.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                        
-                        // 作者名
-                        Text(
-                            text = novel.userName,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                                .weight(1f)
+                                .then(
+                                    if (onUserClick != null) {
+                                        Modifier.combinedClickable(
+                                            onClick = {
+                                                novel.userId.toLongOrNull()?.let { onUserClick(it) }
+                                            }
+                                        )
+                                    } else Modifier
+                                )
+                        ) {
+                            // 作者头像
+                            AsyncImage(
+                                model = novel.userProfileImageUrl,
+                                contentDescription = novel.userName,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                            
+                            // 作者名
+                            Text(
+                                text = novel.userName,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    } else {
+                        // 占位，保持布局一致
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                     
                     // 右侧：统计信息（字数 + 收藏数）

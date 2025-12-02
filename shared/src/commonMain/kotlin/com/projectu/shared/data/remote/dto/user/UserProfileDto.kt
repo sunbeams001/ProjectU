@@ -8,6 +8,7 @@ import com.projectu.shared.data.remote.dto.illust.IllustSimple
 import com.projectu.shared.data.remote.dto.novel.NovelSimple
 import com.projectu.shared.data.remote.serializers.MapOrEmptyArraySerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 /**
  * 用户作品概况响应体
@@ -25,7 +26,9 @@ data class ProfileAllBody(
     @Serializable(with = MapOrEmptyArraySerializer::class)
     val collections: Map<String, String?>? = null,  // 收藏集Map (ID -> null)
     val collectionIds: List<String>? = null,  // 收藏集 ID 列表
-    val pickup: List<PickupInfo>? = null,
+    // pickup 数组包含多种类型：booth商品(boothItem)、插画(illust)、漫画系列(illustSeries)等
+    // 由于结构差异很大，使用 JsonElement 存储原始数据
+    val pickup: List<JsonElement>? = null,
     val bookmarkCount: ProfileBookmarkCount? = null,
     val externalSiteWorksStatus: ExternalSiteWorksStatus? = null,  // 外部站点作品状态
     val request: UserRequestInfo? = null,  // 请求相关信息

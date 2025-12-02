@@ -95,6 +95,6 @@ actual val viewModelModule: Module = module {
     factory { com.projectu.ui.screens.novelseries.NovelSeriesViewModel(get()) }
     
     // 小说详情 ScreenModel
-    factory { com.projectu.ui.screens.novel.NovelDetailViewModel(get(), get(), get(), get()) }
+    factory { com.projectu.ui.screens.novel.NovelDetailViewModel(get(), get(), get(), get(), get(), get()) }
 }
 

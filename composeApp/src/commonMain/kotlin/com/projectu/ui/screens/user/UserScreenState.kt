@@ -14,7 +14,10 @@ enum class UserProfileTab(val displayName: String) {
     NOVELS("小说"),
     MANGA_SERIES("漫画系列"),
     NOVEL_SERIES("小说系列"),
-    BOOKMARKS("收藏")
+    BOOKMARK_ILLUSTS_PUBLIC("公开收藏·插画"),
+    BOOKMARK_ILLUSTS_PRIVATE("私人收藏·插画"),
+    BOOKMARK_NOVELS_PUBLIC("公开收藏·小说"),
+    BOOKMARK_NOVELS_PRIVATE("私人收藏·小说")
 }
 
 /**
@@ -34,15 +37,22 @@ data class UserProfile(
 
 /**
  * 每个Tab的数据状态
+ * 
+ * 支持两种分页模式：
+ * 1. ID模式：用于用户作品列表（allIds + loadedIds）
+ * 2. Offset模式：用于收藏列表（offset + total）
  */
 data class TabData(
-    val allIds: List<String> = emptyList(),     // 所有作品ID
-    val loadedIds: List<String> = emptyList(),  // 已加载的ID
+    val allIds: List<String> = emptyList(),     // 所有作品ID（用于用户作品）
+    val loadedIds: List<String> = emptyList(),  // 已加载的ID（用于用户作品）
     val artworks: List<Artwork> = emptyList(),  // 插画/漫画列表
     val novels: List<Novel> = emptyList(),      // 小说列表
     val isLoading: Boolean = false,
     val hasMore: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    // 收藏列表分页相关
+    val offset: Int = 0,                        // 当前偏移量（用于收藏列表）
+    val total: Int = 0                          // 总数量（用于收藏列表）
 )
 
 /**

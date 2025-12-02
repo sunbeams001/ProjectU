@@ -2,10 +2,10 @@ package com.projectu.shared.data.cache
 
 import com.projectu.shared.domain.model.UgoiraFrame
 import com.projectu.shared.domain.model.UgoiraMetadata
+import com.projectu.shared.util.AppJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
@@ -22,7 +22,8 @@ class UgoiraCache(
     private val fileSystem: FileSystem,
     private val cacheDir: Path
 ) {
-    private val json = Json { ignoreUnknownKeys = true }
+    // 使用全局统一的 Json 配置
+    private val json = AppJson
     
     /**
      * 获取作品的Ugoira缓存目录

@@ -227,11 +227,18 @@ enum class ArtworkType {
         
         /**
          * 从字符串类型转换为 ArtworkType
-         * @param type 作品类型字符串 (illustration, manga, ugoira)
+         * @param type 作品类型字符串，支持以下格式：
+         *   - 完整名称: "illustration", "manga", "ugoira"
+         *   - 数字字符串: "0" (插画), "1" (漫画), "2" (动图)
          */
         fun fromString(type: String): ArtworkType {
+            // 先尝试按数字解析（排行榜 API 返回的是数字字符串）
+            type.toIntOrNull()?.let { 
+                return fromIllustType(it) 
+            }
+            // 按名称解析
             return when (type.lowercase()) {
-                "illustration" -> ILLUSTRATION
+                "illustration", "illust" -> ILLUSTRATION
                 "manga" -> MANGA
                 "ugoira" -> UGOIRA
                 else -> ILLUSTRATION // 默认为插画
