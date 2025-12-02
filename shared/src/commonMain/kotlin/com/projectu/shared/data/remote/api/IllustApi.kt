@@ -3,7 +3,6 @@ package com.projectu.shared.data.remote.api
 import com.projectu.shared.data.remote.dto.common.BookmarkData
 import com.projectu.shared.data.remote.dto.common.PixivResponse
 import com.projectu.shared.data.remote.dto.illust.DiscoveryBody
-import com.projectu.shared.data.remote.dto.illust.FollowLatestBody
 import com.projectu.shared.data.remote.dto.illust.IllustDetailBody
 import com.projectu.shared.data.remote.dto.illust.IllustRecommendBody
 import com.projectu.shared.data.remote.dto.illust.IllustRecommendInitBody
@@ -108,21 +107,6 @@ class IllustApi(private val client: PixivApiClient) {
         sampleIllustId?.let { params["sampleIllustId"] = it }
 
         return client.get("/ajax/discovery/artworks", params)
-    }
-
-    /**
-     * 查询关注作者的最新插画
-     * @param mode 模式：all, r18
-     * @param page 页码
-     */
-    suspend fun getFollowLatest(
-        mode: String = "all",
-        page: Int = 1
-    ): PixivResponse<FollowLatestBody> {
-        return client.get("/ajax/follow_latest/illust", mapOf(
-            "mode" to mode,
-            "p" to page
-        ))
     }
 
     /**

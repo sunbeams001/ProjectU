@@ -16,6 +16,7 @@ import io.ktor.client.HttpClient
  * @property novelSeriesApi 小说系列 API
  * @property tagApi 标签 API
  * @property markerApi 书签 API（稍后再读）
+ * @property followApi 关注 API（已关注用户的作品、追更）
  */
 class PixivApi(
     val client: PixivApiClient
@@ -64,6 +65,11 @@ class PixivApi(
      * 书签API（稍后再读）
      */
     val markerApi: MarkerApi = MarkerApi(client)
+
+    /**
+     * 关注API（已关注用户的作品、追更）
+     */
+    val followApi: FollowApi = FollowApi(client)
 
     companion object {
         /**

@@ -239,8 +239,14 @@ fun pixivApiModule(phpSessionId: String, token: String? = null) = module {
 | `getRecommendInit()` | 推荐作品 | pid, limit |
 | `getDiscovery()` | 发现作品 | mode, limit |
 | `getUgoiraMeta()` | Ugoira 元数据 | pid |
-| `getFollowLatest()` | 关注作者最新 | mode, page |
 | `postLike()` | 点赞作品 | pid |
+
+### FollowApi - 关注相关（已关注用户的作品、追更）
+
+| 方法 | 功能 | 参数 |
+|-----|------|------|
+| `getFollowLatestIllust()` | 关注作者最新插画 | mode, page |
+| `getFollowLatestNovel()` | 关注作者最新小说 | mode, page |
 
 ### UserApi - 用户相关
 

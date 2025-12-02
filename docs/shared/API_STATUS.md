@@ -20,11 +20,12 @@
 | BookmarkApi | 8 | 8 | 8 | ✅ 100% |
 | RankingApi | 2 | 2 | 2 | ✅ 100% |
 | CommentApi | 8 | 8 | 8 | ✅ 100% |
-| NovelApi | 5 | 5 | 5 | ✅ 100% |
+| NovelApi | 4 | 4 | 4 | ✅ 100% |
 | NovelSeriesApi | 5 | 5 | 5 | ✅ 100% |
 | TagApi | 4 | 4 | 4 | ✅ 100% |
 | MarkerApi | 3 | 3 | 3 | ✅ 100% |
-| **总计** | **51** | **51** | **51** | **✅ 100%** |
+| FollowApi | 4 | 4 | 4 | ✅ 100% |
+| **总计** | **54** | **54** | **54** | **✅ 100%** |
 
 ---
 
@@ -100,7 +101,7 @@
 | 发表小说评论 | `/rpc/post_comment.php` | ✅ | ✅ | ✅ | 文字+表情 |
 | 删除小说评论 | `/rpc_delete_comment.php` | ✅ | ✅ | ✅ | 删除自己的评论 |
 
-### NovelApi - 小说相关 API (5/5) ✅
+### NovelApi - 小说相关 API (4/4) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
@@ -108,7 +109,15 @@
 | 获取小说收藏状态 | `/ajax/novel/{novelId}/bookmarkData` | ✅ | ✅ | ✅ | 收藏状态 |
 | 搜索小说 | `/ajax/search/novels/{keyword}` | ✅ | ✅ | ✅ | 支持排序和筛选 |
 | 发现小说 | `/ajax/discovery/novels` | ✅ | ✅ | ✅ | 编辑精选 |
-| 关注作者的最新小说 | `/ajax/follow_latest/novel` | ✅ | ✅ | ✅ | 关注作者的新作 |
+
+### FollowApi - 关注相关 API (4/4) ✅
+
+| 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
+|-----|------|------|------|---------|------|
+| 关注作者的最新插画 | `/ajax/follow_latest/illust` | ✅ | ✅ | ✅ | 已关注用户的新作 |
+| 关注作者的最新小说 | `/ajax/follow_latest/novel` | ✅ | ✅ | ✅ | 已关注用户的新作 |
+| 漫画追更列表 | `/ajax/watch_list/manga` | ✅ | ✅ | ✅ | 已追更的漫画系列 |
+| 小说追更列表 | `/ajax/watch_list/novel` | ✅ | ✅ | ✅ | 已追更的小说系列 |
 
 ### NovelSeriesApi - 小说系列相关 API (5/5) ✅
 

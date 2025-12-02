@@ -73,7 +73,7 @@ class ArtworkRepositoryImpl(
     override suspend fun getFollowingArtworks(
         page: Int
     ): Result<List<Artwork>> = runCatching {
-        val response = pixivApi.illustApi.getFollowLatest(
+        val response = pixivApi.followApi.getFollowLatestIllust(
             mode = "all",
             page = page
         )

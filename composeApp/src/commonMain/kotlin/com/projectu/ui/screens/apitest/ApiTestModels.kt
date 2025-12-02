@@ -12,7 +12,8 @@ enum class ApiModule(val displayName: String) {
     NOVEL("小说 API (NovelApi)"),
     NOVEL_SERIES("小说系列 API (NovelSeriesApi)"),
     TAG("标签 API (TagApi)"),
-    MARKER("书签 API (MarkerApi)")
+    MARKER("书签 API (MarkerApi)"),
+    FOLLOW("关注 API (FollowApi)")
 }
 
 /**
@@ -578,16 +579,50 @@ sealed class ApiMethod(
         priority = 1
     )
     
-    object GetNovelFollowLatest : ApiMethod(
-        module = ApiModule.NOVEL,
-        methodName = "getNovelFollowLatest",
+    // ==================== FollowApi ====================
+    
+    object GetFollowLatestIllust : ApiMethod(
+        module = ApiModule.FOLLOW,
+        methodName = "getFollowLatestIllust",
+        displayName = "关注作者最新插画",
+        parameters = listOf(
+            ApiParameter("mode", "模式", "all", required = false,
+                options = listOf("all", "r18")),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 0
+    )
+    
+    object GetFollowLatestNovel : ApiMethod(
+        module = ApiModule.FOLLOW,
+        methodName = "getFollowLatestNovel",
         displayName = "关注作者最新小说",
         parameters = listOf(
             ApiParameter("mode", "模式", "all", required = false,
                 options = listOf("all", "r18")),
             ApiParameter("page", "页码", "1", required = false)
         ),
-        priority = 2
+        priority = 0
+    )
+    
+    object GetWatchListManga : ApiMethod(
+        module = ApiModule.FOLLOW,
+        methodName = "getWatchListManga",
+        displayName = "漫画追更列表",
+        parameters = listOf(
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 1
+    )
+    
+    object GetWatchListNovel : ApiMethod(
+        module = ApiModule.FOLLOW,
+        methodName = "getWatchListNovel",
+        displayName = "小说追更列表",
+        parameters = listOf(
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 1
     )
     
     // ==================== NovelSeriesApi ====================
@@ -744,7 +779,9 @@ sealed class ApiMethod(
             GetNovelCommentRoots, GetNovelCommentReplies, PostNovelComment, DeleteNovelComment,
             // NovelApi
             GetNovelDetail, GetNovelBookmarkData, SearchNovel, 
-            GetNovelDiscovery, GetNovelFollowLatest,
+            GetNovelDiscovery,
+            // FollowApi
+            GetFollowLatestIllust, GetFollowLatestNovel, GetWatchListManga, GetWatchListNovel,
             // NovelSeriesApi
             GetNovelSeriesDetail, GetNovelSeriesContents, GetNovelSeriesTitles,
             WatchNovelSeries, UnwatchNovelSeries,

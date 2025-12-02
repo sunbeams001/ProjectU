@@ -231,7 +231,12 @@ class ApiTestViewModel(
                         ApiMethod.GetNovelBookmarkData -> testGetNovelBookmarkData()
                         ApiMethod.SearchNovel -> testSearchNovel()
                         ApiMethod.GetNovelDiscovery -> testGetNovelDiscovery()
-                        ApiMethod.GetNovelFollowLatest -> testGetNovelFollowLatest()
+                        
+                        // ==================== FollowApi ====================
+                        ApiMethod.GetFollowLatestIllust -> testGetFollowLatestIllust()
+                        ApiMethod.GetFollowLatestNovel -> testGetFollowLatestNovel()
+                        ApiMethod.GetWatchListManga -> testGetWatchListManga()
+                        ApiMethod.GetWatchListNovel -> testGetWatchListNovel()
                         
                         // ==================== NovelSeriesApi ====================
                         ApiMethod.GetNovelSeriesDetail -> testGetNovelSeriesDetail()
@@ -1972,7 +1977,38 @@ class ApiTestViewModel(
         updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
-    private suspend fun testGetNovelFollowLatest() {
+    // ==================== FollowApi 测试方法 ====================
+    
+    private suspend fun testGetFollowLatestIllust() {
+        val mode = getParam("mode")
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<FollowLatestBody>(
+            "/ajax/follow_latest/illust",
+            mapOf(
+                "mode" to mode,
+                "p" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 关注作者最新插画获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("模式: $mode")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetFollowLatestNovel() {
         val mode = getParam("mode")
         val page = getParam("page").toIntOrNull() ?: 1
         
@@ -1995,6 +2031,92 @@ class ApiTestViewModel(
             appendLine("消息: ${response.message}")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetWatchListManga() {
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.follow.WatchListMangaBody>(
+            "/ajax/watch_list/manga",
+            mapOf(
+                "p" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 漫画追更列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            response.body?.let { body ->
+                appendLine("📊 统计信息:")
+                appendLine("总数: ${body.page.total}")
+                appendLine("最大页数: ${body.page.maxPage}")
+                appendLine("追更系列数: ${body.page.watchedSeriesIds.size}")
+                body.illustSeries?.let { series ->
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("📚 系列列表 (${series.size}):")
+                    series.take(5).forEach { s ->
+                        appendLine("  • ${s.title} (ID: ${s.id})")
+                        appendLine("    作品数: ${s.total}, 追更: ${s.isWatched}")
+                    }
+                    if (series.size > 5) {
+                        appendLine("  ... 还有 ${series.size - 5} 个系列")
+                    }
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetWatchListNovel() {
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<com.projectu.shared.data.remote.dto.follow.WatchListNovelBody>(
+            "/ajax/watch_list/novel",
+            mapOf(
+                "p" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说追更列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            response.body?.let { body ->
+                appendLine("📊 统计信息:")
+                appendLine("总数: ${body.page.total}")
+                appendLine("最大页数: ${body.page.maxPage}")
+                appendLine("追更系列数: ${body.page.watchedSeriesIds.size}")
+                body.thumbnails?.novelSeries?.let { series ->
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("📚 系列列表 (${series.size}):")
+                    series.take(5).forEach { s ->
+                        appendLine("  • ${s.title} (ID: ${s.id})")
+                        appendLine("    章节数: ${s.episodeCount}, 追更: ${s.isWatched}")
+                    }
+                    if (series.size > 5) {
+                        appendLine("  ... 还有 ${series.size - 5} 个系列")
+                    }
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("请查看 JSON 标签页查看完整数据")
         }
         

@@ -161,11 +161,17 @@ class XxxScreen : Screen {
 
 > 🌐 API 详细状态: [docs/shared/API_STATUS.md](shared/API_STATUS.md)
 
-已集成 4 个主要 API 模块：
+已集成 10 个主要 API 模块：
 - ✅ **IllustApi** - 作品详情、搜索、推荐、发现、Ugoira
 - ✅ **UserApi** - 用户信息、关注、作品列表
 - ✅ **BookmarkApi** - 收藏管理、批量操作
 - ✅ **RankingApi** - 各类排行榜
+- ✅ **CommentApi** - 评论相关
+- ✅ **NovelApi** - 小说相关
+- ✅ **NovelSeriesApi** - 小说系列相关
+- ✅ **TagApi** - 标签相关
+- ✅ **MarkerApi** - 书签（稍后再读）
+- ✅ **FollowApi** - 关注（已关注用户的作品、追更）
 
 认证方式: PHPSESSID Cookie + CSRF Token (自动刷新)
 

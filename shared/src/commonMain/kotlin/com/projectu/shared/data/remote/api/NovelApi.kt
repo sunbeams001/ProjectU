@@ -2,7 +2,6 @@ package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.common.PixivResponse
 import com.projectu.shared.data.remote.dto.illust.DiscoveryBody
-import com.projectu.shared.data.remote.dto.illust.FollowLatestBody
 import com.projectu.shared.data.remote.dto.novel.NovelBookmarkStatusBody
 import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
 import com.projectu.shared.data.remote.dto.novel.NovelSearchBody
@@ -85,18 +84,4 @@ class NovelApi(private val client: PixivApiClient) {
         return client.get("/ajax/discovery/novels", params)
     }
 
-    /**
-     * 查询关注作者的最新小说
-     * @param mode 模式：all, r18
-     * @param page 页码
-     */
-    suspend fun getFollowLatest(
-        mode: String = "all",
-        page: Int = 1
-    ): PixivResponse<FollowLatestBody> {
-        return client.get("/ajax/follow_latest/novel", mapOf(
-            "mode" to mode,
-            "p" to page
-        ))
-    }
 }
