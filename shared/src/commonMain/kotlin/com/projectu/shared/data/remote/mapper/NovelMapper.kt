@@ -5,6 +5,7 @@ import com.projectu.shared.data.remote.dto.novel.NovelSimple
 import com.projectu.shared.data.remote.dto.ranking.NovelRankingItem
 import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.model.Novel
+import com.projectu.shared.domain.model.NovelEmbeddedImageInfo
 import com.projectu.shared.domain.model.NovelGenre
 import com.projectu.shared.domain.model.Tag
 import com.projectu.shared.util.AgeLimitDeterminer
@@ -114,15 +115,29 @@ fun NovelDetailBody.toNovel(ageLimitDeterminer: AgeLimitDeterminer): Novel {
         )
     }
     
+    // 转换内嵌图片
+    val embeddedImagesMap = textEmbeddedImages?.mapValues { (_, imageDto) ->
+        NovelEmbeddedImageInfo(
+            imageId = imageDto.novelImageId,
+            smallUrl = imageDto.urls.small,
+            mediumUrl = imageDto.urls.medium,
+            largeUrl = imageDto.urls.large,
+            originalUrl = imageDto.urls.original
+        )
+    } ?: emptyMap()
+    
+    // 解析小说类型
+    val novelGenre = genre?.let { NovelGenre.fromString(it) } ?: NovelGenre.OTHER
+    
     return Novel(
         id = id,
         title = title,
         description = description,
         content = content, // 详情接口包含正文
-        imageUrl = "", // 详情接口不返回封面URL
+        imageUrl = coverUrl ?: "", // 使用 coverUrl
         userId = userId,
         userName = userName,
-        userProfileImageUrl = "", // 详情接口不返回用户头像
+        userProfileImageUrl = "", // 详情接口不返回用户头像，需从用户接口获取
         tags = translatedTags,
         viewCount = viewCount,
         likeCount = likeCount,
@@ -138,24 +153,27 @@ fun NovelDetailBody.toNovel(ageLimitDeterminer: AgeLimitDeterminer): Novel {
         },
         bookmarkId = bookmarkData?.id,
         isMasked = false,
-        isAiGenerated = isAiGeneratedNovel(0, tags.tags.map { it.tag }),
+        isAiGenerated = isAiGeneratedNovel(aiType, tags.tags.map { it.tag }),
         isOriginal = isOriginal,
         isBungei = isBungei,
-        textCount = pageCount, // 详情接口的 pageCount 实际是文字数
-        wordCount = pageCount,
-        readingTime = pageCount / 500, // 按平均阅读速度估算
-        useWordCount = false,
-        genre = NovelGenre.OTHER, // 详情接口不返回类型
-        language = "ja",
+        isLiked = likeData,
+        textCount = characterCount ?: pageCount, // 优先使用 characterCount
+        wordCount = wordCount ?: (characterCount ?: pageCount),
+        readingTime = readingTime ?: ((characterCount ?: pageCount) / 500), // 优先使用API返回的阅读时间
+        useWordCount = useWordCount,
+        genre = novelGenre,
+        language = language ?: "ja",
         ageLimit = ageLimitDeterminer.determine(
             xRestrict = xRestrict,
             tags = tags.tags.map { it.tag }
         ),
-        seriesId = null, // 需要从其他接口获取
-        seriesTitle = null,
-        isUnlisted = false,
+        seriesId = seriesNavData?.seriesId?.toString(),
+        seriesTitle = seriesNavData?.title,
+        seriesOrder = seriesNavData?.order,
+        isUnlisted = isUnlisted,
         pageCount = pageCount,
-        marker = null
+        marker = marker,  // 使用API返回的书签位置
+        embeddedImages = embeddedImagesMap
     )
 }
 

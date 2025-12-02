@@ -49,6 +49,7 @@ import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NovelSeriesCard
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -134,8 +135,8 @@ data class UserScreen(
                 )
             },
             onNovelClick = { novel ->
-                // TODO: 跳转到小说详情页
-                println("点击小说: ${novel.title}")
+                // 跳转到小说详情页
+                navigator.push(NovelDetailScreen(novelId = novel.id))
             },
             onNovelSeriesClick = { seriesId ->
                 // 跳转到小说系列详情页

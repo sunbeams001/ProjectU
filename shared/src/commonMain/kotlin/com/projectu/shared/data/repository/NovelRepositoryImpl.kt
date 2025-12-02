@@ -163,5 +163,37 @@ class NovelRepositoryImpl(
             Result.failure(e)
         }
     }
+    
+    override suspend fun addNovelMarker(
+        novelId: Long,
+        userId: Long,
+        page: Int
+    ): Result<Unit> {
+        return try {
+            pixivApi.markerApi.addNovelMarker(
+                novelId = novelId,
+                userId = userId,
+                page = page
+            )
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    override suspend fun deleteNovelMarker(
+        novelId: Long,
+        userId: Long
+    ): Result<Unit> {
+        return try {
+            pixivApi.markerApi.deleteNovelMarker(
+                novelId = novelId,
+                userId = userId
+            )
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
 

@@ -5,6 +5,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 
 /**
@@ -40,8 +41,8 @@ data class NovelSeriesScreen(
             onRetryContents = viewModel::retryContents,
             onRefresh = viewModel::refresh,
             onNovelClick = { novel ->
-                // TODO: 跳转到小说详情页
-                println("点击小说: ${novel.id} - ${novel.title}")
+                // 跳转到小说详情页
+                navigator.push(NovelDetailScreen(novelId = novel.id))
             },
             onUserClick = { userId ->
                 navigator.push(UserScreen(userId))

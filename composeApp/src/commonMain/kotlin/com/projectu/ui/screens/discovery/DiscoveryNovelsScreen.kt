@@ -19,6 +19,7 @@ import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Novel
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -51,8 +52,8 @@ class DiscoveryNovelsScreen : Screen {
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
             onNovelClick = { novel ->
-                // TODO: 跳转到小说详情页
-                println("点击小说: ${novel.title}")
+                // 跳转到小说详情页
+                navigator.push(NovelDetailScreen(novelId = novel.id))
             },
             onSeriesClick = { seriesId ->
                 navigator.push(NovelSeriesScreen(seriesId))

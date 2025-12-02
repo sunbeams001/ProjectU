@@ -34,6 +34,7 @@ import com.projectu.ui.components.UserCard
 import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -350,8 +351,8 @@ fun DiscoveryContent(
                         onRefresh = novelsViewModel::refresh,
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onNovelClick = { novel ->
-                            // TODO: 跳转到小说详情页
-                            println("点击小说: ${novel.title}")
+                            // 跳转到小说详情页
+                            parentNavigator?.push(NovelDetailScreen(novelId = novel.id))
                         },
                         onSeriesClick = { seriesId ->
                             parentNavigator?.push(NovelSeriesScreen(seriesId))

@@ -1,6 +1,17 @@
 package com.projectu.shared.domain.model
 
 /**
+ * 内嵌图片信息
+ */
+data class NovelEmbeddedImageInfo(
+    val imageId: String,
+    val smallUrl: String?,  // 240px 宽度
+    val mediumUrl: String?, // 480px 宽度
+    val largeUrl: String?,  // 1200px
+    val originalUrl: String?
+)
+
+/**
  * 小说领域模型
  */
 data class Novel(
@@ -31,6 +42,7 @@ data class Novel(
     val isAiGenerated: Boolean = false,
     val isOriginal: Boolean = false,
     val isBungei: Boolean = false, // 是否为文艺小说
+    val isLiked: Boolean = false, // 是否已点赞
     // 阅读信息
     val textCount: Int, // 文本字数
     val wordCount: Int, // 单词数
@@ -48,7 +60,9 @@ data class Novel(
     // 其他
     val isUnlisted: Boolean = false, // 是否为非公开作品
     val pageCount: Int = 1, // 页数（用于分章节小说）
-    val marker: Int? = null // 当前阅读标记位置
+    val marker: Int? = null, // 当前阅读标记位置
+    // 内嵌图片（仅在详情接口返回）
+    val embeddedImages: Map<String, NovelEmbeddedImageInfo> = emptyMap()
 )
 
 /**

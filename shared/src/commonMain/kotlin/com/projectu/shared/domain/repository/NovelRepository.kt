@@ -91,6 +91,30 @@ interface NovelRepository {
      * @param bookmarkId 收藏ID（从Novel.bookmarkId获取）
      */
     suspend fun removeBookmark(bookmarkId: String): Result<Unit>
+    
+    /**
+     * 添加小说阅读书签（稍后再读标记）
+     * @param novelId 小说ID
+     * @param userId 用户ID
+     * @param page 当前阅读页码
+     * @return 是否成功
+     */
+    suspend fun addNovelMarker(
+        novelId: Long,
+        userId: Long,
+        page: Int
+    ): Result<Unit>
+    
+    /**
+     * 删除小说阅读书签
+     * @param novelId 小说ID
+     * @param userId 用户ID
+     * @return 是否成功
+     */
+    suspend fun deleteNovelMarker(
+        novelId: Long,
+        userId: Long
+    ): Result<Unit>
 }
 
 

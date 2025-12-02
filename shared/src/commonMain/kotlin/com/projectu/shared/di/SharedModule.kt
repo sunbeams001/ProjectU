@@ -1,6 +1,7 @@
 package com.projectu.shared.di
 
 import com.projectu.shared.data.cache.ArtworkCacheManager
+import com.projectu.shared.data.cache.NovelCacheManager
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.data.local.SettingsCache
@@ -171,6 +172,11 @@ val stateCacheModule = module {
     // 全局作品缓存管理器
     single {
         ArtworkCacheManager()
+    }
+    
+    // 全局小说缓存管理器
+    single {
+        NovelCacheManager()
     }
 }
 
