@@ -22,6 +22,7 @@ ProjectU 已完整集成 Pixiv Web API，基于 Kotlin Multiplatform + Ktor，�
 | 模块 | 完成度 | 方法数 |
 |------|--------|--------|
 | IllustApi | 100% | 9 |
+| IllustSeriesApi ✨ | 100% | 3 |
 | UserApi | 100% | 7 |
 | BookmarkApi | 100% | 8 |
 | RankingApi | 100% | 2 |
@@ -29,7 +30,7 @@ ProjectU 已完整集成 Pixiv Web API，基于 Kotlin Multiplatform + Ktor，�
 | NovelApi ✨ | 100% | 6 |
 | NovelSeriesApi ✨ | 100% | 3 |
 | TagApi ✨ | 100% | 7 |
-| **总计** | **100%** | **49** |
+| **总计** | **100%** | **52** |
 
 ---
 

@@ -95,6 +95,8 @@ fun IllustDetailBody.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork 
             sl = this.sl,
             tags = this.tags.tags.map { it.tag }
         ),
+        seriesId = this.seriesNavData?.seriesId,
+        seriesTitle = this.seriesNavData?.title,
         ugoiraMetadata = null // 需要单独查询
     )
 }

@@ -16,6 +16,7 @@
 | 模块 | 总方法数 | 已实现 | 已测试 | 完成度 |
 |------|---------|-------|-------|--------|
 | IllustApi | 6 | 6 | 6 | ✅ 100% |
+| IllustSeriesApi | 3 | 3 | 0 | ⏳ 0% |
 | UserApi | 10 | 10 | 10 | ✅ 100% |
 | BookmarkApi | 8 | 8 | 8 | ✅ 100% |
 | RankingApi | 2 | 2 | 2 | ✅ 100% |
@@ -25,7 +26,7 @@
 | TagApi | 4 | 4 | 4 | ✅ 100% |
 | MarkerApi | 3 | 3 | 3 | ✅ 100% |
 | FollowApi | 4 | 4 | 4 | ✅ 100% |
-| **总计** | **54** | **54** | **54** | **✅ 100%** |
+| **总计** | **57** | **57** | **54** | **✅ 95%** |
 
 ---
 
@@ -41,6 +42,14 @@
 | 推荐作品（续） | `/ajax/illust/recommend/illusts` | ✅ | ✅ | ✅ | 更多推荐 |
 | 发现作品 | `/ajax/discovery/artworks` | ✅ | ✅ | ✅ | 编辑精选 |
 | Ugoira 元数据 | `/ajax/illust/{illustId}/ugoira_meta` | ✅ | ✅ | ✅ | 动图 ZIP 和帧信息 |
+
+### IllustSeriesApi - 漫画系列相关 API (3/3) ⏳
+
+| 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
+|-----|------|------|------|---------|------|
+| 获取漫画系列详情 | `/ajax/series/{seriesId}` | ✅ | ⏳ | ✅ | 系列详情、作品列表 |
+| 追更漫画系列 | `POST /ajax/illust/series/{seriesId}/watch` | ✅ | ⏳ | ✅ | 发送空JSON `{}` |
+| 取消追更漫画系列 | `POST /ajax/illust/series/{seriesId}/unwatch` | ✅ | ⏳ | ✅ | 发送空JSON `{}` |
 
 ### UserApi - 用户相关 API (10/10) ✅
 

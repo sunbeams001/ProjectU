@@ -59,6 +59,7 @@ import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NovelSeriesCard
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -155,6 +156,10 @@ data class UserScreen(
                 // 跳转到小说系列详情页
                 navigator.push(NovelSeriesScreen(seriesId))
             },
+            onMangaSeriesClick = { seriesId ->
+                // 跳转到漫画系列详情页
+                navigator.push(MangaSeriesScreen(seriesId))
+            },
             onUserClick = { clickedUserId ->
                 // 跳转到用户页面
                 if (clickedUserId.toLongOrNull() != userId) {
@@ -178,6 +183,7 @@ fun UserScreenContent(
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
     onNovelSeriesClick: (Long) -> Unit,
+    onMangaSeriesClick: (Long) -> Unit,
     onUserClick: (String) -> Unit,
     onBackClick: () -> Unit,
     // 自定义显示选项
@@ -338,6 +344,7 @@ fun UserScreenContent(
                                     onArtworkClick = onArtworkClick,
                                     onNovelClick = onNovelClick,
                                     onNovelSeriesClick = onNovelSeriesClick,
+                                    onMangaSeriesClick = onMangaSeriesClick,
                                     onUserClick = { userId -> onUserClick(userId.toString()) },
                                     onLoadMore = onLoadMore,
                                     onRefresh = onRefresh,
@@ -553,6 +560,7 @@ fun UserTabContent(
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
     onNovelSeriesClick: (Long) -> Unit,
+    onMangaSeriesClick: (Long) -> Unit,
     onUserClick: (Long) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
@@ -624,7 +632,9 @@ fun UserTabContent(
                                     series = mangaSeries,
                                     tab = tab,
                                     tabListStates = tabListStates,
-                                    onClick = { /* TODO: 跳转到系列详情 */ }
+                                    onClick = { item ->
+                                        item.id.toLongOrNull()?.let { id -> onMangaSeriesClick(id) }
+                                    }
                                 )
                             }
                             UserProfileTab.NOVEL_SERIES -> {

@@ -18,6 +18,7 @@ import com.projectu.shared.data.remote.dto.illust.IllustRecommendInitBody
 import com.projectu.shared.data.remote.dto.illust.IllustSearchBody
 import com.projectu.shared.data.remote.dto.illust.PageInfo
 import com.projectu.shared.data.remote.dto.illust.UgoiraMetaBody
+import com.projectu.shared.data.remote.dto.illust_series.IllustSeriesBody
 import com.projectu.shared.data.remote.dto.bookmark.NovelBookmarkRequest
 import com.projectu.shared.data.remote.dto.novel.NovelBookmarkStatusBody
 import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
@@ -231,6 +232,11 @@ class ApiTestViewModel(
                         ApiMethod.GetNovelBookmarkData -> testGetNovelBookmarkData()
                         ApiMethod.SearchNovel -> testSearchNovel()
                         ApiMethod.GetNovelDiscovery -> testGetNovelDiscovery()
+                        
+                        // ==================== IllustSeriesApi ====================
+                        ApiMethod.GetIllustSeriesDetail -> testGetIllustSeriesDetail()
+                        ApiMethod.WatchIllustSeries -> testWatchIllustSeries()
+                        ApiMethod.UnwatchIllustSeries -> testUnwatchIllustSeries()
                         
                         // ==================== FollowApi ====================
                         ApiMethod.GetFollowLatestIllust -> testGetFollowLatestIllust()
@@ -2258,7 +2264,131 @@ class ApiTestViewModel(
         updateResultWithRaw(rawJson, summary)
     }
     
-    // ==================== 辅助方法 ====================
+    // ==================== IllustSeriesApi 测试方法 ====================
+    
+    private suspend fun testGetIllustSeriesDetail() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 313864L
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<IllustSeriesBody>(
+            "/ajax/series/$seriesId",
+            mapOf("p" to page)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 漫画系列详情获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("系列ID: $seriesId")
+            appendLine("页码: $page")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            response.body?.let { body ->
+                // 系列信息
+                body.illustSeries.firstOrNull()?.let { series ->
+                    appendLine("系列标题: ${series.title}")
+                    appendLine("作者ID: ${series.userId}")
+                    appendLine("作品总数: ${series.total}")
+                    appendLine("描述: ${series.description.take(100)}...")
+                    appendLine("是否已追更: ${series.isWatched}")
+                    appendLine("创建时间: ${series.createDate}")
+                    appendLine("更新时间: ${series.updateDate}")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                }
+                
+                // 分页信息
+                body.page?.let { page ->
+                    appendLine("当前页作品数: ${page.series.size}")
+                    appendLine("总作品数: ${page.total}")
+                    appendLine("是否已追更: ${page.isWatched}")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                }
+                
+                // 用户信息
+                body.users.firstOrNull()?.let { user ->
+                    appendLine("作者: ${user.name}")
+                    appendLine("作者ID: ${user.userId}")
+                    appendLine("是否已关注: ${user.isFollowed}")
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                }
+                
+                // 缩略图
+                body.thumbnails?.let { thumbnails ->
+                    appendLine("缩略图数量: ${thumbnails.illust.size}")
+                }
+            }
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testWatchIllustSeries() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 313864L
+        
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<List<String>, Map<String, String>>(
+            "/ajax/illust/series/$seriesId/watch",
+            emptyMap()
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            if (response.error) {
+                appendLine("❌ 追更漫画系列失败")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+            } else {
+                appendLine("✅ 追更漫画系列成功")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("已成功添加到漫画追更列表")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整响应")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testUnwatchIllustSeries() {
+        val seriesId = getParam("seriesId").toLongOrNull() ?: 313864L
+        
+        val responseWithRaw = pixivApi.client.postJsonWithRaw<List<String>, Map<String, String>>(
+            "/ajax/illust/series/$seriesId/unwatch",
+            emptyMap()
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            if (response.error) {
+                appendLine("❌ 取消追更漫画系列失败")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+            } else {
+                appendLine("✅ 取消追更漫画系列成功")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("系列ID: $seriesId")
+                appendLine("错误: ${response.error}")
+                appendLine("消息: ${response.message}")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("已成功从漫画追更列表移除")
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整响应")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    // ==================== NovelSeriesApi 测试方法 ====================
     
     private suspend fun testGetNovelSeriesDetail() {
         val seriesId = getParam("seriesId").toLongOrNull() ?: 8174474L

@@ -231,7 +231,9 @@
     <string name="series_add_watch">Add to watchlist</string>
     <string name="series_remove_watch">Remove from watchlist</string>
     <string name="series_label">Series: %1$s</string>
+    <string name="series_watch_count">%1$d watchers</string>
     <string name="novel_series">Novel Series</string>
+    <string name="manga_series">Manga Series</string>
     
     <!-- Content Types -->
     <string name="content_illusts">Illusts</string>
@@ -340,6 +342,7 @@
     <string name="user_info_following">Following</string>
     <string name="user_info_mypixiv">My Pixiv Friends</string>
     <string name="user_info_followed_back">Followed Back</string>
+    <string name="user_followed">Followed</string>
     <string name="user_info_is_mypixiv">Is My Pixiv Friend</string>
     <string name="user_info_links">Links</string>
     <string name="user_info_webpage">Website</string>

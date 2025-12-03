@@ -47,7 +47,7 @@ data class IllustDetailBody(
     val imageResponseOutData: List<ImageResponseOutData>? = null,
     val imageResponseData: List<IllustSimple>? = null,
     val imageResponseCount: Int = 0,
-    val pollData: String? = null,
+    val pollData: PollData? = null,
     val seriesNavData: SeriesNavData? = null,
     val descriptionBoothId: String? = null,
     val descriptionYoutubeId: String? = null,
@@ -95,6 +95,27 @@ data class ContestData(
     val url: String,
     val icon: String,
     val title: String
+)
+
+/**
+ * 投票数据
+ */
+@Serializable
+data class PollData(
+    val question: String,
+    val choices: List<PollChoice>,
+    val selectedValue: Int? = null,
+    val total: Int
+)
+
+/**
+ * 投票选项
+ */
+@Serializable
+data class PollChoice(
+    val id: Int,
+    val text: String,
+    val count: Int
 )
 
 /**

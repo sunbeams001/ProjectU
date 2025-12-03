@@ -8,6 +8,7 @@ import io.ktor.client.HttpClient
  * 
  * @property client Pixiv API 客户端
  * @property illustApi 插画 API
+ * @property illustSeriesApi 漫画系列 API
  * @property userApi 用户 API
  * @property bookmarkApi 收藏 API
  * @property rankingApi 排行榜 API
@@ -25,6 +26,11 @@ class PixivApi(
      * 插画API
      */
     val illustApi: IllustApi = IllustApi(client)
+
+    /**
+     * 漫画系列API
+     */
+    val illustSeriesApi: IllustSeriesApi = IllustSeriesApi(client)
 
     /**
      * 用户API

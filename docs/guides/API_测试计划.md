@@ -145,6 +145,23 @@
 
 ---
 
+### IllustSeriesApi - 漫画系列相关 API
+
+> 📁 文件: `shared/data/remote/api/IllustSeriesApi.kt`  
+> ✅ 状态: 已集成，待测试
+
+| API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
+|---------|------|--------|---------|------|
+| `getDetail` | `/ajax/series/{seriesId}` | P0 | ⏳ | 系列详情（含分页） |
+| `watch` | `POST /ajax/illust/series/{seriesId}/watch` | P1 | ⏳ | 追更系列 |
+| `unwatch` | `POST /ajax/illust/series/{seriesId}/unwatch` | P1 | ⏳ | 取消追更 |
+
+⚠️ **注意**: 
+- `watch` 和 `unwatch` 需要发送空 JSON 对象 `{}`
+- 响应结构与小说系列类似
+
+---
+
 ### NovelSeriesApi - 小说系列相关 API
 
 > 📁 文件: `shared/data/remote/api/NovelSeriesApi.kt`  
@@ -210,10 +227,11 @@
 | RankingApi | 2 | 2 | 2 | 0 | 100% |
 | CommentApi | 8 | 8 | 8 | 0 | 100% |
 | NovelApi | 5 | 5 | 5 | 0 | 100% |
+| IllustSeriesApi | 3 | 0 | 0 | 0 | 0% |
 | NovelSeriesApi | 5 | 5 | 5 | 0 | 100% |
 | TagApi | 4 | 4 | 4 | 0 | 100% |
 | MarkerApi | 3 | 3 | 3 | 0 | 100% |
-| **总计** | **50** | **50** | **50** | **0** | **100%** |
+| **总计** | **53** | **50** | **50** | **0** | **94%** |
 
 ---
 
@@ -245,6 +263,7 @@
 ### 测试覆盖模块
 
 - ✅ IllustApi - 6 个方法
+- ⏳ IllustSeriesApi - 3 个方法（漫画系列详情、追更/取消追更）
 - ✅ UserApi - 9 个方法  
 - ✅ BookmarkApi - 8 个方法
 - ✅ RankingApi - 2 个方法

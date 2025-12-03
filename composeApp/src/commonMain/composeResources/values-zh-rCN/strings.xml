@@ -230,7 +230,9 @@
     <string name="series_add_watch">加入追更</string>
     <string name="series_remove_watch">取消追更</string>
     <string name="series_label">系列: %1$s</string>
+    <string name="series_watch_count">%1$d 人追更</string>
     <string name="novel_series">小说系列</string>
+    <string name="manga_series">漫画系列</string>
     
     <!-- Content Types -->
     <string name="content_illusts">插画</string>
@@ -338,6 +340,7 @@
     <string name="user_info_following">关注</string>
     <string name="user_info_mypixiv">好P友</string>
     <string name="user_info_followed_back">互相关注</string>
+    <string name="user_followed">已关注</string>
     <string name="user_info_is_mypixiv">是我的好P友</string>
     <string name="user_info_links">链接</string>
     <string name="user_info_webpage">个人网站</string>

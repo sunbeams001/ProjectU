@@ -34,6 +34,9 @@ data class Artwork(
     val totalView: Int,
     val totalBookmarks: Int,
     val ageLimit: AgeLimit = AgeLimit.ALL_AGE,
+    // 系列信息（漫画/插画系列）
+    val seriesId: String? = null,
+    val seriesTitle: String? = null,
     // Ugoira特有字段
     val ugoiraMetadata: UgoiraMetadata? = null
 )

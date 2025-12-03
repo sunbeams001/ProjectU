@@ -285,7 +285,11 @@ class UserViewModel(
                         currentTab = availableTabs.firstOrNull() ?: UserProfileTab.ILLUSTS,
                         tabDataCache = tabDataCache,
                         mangaSeries = mangaSeriesList.map { series ->
-                            series.toMangaSeries()
+                            series.toMangaSeries(
+                                userName = userInfo.name,
+                                profileImageUrl = userInfo.image,
+                                isFollowed = userInfo.isFollowed
+                            )
                         },
                         novelSeries = novelSeriesList.map { series ->
                             series.toNovelSeries()

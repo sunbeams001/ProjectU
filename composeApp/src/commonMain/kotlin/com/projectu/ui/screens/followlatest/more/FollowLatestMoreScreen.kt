@@ -26,6 +26,7 @@ import com.projectu.shared.domain.model.NovelSeries
 import com.projectu.ui.components.MangaSeriesCard
 import com.projectu.ui.components.NovelSeriesCard
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -203,7 +204,9 @@ fun WatchListContent(
                         onLoadMore = mangaViewModel::loadMore,
                         onRefresh = mangaViewModel::refresh,
                         onSeriesClick = { series ->
-                            // TODO: Navigate to manga series detail
+                            series.id.toLongOrNull()?.let { seriesId ->
+                                navigator.push(MangaSeriesScreen(seriesId))
+                            }
                         }
                     )
                 }
@@ -238,7 +241,7 @@ fun WatchListMangaPage(
     
     // 转换为领域模型
     val mangaSeriesList = remember(state.series) {
-        state.series.map { it.toMangaSeries() }
+        state.series.map { it.toMangaSeries() }  // 使用默认参数，追更列表中没有作者名
     }
     
     // 监听滚动到底部，加载更多

@@ -49,6 +49,7 @@ fun ArtworkDetailContent(
     onPageChange: (Int) -> Unit = {},
     onRetry: () -> Unit = {},
     onUserClick: ((userId: Long) -> Unit)? = null,
+    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -81,6 +82,7 @@ fun ArtworkDetailContent(
                         state = state,
                         onPageChange = onPageChange,
                         onUserClick = onUserClick,
+                        onSeriesClick = onSeriesClick,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
@@ -89,6 +91,7 @@ fun ArtworkDetailContent(
                         artwork = state.artwork,
                         authorFollowStatus = state.authorFollowStatus,
                         onUserClick = onUserClick,
+                        onSeriesClick = onSeriesClick,
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
@@ -124,6 +127,7 @@ private fun ArtworkListPager(
     state: ArtworkDetailState,
     onPageChange: (Int) -> Unit,
     onUserClick: ((userId: Long) -> Unit)? = null,
+    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(
@@ -173,6 +177,7 @@ private fun ArtworkListPager(
                     artwork = cachedArtwork,
                     authorFollowStatus = followStatus,
                     onUserClick = onUserClick,
+                    onSeriesClick = onSeriesClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -185,6 +190,7 @@ private fun ArtworkListPager(
                     artwork = state.artwork,
                     authorFollowStatus = state.authorFollowStatus,
                     onUserClick = onUserClick,
+                    onSeriesClick = onSeriesClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -227,6 +233,7 @@ private fun ArtworkDetailLayout(
     artwork: Artwork,
     authorFollowStatus: com.projectu.shared.domain.model.FollowStatus,
     onUserClick: ((userId: Long) -> Unit)? = null,
+    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -245,6 +252,7 @@ private fun ArtworkDetailLayout(
             artwork = artwork,
             authorFollowStatus = authorFollowStatus,
             onUserClick = onUserClick,
+            onSeriesClick = onSeriesClick,
             modifier = Modifier.fillMaxWidth()
         )
     }

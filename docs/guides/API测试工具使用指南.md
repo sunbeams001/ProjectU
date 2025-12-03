@@ -17,8 +17,8 @@
 - `ApiTestScreen.kt` - 完整的测试界面 UI
 
 **功能特性**:
-- ✅ 支持 9 个模块: IllustApi, UserApi, BookmarkApi, RankingApi, CommentApi, NovelApi, NovelSeriesApi, TagApi, MarkerApi
-- ✅ 支持 51 个 API 方法，全部已测试（100%）
+- ✅ 支持 10 个模块: IllustApi, IllustSeriesApi, UserApi, BookmarkApi, RankingApi, CommentApi, NovelApi, NovelSeriesApi, TagApi, MarkerApi
+- ✅ 支持 54 个 API 方法
 - ✅ 按优先级分类 (P0/P1/P2)
 - ✅ 动态参数输入（文本框/下拉选择）
 - ✅ 双标签页结果展示（摘要 + 原始 JSON）
@@ -57,6 +57,7 @@
 
 1. **选择模块**: 
    - 插画 API (IllustApi) - 6 个方法
+   - 漫画系列 API (IllustSeriesApi) - 3 个方法
    - 用户 API (UserApi) - 10 个方法
    - 收藏 API (BookmarkApi) - 8 个方法
    - 排行榜 API (RankingApi) - 2 个方法
@@ -173,6 +174,20 @@
 | searchNovel | 关键词 | ✅ 已测试 |
 | getNovelDiscovery | - | ✅ 已测试 |
 | getNovelFollowLatest | - | ✅ 已测试 |
+
+### IllustSeriesApi - 漫画系列 API ⏳ 0%
+
+| 方法 | 测试ID/参数 | 状态 | 备注 |
+|------|------------|------|------|
+| getDetail | `313864` | ⏳ 待测试 | 系列详情，支持分页 |
+| watch | `313864` | ⏳ 待测试 | POST + 空 JSON |
+| unwatch | `313864` | ⏳ 待测试 | POST + 空 JSON |
+
+⚠️ **重要说明**:
+- API 端点: `/ajax/series/{seriesId}` 获取系列详情
+- API 端点: `POST /ajax/illust/series/{seriesId}/watch` 追更
+- API 端点: `POST /ajax/illust/series/{seriesId}/unwatch` 取消追更
+- `watch` 和 `unwatch` 方法需要发送空 JSON 对象 `{}`
 
 ### NovelSeriesApi - 小说系列 API ✅ 100%
 

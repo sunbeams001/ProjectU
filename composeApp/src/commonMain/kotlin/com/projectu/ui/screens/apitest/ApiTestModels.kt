@@ -5,6 +5,7 @@ package com.projectu.ui.screens.apitest
  */
 enum class ApiModule(val displayName: String) {
     ILLUST("插画 API (IllustApi)"),
+    ILLUST_SERIES("漫画系列 API (IllustSeriesApi)"),
     USER("用户 API (UserApi)"),
     BOOKMARK("收藏 API (BookmarkApi)"),
     RANKING("排行榜 API (RankingApi)"),
@@ -579,6 +580,39 @@ sealed class ApiMethod(
         priority = 1
     )
     
+    // ==================== IllustSeriesApi ====================
+    
+    object GetIllustSeriesDetail : ApiMethod(
+        module = ApiModule.ILLUST_SERIES,
+        methodName = "getIllustSeriesDetail",
+        displayName = "漫画系列详情",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "313864", required = true),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 0
+    )
+    
+    object WatchIllustSeries : ApiMethod(
+        module = ApiModule.ILLUST_SERIES,
+        methodName = "watch",
+        displayName = "追更漫画系列",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "313864", required = true)
+        ),
+        priority = 1
+    )
+    
+    object UnwatchIllustSeries : ApiMethod(
+        module = ApiModule.ILLUST_SERIES,
+        methodName = "unwatch",
+        displayName = "取消追更漫画系列",
+        parameters = listOf(
+            ApiParameter("seriesId", "系列ID", "313864", required = true)
+        ),
+        priority = 1
+    )
+    
     // ==================== FollowApi ====================
     
     object GetFollowLatestIllust : ApiMethod(
@@ -763,6 +797,8 @@ sealed class ApiMethod(
             // IllustApi
             GetIllustDetail, SearchIllust, GetRecommendInit, 
             GetRecommendIllusts, GetDiscoveryIllust, GetUgoiraMetadata, GetIllustPages,
+            // IllustSeriesApi
+            GetIllustSeriesDetail, WatchIllustSeries, UnwatchIllustSeries,
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, GetUserNovels,
             GetUserFollowing, GetUserFollowers,

@@ -2,11 +2,13 @@ package com.projectu.ui.screens.artwork
 
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.user.UserScreen
+import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.util.PlatformBackHandler
 
 /**
@@ -37,6 +39,20 @@ data class ArtworkDetailScreen(
     val initialIndex: Int = 0,
     val contextKey: String = ""
 ) : Screen {
+    
+    /**
+     * 自定义 Screen key，确保不同的作品详情页有不同的 ViewModel 实例
+     * 
+     * 使用 artworkId 和 contextKey 组合：
+     * - 单个作品模式：基于 artworkId 唯一
+     * - 列表导航模式：基于 contextKey 唯一（来自同一列表的详情页共享 ViewModel）
+     */
+    override val key: ScreenKey
+        get() = if (contextKey.isNotEmpty()) {
+            "ArtworkDetailScreen_$contextKey"
+        } else {
+            "ArtworkDetailScreen_$artworkId"
+        }
     
     @Composable
     override fun Content() {
@@ -117,6 +133,9 @@ data class ArtworkDetailScreen(
             onRetry = { viewModel.retry() },
             onUserClick = { userId ->
                 navigator.push(UserScreen(userId))
+            },
+            onSeriesClick = { seriesId ->
+                navigator.push(MangaSeriesScreen(seriesId))
             }
         )
     }

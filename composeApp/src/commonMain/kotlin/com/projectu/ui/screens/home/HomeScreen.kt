@@ -37,6 +37,7 @@ import com.projectu.ui.screens.ranking.RankingViewModel
 import com.projectu.ui.screens.followlatest.FollowLatestContent
 import com.projectu.ui.screens.followlatest.FollowLatestIllustsViewModel
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
@@ -623,6 +624,10 @@ object ProfileTab : Tab {
                 onNovelSeriesClick = { seriesId ->
                     // 跳转到小说系列详情页
                     parentNavigator?.push(NovelSeriesScreen(seriesId))
+                },
+                onMangaSeriesClick = { seriesId ->
+                    // 跳转到漫画系列详情页
+                    parentNavigator?.push(MangaSeriesScreen(seriesId))
                 },
                 onUserClick = { clickedUserId ->
                     // 跳转到用户页面（如果不是当前用户）
