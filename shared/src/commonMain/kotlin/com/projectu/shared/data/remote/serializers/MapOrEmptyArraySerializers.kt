@@ -142,3 +142,49 @@ object SocialLinksOrEmptyArraySerializer : KSerializer<com.projectu.shared.data.
         }
     }
 }
+
+/**
+ * 处理 bookmarkTags 的情况：Map<String, List<String>>
+ * - 有数据时返回对象: {"tag": ["id1", "id2"]}
+ * - 无数据时返回空数组: []
+ */
+object MapStringListOrEmptyArraySerializer : KSerializer<Map<String, List<String>>?> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("MapStringListOrEmptyArray")
+
+    override fun deserialize(decoder: Decoder): Map<String, List<String>>? {
+        val jsonDecoder = decoder as? JsonDecoder ?: return null
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when {
+            element is JsonObject -> {
+                element.mapValues { (_, value) -> 
+                    when (value) {
+                        is JsonArray -> value.map { it.jsonPrimitive.content }
+                        else -> emptyList()
+                    }
+                }
+            }
+            element is JsonArray && element.isEmpty() -> {
+                // 空数组返回空Map
+                emptyMap()
+            }
+            else -> null
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: Map<String, List<String>>?) {
+        if (value == null) {
+            encoder.encodeNull()
+        } else {
+            val jsonEncoder = encoder as JsonEncoder
+            val jsonObject = buildJsonObject {
+                value.forEach { (key, list) ->
+                    put(key, buildJsonArray {
+                        list.forEach { add(JsonPrimitive(it)) }
+                    })
+                }
+            }
+            jsonEncoder.encodeJsonElement(jsonObject)
+        }
+    }
+}

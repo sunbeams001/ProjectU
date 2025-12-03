@@ -4,6 +4,7 @@ import com.projectu.shared.data.remote.dto.common.ZoneConfig
 import com.projectu.shared.data.remote.dto.common.ExtraData
 import com.projectu.shared.data.remote.dto.illust.IllustSimple
 import com.projectu.shared.data.remote.dto.novel.NovelSimple
+import com.projectu.shared.data.remote.serializers.MapStringListOrEmptyArraySerializer
 import kotlinx.serialization.Serializable
 
 /**
@@ -17,6 +18,7 @@ data class UserBookmarkIllustsBody(
     val total: Int,
     val zoneConfig: ZoneConfig? = null,
     val extraData: ExtraData? = null,
+    @Serializable(with = MapStringListOrEmptyArraySerializer::class)
     val bookmarkTags: Map<String, List<String>>? = null
 )
 
@@ -44,5 +46,6 @@ data class UserBookmarkNovelsBody(
     val total: Int,
     val zoneConfig: ZoneConfig? = null,
     val extraData: ExtraData? = null,
+    @Serializable(with = MapStringListOrEmptyArraySerializer::class)
     val bookmarkTags: Map<String, List<String>>? = null
 )

@@ -127,6 +127,7 @@ data class TabData(
     val artworks: List<Artwork> = emptyList(),  // 插画/漫画列表
     val novels: List<Novel> = emptyList(),      // 小说列表
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,          // 下拉刷新中
     val hasMore: Boolean = true,
     val error: String? = null,
     // 收藏列表分页相关

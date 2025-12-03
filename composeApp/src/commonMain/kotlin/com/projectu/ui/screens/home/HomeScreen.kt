@@ -40,6 +40,18 @@ import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
+import com.projectu.ui.screens.user.UserScreenContent
+import com.projectu.ui.screens.user.UserViewModel
+import com.projectu.ui.screens.user.UserProfileTab
+import com.projectu.ui.navigation.NavigationContextManager
+import com.projectu.shared.data.local.PixivConfigStore
+import com.projectu.shared.data.remote.api.PixivApi
+import com.projectu.shared.data.cache.StateCacheManager
+import com.projectu.shared.util.AgeLimitDeterminer
+import com.projectu.shared.util.TagTranslationUtil
+import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
+import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
+import org.koin.compose.koinInject
 import cafe.adriel.voyager.koin.koinScreenModel
 
 /**
@@ -142,7 +154,13 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                 )
                 NavigationRailItem(
                     selected = it.current == ProfileTab,
-                    onClick = { it.current = ProfileTab },
+                    onClick = { 
+                        if (it.current == ProfileTab) {
+                            ProfileTab.triggerScrollToTopOrRefresh()
+                        } else {
+                            it.current = ProfileTab
+                        }
+                    },
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text(stringResource(Res.string.nav_profile)) }
                 )
@@ -188,6 +206,7 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
                     DiscoveryTab -> DiscoveryTab.triggerScrollToTopOrRefresh()
                     FollowLatestTab -> FollowLatestTab.triggerScrollToTopOrRefresh()
                     RankingTab -> RankingTab.triggerScrollToTopOrRefresh()
+                    ProfileTab -> ProfileTab.triggerScrollToTopOrRefresh()
                     else -> {}
                 }
             } else {
@@ -452,6 +471,20 @@ object RankingTab : Tab {
 
 // 个人资料标签
 object ProfileTab : Tab {
+    // 用于触发刷新或滚动到顶部的事件
+    private val _scrollToTopOrRefreshTrigger = mutableStateOf(0L)
+    val scrollToTopOrRefreshTrigger: State<Long> = _scrollToTopOrRefreshTrigger
+    
+    // 将 scrollIndices 提升到 Tab 级别，避免导航时丢失
+    private val scrollIndices = mutableStateMapOf<UserProfileTab, Int>()
+    
+    // 将 ViewModel 提升到 Tab 级别，确保实例稳定
+    private var _viewModel: UserViewModel? = null
+    
+    fun triggerScrollToTopOrRefresh() {
+        _scrollToTopOrRefreshTrigger.value = System.currentTimeMillis()
+    }
+    
     override val options: TabOptions
         @Composable
         get() {
@@ -468,41 +501,152 @@ object ProfileTab : Tab {
     
     @Composable
     override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
+        // 获取或创建 ViewModel（提升到 object 级别保持稳定）
+        val pixivApi: PixivApi = koinInject()
+        val ageLimitDeterminer: AgeLimitDeterminer = koinInject()
+        val tagTranslationUtil: TagTranslationUtil = koinInject()
+        val syncArtworkStatesUseCase: SyncArtworkStatesUseCase = koinInject()
+        val syncNovelStatesUseCase: SyncNovelStatesUseCase = koinInject()
+        val stateCacheManager: StateCacheManager = koinInject()
         
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+        val viewModel = remember {
+            _viewModel ?: UserViewModel(
+                pixivApi = pixivApi,
+                ageLimitDeterminer = ageLimitDeterminer,
+                tagTranslationUtil = tagTranslationUtil,
+                syncArtworkStatesUseCase = syncArtworkStatesUseCase,
+                syncNovelStatesUseCase = syncNovelStatesUseCase,
+                stateCacheManager = stateCacheManager
+            ).also { _viewModel = it }
+        }
+        
+        val state by viewModel.state.collectAsState()
+        val parentNavigator = LocalNavigator.current?.parent
+        val pixivConfigStore: PixivConfigStore = koinInject()
+        
+        // 获取当前登录用户ID
+        val pixivConfig by pixivConfigStore.config
+            .collectAsState(initial = com.projectu.shared.data.local.PixivConfig.DEFAULT)
+        val currentUserId = pixivConfig.getUserId()
+        
+        // 用于管理刷新或滚动到顶部的触发
+        val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
+        
+        // 监听触发器
+        LaunchedEffect(scrollToTopOrRefreshTrigger.value) {
+            if (scrollToTopOrRefreshTrigger.value > 0) {
+                scrollToTopOrRefreshCallback.value?.invoke()
+            }
+        }
+        
+        // 加载用户数据（loadUser 内部会判断是否需要重新加载）
+        LaunchedEffect(currentUserId) {
+            currentUserId?.let { userId ->
+                viewModel.loadUser(userId)
+            }
+        }
+        
+        if (currentUserId == null) {
+            // 未登录状态
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = stringResource(Res.string.nav_profile),
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                
-                // 设置按钮
-                Button(
-                    onClick = { navigator.parent?.push(SettingsScreen()) },
-                    modifier = Modifier.padding(top = 16.dp)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Settings,
+                        imageVector = Icons.Default.Person,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(Res.string.settings_title))
+                    Text(
+                        text = stringResource(Res.string.nav_profile),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    
+                    // 设置按钮
+                    Button(
+                        onClick = { parentNavigator?.push(SettingsScreen()) },
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(Res.string.settings_title))
+                    }
                 }
             }
+        } else {
+            // 已登录状态 - 显示用户页面
+            UserScreenContent(
+                state = state,
+                onTabChange = viewModel::switchTab,
+                onLoadMore = viewModel::loadMore,
+                onRefresh = viewModel::refresh,
+                onRetryTab = viewModel::loadTabData,
+                scrollIndices = scrollIndices,
+                onArtworkClick = { artwork, index ->
+                    // 获取当前 Tab 的作品列表
+                    val currentArtworkIds = state.tabDataCache[state.currentTab]?.artworks?.map { it.id } ?: emptyList()
+                    val currentTab = state.currentTab
+                    
+                    // 创建绑定到当前 Tab 的列表源
+                    val listSource = viewModel.createArtworkListSource(currentTab)
+                    
+                    // 创建导航上下文
+                    val contextKey = NavigationContextManager.createContext(
+                        listSource = listSource,
+                        onReturnWithIndex = { returnIndex ->
+                            scrollIndices[currentTab] = returnIndex
+                        }
+                    )
+                    
+                    // 跳转到作品详情页
+                    parentNavigator?.push(
+                        ArtworkDetailScreen(
+                            artworkIds = currentArtworkIds,
+                            initialIndex = index,
+                            contextKey = contextKey
+                        )
+                    )
+                },
+                onNovelClick = { novel ->
+                    // 跳转到小说详情页
+                    parentNavigator?.push(NovelDetailScreen(novelId = novel.id))
+                },
+                onNovelSeriesClick = { seriesId ->
+                    // 跳转到小说系列详情页
+                    parentNavigator?.push(NovelSeriesScreen(seriesId))
+                },
+                onUserClick = { clickedUserId ->
+                    // 跳转到用户页面（如果不是当前用户）
+                    if (clickedUserId.toLongOrNull() != currentUserId) {
+                        parentNavigator?.push(UserScreen(clickedUserId.toLong()))
+                    }
+                },
+                onBackClick = { /* 不需要返回操作 */ },
+                showBackButton = false,
+                showFollowIndicator = false,
+                useScaffold = false,
+                topBarActions = {
+                    // 设置按钮
+                    IconButton(onClick = { parentNavigator?.push(SettingsScreen()) }) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(Res.string.settings_title)
+                        )
+                    }
+                },
+                onRegisterScrollToTopOrRefreshCallback = { callback ->
+                    scrollToTopOrRefreshCallback.value = callback
+                }
+            )
         }
     }
 }

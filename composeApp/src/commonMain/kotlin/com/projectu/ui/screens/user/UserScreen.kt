@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -178,7 +179,15 @@ fun UserScreenContent(
     onNovelClick: (Novel) -> Unit,
     onNovelSeriesClick: (Long) -> Unit,
     onUserClick: (String) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    // 自定义显示选项
+    showBackButton: Boolean = true,
+    showFollowIndicator: Boolean = true,
+    topBarActions: (@Composable RowScope.() -> Unit)? = null,
+    // 是否使用 Scaffold（嵌入到其他页面时设为 false）
+    useScaffold: Boolean = true,
+    // 用于外部控制置顶/刷新
+    onRegisterScrollToTopOrRefreshCallback: ((callback: () -> Unit) -> Unit)? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     
@@ -237,36 +246,27 @@ fun UserScreenContent(
         }
     }
     
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.nav_back)
-                        )
-                    }
-                },
-                actions = {
-                    // 关注状态指示器
-                    if (state.userProfile.userId.isNotEmpty()) {
-                        FollowIndicator(
-                            user = state.userProfile.toUser(),
-                            size = 28.dp,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
+    // 注册外部置顶/刷新回调
+    LaunchedEffect(Unit) {
+        onRegisterScrollToTopOrRefreshCallback?.invoke {
+            val currentTab = state.availableTabs.getOrNull(pagerState.currentPage)
+            if (currentTab != null) {
+                val scrollState = tabListStates[currentTab]
+                if (scrollState?.isAtTop == true) {
+                    onRefresh()
+                } else {
+                    coroutineScope.launch {
+                        scrollState?.animateScrollToTop()
                     }
                 }
-            )
+            }
         }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+    }
+    
+    // 内部内容 Composable
+    @Composable
+    fun UserScreenInnerContent(modifier: Modifier = Modifier) {
+        Box(modifier = modifier.fillMaxSize()) {
             when {
                 state.isLoadingProfile && state.userProfile.userId.isEmpty() -> {
                     // 初次加载
@@ -292,6 +292,18 @@ fun UserScreenContent(
                 }
                 else -> {
                     Column(modifier = Modifier.fillMaxSize()) {
+                        // 自定义顶部操作栏（不使用 Scaffold 时）
+                        if (!useScaffold && topBarActions != null) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                topBarActions.invoke(this)
+                            }
+                        }
+                        
                         // 用户信息区域
                         UserProfileHeader(
                             profile = state.userProfile,
@@ -328,6 +340,7 @@ fun UserScreenContent(
                                     onNovelSeriesClick = onNovelSeriesClick,
                                     onUserClick = { userId -> onUserClick(userId.toString()) },
                                     onLoadMore = onLoadMore,
+                                    onRefresh = onRefresh,
                                     onRetry = { onRetryTab(tab) }
                                 )
                             }
@@ -348,6 +361,43 @@ fun UserScreenContent(
                 }
             }
         }
+    }
+    
+    // 根据 useScaffold 决定布局
+    if (useScaffold) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { },
+                    navigationIcon = {
+                        if (showBackButton) {
+                            IconButton(onClick = onBackClick) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(Res.string.nav_back)
+                                )
+                            }
+                        }
+                    },
+                    actions = {
+                        // 自定义操作按钮
+                        topBarActions?.invoke(this)
+                        // 关注状态指示器
+                        if (showFollowIndicator && state.userProfile.userId.isNotEmpty()) {
+                            FollowIndicator(
+                                user = state.userProfile.toUser(),
+                                size = 28.dp,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            UserScreenInnerContent(modifier = Modifier.padding(paddingValues))
+        }
+    } else {
+        UserScreenInnerContent()
     }
 }
 
@@ -505,6 +555,7 @@ fun UserTabContent(
     onNovelSeriesClick: (Long) -> Unit,
     onUserClick: (Long) -> Unit,
     onLoadMore: () -> Unit,
+    onRefresh: () -> Unit,
     onRetry: () -> Unit
 ) {
     Box(
@@ -547,6 +598,8 @@ fun UserTabContent(
                                     onArtworkClick = onArtworkClick,
                                     onLoadMore = onLoadMore,
                                     isLoading = tabData.isLoading,
+                                    isRefreshing = tabData.isRefreshing,
+                                    onRefresh = onRefresh,
                                     showUserInfo = false
                                 )
                             }
@@ -560,6 +613,8 @@ fun UserTabContent(
                                     onSeriesClick = onNovelSeriesClick,
                                     onLoadMore = onLoadMore,
                                     isLoading = tabData.isLoading,
+                                    isRefreshing = tabData.isRefreshing,
+                                    onRefresh = onRefresh,
                                     showUserInfo = false
                                 )
                             }
@@ -595,6 +650,8 @@ fun UserTabContent(
                                     onUserClick = onUserClick,
                                     onLoadMore = onLoadMore,
                                     isLoading = tabData.isLoading,
+                                    isRefreshing = tabData.isRefreshing,
+                                    onRefresh = onRefresh,
                                     showUserInfo = true
                                 )
                             }
@@ -610,6 +667,8 @@ fun UserTabContent(
                                     onUserClick = onUserClick,
                                     onLoadMore = onLoadMore,
                                     isLoading = tabData.isLoading,
+                                    isRefreshing = tabData.isRefreshing,
+                                    onRefresh = onRefresh,
                                     showUserInfo = true
                                 )
                             }
@@ -637,6 +696,8 @@ fun ArtworkStaggeredGrid(
     onUserClick: ((Long) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoading: Boolean,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
     showUserInfo: Boolean = false
 ) {
     val gridState = rememberLazyStaggeredGridState()
@@ -681,34 +742,40 @@ fun ArtworkStaggeredGrid(
         }
     }
     
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(3),
-        state = gridState,
-        contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalItemSpacing = 8.dp,
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
-        items(artworks, key = { it.id }) { artwork ->
-            val index = artworks.indexOf(artwork)
-            ArtworkCard(
-                artwork = artwork,
-                onClick = { onArtworkClick(artwork, index) },
-                onUserClick = onUserClick,
-                showUserInfo = showUserInfo
-            )
-        }
-        
-        // 加载更多指示器
-        if (isLoading) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(3),
+            state = gridState,
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalItemSpacing = 8.dp,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(artworks, key = { it.id }) { artwork ->
+                val index = artworks.indexOf(artwork)
+                ArtworkCard(
+                    artwork = artwork,
+                    onClick = { onArtworkClick(artwork, index) },
+                    onUserClick = onUserClick,
+                    showUserInfo = showUserInfo
+                )
+            }
+            
+            // 加载更多指示器
+            if (isLoading && !isRefreshing) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
@@ -728,6 +795,8 @@ fun NovelList(
     onUserClick: ((Long) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoading: Boolean,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
     showUserInfo: Boolean = true
 ) {
     val listState = rememberLazyListState()
@@ -753,32 +822,38 @@ fun NovelList(
         }
     }
     
-    LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
-        items(novels, key = { it.id }) { novel ->
-            NovelCard(
-                novel = novel,
-                onClick = { onNovelClick(novel) },
-                onSeriesClick = onSeriesClick,
-                onUserClick = onUserClick,
-                showUserInfo = showUserInfo
-            )
-        }
-        
-        // 加载更多指示器
-        if (isLoading) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        LazyColumn(
+            state = listState,
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(novels, key = { it.id }) { novel ->
+                NovelCard(
+                    novel = novel,
+                    onClick = { onNovelClick(novel) },
+                    onSeriesClick = onSeriesClick,
+                    onUserClick = onUserClick,
+                    showUserInfo = showUserInfo
+                )
+            }
+            
+            // 加载更多指示器
+            if (isLoading && !isRefreshing) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }

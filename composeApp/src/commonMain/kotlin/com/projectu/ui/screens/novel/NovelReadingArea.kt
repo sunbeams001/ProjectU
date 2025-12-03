@@ -233,8 +233,8 @@ private fun NovelPageContent(
             state = listState,
             modifier = modifier.padding(horizontal = 16.dp),
             // 顶部增加额外的内边距，避免被左上角返回按钮遮挡
-            // 右侧留出进度条空间
-            contentPadding = PaddingValues(top = 48.dp, bottom = 16.dp, end = 8.dp),
+            // 右侧进度条是覆盖层，不影响文字布局，所以左右对称
+            contentPadding = PaddingValues(top = 48.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(page.elements) { element ->

@@ -708,7 +708,7 @@ class UserViewModel(
     }
     
     /**
-     * 刷新当前Tab
+     * 刷新当前Tab（下拉刷新）
      */
     fun refresh() {
         // 如果用户信息加载失败，重新加载用户信息
@@ -719,20 +719,55 @@ class UserViewModel(
         
         val currentTab = _state.value.currentTab
         
-        // 重置Tab数据
-        updateTabData(currentTab) {
-            it.copy(
-                loadedIds = emptyList(),
-                artworks = emptyList(),
-                novels = emptyList(),
-                hasMore = true,
-                error = null,
-                offset = 0  // 重置收藏Tab的偏移量
-            )
-        }
+        // 如果已经在刷新中，不重复触发
+        val tabData = _state.value.tabDataCache[currentTab]
+        if (tabData?.isRefreshing == true) return
         
-        // 重新加载
-        loadTabData(currentTab)
+        screenModelScope.launch {
+            // 设置刷新状态
+            updateTabData(currentTab) {
+                it.copy(
+                    isRefreshing = true,
+                    loadedIds = emptyList(),
+                    artworks = emptyList(),
+                    novels = emptyList(),
+                    hasMore = true,
+                    error = null,
+                    offset = 0  // 重置收藏Tab的偏移量
+                )
+            }
+            
+            try {
+                // 重新加载数据
+                when (currentTab) {
+                    UserProfileTab.ILLUSTS, UserProfileTab.MANGA -> {
+                        loadIllustOrManga(currentTab)
+                    }
+                    UserProfileTab.NOVELS -> {
+                        loadNovels(currentTab)
+                    }
+                    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                    UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> {
+                        loadBookmarkIllusts(currentTab)
+                    }
+                    UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+                    UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
+                        loadBookmarkNovels(currentTab)
+                    }
+                    else -> {
+                        // 系列等Tab不需要刷新
+                        updateTabData(currentTab) { it.copy(isRefreshing = false) }
+                    }
+                }
+            } catch (e: Exception) {
+                updateTabData(currentTab) { 
+                    it.copy(isRefreshing = false, isLoading = false, error = e.message ?: "Failed to refresh") 
+                }
+            } finally {
+                // 确保刷新状态被重置
+                updateTabData(currentTab) { it.copy(isRefreshing = false) }
+            }
+        }
     }
     
     /**
