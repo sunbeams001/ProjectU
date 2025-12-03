@@ -319,6 +319,7 @@
     <string name="user_load_more_failed">Failed to load more</string>
     
     <!-- User Profile Tabs -->
+    <string name="user_tab_info">Info</string>
     <string name="user_tab_illusts">Illusts</string>
     <string name="user_tab_manga">Manga</string>
     <string name="user_tab_novels">Novels</string>
@@ -330,6 +331,45 @@
     <string name="user_tab_bookmark_novels_private">Private Bookmarks (Novels)</string>
     <string name="user_network_error">Network error</string>
     <string name="user_load_failed">Failed to load</string>
+    
+    <!-- User Info Detail -->
+    <string name="user_info_basic">Basic Info</string>
+    <string name="user_info_user_id">User ID</string>
+    <string name="user_info_bio">Bio</string>
+    <string name="user_info_social">Social</string>
+    <string name="user_info_following">Following</string>
+    <string name="user_info_mypixiv">My Pixiv Friends</string>
+    <string name="user_info_followed_back">Followed Back</string>
+    <string name="user_info_is_mypixiv">Is My Pixiv Friend</string>
+    <string name="user_info_links">Links</string>
+    <string name="user_info_webpage">Website</string>
+    <string name="user_info_personal">Personal Info</string>
+    <string name="user_info_region">Region</string>
+    <string name="user_info_gender">Gender</string>
+    <string name="user_info_age">Age</string>
+    <string name="user_info_birthday">Birthday</string>
+    <string name="user_info_job">Job</string>
+    <string name="user_info_workspace">Workspace</string>
+    <string name="user_info_workspace_pc">PC</string>
+    <string name="user_info_workspace_monitor">Monitor</string>
+    <string name="user_info_workspace_tool">Software</string>
+    <string name="user_info_workspace_tablet">Tablet</string>
+    <string name="user_info_workspace_mouse">Mouse</string>
+    <string name="user_info_workspace_scanner">Scanner</string>
+    <string name="user_info_workspace_printer">Printer</string>
+    <string name="user_info_workspace_desktop">Desktop</string>
+    <string name="user_info_workspace_desk">Desk</string>
+    <string name="user_info_workspace_chair">Chair</string>
+    <string name="user_info_workspace_music">Background Music</string>
+    <string name="user_info_workspace_comment">Other</string>
+    <string name="user_info_commission">Commission</string>
+    <string name="user_info_commission_request">Request Status</string>
+    <string name="user_info_commission_fan_request">Fan Request Status</string>
+    <string name="user_info_groups">Groups</string>
+    <string name="user_info_status">Account Status</string>
+    <string name="user_info_premium">Premium Member</string>
+    <string name="user_info_official">Official Account</string>
+    <string name="user_info_can_message">Can Send Message</string>
     
     <!-- Artwork -->
     <string name="artwork_publish_time">Published: %1$s</string>

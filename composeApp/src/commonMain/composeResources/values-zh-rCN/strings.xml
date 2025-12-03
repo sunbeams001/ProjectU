@@ -317,6 +317,7 @@
     <string name="user_load_more_failed">加载更多失败</string>
     
     <!-- User Profile Tabs -->
+    <string name="user_tab_info">详情</string>
     <string name="user_tab_illusts">插画</string>
     <string name="user_tab_manga">漫画</string>
     <string name="user_tab_novels">小说</string>
@@ -328,6 +329,45 @@
     <string name="user_tab_bookmark_novels_private">私人收藏·小说</string>
     <string name="user_network_error">网络错误</string>
     <string name="user_load_failed">加载失败</string>
+    
+    <!-- User Info Detail -->
+    <string name="user_info_basic">基本信息</string>
+    <string name="user_info_user_id">用户ID</string>
+    <string name="user_info_bio">简介</string>
+    <string name="user_info_social">社交</string>
+    <string name="user_info_following">关注</string>
+    <string name="user_info_mypixiv">好P友</string>
+    <string name="user_info_followed_back">互相关注</string>
+    <string name="user_info_is_mypixiv">是我的好P友</string>
+    <string name="user_info_links">链接</string>
+    <string name="user_info_webpage">个人网站</string>
+    <string name="user_info_personal">个人信息</string>
+    <string name="user_info_region">地区</string>
+    <string name="user_info_gender">性别</string>
+    <string name="user_info_age">年龄</string>
+    <string name="user_info_birthday">生日</string>
+    <string name="user_info_job">职业</string>
+    <string name="user_info_workspace">工作环境</string>
+    <string name="user_info_workspace_pc">电脑</string>
+    <string name="user_info_workspace_monitor">显示器</string>
+    <string name="user_info_workspace_tool">软件</string>
+    <string name="user_info_workspace_tablet">数位板</string>
+    <string name="user_info_workspace_mouse">鼠标</string>
+    <string name="user_info_workspace_scanner">扫描仪</string>
+    <string name="user_info_workspace_printer">打印机</string>
+    <string name="user_info_workspace_desktop">桌面</string>
+    <string name="user_info_workspace_desk">桌子</string>
+    <string name="user_info_workspace_chair">椅子</string>
+    <string name="user_info_workspace_music">绘图时听的音乐</string>
+    <string name="user_info_workspace_comment">其他</string>
+    <string name="user_info_commission">接稿状态</string>
+    <string name="user_info_commission_request">接稿</string>
+    <string name="user_info_commission_fan_request">粉丝约稿</string>
+    <string name="user_info_groups">群组</string>
+    <string name="user_info_status">账号状态</string>
+    <string name="user_info_premium">Premium会员</string>
+    <string name="user_info_official">官方账号</string>
+    <string name="user_info_can_message">可发送消息</string>
     
     <!-- Artwork -->
     <string name="artwork_publish_time">投稿时间: %1$s</string>

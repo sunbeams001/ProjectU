@@ -208,7 +208,65 @@ class UserViewModel(
                     }
                 }
                 
-                // 5. 更新状�?
+                // 用户信息Tab（放在最后）
+                availableTabs.add(UserProfileTab.USER_INFO)
+                
+                // 5. 构建用户详细信息
+                val userDetailInfo = UserDetailInfo(
+                    userId = userInfo.userId,
+                    name = userInfo.name,
+                    image = userInfo.image,
+                    imageBig = userInfo.imageBig,
+                    premium = userInfo.premium,
+                    isFollowed = userInfo.isFollowed,
+                    isMypixiv = userInfo.isMypixiv,
+                    isBlocking = userInfo.isBlocking,
+                    backgroundUrl = userInfo.background?.url,
+                    official = userInfo.official,
+                    following = userInfo.following,
+                    mypixivCount = userInfo.mypixivCount,
+                    followedBack = userInfo.followedBack,
+                    canSendMessage = userInfo.canSendMessage,
+                    comment = userInfo.comment,
+                    commentHtml = userInfo.commentHtml,
+                    webpage = userInfo.webpage,
+                    twitterUrl = userInfo.social?.twitter?.url,
+                    facebookUrl = userInfo.social?.facebook?.url,
+                    instagramUrl = userInfo.social?.instagram?.url,
+                    tumblrUrl = userInfo.social?.tumblr?.url,
+                    pawooUrl = userInfo.social?.pawoo?.url,
+                    circlemsUrl = userInfo.social?.circlems?.url,
+                    region = userInfo.region?.name,
+                    age = userInfo.age?.name,
+                    birthDay = userInfo.birthDay?.name,
+                    gender = userInfo.gender?.name,
+                    job = userInfo.job?.name,
+                    workspacePc = userInfo.workspace?.pc,
+                    workspaceMonitor = userInfo.workspace?.monitor,
+                    workspaceTool = userInfo.workspace?.tool,
+                    workspaceScanner = userInfo.workspace?.scanner,
+                    workspaceTablet = userInfo.workspace?.tablet,
+                    workspaceMouse = userInfo.workspace?.mouse,
+                    workspacePrinter = userInfo.workspace?.printer,
+                    workspaceDesktop = userInfo.workspace?.desktop,
+                    workspaceMusic = userInfo.workspace?.music,
+                    workspaceDesk = userInfo.workspace?.desk,
+                    workspaceChair = userInfo.workspace?.chair,
+                    workspaceComment = userInfo.workspace?.comment,
+                    workspaceImageUrl = userInfo.workspace?.imageUrl,
+                    workspaceImageBigUrl = userInfo.workspace?.imageBigUrl,
+                    commissionRequestStatus = userInfo.commission?.requestStatus,
+                    commissionFanRequestStatus = userInfo.commission?.fanRequestStatus,
+                    groups = userInfo.group?.map { group ->
+                        UserGroupInfo(
+                            id = group.id,
+                            title = group.title,
+                            iconUrl = group.iconUrl
+                        )
+                    } ?: emptyList()
+                )
+                
+                // 6. 更新状态
                 _state.update { 
                     it.copy(
                         userProfile = UserProfile(
@@ -222,6 +280,7 @@ class UserViewModel(
                             comment = userInfo.comment,
                             backgroundUrl = userInfo.background?.url
                         ),
+                        userDetailInfo = userDetailInfo,
                         availableTabs = availableTabs,
                         currentTab = availableTabs.firstOrNull() ?: UserProfileTab.ILLUSTS,
                         tabDataCache = tabDataCache,
@@ -236,9 +295,10 @@ class UserViewModel(
                     )
                 }
                 
-                // 6. 自动加载第一个Tab的数�?
-                if (availableTabs.isNotEmpty()) {
-                    loadTabData(availableTabs.first())
+                // 7. 自动加载第一个Tab的数据
+                val firstDataTab = availableTabs.firstOrNull()
+                if (firstDataTab != null && firstDataTab != UserProfileTab.USER_INFO) {
+                    loadTabData(firstDataTab)
                 }
                 
             } catch (e: Exception) {
