@@ -286,6 +286,7 @@
     <string name="novel_publish_time">发布时间: %1$s</string>
     <string name="novel_remove_marker">移除书签</string>
     <string name="novel_add_marker">添加书签</string>
+    <string name="novel_update_marker">更新书签</string>
     <string name="novel_collapse">收起</string>
     <string name="novel_expand">展开</string>
     <string name="novel_friends_only">好P友限定</string>

@@ -84,7 +84,9 @@ object NovelContentParser {
     private val CHAPTER_PATTERN = Regex("""\[chapter:([^\]]+)\]""")
     private val PIXIV_IMAGE_PATTERN = Regex("""\[pixivimage:(\d+)(?:-(\d+))?\]""")
     private val UPLOADED_IMAGE_PATTERN = Regex("""\[uploadedimage:(\d+)\]""")
-    private val JUMP_URI_PATTERN = Regex("""\[\[jumpuri:([^>]+)>([^\]]+)\]\]""")
+    // 支持两种 jumpuri 格式：
+    // [[jumpuri:显示文本>URL]] 和 [[jumpuri:显示文本 > URL]]
+    private val JUMP_URI_PATTERN = Regex("""\[\[jumpuri:([^>\]]+?)\s*>\s*([^\]]+)\]\]""")
     private val RUBY_PATTERN = Regex("""\[\[rb:([^>]+)>([^\]]+)\]\]""")
     
     /**
@@ -165,8 +167,8 @@ object NovelContentParser {
                     elements.add(ContentElement.UploadedImage(imageId))
                 }
                 jumpMatch -> {
-                    val displayText = nearestMatch.groupValues[1]
-                    val url = nearestMatch.groupValues[2]
+                    val displayText = nearestMatch.groupValues[1].trim()
+                    val url = nearestMatch.groupValues[2].trim()
                     elements.add(ContentElement.JumpLink(displayText, url))
                 }
                 rubyMatch -> {

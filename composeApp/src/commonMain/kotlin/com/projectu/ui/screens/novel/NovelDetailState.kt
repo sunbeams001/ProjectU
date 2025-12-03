@@ -5,6 +5,20 @@ import com.projectu.shared.domain.model.Novel
 import com.projectu.ui.util.NovelContentParser
 
 /**
+ * 书签状态枚举
+ * 
+ * 用于区分书签的三种状态，提供更清晰的用户交互体验
+ */
+enum class MarkerStatus {
+    /** 未添加书签 */
+    NO_MARKER,
+    /** 已添加书签且是当前页 */
+    MARKER_CURRENT_PAGE,
+    /** 已添加书签但不是当前页 */
+    MARKER_OTHER_PAGE
+}
+
+/**
  * 小说详情页状态
  * 
  * @param novel 当前展示的小说
@@ -63,4 +77,22 @@ data class NovelDetailState(
      */
     val currentPageContent: NovelContentParser.NovelPage?
         get() = parsedPages.getOrNull(currentPage - 1)
+    
+    /**
+     * 书签状态
+     * 
+     * 根据当前页码和已保存的书签页码计算：
+     * - NO_MARKER: 未添加书签
+     * - MARKER_CURRENT_PAGE: 已添加书签且是当前页
+     * - MARKER_OTHER_PAGE: 已添加书签但不是当前页（需要更新）
+     */
+    val markerStatus: MarkerStatus
+        get() {
+            val markerPage = novel?.marker ?: return MarkerStatus.NO_MARKER
+            return if (markerPage == currentPage) {
+                MarkerStatus.MARKER_CURRENT_PAGE
+            } else {
+                MarkerStatus.MARKER_OTHER_PAGE
+            }
+        }
 }

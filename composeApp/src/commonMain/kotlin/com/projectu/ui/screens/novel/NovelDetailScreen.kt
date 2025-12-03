@@ -334,6 +334,7 @@ private fun NovelDetailLayout(
             novel = novel,
             authorFollowStatus = state.authorFollowStatus,
             isExpanded = state.isInfoExpanded,
+            markerStatus = state.markerStatus,
             isMarkerLoading = state.isMarkerLoading,
             onToggle = onToggleInfo,
             onCollapse = onCollapseInfo,

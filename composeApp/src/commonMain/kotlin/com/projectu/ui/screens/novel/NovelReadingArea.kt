@@ -498,12 +498,13 @@ private fun ContentElementDisplay(
             Text(
                 text = element.displayText,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline
                 ),
                 modifier = modifier
                     .fillMaxWidth()
                     .clickable { 
-                        // TODO: 处理链接跳转
+                        onLinkClick(element.url)
                     }
             )
         }

@@ -493,13 +493,81 @@ class NovelDetailViewModel(
     
     /**
      * 切换书签状态
+     * 
+     * 根据当前书签状态执行不同操作：
+     * - 未添加书签：添加当前页书签
+     * - 已添加书签且是当前页：删除书签
+     * - 已添加书签但不是当前页：更新书签到当前页（先删除再添加）
      */
     fun toggleMarker() {
         val novel = _state.value.novel ?: return
-        if (novel.marker != null) {
-            deleteMarker()
-        } else {
-            addMarker()
+        val markerStatus = _state.value.markerStatus
+        
+        when (markerStatus) {
+            MarkerStatus.NO_MARKER -> {
+                // 未添加书签，直接添加
+                addMarker()
+            }
+            MarkerStatus.MARKER_CURRENT_PAGE -> {
+                // 已添加书签且是当前页，删除书签
+                deleteMarker()
+            }
+            MarkerStatus.MARKER_OTHER_PAGE -> {
+                // 已添加书签但不是当前页，更新书签（先删除再添加）
+                updateMarker()
+            }
+        }
+    }
+    
+    /**
+     * 更新书签到当前页
+     * 先删除旧书签，再添加新书签
+     */
+    private fun updateMarker() {
+        val novel = _state.value.novel ?: return
+        val currentPage = _state.value.currentPage
+        
+        screenModelScope.launch {
+            _state.update { it.copy(isMarkerLoading = true) }
+            
+            try {
+                val userId = authRepository.getCurrentUserId()
+                if (userId == null) {
+                    _state.update { it.copy(isMarkerLoading = false) }
+                    return@launch
+                }
+                
+                // 先删除旧书签
+                novelRepository.deleteNovelMarker(
+                    novelId = novel.id.toLong(),
+                    userId = userId
+                ).onSuccess {
+                    // 再添加新书签
+                    novelRepository.addNovelMarker(
+                        novelId = novel.id.toLong(),
+                        userId = userId,
+                        page = currentPage
+                    ).onSuccess {
+                        // 更新本地状态
+                        val updatedNovel = novel.copy(marker = currentPage)
+                        _state.update { 
+                            it.copy(
+                                novel = updatedNovel,
+                                isMarkerLoading = false
+                            )
+                        }
+                        sessionCache[novel.id] = updatedNovel
+                        // 更新全局缓存
+                        novelCacheManager.updateNovel(novel.id) { it.copy(marker = currentPage) }
+                    }.onFailure {
+                        _state.update { it.copy(isMarkerLoading = false) }
+                    }
+                }.onFailure {
+                    _state.update { it.copy(isMarkerLoading = false) }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isMarkerLoading = false) }
+            }
         }
     }
     

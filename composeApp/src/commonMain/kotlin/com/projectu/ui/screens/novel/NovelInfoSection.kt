@@ -50,6 +50,7 @@ import projectu.composeapp.generated.resources.*
  * @param novel 小说对象
  * @param authorFollowStatus 作者关注状态
  * @param isExpanded 是否展开
+ * @param markerStatus 书签状态
  * @param isMarkerLoading 书签操作是否正在加载
  * @param onToggle 切换展开/收缩回调
  * @param onCollapse 收起回调（用于下拉手势触发）
@@ -63,6 +64,7 @@ fun NovelInfoSection(
     novel: Novel,
     authorFollowStatus: FollowStatus,
     isExpanded: Boolean,
+    markerStatus: MarkerStatus = MarkerStatus.NO_MARKER,
     isMarkerLoading: Boolean = false,
     onToggle: () -> Unit,
     onCollapse: () -> Unit = onToggle,
@@ -72,7 +74,6 @@ fun NovelInfoSection(
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
-    val hasMarker = novel.marker != null
     
     Column(modifier = modifier.fillMaxWidth()) {
         // 收缩状态的提示条 - 始终显示
@@ -108,6 +109,7 @@ fun NovelInfoSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // 阅读书签按钮（稍后再读）
+                    // 三种状态：未添加、已添加当前页、已添加其他页
                     IconButton(
                         onClick = onMarkerClick,
                         enabled = !isMarkerLoading,
@@ -119,10 +121,27 @@ fun NovelInfoSection(
                                 strokeWidth = 2.dp
                             )
                         } else {
+                            val (icon, contentDesc, tint) = when (markerStatus) {
+                                MarkerStatus.NO_MARKER -> Triple(
+                                    Icons.Default.BookmarkAdd,
+                                    stringResource(Res.string.novel_add_marker),
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                MarkerStatus.MARKER_CURRENT_PAGE -> Triple(
+                                    Icons.Default.BookmarkAdded,
+                                    stringResource(Res.string.novel_remove_marker),
+                                    MaterialTheme.colorScheme.primary
+                                )
+                                MarkerStatus.MARKER_OTHER_PAGE -> Triple(
+                                    Icons.Default.BookmarkBorder,
+                                    stringResource(Res.string.novel_update_marker),
+                                    MaterialTheme.colorScheme.tertiary
+                                )
+                            }
                             Icon(
-                                imageVector = if (hasMarker) Icons.Default.BookmarkAdded else Icons.Default.BookmarkAdd,
-                                contentDescription = if (hasMarker) stringResource(Res.string.novel_remove_marker) else stringResource(Res.string.novel_add_marker),
-                                tint = if (hasMarker) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                imageVector = icon,
+                                contentDescription = contentDesc,
+                                tint = tint,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
