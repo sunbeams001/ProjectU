@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.mapper
 
+import com.projectu.shared.data.remote.dto.follow.WatchedNovelSeries
 import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesBody
 import com.projectu.shared.data.remote.dto.novel_series.NovelThumbnail
 import com.projectu.shared.domain.model.AgeLimit
@@ -169,6 +170,46 @@ fun com.projectu.shared.data.remote.dto.user.NovelSeriesInfo.toNovelSeries(): No
         lastPublishedContentTimestamp = lastPublishedContentTimestamp,
         firstNovelId = firstNovelId,
         latestNovelId = latestNovelId,
+        hasGlossary = false
+    )
+}
+
+/**
+ * 将追更列表的 WatchedNovelSeries 转换为 NovelSeries
+ * 
+ * 用于追更列表页面的小说系列显示
+ */
+fun WatchedNovelSeries.toNovelSeries(): NovelSeries {
+    return NovelSeries(
+        id = id,
+        title = title,
+        caption = caption ?: "",
+        userId = userId ?: "",
+        userName = userName ?: "",
+        profileImageUrl = profileImageUrl,
+        coverUrl = cover?.urls?.`240mw` ?: cover?.urls?.`128x128`,
+        isOriginal = isOriginal,
+        isConcluded = isConcluded,
+        isWatched = isWatched,
+        isNotifying = isNotifying,
+        contentCount = publishedEpisodeCount,
+        totalCharacterCount = publishedTextLength,
+        totalWordCount = publishedWordCount,
+        readingTimeSeconds = publishedReadingTime,
+        watchCount = null, // 追更列表不返回追更人数
+        tags = tags ?: emptyList(),
+        genreId = genre,
+        language = null,
+        xRestrict = xRestrict,
+        maxXRestrict = null,
+        aiType = aiType,
+        createDate = createDateTime ?: "",
+        updateDate = updateDateTime ?: "",
+        createdTimestamp = null,
+        updatedTimestamp = null,
+        lastPublishedContentTimestamp = null,
+        firstNovelId = null,
+        latestNovelId = latestEpisodeId,
         hasGlossary = false
     )
 }

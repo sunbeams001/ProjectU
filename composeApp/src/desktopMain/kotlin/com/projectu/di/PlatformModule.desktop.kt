@@ -15,6 +15,10 @@ import com.projectu.ui.screens.settings.SettingsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryIllustsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryNovelsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryUsersViewModel
+import com.projectu.ui.screens.followlatest.FollowLatestIllustsViewModel
+import com.projectu.ui.screens.followlatest.FollowLatestNovelsViewModel
+import com.projectu.ui.screens.followlatest.more.WatchListMangaViewModel
+import com.projectu.ui.screens.followlatest.more.WatchListNovelsViewModel
 import io.ktor.client.engine.cio.*
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -81,6 +85,18 @@ actual val viewModelModule: Module = module {
     
     // 发现小说 ScreenModel
     single { DiscoveryNovelsViewModel(get(), get(), get()) }
+    
+    // 关注用户最新插画 ScreenModel
+    single { FollowLatestIllustsViewModel(get(), get(), get()) }
+    
+    // 关注用户最新小说 ScreenModel
+    single { FollowLatestNovelsViewModel(get(), get(), get()) }
+    
+    // 漫画追更列表 ScreenModel
+    single { WatchListMangaViewModel(get()) }
+    
+    // 小说追更列表 ScreenModel
+    single { WatchListNovelsViewModel(get()) }
     
     // 排行榜 ScreenModel
     single { com.projectu.ui.screens.ranking.RankingViewModel(get(), get(), get(), get(), get()) }

@@ -120,6 +120,7 @@
     <string name="common_delete">Delete</string>
     <string name="common_edit">Edit</string>
     <string name="common_done">Done</string>
+    <string name="common_no_data">No data</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">Play</string>
@@ -343,6 +344,21 @@
     <string name="settings_phpsessid_empty">PHPSESSID cannot be empty</string>
     <string name="settings_phpsessid_invalid_format">Invalid format, expected: userid_xxxxx</string>
     
+    <!-- Follow Latest (动态) -->
+    <string name="nav_follow_latest">Following</string>
+    <string name="follow_latest_title">Following</string>
+    <string name="follow_latest_illusts">Illusts &amp; Manga</string>
+    <string name="follow_latest_novels">Novels</string>
+    <string name="follow_latest_mode_all">All</string>
+    <string name="follow_latest_mode_r18">R-18</string>
+    <string name="follow_latest_more">More</string>
+    <string name="follow_latest_more_title">More Following</string>
+    <string name="follow_latest_watch_list">Watch List</string>
+    <string name="follow_latest_good_p_friends">Good P Friends</string>
+    <string name="follow_latest_manga">Manga</string>
+    <string name="follow_latest_coming_soon">Coming Soon</string>
+    <string name="follow_latest_coming_soon_desc">This feature is under development</string>
+
     <!-- API Errors -->
     <string name="api_post_comment_failed">Failed to post comment</string>
     <string name="api_delete_comment_failed">Failed to delete comment</string>

@@ -16,6 +16,7 @@ import com.projectu.shared.data.repository.NovelSeriesRepositoryImpl
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.data.repository.StateCacheRepositoryInMemory
 import com.projectu.shared.data.repository.UserRepositoryImpl
+import com.projectu.shared.data.repository.WatchListRepositoryImpl
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.NovelRepository
@@ -23,6 +24,7 @@ import com.projectu.shared.domain.repository.NovelSeriesRepository
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.repository.StateCacheRepository
 import com.projectu.shared.domain.repository.UserRepository
+import com.projectu.shared.domain.repository.WatchListRepository
 import com.projectu.shared.domain.usecase.BookmarkArtworkUseCase
 import com.projectu.shared.domain.usecase.BookmarkNovelUseCase
 import com.projectu.shared.domain.usecase.FollowUserUseCase
@@ -149,6 +151,13 @@ val repositoryModule = module {
         NovelSeriesRepositoryImpl(
             pixivApi = get(),
             ageLimitDeterminer = get()
+        )
+    }
+    
+    // 追更列表仓储
+    single<WatchListRepository> {
+        WatchListRepositoryImpl(
+            followApi = get<PixivApi>().followApi
         )
     }
     

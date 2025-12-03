@@ -38,6 +38,17 @@ interface ArtworkRepository {
     suspend fun getFollowingArtworks(page: Int = 1): Result<List<Artwork>>
     
     /**
+     * 获取关注用户的最新插画
+     * @param mode 模式：all, r18
+     * @param page 页码
+     * @return Pair<作品列表, 是否最后一页>
+     */
+    suspend fun getFollowLatestIllusts(
+        mode: String = "all",
+        page: Int = 1
+    ): Result<Pair<List<Artwork>, Boolean>>
+    
+    /**
      * 搜索作品
      */
     suspend fun searchArtworks(

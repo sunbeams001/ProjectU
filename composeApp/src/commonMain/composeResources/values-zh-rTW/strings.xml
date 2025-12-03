@@ -6,6 +6,7 @@
     <!-- Bottom Navigation -->
     <string name="nav_home">首頁</string>
     <string name="nav_discovery">發現</string>
+    <string name="nav_follow_latest">動態</string>
     <string name="nav_ranking">排行榜</string>
     <string name="nav_profile">我的</string>
     
@@ -13,6 +14,20 @@
     <string name="home_recommended">推薦</string>
     <string name="home_following">關注</string>
     <string name="home_framework_complete">專案框架搭建完成</string>
+    
+    <!-- Follow Latest (動態) -->
+    <string name="follow_latest_title">動態</string>
+    <string name="follow_latest_illusts">插畫·漫畫</string>
+    <string name="follow_latest_novels">小說</string>
+    <string name="follow_latest_mode_all">全部</string>
+    <string name="follow_latest_mode_r18">R-18</string>
+    <string name="follow_latest_more">更多</string>
+    <string name="follow_latest_more_title">更多動態</string>
+    <string name="follow_latest_watch_list">追更列表</string>
+    <string name="follow_latest_good_p_friends">好P友</string>
+    <string name="follow_latest_manga">漫畫</string>
+    <string name="follow_latest_coming_soon">即將推出</string>
+    <string name="follow_latest_coming_soon_desc">此功能正在開發中</string>
     
     <!-- Discovery Screen -->
     <string name="discovery_search_hint">搜尋作品、用戶...</string>
@@ -102,6 +117,7 @@
     <string name="common_delete">刪除</string>
     <string name="common_edit">編輯</string>
     <string name="common_done">完成</string>
+    <string name="common_no_data">暫無資料</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">播放</string>

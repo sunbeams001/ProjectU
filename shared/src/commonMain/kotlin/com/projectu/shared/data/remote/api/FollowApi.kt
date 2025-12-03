@@ -50,7 +50,8 @@ class FollowApi(private val client: PixivApiClient) {
         page: Int = 1
     ): PixivResponse<WatchListMangaBody> {
         return client.get("/ajax/watch_list/manga", mapOf(
-            "p" to page
+            "p" to page,
+            "new" to "1"
         ))
     }
 
@@ -63,7 +64,8 @@ class FollowApi(private val client: PixivApiClient) {
         page: Int = 1
     ): PixivResponse<WatchListNovelBody> {
         return client.get("/ajax/watch_list/novel", mapOf(
-            "p" to page
+            "p" to page,
+            "new" to "1"
         ))
     }
 }

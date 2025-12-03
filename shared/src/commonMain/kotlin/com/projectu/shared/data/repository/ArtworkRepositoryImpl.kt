@@ -86,6 +86,26 @@ class ArtworkRepositoryImpl(
             ageLimitDeterminer = ageLimitDeterminer
         ) ?: emptyList()
     }
+    
+    override suspend fun getFollowLatestIllusts(
+        mode: String,
+        page: Int
+    ): Result<Pair<List<Artwork>, Boolean>> = runCatching {
+        val response = pixivApi.followApi.getFollowLatestIllust(
+            mode = mode,
+            page = page
+        )
+        if (response.error) {
+            throw IllegalStateException(response.message)
+        }
+        val artworks = response.body?.thumbnails?.illust?.toArtworkList(
+            tagTranslationUtil = tagTranslationUtil,
+            tagTranslation = response.body.tagTranslation,
+            ageLimitDeterminer = ageLimitDeterminer
+        ) ?: emptyList()
+        val isLastPage = response.body?.page?.isLastPage ?: true
+        Pair(artworks, isLastPage)
+    }
 
     override suspend fun searchArtworks(
         keyword: String,

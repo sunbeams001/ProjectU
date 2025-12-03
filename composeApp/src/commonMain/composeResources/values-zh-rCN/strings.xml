@@ -119,6 +119,7 @@
     <string name="common_delete">删除</string>
     <string name="common_edit">编辑</string>
     <string name="common_done">完成</string>
+    <string name="common_no_data">暂无数据</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">播放</string>
@@ -341,6 +342,21 @@
     <string name="settings_phpsessid_empty">PHPSESSID 不能为空</string>
     <string name="settings_phpsessid_invalid_format">格式无效，应为: userid_xxxxx</string>
     
+    <!-- Follow Latest (动态) -->
+    <string name="nav_follow_latest">动态</string>
+    <string name="follow_latest_title">动态</string>
+    <string name="follow_latest_illusts">插画·漫画</string>
+    <string name="follow_latest_novels">小说</string>
+    <string name="follow_latest_mode_all">全部</string>
+    <string name="follow_latest_mode_r18">R-18</string>
+    <string name="follow_latest_more">更多</string>
+    <string name="follow_latest_more_title">更多动态</string>
+    <string name="follow_latest_watch_list">追更列表</string>
+    <string name="follow_latest_good_p_friends">好P友</string>
+    <string name="follow_latest_manga">漫画</string>
+    <string name="follow_latest_coming_soon">即将推出</string>
+    <string name="follow_latest_coming_soon_desc">此功能正在开发中</string>
+
     <!-- API Errors -->
     <string name="api_post_comment_failed">发表评论失败</string>
     <string name="api_delete_comment_failed">删除评论失败</string>

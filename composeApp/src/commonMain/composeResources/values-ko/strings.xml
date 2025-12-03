@@ -6,6 +6,7 @@
     <!-- Bottom Navigation -->
     <string name="nav_home">홈</string>
     <string name="nav_discovery">발견</string>
+    <string name="nav_follow_latest">팔로우 최신</string>
     <string name="nav_ranking">랭킹</string>
     <string name="nav_profile">마이페이지</string>
     
@@ -13,6 +14,20 @@
     <string name="home_recommended">추천</string>
     <string name="home_following">팔로잉</string>
     <string name="home_framework_complete">프로젝트 프레임워크 구축 완료</string>
+    
+    <!-- Follow Latest (팔로우 최신) -->
+    <string name="follow_latest_title">팔로우 최신</string>
+    <string name="follow_latest_illusts">일러스트·만화</string>
+    <string name="follow_latest_novels">소설</string>
+    <string name="follow_latest_mode_all">전체</string>
+    <string name="follow_latest_mode_r18">R-18</string>
+    <string name="follow_latest_more">더보기</string>
+    <string name="follow_latest_more_title">더보기 팔로우</string>
+    <string name="follow_latest_watch_list">구독 목록</string>
+    <string name="follow_latest_good_p_friends">좋은 P 친구</string>
+    <string name="follow_latest_manga">만화</string>
+    <string name="follow_latest_coming_soon">곧 출시</string>
+    <string name="follow_latest_coming_soon_desc">이 기능은 개발 중입니다</string>
     
     <!-- Discovery Screen -->
     <string name="discovery_search_hint">작품, 사용자 검색...</string>
@@ -102,6 +117,7 @@
     <string name="common_delete">삭제</string>
     <string name="common_edit">편집</string>
     <string name="common_done">완료</string>
+    <string name="common_no_data">데이터 없음</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">재생</string>

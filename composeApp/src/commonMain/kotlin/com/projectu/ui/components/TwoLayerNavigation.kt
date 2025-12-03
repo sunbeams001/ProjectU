@@ -143,6 +143,7 @@ fun <T> NavigationBar(
  * @param selectedIndex 当前选中的索引
  * @param onItemClick 点击回调，参数为索引
  * @param getItemLabel 获取导航项标签文本的 Composable 函数
+ * @param trailingContent 尾部内容（可选）
  * @param modifier 修饰符
  */
 @Composable
@@ -151,7 +152,8 @@ fun <T> SimpleNavigationBar(
     selectedIndex: Int,
     onItemClick: (Int) -> Unit,
     getItemLabel: @Composable (T) -> String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
     val scrollState = rememberScrollState()
     val density = LocalDensity.current
@@ -217,23 +219,34 @@ fun <T> SimpleNavigationBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .horizontalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 6.dp)
-                .onGloballyPositioned { coordinates ->
-                    rowCoordinates = coordinates
-                },
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            items.forEachIndexed { index, item ->
-                FilterChip(
-                    selected = index == selectedIndex,
-                    onClick = { onItemClick(index) },
-                    label = { Text(text = getItemLabel(item)) },
-                    modifier = Modifier.onGloballyPositioned { coordinates ->
-                        chipCoordinatesList[index] = coordinates
-                    }
-                )
+            // 左侧：可滚动的导航项
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .horizontalScroll(scrollState)
+                    .onGloballyPositioned { coordinates ->
+                        rowCoordinates = coordinates
+                    },
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items.forEachIndexed { index, item ->
+                    FilterChip(
+                        selected = index == selectedIndex,
+                        onClick = { onItemClick(index) },
+                        label = { Text(text = getItemLabel(item)) },
+                        modifier = Modifier.onGloballyPositioned { coordinates ->
+                            chipCoordinatesList[index] = coordinates
+                        }
+                    )
+                }
             }
+            
+            // 右侧：尾部内容（可选）
+            trailingContent?.invoke()
         }
     }
 }

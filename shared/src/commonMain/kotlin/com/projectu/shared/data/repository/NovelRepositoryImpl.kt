@@ -87,6 +87,31 @@ class NovelRepositoryImpl(
         }
     }
     
+    override suspend fun getFollowLatestNovels(
+        mode: String,
+        page: Int
+    ): Result<Pair<List<Novel>, Boolean>> {
+        return try {
+            val response = pixivApi.followApi.getFollowLatestNovel(
+                mode = mode,
+                page = page
+            )
+            
+            if (response.error || response.body == null) {
+                Result.failure(Exception(response.message ?: "Failed to get follow latest novels"))
+            } else {
+                val novels = response.body!!.thumbnails.novel?.toNovelList(
+                    tagTranslation = response.body!!.tagTranslation,
+                    ageLimitDeterminer = ageLimitDeterminer
+                ) ?: emptyList()
+                val isLastPage = response.body!!.page.isLastPage
+                Result.success(Pair(novels, isLastPage))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     override suspend fun getRankingNovels(
         mode: RankingMode,
         content: RankingContent,

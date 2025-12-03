@@ -25,6 +25,7 @@ import projectu.composeapp.generated.resources.nav_home
 import projectu.composeapp.generated.resources.nav_discovery
 import projectu.composeapp.generated.resources.nav_ranking
 import projectu.composeapp.generated.resources.nav_profile
+import projectu.composeapp.generated.resources.nav_follow_latest
 import projectu.composeapp.generated.resources.home_framework_complete
 import projectu.composeapp.generated.resources.settings_title
 import projectu.composeapp.generated.resources.discovery_recommended_users
@@ -33,6 +34,8 @@ import projectu.composeapp.generated.resources.discovery_recommended_novels
 import com.projectu.ui.screens.discovery.DiscoveryContent
 import com.projectu.ui.screens.ranking.RankingContent
 import com.projectu.ui.screens.ranking.RankingViewModel
+import com.projectu.ui.screens.followlatest.FollowLatestContent
+import com.projectu.ui.screens.followlatest.FollowLatestIllustsViewModel
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
@@ -65,6 +68,7 @@ private fun HomeScreenPhone(windowSize: WindowSize) {
                 NavigationBar {
                     TabNavigationItem(HomeTab)
                     TabNavigationItem(DiscoveryTab)
+                    TabNavigationItem(FollowLatestTab)
                     TabNavigationItem(RankingTab)
                     TabNavigationItem(ProfileTab)
                 }
@@ -112,6 +116,18 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                     label = { Text(stringResource(Res.string.nav_discovery)) }
                 )
                 NavigationRailItem(
+                    selected = it.current == FollowLatestTab,
+                    onClick = { 
+                        if (it.current == FollowLatestTab) {
+                            FollowLatestTab.triggerScrollToTopOrRefresh()
+                        } else {
+                            it.current = FollowLatestTab
+                        }
+                    },
+                    icon = { Icon(Icons.Default.FavoriteBorder, contentDescription = null) },
+                    label = { Text(stringResource(Res.string.nav_follow_latest)) }
+                )
+                NavigationRailItem(
                     selected = it.current == RankingTab,
                     onClick = { 
                         if (it.current == RankingTab) {
@@ -150,6 +166,7 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
     val title = when (tab) {
         HomeTab -> stringResource(Res.string.nav_home)
         DiscoveryTab -> stringResource(Res.string.nav_discovery)
+        FollowLatestTab -> stringResource(Res.string.nav_follow_latest)
         RankingTab -> stringResource(Res.string.nav_ranking)
         ProfileTab -> stringResource(Res.string.nav_profile)
         else -> ""
@@ -157,6 +174,7 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
     val icon = when (tab) {
         HomeTab -> Icons.Default.Home
         DiscoveryTab -> Icons.Default.Search
+        FollowLatestTab -> Icons.Default.FavoriteBorder
         RankingTab -> Icons.Default.Star
         ProfileTab -> Icons.Default.Person
         else -> Icons.Default.Home
@@ -168,6 +186,7 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
             if (tabNavigator.current == tab) {
                 when (tab) {
                     DiscoveryTab -> DiscoveryTab.triggerScrollToTopOrRefresh()
+                    FollowLatestTab -> FollowLatestTab.triggerScrollToTopOrRefresh()
                     RankingTab -> RankingTab.triggerScrollToTopOrRefresh()
                     else -> {}
                 }
@@ -283,6 +302,58 @@ object DiscoveryTab : Tab {
     }
 }
 
+// 动态标签（关注用户最新作品）
+object FollowLatestTab : Tab {
+    // 用于触发刷新或滚动到顶部的事件
+    private val _scrollToTopOrRefreshTrigger = mutableStateOf(0L)
+    val scrollToTopOrRefreshTrigger: State<Long> = _scrollToTopOrRefreshTrigger
+    
+    // 将 scrollIndices 提升到 Tab 级别，避免导航时丢失
+    private val scrollIndices = mutableStateMapOf<String, Int>()
+    
+    // 保存当前选中的内容类型页面索引，避免切换 Tab 时重置
+    private var currentPageIndex = mutableIntStateOf(0) // 默认为 ILLUSTS (索引0)
+    
+    fun triggerScrollToTopOrRefresh() {
+        _scrollToTopOrRefreshTrigger.value = System.currentTimeMillis()
+    }
+    
+    override val options: TabOptions
+        @Composable
+        get() {
+            val icon = rememberVectorPainter(Icons.Default.FavoriteBorder)
+            val title = stringResource(Res.string.nav_follow_latest)
+            return remember(title) {
+                TabOptions(
+                    index = 2u,
+                    title = title,
+                    icon = icon
+                )
+            }
+        }
+    
+    @Composable
+    override fun Content() {
+        val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
+        
+        // 监听触发器
+        LaunchedEffect(scrollToTopOrRefreshTrigger.value) {
+            if (scrollToTopOrRefreshTrigger.value > 0) {
+                scrollToTopOrRefreshCallback.value?.invoke()
+            }
+        }
+        
+        FollowLatestContent(
+            scrollIndices = scrollIndices,
+            initialPageIndex = currentPageIndex.intValue,
+            onPageChanged = { index -> currentPageIndex.intValue = index },
+            onRegisterScrollToTopOrRefreshCallback = { callback ->
+                scrollToTopOrRefreshCallback.value = callback
+            }
+        )
+    }
+}
+
 // 排行榜标签
 object RankingTab : Tab {
     // 用于触发刷新或滚动到顶部的事件
@@ -303,7 +374,7 @@ object RankingTab : Tab {
             val title = stringResource(Res.string.nav_ranking)
             return remember(title) {
                 TabOptions(
-                    index = 2u,
+                    index = 3u,
                     title = title,
                     icon = icon
                 )
@@ -388,7 +459,7 @@ object ProfileTab : Tab {
             val title = stringResource(Res.string.nav_profile)
             return remember(title) {
                 TabOptions(
-                    index = 3u,
+                    index = 4u,
                     title = title,
                     icon = icon
                 )

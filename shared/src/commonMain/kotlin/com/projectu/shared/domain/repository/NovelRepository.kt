@@ -48,6 +48,17 @@ interface NovelRepository {
     ): Result<List<Novel>>
     
     /**
+     * 获取关注用户的最新小说
+     * @param mode 模式：all, r18
+     * @param page 页码
+     * @return Pair<小说列表, 是否最后一页>
+     */
+    suspend fun getFollowLatestNovels(
+        mode: String = "all",
+        page: Int = 1
+    ): Result<Pair<List<Novel>, Boolean>>
+    
+    /**
      * 获取小说排行榜
      * @param mode 排行榜模式
      * @param content 内容类型（应该是 NOVEL 或 ALL）
