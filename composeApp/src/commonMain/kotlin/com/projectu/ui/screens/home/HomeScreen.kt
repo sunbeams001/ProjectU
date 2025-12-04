@@ -636,6 +636,8 @@ object ProfileTab : Tab {
                     }
                 },
                 onBackClick = { /* 不需要返回操作 */ },
+                onToggleTagFilter = viewModel::toggleTagFilter,
+                onSelectTag = viewModel::selectTag,
                 showBackButton = false,
                 showFollowIndicator = false,
                 useScaffold = false,

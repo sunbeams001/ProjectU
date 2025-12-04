@@ -115,6 +115,14 @@ data class UserGroupInfo(
 )
 
 /**
+ * 收藏标签数据
+ */
+data class BookmarkTagData(
+    val tag: String,
+    val count: Int
+)
+
+/**
  * 每个Tab的数据状态
  * 
  * 支持两种分页模式：
@@ -132,7 +140,12 @@ data class TabData(
     val error: String? = null,
     // 收藏列表分页相关
     val offset: Int = 0,                        // 当前偏移量（用于收藏列表）
-    val total: Int = 0                          // 总数量（用于收藏列表）
+    val total: Int = 0,                         // 总数量（用于收藏列表）
+    // Tag筛选相关（仅用于收藏Tab）
+    val bookmarkTags: List<BookmarkTagData> = emptyList(),  // 收藏标签列表
+    val selectedTag: String? = null,             // 当前选中的标签（null表示不筛选）
+    val isTagFilterExpanded: Boolean = false,    // Tag筛选行是否展开
+    val isLoadingTags: Boolean = false           // 是否正在加载标签
 )
 
 /**

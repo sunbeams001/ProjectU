@@ -3,6 +3,7 @@ package com.projectu.ui.screens.user
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.projectu.shared.data.cache.StateCacheEvent
+import com.projectu.ui.util.AppLogger
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.mapper.toArtwork
@@ -554,6 +555,7 @@ class UserViewModel(
     private suspend fun loadBookmarkIllusts(tab: UserProfileTab) {
         val tabData = _state.value.tabDataCache[tab] ?: TabData()
         val currentOffset = tabData.offset
+        val selectedTag = tabData.selectedTag
         
         val rest = when (tab) {
             UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC -> "show"
@@ -563,7 +565,7 @@ class UserViewModel(
         
         val response = pixivApi.bookmarkApi.getUserBookmarkIllusts(
             uid = currentUserId,
-            tag = "",
+            tag = selectedTag ?: "",
             offset = currentOffset,
             limit = BOOKMARK_ILLUST_PAGE_SIZE,
             rest = rest
@@ -612,6 +614,7 @@ class UserViewModel(
     private suspend fun loadBookmarkNovels(tab: UserProfileTab) {
         val tabData = _state.value.tabDataCache[tab] ?: TabData()
         val currentOffset = tabData.offset
+        val selectedTag = tabData.selectedTag
         
         val rest = when (tab) {
             UserProfileTab.BOOKMARK_NOVELS_PUBLIC -> "show"
@@ -621,7 +624,7 @@ class UserViewModel(
         
         val response = pixivApi.bookmarkApi.getUserBookmarkNovels(
             uid = currentUserId,
-            tag = "",
+            tag = selectedTag ?: "",
             offset = currentOffset,
             limit = BOOKMARK_NOVEL_PAGE_SIZE,
             rest = rest
@@ -796,6 +799,130 @@ class UserViewModel(
             state.copy(
                 tabDataCache = state.tabDataCache + (tab to newData)
             )
+        }
+    }
+    
+    /**
+     * 切换Tag筛选行的展开/收起状态
+     * 展开时加载Tag数据
+     */
+    fun toggleTagFilter(tab: UserProfileTab) {
+        AppLogger.d("UserViewModel", "toggleTagFilter called for tab: $tab")
+        
+        // 如果 tabDataCache 中没有该 Tab 的数据，先创建一个默认的
+        val tabData = _state.value.tabDataCache[tab] ?: TabData()
+        val newExpanded = !tabData.isTagFilterExpanded
+        
+        AppLogger.d("UserViewModel", "toggleTagFilter: current expanded=${tabData.isTagFilterExpanded}, newExpanded=$newExpanded")
+        
+        updateTabData(tab) { it.copy(isTagFilterExpanded = newExpanded) }
+        
+        // 展开时加载Tag数据
+        if (newExpanded && tabData.bookmarkTags.isEmpty() && !tabData.isLoadingTags) {
+            AppLogger.d("UserViewModel", "toggleTagFilter: loading tags for tab: $tab")
+            loadBookmarkTags(tab)
+        }
+    }
+    
+    /**
+     * 加载收藏标签
+     */
+    private fun loadBookmarkTags(tab: UserProfileTab) {
+        if (!tab.isBookmarkTab()) return
+        
+        screenModelScope.launch {
+            updateTabData(tab) { it.copy(isLoadingTags = true) }
+            
+            try {
+                val isPublic = when (tab) {
+                    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                    UserProfileTab.BOOKMARK_NOVELS_PUBLIC -> true
+                    else -> false
+                }
+                
+                val isIllust = when (tab) {
+                    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                    UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> true
+                    else -> false
+                }
+                
+                val response = if (isIllust) {
+                    pixivApi.bookmarkApi.getIllustBookmarkTags(currentUserId)
+                } else {
+                    pixivApi.bookmarkApi.getNovelBookmarkTags(currentUserId)
+                }
+                
+                if (response.error) {
+                    updateTabData(tab) { it.copy(isLoadingTags = false) }
+                    return@launch
+                }
+                
+                val body = response.body ?: run {
+                    updateTabData(tab) { it.copy(isLoadingTags = false) }
+                    return@launch
+                }
+                
+                // 根据公开/私人选择对应的标签列表，并倒序排列
+                val tags = if (isPublic) body.public else body.private
+                val bookmarkTags = tags.reversed().map { BookmarkTagData(tag = it.tag, count = it.cnt) }
+                
+                updateTabData(tab) {
+                    it.copy(
+                        bookmarkTags = bookmarkTags,
+                        isLoadingTags = false
+                    )
+                }
+            } catch (e: Exception) {
+                updateTabData(tab) { it.copy(isLoadingTags = false) }
+            }
+        }
+    }
+    
+    /**
+     * 选择/取消选择Tag进行筛选
+     * @param tab 当前Tab
+     * @param tag 选择的标签，传null表示取消筛选
+     */
+    fun selectTag(tab: UserProfileTab, tag: String?) {
+        val tabData = _state.value.tabDataCache[tab] ?: return
+        
+        // 如果点击的是已选中的Tag，则取消选择
+        val newSelectedTag = if (tabData.selectedTag == tag) null else tag
+        
+        // 更新选中状态，并清空列表数据以便重新加载
+        updateTabData(tab) {
+            it.copy(
+                selectedTag = newSelectedTag,
+                artworks = emptyList(),
+                novels = emptyList(),
+                offset = 0,
+                hasMore = true,
+                isLoading = true,
+                error = null
+            )
+        }
+        
+        // 重新加载数据
+        screenModelScope.launch {
+            try {
+                when (tab) {
+                    UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                    UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> {
+                        loadBookmarkIllusts(tab)
+                    }
+                    UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+                    UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
+                        loadBookmarkNovels(tab)
+                    }
+                    else -> {
+                        updateTabData(tab) { it.copy(isLoading = false) }
+                    }
+                }
+            } catch (e: Exception) {
+                updateTabData(tab) {
+                    it.copy(isLoading = false, error = e.message ?: "Failed to load")
+                }
+            }
         }
     }
 }

@@ -332,6 +332,12 @@
     <string name="user_network_error">网络错误</string>
     <string name="user_load_failed">加载失败</string>
     
+    <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_expand">按标签筛选</string>
+    <string name="bookmark_tag_filter_collapse">收起</string>
+    <string name="bookmark_tag_loading">正在加载标签…</string>
+    <string name="bookmark_tag_empty">暂无标签</string>
+    
     <!-- User Info Detail -->
     <string name="user_info_basic">基本信息</string>
     <string name="user_info_user_id">用户ID</string>

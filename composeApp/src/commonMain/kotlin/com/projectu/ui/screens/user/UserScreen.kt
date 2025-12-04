@@ -1,8 +1,14 @@
 package com.projectu.ui.screens.user
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -15,11 +21,15 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -62,6 +72,7 @@ import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
+import com.projectu.ui.util.AppLogger
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -166,7 +177,9 @@ data class UserScreen(
                     navigator.push(UserScreen(clickedUserId.toLong()))
                 }
             },
-            onBackClick = { navigator.pop() }
+            onBackClick = { navigator.pop() },
+            onToggleTagFilter = viewModel::toggleTagFilter,
+            onSelectTag = viewModel::selectTag
         )
     }
 }
@@ -186,6 +199,9 @@ fun UserScreenContent(
     onMangaSeriesClick: (Long) -> Unit,
     onUserClick: (String) -> Unit,
     onBackClick: () -> Unit,
+    // Tag筛选相关回调
+    onToggleTagFilter: (UserProfileTab) -> Unit = {},
+    onSelectTag: (UserProfileTab, String?) -> Unit = { _, _ -> },
     // 自定义显示选项
     showBackButton: Boolean = true,
     showFollowIndicator: Boolean = true,
@@ -199,6 +215,9 @@ fun UserScreenContent(
     
     // 每个Tab的列表滚动状态
     val tabListStates = remember { mutableStateMapOf<UserProfileTab, ListScrollState>() }
+    
+    // 每个收藏Tab的Tag筛选行滚动状态
+    val tagFilterScrollStates = remember { mutableStateMapOf<UserProfileTab, ScrollState>() }
     
     // Pager状态 - 使用 availableTabs 的 key 来确保在 tabs 变化时重建 pager
     val pagerState = key(state.availableTabs) {
@@ -341,6 +360,7 @@ fun UserScreenContent(
                                     novelSeries = state.novelSeries,
                                     scrollIndices = scrollIndices,
                                     tabListStates = tabListStates,
+                                    tagFilterScrollStates = tagFilterScrollStates,
                                     onArtworkClick = onArtworkClick,
                                     onNovelClick = onNovelClick,
                                     onNovelSeriesClick = onNovelSeriesClick,
@@ -348,7 +368,12 @@ fun UserScreenContent(
                                     onUserClick = { userId -> onUserClick(userId.toString()) },
                                     onLoadMore = onLoadMore,
                                     onRefresh = onRefresh,
-                                    onRetry = { onRetryTab(tab) }
+                                    onRetry = { onRetryTab(tab) },
+                                    onToggleTagFilter = { 
+                                        AppLogger.d("UserScreenContent", "onToggleTagFilter lambda called for tab: $tab")
+                                        onToggleTagFilter(tab) 
+                                    },
+                                    onSelectTag = { selectedTag -> onSelectTag(tab, selectedTag) }
                                 )
                             }
                         } else {
@@ -557,6 +582,7 @@ fun UserTabContent(
     novelSeries: List<NovelSeries>,
     scrollIndices: MutableMap<UserProfileTab, Int>,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
+    tagFilterScrollStates: MutableMap<UserProfileTab, ScrollState> = mutableMapOf(),
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
     onNovelSeriesClick: (Long) -> Unit,
@@ -564,8 +590,13 @@ fun UserTabContent(
     onUserClick: (Long) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onToggleTagFilter: () -> Unit = {},
+    onSelectTag: (String?) -> Unit = {}
 ) {
+    // 获取或创建当前Tab的Tag筛选行滚动状态
+    val tagScrollState = tagFilterScrollStates.getOrPut(tab) { ScrollState(0) }
+    
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -651,36 +682,62 @@ fun UserTabContent(
                             UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
                             UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE -> {
                                 // 收藏的插画·漫画（瀑布流展示，显示作者信息）
-                                ArtworkStaggeredGrid(
-                                    artworks = tabData.artworks,
-                                    tab = tab,
-                                    scrollIndices = scrollIndices,
-                                    tabListStates = tabListStates,
-                                    onArtworkClick = onArtworkClick,
-                                    onUserClick = onUserClick,
-                                    onLoadMore = onLoadMore,
-                                    isLoading = tabData.isLoading,
-                                    isRefreshing = tabData.isRefreshing,
-                                    onRefresh = onRefresh,
-                                    showUserInfo = true
-                                )
+                                Column(modifier = Modifier.fillMaxSize()) {
+                                    // Tag筛选行
+                                    BookmarkTagFilterRow(
+                                        tabData = tabData,
+                                        scrollState = tagScrollState,
+                                        onToggleExpand = {
+                                            AppLogger.d("UserTabContent", "BookmarkTagFilterRow onToggleExpand called for tab: $tab")
+                                            onToggleTagFilter()
+                                        },
+                                        onSelectTag = onSelectTag
+                                    )
+                                    
+                                    ArtworkStaggeredGrid(
+                                        artworks = tabData.artworks,
+                                        tab = tab,
+                                        scrollIndices = scrollIndices,
+                                        tabListStates = tabListStates,
+                                        onArtworkClick = onArtworkClick,
+                                        onUserClick = onUserClick,
+                                        onLoadMore = onLoadMore,
+                                        isLoading = tabData.isLoading,
+                                        isRefreshing = tabData.isRefreshing,
+                                        onRefresh = onRefresh,
+                                        showUserInfo = true
+                                    )
+                                }
                             }
                             UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
                             UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
                                 // 收藏的小说（列表展示，显示作者信息）
-                                NovelList(
-                                    novels = tabData.novels,
-                                    tab = tab,
-                                    tabListStates = tabListStates,
-                                    onNovelClick = onNovelClick,
-                                    onSeriesClick = onNovelSeriesClick,
-                                    onUserClick = onUserClick,
-                                    onLoadMore = onLoadMore,
-                                    isLoading = tabData.isLoading,
-                                    isRefreshing = tabData.isRefreshing,
-                                    onRefresh = onRefresh,
-                                    showUserInfo = true
-                                )
+                                Column(modifier = Modifier.fillMaxSize()) {
+                                    // Tag筛选行
+                                    BookmarkTagFilterRow(
+                                        tabData = tabData,
+                                        scrollState = tagScrollState,
+                                        onToggleExpand = {
+                                            AppLogger.d("UserTabContent", "BookmarkTagFilterRow onToggleExpand called for tab: $tab")
+                                            onToggleTagFilter()
+                                        },
+                                        onSelectTag = onSelectTag
+                                    )
+                                    
+                                    NovelList(
+                                        novels = tabData.novels,
+                                        tab = tab,
+                                        tabListStates = tabListStates,
+                                        onNovelClick = onNovelClick,
+                                        onSeriesClick = onNovelSeriesClick,
+                                        onUserClick = onUserClick,
+                                        onLoadMore = onLoadMore,
+                                        isLoading = tabData.isLoading,
+                                        isRefreshing = tabData.isRefreshing,
+                                        onRefresh = onRefresh,
+                                        showUserInfo = true
+                                    )
+                                }
                             }
                             else -> {
                                 // USER_INFO 已在上面处理
@@ -1502,5 +1559,147 @@ private fun UserInfoLinkRow(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(0.7f)
         )
+    }
+}
+
+/**
+ * 收藏标签筛选行
+ * 
+ * 默认收起状态，点击展开按钮后加载并显示标签列表
+ * 标签列表可以横向滑动，支持单选
+ * 
+ * @param scrollState 外部传入的滚动状态，用于在重组时保持滚动位置
+ */
+@Composable
+fun BookmarkTagFilterRow(
+    tabData: TabData,
+    scrollState: ScrollState,
+    onToggleExpand: () -> Unit,
+    onSelectTag: (String?) -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        tonalElevation = 0.5.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            // 展开/收起按钮行
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = {
+                        AppLogger.d("BookmarkTagFilterRow", "Row clicked, calling onToggleExpand")
+                        onToggleExpand()
+                    })
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = if (tabData.isTagFilterExpanded) {
+                            Icons.Default.KeyboardArrowUp
+                        } else {
+                            Icons.Default.KeyboardArrowDown
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = stringResource(
+                            if (tabData.isTagFilterExpanded) {
+                                Res.string.bookmark_tag_filter_collapse
+                            } else {
+                                Res.string.bookmark_tag_filter_expand
+                            }
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                
+                // 显示当前选中的标签（如果有）
+                if (tabData.selectedTag != null) {
+                    FilterChip(
+                        selected = true,
+                        onClick = { onSelectTag(null) },
+                        label = { Text(tabData.selectedTag) },
+                        modifier = Modifier.height(28.dp)
+                    )
+                }
+            }
+            
+            // 展开时显示标签列表
+            AnimatedVisibility(
+                visible = tabData.isTagFilterExpanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                when {
+                    tabData.isLoadingTags -> {
+                        // 加载中
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(Res.string.bookmark_tag_loading),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    tabData.bookmarkTags.isEmpty() -> {
+                        // 无标签
+                        Text(
+                            text = stringResource(Res.string.bookmark_tag_empty),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+                    else -> {
+                        // 标签列表（可横向滑动）
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(scrollState)
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            tabData.bookmarkTags.forEach { tagData ->
+                                FilterChip(
+                                    selected = tabData.selectedTag == tagData.tag,
+                                    onClick = { onSelectTag(tagData.tag) },
+                                    label = {
+                                        Text(
+                                            text = "${tagData.tag} (${tagData.count})",
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    },
+                                    modifier = Modifier.height(28.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

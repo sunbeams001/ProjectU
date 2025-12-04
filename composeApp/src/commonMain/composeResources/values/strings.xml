@@ -334,6 +334,12 @@
     <string name="user_network_error">Network error</string>
     <string name="user_load_failed">Failed to load</string>
     
+    <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_expand">Filter by Tag</string>
+    <string name="bookmark_tag_filter_collapse">Collapse</string>
+    <string name="bookmark_tag_loading">Loading tags…</string>
+    <string name="bookmark_tag_empty">No tags</string>
+    
     <!-- User Info Detail -->
     <string name="user_info_basic">Basic Info</string>
     <string name="user_info_user_id">User ID</string>
