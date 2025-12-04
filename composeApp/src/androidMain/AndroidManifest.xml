@@ -16,10 +16,58 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <!-- Deep Link: pixiv.net URLs -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <data android:scheme="https" />
+                <data android:host="www.pixiv.net" />
+                <data android:host="pixiv.net" />
+                
+                <!-- 用户页面: /users/{id} 或 /en/users/{id} -->
+                <data android:pathPattern="/users/.*" />
+                <data android:pathPattern="/en/users/.*" />
+                
+                <!-- 作品详情: /artworks/{id} 或 /en/artworks/{id} -->
+                <data android:pathPattern="/artworks/.*" />
+                <data android:pathPattern="/en/artworks/.*" />
+                
+                <!-- 小说详情: /novel/show.php?id={id} -->
+                <data android:pathPrefix="/novel/show.php" />
+                
+                <!-- 小说系列: /novel/series/{id} -->
+                <data android:pathPattern="/novel/series/.*" />
+                
+                <!-- 漫画系列: /user/{userId}/series/{seriesId} -->
+                <data android:pathPattern="/user/.*/series/.*" />
+            </intent-filter>
+            
+            <!-- Deep Link: HTTP scheme (redirect to HTTPS) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <data android:scheme="http" />
+                <data android:host="www.pixiv.net" />
+                <data android:host="pixiv.net" />
+                
+                <data android:pathPattern="/users/.*" />
+                <data android:pathPattern="/en/users/.*" />
+                <data android:pathPattern="/artworks/.*" />
+                <data android:pathPattern="/en/artworks/.*" />
+                <data android:pathPrefix="/novel/show.php" />
+                <data android:pathPattern="/novel/series/.*" />
+                <data android:pathPattern="/user/.*/series/.*" />
             </intent-filter>
         </activity>
     </application>

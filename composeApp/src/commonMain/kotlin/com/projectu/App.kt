@@ -10,6 +10,8 @@ import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.ui.localization.LocalLocaleManager
 import com.projectu.ui.localization.LocaleManager
+import com.projectu.ui.navigation.DeepLinkHandler
+import com.projectu.ui.navigation.DeepLinkParser
 import com.projectu.ui.screens.home.HomeScreen
 import com.projectu.ui.theme.AppTheme
 import com.projectu.ui.util.ImageCacheManager
@@ -18,8 +20,17 @@ import com.projectu.ui.util.createImageCacheManager
 import com.projectu.ui.util.createImageLoader
 import org.koin.compose.koinInject
 
+/**
+ * 主应用入口
+ * 
+ * @param deepLink 深度链接 URL（可选，来自外部点击的 pixiv 链接）
+ * @param onDeepLinkConsumed 深度链接处理完成后的回调，用于清除状态
+ */
 @Composable
-fun App() {
+fun App(
+    deepLink: String? = null,
+    onDeepLinkConsumed: () -> Unit = {}
+) {
     val localeManager: LocaleManager = koinInject()
     val settingsRepository: SettingsRepository = koinInject()
     val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
@@ -116,10 +127,19 @@ fun App() {
                 }
 
                 Navigator(initialScreen) { navigator ->
+                    // 处理深度链接
+                    LaunchedEffect(deepLink) {
+                        if (deepLink != null && isLoggedIn) {
+                            val handled = DeepLinkHandler.handleUrl(deepLink, navigator)
+                            if (handled) {
+                                onDeepLinkConsumed()
+                            }
+                        }
+                    }
+                    
                     SlideTransition(navigator)
                 }
             }
         }
     }
 }
-
