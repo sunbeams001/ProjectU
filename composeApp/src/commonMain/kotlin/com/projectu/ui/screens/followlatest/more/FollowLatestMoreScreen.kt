@@ -204,9 +204,7 @@ fun WatchListContent(
                         onLoadMore = mangaViewModel::loadMore,
                         onRefresh = mangaViewModel::refresh,
                         onSeriesClick = { series ->
-                            series.id.toLongOrNull()?.let { seriesId ->
-                                navigator.push(MangaSeriesScreen(seriesId))
-                            }
+                            navigator.push(MangaSeriesScreen(series.id))
                         }
                     )
                 }
@@ -216,9 +214,7 @@ fun WatchListContent(
                         onLoadMore = novelsViewModel::loadMore,
                         onRefresh = novelsViewModel::refresh,
                         onSeriesClick = { series ->
-                            series.id.toLongOrNull()?.let { seriesId ->
-                                navigator.push(NovelSeriesScreen(seriesId))
-                            }
+                            navigator.push(NovelSeriesScreen(series.id))
                         }
                     )
                 }

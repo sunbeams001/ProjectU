@@ -20,7 +20,7 @@ class NovelSeriesViewModel(
     val state: StateFlow<NovelSeriesDetailState> = _state.asStateFlow()
     
     // 当前系列 ID
-    private var currentSeriesId: Long = 0
+    private var currentSeriesId: String = ""
     
     // 每页加载数量
     private val pageSize = 30
@@ -28,12 +28,13 @@ class NovelSeriesViewModel(
     /**
      * 加载系列详情和内容
      */
-    fun loadSeries(seriesId: Long) {
+    fun loadSeries(seriesId: String) {
         if (seriesId == currentSeriesId && _state.value.series != null) {
             return // 已加载，不重复加载
         }
         
         currentSeriesId = seriesId
+        val seriesIdLong = seriesId.toLongOrNull() ?: return
         
         // 重置状态
         _state.update { 
@@ -46,7 +47,7 @@ class NovelSeriesViewModel(
         // 并行加载系列详情和内容
         screenModelScope.launch {
             // 1. 加载系列详情
-            val seriesResult = novelSeriesRepository.getSeriesDetail(seriesId)
+            val seriesResult = novelSeriesRepository.getSeriesDetail(seriesIdLong)
             seriesResult.fold(
                 onSuccess = { series ->
                     _state.update { 
@@ -85,9 +86,10 @@ class NovelSeriesViewModel(
         _state.update { it.copy(isLoadingContents = true, contentsError = null) }
         
         val lastOrder = if (isInitial) null else _state.value.lastOrder
+        val seriesIdLong = currentSeriesId.toLongOrNull() ?: return
         
         val result = novelSeriesRepository.getSeriesContents(
-            seriesId = currentSeriesId,
+            seriesId = seriesIdLong,
             limit = pageSize,
             lastOrder = lastOrder,
             orderBy = "asc"
@@ -142,11 +144,12 @@ class NovelSeriesViewModel(
         
         _state.update { it.copy(isWatchLoading = true, watchError = null) }
         
+        val seriesIdLong = series.id.toLongOrNull() ?: return
         screenModelScope.launch {
             val result = if (series.isWatched) {
-                novelSeriesRepository.unwatchSeries(series.id.toLong())
+                novelSeriesRepository.unwatchSeries(seriesIdLong)
             } else {
-                novelSeriesRepository.watchSeries(series.id.toLong())
+                novelSeriesRepository.watchSeries(seriesIdLong)
             }
             
             result.fold(
@@ -175,7 +178,7 @@ class NovelSeriesViewModel(
      * 刷新页面
      */
     fun refresh() {
-        if (currentSeriesId > 0) {
+        if (currentSeriesId.isNotEmpty()) {
             // 重置状态并重新加载
             _state.update { 
                 NovelSeriesDetailState(
@@ -191,11 +194,12 @@ class NovelSeriesViewModel(
      * 重试加载系列详情
      */
     fun retrySeries() {
-        if (currentSeriesId > 0) {
+        if (currentSeriesId.isNotEmpty()) {
             _state.update { it.copy(isLoadingSeries = true, seriesError = null) }
             
+            val seriesIdLong = currentSeriesId.toLongOrNull() ?: return
             screenModelScope.launch {
-                val result = novelSeriesRepository.getSeriesDetail(currentSeriesId)
+                val result = novelSeriesRepository.getSeriesDetail(seriesIdLong)
                 result.fold(
                     onSuccess = { series ->
                         _state.update { 

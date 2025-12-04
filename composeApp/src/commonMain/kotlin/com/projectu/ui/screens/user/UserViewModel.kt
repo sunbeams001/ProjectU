@@ -48,7 +48,7 @@ class UserViewModel(
     private val BOOKMARK_NOVEL_PAGE_SIZE = 30
     
     // 当前用户ID
-    private var currentUserId: Long = 0
+    private var currentUserId: String = ""
     
     init {
         // 监听全局状态变更事件
@@ -95,19 +95,20 @@ class UserViewModel(
     /**
      * 加载用户信息
      */
-    fun loadUser(userId: Long) {
+    fun loadUser(userId: String) {
         if (userId == currentUserId && _state.value.userProfile.userId.isNotEmpty()) {
             return // 已加载，不重复加载
         }
         
         currentUserId = userId
+        val userIdLong = userId.toLongOrNull() ?: return
         
         screenModelScope.launch {
             _state.update { it.copy(isLoadingProfile = true, profileError = null) }
             
             try {
                 // 1. 加载用户基本信息
-                val userInfoResponse = pixivApi.userApi.getUserInfo(userId, full = 1)
+                val userInfoResponse = pixivApi.userApi.getUserInfo(userIdLong, full = 1)
                 if (userInfoResponse.error) {
                     _state.update { 
                         it.copy(
@@ -126,7 +127,7 @@ class UserViewModel(
                 }
                 
                 // 2. 加载用户作品概况
-                val profileAllResponse = pixivApi.userApi.getProfileAll(userId)
+                val profileAllResponse = pixivApi.userApi.getProfileAll(userIdLong)
                 if (profileAllResponse.error) {
                     _state.update { 
                         it.copy(
@@ -463,8 +464,9 @@ class UserViewModel(
             else -> "illustManga"
         }
         
+        val userIdLong = currentUserId.toLongOrNull() ?: return
         val response = pixivApi.userApi.getProfileIllusts(
-            uid = currentUserId,
+            uid = userIdLong,
             ids = nextIds,
             workCategory = workCategory,
             isFirstPage = if (loadedIds.isEmpty()) 1 else 0
@@ -516,8 +518,9 @@ class UserViewModel(
             return
         }
         
+        val userIdLong = currentUserId.toLongOrNull() ?: return
         val response = pixivApi.userApi.getProfileNovels(
-            uid = currentUserId,
+            uid = userIdLong,
             ids = nextIds
         )
         
@@ -563,8 +566,9 @@ class UserViewModel(
             else -> return
         }
         
+        val userIdLong = currentUserId.toLongOrNull() ?: return
         val response = pixivApi.bookmarkApi.getUserBookmarkIllusts(
-            uid = currentUserId,
+            uid = userIdLong,
             tag = selectedTag ?: "",
             offset = currentOffset,
             limit = BOOKMARK_ILLUST_PAGE_SIZE,
@@ -622,8 +626,9 @@ class UserViewModel(
             else -> return
         }
         
+        val userIdLong = currentUserId.toLongOrNull() ?: return
         val response = pixivApi.bookmarkApi.getUserBookmarkNovels(
-            uid = currentUserId,
+            uid = userIdLong,
             tag = selectedTag ?: "",
             offset = currentOffset,
             limit = BOOKMARK_NOVEL_PAGE_SIZE,
@@ -782,9 +787,9 @@ class UserViewModel(
      */
     fun retryLoadUser() {
         val userId = currentUserId
-        if (userId != 0L) {
+        if (userId.isNotEmpty()) {
             // 重置状态以允许重新加载
-            currentUserId = 0L
+            currentUserId = ""
             loadUser(userId)
         }
     }
@@ -807,19 +812,14 @@ class UserViewModel(
      * 展开时加载Tag数据
      */
     fun toggleTagFilter(tab: UserProfileTab) {
-        AppLogger.d("UserViewModel", "toggleTagFilter called for tab: $tab")
-        
         // 如果 tabDataCache 中没有该 Tab 的数据，先创建一个默认的
         val tabData = _state.value.tabDataCache[tab] ?: TabData()
         val newExpanded = !tabData.isTagFilterExpanded
-        
-        AppLogger.d("UserViewModel", "toggleTagFilter: current expanded=${tabData.isTagFilterExpanded}, newExpanded=$newExpanded")
         
         updateTabData(tab) { it.copy(isTagFilterExpanded = newExpanded) }
         
         // 展开时加载Tag数据
         if (newExpanded && tabData.bookmarkTags.isEmpty() && !tabData.isLoadingTags) {
-            AppLogger.d("UserViewModel", "toggleTagFilter: loading tags for tab: $tab")
             loadBookmarkTags(tab)
         }
     }
@@ -846,10 +846,11 @@ class UserViewModel(
                     else -> false
                 }
                 
+                val userIdLong = currentUserId.toLongOrNull() ?: return@launch
                 val response = if (isIllust) {
-                    pixivApi.bookmarkApi.getIllustBookmarkTags(currentUserId)
+                    pixivApi.bookmarkApi.getIllustBookmarkTags(userIdLong)
                 } else {
-                    pixivApi.bookmarkApi.getNovelBookmarkTags(currentUserId)
+                    pixivApi.bookmarkApi.getNovelBookmarkTags(userIdLong)
                 }
                 
                 if (response.error) {

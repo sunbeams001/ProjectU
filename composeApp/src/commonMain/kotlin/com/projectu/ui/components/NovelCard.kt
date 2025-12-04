@@ -61,8 +61,8 @@ import org.koin.compose.koinInject
 fun NovelCard(
     novel: Novel,
     onClick: () -> Unit,
-    onUserClick: ((userId: Long) -> Unit)? = null,
-    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
+    onUserClick: ((userId: String) -> Unit)? = null,
+    onSeriesClick: ((seriesId: String) -> Unit)? = null,
     showSeriesInfo: Boolean = true,
     showUserInfo: Boolean = true,
     modifier: Modifier = Modifier,
@@ -345,7 +345,7 @@ fun NovelCard(
                                 .combinedClickable(
                                     onClick = { 
                                         println("NovelCard: 点击系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
-                                        novel.seriesId?.toLongOrNull()?.let { seriesId ->
+                                        novel.seriesId?.let { seriesId ->
                                             onSeriesClick?.invoke(seriesId)
                                         }
                                     },
@@ -377,7 +377,7 @@ fun NovelCard(
                                     if (onUserClick != null) {
                                         Modifier.combinedClickable(
                                             onClick = {
-                                                novel.userId.toLongOrNull()?.let { onUserClick(it) }
+                                                onUserClick(novel.userId)
                                             }
                                         )
                                     } else Modifier

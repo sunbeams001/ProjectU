@@ -35,7 +35,7 @@ import org.koin.compose.koinInject
 fun ArtworkCard(
     artwork: Artwork,
     onClick: () -> Unit,
-    onUserClick: ((userId: Long) -> Unit)? = null,
+    onUserClick: ((userId: String) -> Unit)? = null,
     showUserInfo: Boolean = true,
     modifier: Modifier = Modifier,
     settingsCache: SettingsCache = koinInject()
@@ -142,7 +142,7 @@ fun ArtworkCard(
                                 if (onUserClick != null) {
                                     Modifier.combinedClickable(
                                         onClick = {
-                                            artwork.userId.toLongOrNull()?.let { onUserClick(it) }
+                                            onUserClick(artwork.userId)
                                         }
                                     )
                                 } else Modifier

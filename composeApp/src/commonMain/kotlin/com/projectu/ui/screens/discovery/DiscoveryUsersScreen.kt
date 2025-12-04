@@ -45,7 +45,7 @@ class DiscoveryUsersScreen : Screen {
             onRefresh = viewModel::refresh,
             onUserClick = { user ->
                 // 跳转到用户主页
-                navigator.push(UserScreen(user.id.toLong()))
+                navigator.push(UserScreen(user.id))
             },
             onArtworkClick = { artwork ->
                 // TODO: 跳转到作品详情页

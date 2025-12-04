@@ -54,7 +54,7 @@ fun NovelSeriesContent(
     onRetryContents: () -> Unit,
     onRefresh: () -> Unit,
     onNovelClick: (Novel) -> Unit,
-    onUserClick: (Long) -> Unit,
+    onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -221,7 +221,7 @@ private fun NovelSeriesHeaderCard(
     series: NovelSeries,
     isWatchLoading: Boolean,
     onToggleWatch: () -> Unit,
-    onUserClick: (Long) -> Unit,
+    onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // R-18颜色
@@ -355,7 +355,7 @@ private fun NovelSeriesHeaderCard(
                     Row(
                         modifier = Modifier
                             .clickable { 
-                                series.userId.toLongOrNull()?.let { onUserClick(it) }
+                                onUserClick(series.userId)
                             },
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically

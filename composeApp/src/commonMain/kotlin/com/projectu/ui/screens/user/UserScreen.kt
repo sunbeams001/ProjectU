@@ -107,7 +107,7 @@ sealed class ListScrollState {
  * @param userId 用户ID
  */
 data class UserScreen(
-    private val userId: Long
+    private val userId: String
 ) : Screen {
     
     // 每个用户页面需要独立的 key，确保 ScreenModel 不会被错误复用
@@ -173,8 +173,8 @@ data class UserScreen(
             },
             onUserClick = { clickedUserId ->
                 // 跳转到用户页面
-                if (clickedUserId.toLongOrNull() != userId) {
-                    navigator.push(UserScreen(clickedUserId.toLong()))
+                if (clickedUserId != userId) {
+                    navigator.push(UserScreen(clickedUserId))
                 }
             },
             onBackClick = { navigator.pop() },
@@ -195,8 +195,8 @@ fun UserScreenContent(
     scrollIndices: MutableMap<UserProfileTab, Int>,
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
-    onNovelSeriesClick: (Long) -> Unit,
-    onMangaSeriesClick: (Long) -> Unit,
+    onNovelSeriesClick: (String) -> Unit,
+    onMangaSeriesClick: (String) -> Unit,
     onUserClick: (String) -> Unit,
     onBackClick: () -> Unit,
     // Tag筛选相关回调
@@ -369,10 +369,7 @@ fun UserScreenContent(
                                     onLoadMore = onLoadMore,
                                     onRefresh = onRefresh,
                                     onRetry = { onRetryTab(tab) },
-                                    onToggleTagFilter = { 
-                                        AppLogger.d("UserScreenContent", "onToggleTagFilter lambda called for tab: $tab")
-                                        onToggleTagFilter(tab) 
-                                    },
+                                    onToggleTagFilter = { onToggleTagFilter(tab) },
                                     onSelectTag = { selectedTag -> onSelectTag(tab, selectedTag) }
                                 )
                             }
@@ -585,9 +582,9 @@ fun UserTabContent(
     tagFilterScrollStates: MutableMap<UserProfileTab, ScrollState> = mutableMapOf(),
     onArtworkClick: (Artwork, Int) -> Unit,
     onNovelClick: (Novel) -> Unit,
-    onNovelSeriesClick: (Long) -> Unit,
-    onMangaSeriesClick: (Long) -> Unit,
-    onUserClick: (Long) -> Unit,
+    onNovelSeriesClick: (String) -> Unit,
+    onMangaSeriesClick: (String) -> Unit,
+    onUserClick: (String) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
@@ -664,7 +661,7 @@ fun UserTabContent(
                                     tab = tab,
                                     tabListStates = tabListStates,
                                     onClick = { item ->
-                                        item.id.toLongOrNull()?.let { id -> onMangaSeriesClick(id) }
+                                        onMangaSeriesClick(item.id)
                                     }
                                 )
                             }
@@ -675,7 +672,7 @@ fun UserTabContent(
                                     tab = tab,
                                     tabListStates = tabListStates,
                                     onClick = { item -> 
-                                        item.id.toLongOrNull()?.let { id -> onNovelSeriesClick(id) }
+                                        onNovelSeriesClick(item.id)
                                     }
                                 )
                             }
@@ -687,10 +684,7 @@ fun UserTabContent(
                                     BookmarkTagFilterRow(
                                         tabData = tabData,
                                         scrollState = tagScrollState,
-                                        onToggleExpand = {
-                                            AppLogger.d("UserTabContent", "BookmarkTagFilterRow onToggleExpand called for tab: $tab")
-                                            onToggleTagFilter()
-                                        },
+                                        onToggleExpand = onToggleTagFilter,
                                         onSelectTag = onSelectTag
                                     )
                                     
@@ -717,10 +711,7 @@ fun UserTabContent(
                                     BookmarkTagFilterRow(
                                         tabData = tabData,
                                         scrollState = tagScrollState,
-                                        onToggleExpand = {
-                                            AppLogger.d("UserTabContent", "BookmarkTagFilterRow onToggleExpand called for tab: $tab")
-                                            onToggleTagFilter()
-                                        },
+                                        onToggleExpand = onToggleTagFilter,
                                         onSelectTag = onSelectTag
                                     )
                                     
@@ -760,7 +751,7 @@ fun ArtworkStaggeredGrid(
     scrollIndices: MutableMap<UserProfileTab, Int>,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onArtworkClick: (Artwork, Int) -> Unit,
-    onUserClick: ((Long) -> Unit)? = null,
+    onUserClick: ((String) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoading: Boolean,
     isRefreshing: Boolean = false,
@@ -858,8 +849,8 @@ fun NovelList(
     tab: UserProfileTab,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onNovelClick: (Novel) -> Unit,
-    onSeriesClick: (Long) -> Unit,
-    onUserClick: ((Long) -> Unit)? = null,
+    onSeriesClick: (String) -> Unit,
+    onUserClick: ((String) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoading: Boolean,
     isRefreshing: Boolean = false,
@@ -1591,10 +1582,7 @@ fun BookmarkTagFilterRow(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = {
-                        AppLogger.d("BookmarkTagFilterRow", "Row clicked, calling onToggleExpand")
-                        onToggleExpand()
-                    })
+                    .clickable(onClick = onToggleExpand)
                     .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically

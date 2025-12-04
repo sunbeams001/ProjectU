@@ -212,7 +212,7 @@ fun DiscoveryContent(
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onUserClick = { user ->
                             // 跳转到用户详情页
-                            parentNavigator?.push(UserScreen(user.id.toLong()))
+                            parentNavigator?.push(UserScreen(user.id))
                         },
                         onArtworkClick = { artwork, artworkIndex ->
                             val userIndex = artworkToUserIndexMap[artworkIndex] ?: 0
@@ -430,7 +430,7 @@ fun DiscoveryIllustsPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onArtworkClick: (Artwork, Int) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     listState: LazyStaggeredGridState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -506,8 +506,8 @@ fun DiscoveryNovelsPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onNovelClick: (Novel) -> Unit,
-    onSeriesClick: (Long) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onSeriesClick: (String) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     listState: LazyListState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -658,7 +658,7 @@ fun UserListLayout(
 fun ArtworkStaggeredGridLayout(
     artworks: List<Artwork>,
     onArtworkClick: (Artwork, Int) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyStaggeredGridState,
@@ -721,8 +721,8 @@ fun ArtworkStaggeredGridLayout(
 fun NovelListLayout(
     novels: List<Novel>,
     onNovelClick: (Novel) -> Unit,
-    onSeriesClick: (Long) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onSeriesClick: (String) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyListState,

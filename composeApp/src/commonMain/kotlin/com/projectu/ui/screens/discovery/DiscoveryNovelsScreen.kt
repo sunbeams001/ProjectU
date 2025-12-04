@@ -70,8 +70,8 @@ fun DiscoveryNovelsContent(
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onNovelClick: (Novel) -> Unit,
-    onSeriesClick: (Long) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onSeriesClick: (String) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -159,8 +159,8 @@ fun DiscoveryNovelsContent(
 fun NovelList(
     novels: List<Novel>,
     onNovelClick: (Novel) -> Unit,
-    onSeriesClick: (Long) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onSeriesClick: (String) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     currentMode: DiscoveryMode = DiscoveryMode.ALL

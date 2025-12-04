@@ -94,7 +94,7 @@ fun DiscoveryIllustsContent(
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -176,7 +176,7 @@ fun DiscoveryIllustsContent(
 fun ArtworkStaggeredGrid(
     artworks: List<com.projectu.shared.domain.model.Artwork>,
     onArtworkClick: (artwork: com.projectu.shared.domain.model.Artwork, index: Int) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     scrollToIndex: Int? = null,

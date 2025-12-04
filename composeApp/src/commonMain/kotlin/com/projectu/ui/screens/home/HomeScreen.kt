@@ -528,7 +528,7 @@ object ProfileTab : Tab {
         // 获取当前登录用户ID
         val pixivConfig by pixivConfigStore.config
             .collectAsState(initial = com.projectu.shared.data.local.PixivConfig.DEFAULT)
-        val currentUserId = pixivConfig.getUserId()
+        val currentUserId = pixivConfig.getUserId()?.toString()
         
         // 用于管理刷新或滚动到顶部的触发
         val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -631,8 +631,8 @@ object ProfileTab : Tab {
                 },
                 onUserClick = { clickedUserId ->
                     // 跳转到用户页面（如果不是当前用户）
-                    if (clickedUserId.toLongOrNull() != currentUserId) {
-                        parentNavigator?.push(UserScreen(clickedUserId.toLong()))
+                    if (clickedUserId != currentUserId) {
+                        parentNavigator?.push(UserScreen(clickedUserId))
                     }
                 },
                 onBackClick = { /* 不需要返回操作 */ },

@@ -18,7 +18,7 @@ import com.projectu.ui.screens.user.UserScreen
  * @param seriesId 系列ID
  */
 data class NovelSeriesScreen(
-    private val seriesId: Long
+    private val seriesId: String
 ) : Screen {
     
     @Composable

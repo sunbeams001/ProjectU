@@ -48,8 +48,8 @@ fun ArtworkDetailContent(
     onBackClick: () -> Unit,
     onPageChange: (Int) -> Unit = {},
     onRetry: () -> Unit = {},
-    onUserClick: ((userId: Long) -> Unit)? = null,
-    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
+    onUserClick: ((userId: String) -> Unit)? = null,
+    onSeriesClick: ((seriesId: String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -126,8 +126,8 @@ fun ArtworkDetailContent(
 private fun ArtworkListPager(
     state: ArtworkDetailState,
     onPageChange: (Int) -> Unit,
-    onUserClick: ((userId: Long) -> Unit)? = null,
-    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
+    onUserClick: ((userId: String) -> Unit)? = null,
+    onSeriesClick: ((seriesId: String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(
@@ -232,8 +232,8 @@ private fun ArtworkListPager(
 private fun ArtworkDetailLayout(
     artwork: Artwork,
     authorFollowStatus: com.projectu.shared.domain.model.FollowStatus,
-    onUserClick: ((userId: Long) -> Unit)? = null,
-    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
+    onUserClick: ((userId: String) -> Unit)? = null,
+    onSeriesClick: ((seriesId: String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {

@@ -47,8 +47,8 @@ import com.projectu.ui.components.FollowIndicator
 fun ArtworkInfoSection(
     artwork: Artwork,
     authorFollowStatus: FollowStatus,
-    onUserClick: ((userId: Long) -> Unit)? = null,
-    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
+    onUserClick: ((userId: String) -> Unit)? = null,
+    onSeriesClick: ((seriesId: String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -96,7 +96,7 @@ fun ArtworkInfoSection(
                             modifier = Modifier.then(
                                 if (onSeriesClick != null) {
                                     Modifier.clickable {
-                                        seriesId.toLongOrNull()?.let { onSeriesClick(it) }
+                                        onSeriesClick(seriesId)
                                     }
                                 } else Modifier
                             )
@@ -125,7 +125,7 @@ fun ArtworkInfoSection(
                         .then(
                             if (onUserClick != null) {
                                 Modifier.clickable {
-                                    artwork.userId.toLongOrNull()?.let { onUserClick(it) }
+                                    onUserClick(artwork.userId)
                                 }
                             } else Modifier
                         ),
@@ -167,7 +167,7 @@ fun ArtworkInfoSection(
                         .then(
                             if (onUserClick != null) {
                                 Modifier.clickable {
-                                    artwork.userId.toLongOrNull()?.let { onUserClick(it) }
+                                    onUserClick(artwork.userId)
                                 }
                             } else Modifier
                         ),

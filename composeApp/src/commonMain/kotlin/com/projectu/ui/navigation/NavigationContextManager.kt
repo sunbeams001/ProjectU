@@ -58,7 +58,7 @@ object NavigationContextManager {
     private val novelContexts = ConcurrentHashMap<String, NovelDetailContext>()
     
     // UserScreen 的滚动位置存储，key 为 userId
-    private val userScreenScrollIndices = ConcurrentHashMap<Long, SnapshotStateMap<UserProfileTab, Int>>()
+    private val userScreenScrollIndices = ConcurrentHashMap<String, SnapshotStateMap<UserProfileTab, Int>>()
     
     // ===================== 作品详情页上下文管理 =====================
     
@@ -147,7 +147,7 @@ object NavigationContextManager {
      * @param userId 用户ID
      * @return 该用户页面各Tab的滚动位置Map
      */
-    fun getOrCreateUserScrollIndices(userId: Long): SnapshotStateMap<UserProfileTab, Int> {
+    fun getOrCreateUserScrollIndices(userId: String): SnapshotStateMap<UserProfileTab, Int> {
         return userScreenScrollIndices.getOrPut(userId) { mutableStateMapOf() }
     }
     
@@ -156,7 +156,7 @@ object NavigationContextManager {
      * 
      * @param userId 用户ID
      */
-    fun clearUserScrollIndices(userId: Long) {
+    fun clearUserScrollIndices(userId: String) {
         userScreenScrollIndices.remove(userId)
     }
 }

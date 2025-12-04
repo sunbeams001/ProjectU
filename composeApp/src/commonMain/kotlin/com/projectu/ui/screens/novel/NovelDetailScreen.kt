@@ -184,8 +184,8 @@ private fun NovelDetailContent(
     onCollapseInfo: () -> Unit,
     onMarkerClick: () -> Unit,
     onRetry: () -> Unit,
-    onUserClick: ((userId: Long) -> Unit)?,
-    onSeriesClick: ((seriesId: Long) -> Unit)?,
+    onUserClick: ((userId: String) -> Unit)?,
+    onSeriesClick: ((seriesId: String) -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -258,8 +258,8 @@ private fun NovelDetailLayout(
     onToggleInfo: () -> Unit,
     onCollapseInfo: () -> Unit,
     onMarkerClick: () -> Unit,
-    onUserClick: ((userId: Long) -> Unit)?,
-    onSeriesClick: ((seriesId: Long) -> Unit)?,
+    onUserClick: ((userId: String) -> Unit)?,
+    onSeriesClick: ((seriesId: String) -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     val novel = state.novel ?: return

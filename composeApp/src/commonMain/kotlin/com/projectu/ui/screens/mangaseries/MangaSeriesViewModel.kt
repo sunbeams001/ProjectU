@@ -24,7 +24,7 @@ class MangaSeriesViewModel(
     val state: StateFlow<MangaSeriesDetailState> = _state.asStateFlow()
     
     // 当前系列 ID
-    private var currentSeriesId: Long = 0
+    private var currentSeriesId: String = ""
     
     /**
      * 创建 ArtworkListSource，用于作品详情页的列表导航功能
@@ -53,7 +53,7 @@ class MangaSeriesViewModel(
     /**
      * 加载系列详情和内容
      */
-    fun loadSeries(seriesId: Long) {
+    fun loadSeries(seriesId: String) {
         if (seriesId == currentSeriesId && _state.value.series != null) {
             return // 已加载，不重复加载
         }
@@ -78,8 +78,9 @@ class MangaSeriesViewModel(
      * 加载系列详情和作品
      */
     private suspend fun loadSeriesAndWorks(page: Int, isInitial: Boolean) {
+        val seriesIdLong = currentSeriesId.toLongOrNull() ?: return
         // 加载系列详情
-        val seriesResult = mangaSeriesRepository.getSeriesDetail(currentSeriesId, page)
+        val seriesResult = mangaSeriesRepository.getSeriesDetail(seriesIdLong, page)
         seriesResult.fold(
             onSuccess = { series ->
                 _state.update { 
@@ -101,7 +102,7 @@ class MangaSeriesViewModel(
         )
         
         // 加载作品列表
-        val worksResult = mangaSeriesRepository.getSeriesWorks(currentSeriesId, page)
+        val worksResult = mangaSeriesRepository.getSeriesWorks(seriesIdLong, page)
         worksResult.fold(
             onSuccess = { result ->
                 _state.update { currentState ->
@@ -161,11 +162,12 @@ class MangaSeriesViewModel(
         
         _state.update { it.copy(isWatchLoading = true, watchError = null) }
         
+        val seriesIdLong = series.id.toLongOrNull() ?: return
         screenModelScope.launch {
             val result = if (series.isWatched) {
-                mangaSeriesRepository.unwatchSeries(series.id.toLong())
+                mangaSeriesRepository.unwatchSeries(seriesIdLong)
             } else {
-                mangaSeriesRepository.watchSeries(series.id.toLong())
+                mangaSeriesRepository.watchSeries(seriesIdLong)
             }
             
             result.fold(
@@ -194,7 +196,7 @@ class MangaSeriesViewModel(
      * 刷新页面
      */
     fun refresh() {
-        if (currentSeriesId > 0) {
+        if (currentSeriesId.isNotEmpty()) {
             // 重置状态并重新加载
             _state.update { 
                 MangaSeriesDetailState(
@@ -213,11 +215,12 @@ class MangaSeriesViewModel(
      * 重试加载系列详情
      */
     fun retrySeries() {
-        if (currentSeriesId > 0) {
+        if (currentSeriesId.isNotEmpty()) {
             _state.update { it.copy(isLoadingSeries = true, seriesError = null) }
             
+            val seriesIdLong = currentSeriesId.toLongOrNull() ?: return
             screenModelScope.launch {
-                val result = mangaSeriesRepository.getSeriesDetail(currentSeriesId, 1)
+                val result = mangaSeriesRepository.getSeriesDetail(seriesIdLong, 1)
                 result.fold(
                     onSuccess = { series ->
                         _state.update { 
@@ -245,11 +248,12 @@ class MangaSeriesViewModel(
      * 重试加载内容
      */
     fun retryContents() {
-        if (currentSeriesId > 0) {
+        if (currentSeriesId.isNotEmpty()) {
             _state.update { it.copy(isLoadingContents = true, contentsError = null) }
             
+            val seriesIdLong = currentSeriesId.toLongOrNull() ?: return
             screenModelScope.launch {
-                val apiResult = mangaSeriesRepository.getSeriesWorks(currentSeriesId, 1)
+                val apiResult = mangaSeriesRepository.getSeriesWorks(seriesIdLong, 1)
                 apiResult.fold(
                     onSuccess = { result ->
                         _state.update { 

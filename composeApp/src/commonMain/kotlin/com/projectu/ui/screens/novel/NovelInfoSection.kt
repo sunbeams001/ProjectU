@@ -69,8 +69,8 @@ fun NovelInfoSection(
     onToggle: () -> Unit,
     onCollapse: () -> Unit = onToggle,
     onMarkerClick: () -> Unit = {},
-    onUserClick: ((userId: Long) -> Unit)? = null,
-    onSeriesClick: ((seriesId: Long) -> Unit)? = null,
+    onUserClick: ((userId: String) -> Unit)? = null,
+    onSeriesClick: ((seriesId: String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -258,7 +258,7 @@ fun NovelInfoSection(
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.clickable {
-                                        novel.seriesId?.toLongOrNull()?.let { onSeriesClick?.invoke(it) }
+                                        novel.seriesId?.let { onSeriesClick?.invoke(it) }
                                     }
                                 )
                             }
@@ -399,7 +399,7 @@ fun NovelInfoSection(
                                 .then(
                                     if (onUserClick != null) {
                                         Modifier.clickable {
-                                            novel.userId.toLongOrNull()?.let { onUserClick(it) }
+                                            onUserClick(novel.userId)
                                         }
                                     } else Modifier
                                 ),
@@ -445,7 +445,7 @@ fun NovelInfoSection(
                                 .then(
                                     if (onUserClick != null) {
                                         Modifier.clickable {
-                                            novel.userId.toLongOrNull()?.let { onUserClick(it) }
+                                            onUserClick(novel.userId)
                                         }
                                     } else Modifier
                                 )

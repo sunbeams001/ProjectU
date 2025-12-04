@@ -303,7 +303,7 @@ fun FollowLatestIllustsPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onArtworkClick: (Artwork, Int) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     listState: LazyStaggeredGridState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -378,8 +378,8 @@ fun FollowLatestNovelsPage(
     onRefresh: () -> Unit,
     onRefreshOrScrollToTop: () -> Unit,
     onNovelClick: (Novel) -> Unit,
-    onSeriesClick: (Long) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onSeriesClick: (String) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     listState: LazyListState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -451,7 +451,7 @@ fun FollowLatestNovelsPage(
 private fun FollowLatestArtworkStaggeredGridLayout(
     artworks: List<Artwork>,
     onArtworkClick: (Artwork, Int) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyStaggeredGridState,
@@ -514,8 +514,8 @@ private fun FollowLatestArtworkStaggeredGridLayout(
 private fun FollowLatestNovelListLayout(
     novels: List<Novel>,
     onNovelClick: (Novel) -> Unit,
-    onSeriesClick: (Long) -> Unit,
-    onUserClick: (userId: Long) -> Unit,
+    onSeriesClick: (String) -> Unit,
+    onUserClick: (userId: String) -> Unit,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyListState,

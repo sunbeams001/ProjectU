@@ -53,7 +53,7 @@ fun MangaSeriesContent(
     onRetryContents: () -> Unit,
     onRefresh: () -> Unit,
     onArtworkClick: (Artwork) -> Unit,
-    onUserClick: (Long) -> Unit,
+    onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val gridState = rememberLazyStaggeredGridState()
@@ -240,7 +240,7 @@ private fun MangaSeriesHeaderCard(
     series: MangaSeries,
     isWatchLoading: Boolean,
     onToggleWatch: () -> Unit,
-    onUserClick: (Long) -> Unit,
+    onUserClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -336,7 +336,7 @@ private fun MangaSeriesHeaderCard(
                     Row(
                         modifier = Modifier
                             .clickable { 
-                                series.userId.toLongOrNull()?.let { onUserClick(it) }
+                                onUserClick(series.userId)
                             },
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
