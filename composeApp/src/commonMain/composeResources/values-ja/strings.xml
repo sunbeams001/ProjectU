@@ -164,5 +164,16 @@
     <string name="cache_size_medium">中 (512 MB)</string>
     <string name="cache_size_large">大 (1 GB)</string>
     <string name="cache_size_extra_large">特大 (2 GB)</string>
+    
+    <!-- Navigation -->
+    <string name="nav_back">戻る</string>
+    
+    <!-- Image Search -->
+    <string name="image_search_title">画像で検索</string>
+    <string name="image_search_loading">検索中...</string>
+    <string name="image_search_failed">検索失敗</string>
+    <string name="image_search_retry">再試行</string>
+    <string name="image_search_cannot_read">画像を読み込めません</string>
+    <string name="image_search_unknown_error">不明なエラー</string>
 </resources>
 

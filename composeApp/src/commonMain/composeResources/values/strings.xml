@@ -272,6 +272,14 @@
     <string name="nav_back">Back</string>
     <string name="nav_refresh">Refresh</string>
     
+    <!-- Image Search -->
+    <string name="image_search_title">Image Search</string>
+    <string name="image_search_loading">Searching...</string>
+    <string name="image_search_failed">Search Failed</string>
+    <string name="image_search_retry">Retry</string>
+    <string name="image_search_cannot_read">Cannot read image</string>
+    <string name="image_search_unknown_error">Unknown error</string>
+    
     <!-- Novel -->
     <string name="novel_page_number">Page %1$d</string>
     <string name="novel_no_content">No content</string>

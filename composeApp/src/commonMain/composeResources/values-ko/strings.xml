@@ -164,5 +164,16 @@
     <string name="cache_size_medium">중간 (512 MB)</string>
     <string name="cache_size_large">큼 (1 GB)</string>
     <string name="cache_size_extra_large">매우 큼 (2 GB)</string>
+    
+    <!-- Navigation -->
+    <string name="nav_back">뒤로</string>
+    
+    <!-- Image Search -->
+    <string name="image_search_title">이미지 검색</string>
+    <string name="image_search_loading">검색 중...</string>
+    <string name="image_search_failed">검색 실패</string>
+    <string name="image_search_retry">재시도</string>
+    <string name="image_search_cannot_read">이미지를 읽을 수 없습니다</string>
+    <string name="image_search_unknown_error">알 수 없는 오류</string>
 </resources>
 

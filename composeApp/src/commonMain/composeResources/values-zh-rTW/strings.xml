@@ -164,5 +164,16 @@
     <string name="cache_size_medium">中 (512 MB)</string>
     <string name="cache_size_large">大 (1 GB)</string>
     <string name="cache_size_extra_large">超大 (2 GB)</string>
+    
+    <!-- Navigation -->
+    <string name="nav_back">返回</string>
+    
+    <!-- Image Search -->
+    <string name="image_search_title">以圖搜圖</string>
+    <string name="image_search_loading">正在搜尋...</string>
+    <string name="image_search_failed">搜尋失敗</string>
+    <string name="image_search_retry">重試</string>
+    <string name="image_search_cannot_read">無法讀取圖片</string>
+    <string name="image_search_unknown_error">未知錯誤</string>
 </resources>
 

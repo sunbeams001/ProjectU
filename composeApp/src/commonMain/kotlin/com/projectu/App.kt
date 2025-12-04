@@ -2,6 +2,7 @@ package com.projectu
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
+import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import coil3.compose.LocalPlatformContext
@@ -21,15 +22,30 @@ import com.projectu.ui.util.createImageLoader
 import org.koin.compose.koinInject
 
 /**
+ * 分享图片数据（平台无关定义）
+ */
+data class SharedImage(val imageUri: String)
+
+/**
+ * 平台特定的图片搜索 Screen 创建器
+ * 由各平台提供实现
+ */
+expect fun createImageSearchScreen(imageUri: String): Screen?
+
+/**
  * 主应用入口
  * 
  * @param deepLink 深度链接 URL（可选，来自外部点击的 pixiv 链接）
  * @param onDeepLinkConsumed 深度链接处理完成后的回调，用于清除状态
+ * @param sharedImage 分享的图片数据（可选，来自外部分享图片）
+ * @param onSharedImageConsumed 分享图片处理完成后的回调，用于清除状态
  */
 @Composable
 fun App(
     deepLink: String? = null,
-    onDeepLinkConsumed: () -> Unit = {}
+    onDeepLinkConsumed: () -> Unit = {},
+    sharedImage: SharedImage? = null,
+    onSharedImageConsumed: () -> Unit = {}
 ) {
     val localeManager: LocaleManager = koinInject()
     val settingsRepository: SettingsRepository = koinInject()
@@ -134,6 +150,17 @@ fun App(
                             if (handled) {
                                 onDeepLinkConsumed()
                             }
+                        }
+                    }
+                    
+                    // 处理分享的图片 - 打开图片搜索页面
+                    LaunchedEffect(sharedImage) {
+                        if (sharedImage != null) {
+                            val searchScreen = createImageSearchScreen(sharedImage.imageUri)
+                            if (searchScreen != null) {
+                                navigator.push(searchScreen)
+                            }
+                            onSharedImageConsumed()
                         }
                     }
                     

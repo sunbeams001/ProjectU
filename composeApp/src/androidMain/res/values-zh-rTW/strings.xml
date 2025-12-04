@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 分享功能标签 -->
+    <string name="share_image_search">以圖搜圖</string>
+</resources>

@@ -271,6 +271,14 @@
     <string name="nav_back">返回</string>
     <string name="nav_refresh">刷新</string>
     
+    <!-- Image Search -->
+    <string name="image_search_title">以图搜图</string>
+    <string name="image_search_loading">正在搜索...</string>
+    <string name="image_search_failed">搜索失败</string>
+    <string name="image_search_retry">重试</string>
+    <string name="image_search_cannot_read">无法读取图片</string>
+    <string name="image_search_unknown_error">未知错误</string>
+    
     <!-- Novel -->
     <string name="novel_page_number">第%1$d页</string>
     <string name="novel_no_content">暂无内容</string>
