@@ -26,13 +26,26 @@ enum class CacheSize(
     /**
      * 超大容量缓存 (2 GB)
      */
-    EXTRA_LARGE("cache_size_extra_large", 2048);
+    EXTRA_LARGE("cache_size_extra_large", 2048),
+    
+    /**
+     * 不限制缓存大小
+     * 使用 Long.MAX_VALUE 表示无限制，不进行自动清理
+     */
+    UNLIMITED("cache_size_unlimited", Long.MAX_VALUE / (1024 * 1024));
     
     /**
      * 获取字节数
+     * 对于 UNLIMITED，返回 Long.MAX_VALUE
      */
     val sizeInBytes: Long
-        get() = sizeInMB * 1024 * 1024
+        get() = if (this == UNLIMITED) Long.MAX_VALUE else sizeInMB * 1024 * 1024
+    
+    /**
+     * 是否为无限制模式
+     */
+    val isUnlimited: Boolean
+        get() = this == UNLIMITED
     
     companion object {
         /**

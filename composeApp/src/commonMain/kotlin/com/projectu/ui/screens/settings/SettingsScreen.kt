@@ -24,6 +24,7 @@ import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.ui.util.CacheDetails
 import com.projectu.ui.util.ImageCacheManager
 import com.projectu.ui.util.LocalImageCacheManager
 import kotlinx.coroutines.launch
@@ -91,6 +92,10 @@ import projectu.composeapp.generated.resources.cache_size_small
 import projectu.composeapp.generated.resources.cache_size_medium
 import projectu.composeapp.generated.resources.cache_size_large
 import projectu.composeapp.generated.resources.cache_size_extra_large
+import projectu.composeapp.generated.resources.cache_size_unlimited
+import projectu.composeapp.generated.resources.cache_size_unlimited_desc
+import projectu.composeapp.generated.resources.cache_type_image
+import projectu.composeapp.generated.resources.cache_type_ugoira
 import projectu.composeapp.generated.resources.settings_api_test_tool
 import projectu.composeapp.generated.resources.settings_api_test_subtitle
 import projectu.composeapp.generated.resources.settings_api_test_desc
@@ -119,8 +124,9 @@ class SettingsScreen : Screen {
         val pixivConfig by authRepository.observePixivConfig()
             .collectAsState(initial = com.projectu.shared.data.local.PixivConfig.DEFAULT)
         
-        // 获取缓存大小
+        // 获取缓存大小和详情
         val currentCacheSize by cacheManager.currentCacheSize.collectAsState()
+        val cacheDetails by cacheManager.cacheDetails.collectAsState()
         
         // 初始化时刷新缓存大小
         LaunchedEffect(Unit) {
@@ -139,6 +145,7 @@ class SettingsScreen : Screen {
             currentDetailImageQuality = settings.detailImageQuality,
             currentImageCacheSize = settings.imageCacheSize,
             currentCacheSizeBytes = currentCacheSize,
+            cacheDetails = cacheDetails,
             maxCacheSizeBytes = cacheManager.maxCacheSize,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
@@ -170,6 +177,7 @@ private fun SettingsScreenContent(
     currentDetailImageQuality: DetailImageQuality,
     currentImageCacheSize: CacheSize,
     currentCacheSizeBytes: Long,
+    cacheDetails: CacheDetails,
     maxCacheSizeBytes: Long,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
@@ -330,42 +338,22 @@ private fun SettingsScreenContent(
                         CacheSize.MEDIUM -> stringResource(Res.string.cache_size_medium)
                         CacheSize.LARGE -> stringResource(Res.string.cache_size_large)
                         CacheSize.EXTRA_LARGE -> stringResource(Res.string.cache_size_extra_large)
+                        CacheSize.UNLIMITED -> stringResource(Res.string.cache_size_unlimited)
                     },
                     description = stringResource(Res.string.settings_image_cache_size_desc),
                     onClick = { showCacheSizeDialog = true }
                 )
             }
             
-            // 当前缓存大小显示
+            // 当前缓存大小显示（点击可清空缓存）
             item {
-                SettingsItem(
-                    title = stringResource(Res.string.settings_current_cache_size),
-                    subtitle = formatCacheSize(currentCacheSizeBytes) + " / " + formatCacheSize(maxCacheSizeBytes),
-                    onClick = { }
+                CacheInfoItem(
+                    cacheDetails = cacheDetails,
+                    currentCacheSizeBytes = currentCacheSizeBytes,
+                    maxCacheSizeBytes = maxCacheSizeBytes,
+                    isUnlimited = currentImageCacheSize.isUnlimited,
+                    onClearCacheClick = { showClearCacheConfirmDialog = true }
                 )
-            }
-            
-            // 清空缓存按钮
-            item {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showClearCacheConfirmDialog = true }
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.settings_clear_image_cache),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-                HorizontalDivider()
             }
             
             // API 测试工具 (开发者选项)
@@ -1064,11 +1052,13 @@ private fun CacheSizeSelectionDialog(
     onSelect: (CacheSize) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val unlimitedDesc = stringResource(Res.string.cache_size_unlimited_desc)
     val sizes = listOf(
-        CacheSize.SMALL to stringResource(Res.string.cache_size_small),
-        CacheSize.MEDIUM to stringResource(Res.string.cache_size_medium),
-        CacheSize.LARGE to stringResource(Res.string.cache_size_large),
-        CacheSize.EXTRA_LARGE to stringResource(Res.string.cache_size_extra_large)
+        CacheSize.SMALL to stringResource(Res.string.cache_size_small) to null,
+        CacheSize.MEDIUM to stringResource(Res.string.cache_size_medium) to null,
+        CacheSize.LARGE to stringResource(Res.string.cache_size_large) to null,
+        CacheSize.EXTRA_LARGE to stringResource(Res.string.cache_size_extra_large) to null,
+        CacheSize.UNLIMITED to stringResource(Res.string.cache_size_unlimited) to unlimitedDesc
     )
     
     AlertDialog(
@@ -1076,7 +1066,8 @@ private fun CacheSizeSelectionDialog(
         title = { Text(stringResource(Res.string.settings_image_cache_size)) },
         text = {
             Column {
-                sizes.forEach { (size, name) ->
+                sizes.forEach { (sizeAndName, description) ->
+                    val (size, name) = sizeAndName
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1093,10 +1084,19 @@ private fun CacheSizeSelectionDialog(
                                 onClick = { onSelect(size) }
                             )
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = name,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Column {
+                                Text(
+                                    text = name,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                if (description != null) {
+                                    Text(
+                                        text = description,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -1116,4 +1116,76 @@ private fun CacheSizeSelectionDialog(
             }
         }
     )
+}
+
+/**
+ * 缓存信息显示项（合并当前缓存大小和清空缓存功能）
+ * 显示总缓存大小和各类型缓存详情
+ */
+@Composable
+private fun CacheInfoItem(
+    cacheDetails: CacheDetails,
+    currentCacheSizeBytes: Long,
+    maxCacheSizeBytes: Long,
+    isUnlimited: Boolean,
+    onClearCacheClick: () -> Unit
+) {
+    val imageLabel = stringResource(Res.string.cache_type_image)
+    val ugoiraLabel = stringResource(Res.string.cache_type_ugoira)
+    
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClearCacheClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = stringResource(Res.string.settings_current_cache_size),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                // 总缓存大小
+                Text(
+                    text = if (isUnlimited) {
+                        formatCacheSize(currentCacheSizeBytes)
+                    } else {
+                        formatCacheSize(currentCacheSizeBytes) + " / " + formatCacheSize(maxCacheSizeBytes)
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                // 缓存类型详情
+                if (cacheDetails.imageCacheSize > 0 || cacheDetails.ugoiraCacheSize > 0) {
+                    val detailParts = buildList {
+                        if (cacheDetails.imageCacheSize > 0) {
+                            add("$imageLabel: ${formatCacheSize(cacheDetails.imageCacheSize)}")
+                        }
+                        if (cacheDetails.ugoiraCacheSize > 0) {
+                            add("$ugoiraLabel: ${formatCacheSize(cacheDetails.ugoiraCacheSize)}")
+                        }
+                    }
+                    Text(
+                        text = detailParts.joinToString(" | "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
+            }
+            Text(
+                text = stringResource(Res.string.settings_clear_image_cache),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+    HorizontalDivider()
 }

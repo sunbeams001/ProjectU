@@ -119,6 +119,7 @@ class UgoiraCache(
     
     /**
      * 解压ZIP文件到帧目录
+     * 解压完成后自动删除 ZIP 文件以节省空间
      */
     suspend fun extractZipToFrames(artworkId: String, zipPath: Path): List<Path> = withContext(Dispatchers.IO) {
         val framesDir = getArtworkCacheDir(artworkId)
@@ -126,6 +127,11 @@ class UgoiraCache(
         
         // 使用平台特定的ZIP解压实现
         extractZipPlatform(zipPath, framesDir)
+        
+        // 解压完成后删除 ZIP 文件以节省空间
+        if (fileSystem.exists(zipPath)) {
+            fileSystem.delete(zipPath)
+        }
         
         getCachedFrames(artworkId)
     }

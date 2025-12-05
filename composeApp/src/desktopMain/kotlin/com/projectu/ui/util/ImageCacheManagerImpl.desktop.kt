@@ -2,12 +2,15 @@ package com.projectu.ui.util
 
 import coil3.ImageLoader
 import coil3.disk.DiskCache
+import com.projectu.shared.data.cache.UgoiraCache
 import com.projectu.shared.domain.model.CacheSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * 创建 Desktop 平台的图片缓存管理器实例
@@ -23,10 +26,15 @@ actual fun createImageCacheManager(
 class ImageCacheManagerImpl(
     private val imageLoader: ImageLoader,
     initialMaxSize: Long
-) : ImageCacheManager {
+) : ImageCacheManager, KoinComponent {
+    
+    private val ugoiraCache: UgoiraCache by inject()
     
     private val _currentCacheSize = MutableStateFlow(0L)
     override val currentCacheSize: StateFlow<Long> = _currentCacheSize.asStateFlow()
+    
+    private val _cacheDetails = MutableStateFlow(CacheDetails())
+    override val cacheDetails: StateFlow<CacheDetails> = _cacheDetails.asStateFlow()
     
     private var _maxCacheSize: Long = initialMaxSize
     override val maxCacheSize: Long
@@ -39,8 +47,18 @@ class ImageCacheManagerImpl(
         diskCache?.size ?: 0L
     }
     
+    override suspend fun getCacheDetails(): CacheDetails = withContext(Dispatchers.IO) {
+        val imageCacheSize = diskCache?.size ?: 0L
+        val ugoiraCacheSize = ugoiraCache.getCacheSize()
+        CacheDetails(
+            imageCacheSize = imageCacheSize,
+            ugoiraCacheSize = ugoiraCacheSize
+        )
+    }
+    
     override suspend fun clearCache() = withContext(Dispatchers.IO) {
         diskCache?.clear()
+        ugoiraCache.clearAllCache()
         refreshCacheSize()
     }
     
@@ -51,6 +69,8 @@ class ImageCacheManagerImpl(
     }
     
     override suspend fun refreshCacheSize() {
-        _currentCacheSize.value = getCacheSize()
+        val details = getCacheDetails()
+        _cacheDetails.value = details
+        _currentCacheSize.value = details.totalSize
     }
 }

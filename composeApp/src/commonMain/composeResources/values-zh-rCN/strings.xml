@@ -196,6 +196,10 @@
     <string name="cache_size_medium">中 (512 MB)</string>
     <string name="cache_size_large">大 (1 GB)</string>
     <string name="cache_size_extra_large">超大 (2 GB)</string>
+    <string name="cache_size_unlimited">不限制</string>
+    <string name="cache_size_unlimited_desc">不进行自动清理</string>
+    <string name="cache_type_image">图片</string>
+    <string name="cache_type_ugoira">动图 (Ugoira)</string>
     
     <!-- Bookmark Status -->
     <string name="bookmark_not_bookmarked">未收藏</string>

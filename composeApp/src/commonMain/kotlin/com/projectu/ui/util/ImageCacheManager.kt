@@ -14,6 +14,21 @@ val LocalImageCacheManager = staticCompositionLocalOf<ImageCacheManager> {
 }
 
 /**
+ * 缓存详情数据类
+ * 用于展示不同类型缓存的大小统计
+ */
+data class CacheDetails(
+    /** 图片缓存大小（Coil 磁盘缓存） */
+    val imageCacheSize: Long = 0L,
+    /** Ugoira (动图) 缓存大小 */
+    val ugoiraCacheSize: Long = 0L
+) {
+    /** 总缓存大小 */
+    val totalSize: Long
+        get() = imageCacheSize + ugoiraCacheSize
+}
+
+/**
  * 创建平台特定的 ImageCacheManager 实例
  * 
  * @param imageLoader Coil ImageLoader 实例
@@ -35,6 +50,11 @@ interface ImageCacheManager {
     val currentCacheSize: StateFlow<Long>
     
     /**
+     * 当前缓存详情的状态流（区分不同缓存类型）
+     */
+    val cacheDetails: StateFlow<CacheDetails>
+    
+    /**
      * 最大缓存大小（字节）
      */
     val maxCacheSize: Long
@@ -43,6 +63,11 @@ interface ImageCacheManager {
      * 获取当前缓存大小（字节）
      */
     suspend fun getCacheSize(): Long
+    
+    /**
+     * 获取缓存详情（区分不同缓存类型）
+     */
+    suspend fun getCacheDetails(): CacheDetails
     
     /**
      * 清空磁盘缓存

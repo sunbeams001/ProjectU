@@ -197,6 +197,10 @@
     <string name="cache_size_medium">Medium (512 MB)</string>
     <string name="cache_size_large">Large (1 GB)</string>
     <string name="cache_size_extra_large">Extra Large (2 GB)</string>
+    <string name="cache_size_unlimited">Unlimited</string>
+    <string name="cache_size_unlimited_desc">No automatic cleanup</string>
+    <string name="cache_type_image">Images</string>
+    <string name="cache_type_ugoira">Animations (Ugoira)</string>
     
     <!-- Bookmark Status -->
     <string name="bookmark_not_bookmarked">Not bookmarked</string>

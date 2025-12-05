@@ -164,6 +164,10 @@
     <string name="cache_size_medium">중간 (512 MB)</string>
     <string name="cache_size_large">큼 (1 GB)</string>
     <string name="cache_size_extra_large">매우 큼 (2 GB)</string>
+    <string name="cache_size_unlimited">무제한</string>
+    <string name="cache_size_unlimited_desc">자동 정리 없음</string>
+    <string name="cache_type_image">이미지</string>
+    <string name="cache_type_ugoira">애니메이션 (Ugoira)</string>
     
     <!-- Navigation -->
     <string name="nav_back">뒤로</string>
