@@ -452,5 +452,28 @@
     <string name="user_relations_private">Private</string>
     <string name="user_relations_empty">No users</string>
     <string name="user_relations_load_failed">Failed to load user list</string>
+    
+    <!-- Comments -->
+    <string name="comments_title">Comments</string>
+    <string name="comments_empty">No comments yet</string>
+    <string name="comments_input_hint">Write a comment...</string>
+    <string name="comments_reply_hint">Write a reply...</string>
+    <string name="comments_send">Send</string>
+    <string name="comments_reply">Reply</string>
+    <string name="comments_delete">Delete</string>
+    <string name="comments_show_replies">Show replies</string>
+    <string name="comments_hide_replies">Hide replies</string>
+    <string name="comments_load_more_replies">Load more replies</string>
+    <string name="comments_replying_to">Replying to %1$s</string>
+    <string name="comments_cancel_reply">Cancel reply</string>
+    <string name="comments_reply_to">@%1$s</string>
+    <string name="comments_deleted_user">Deleted user</string>
+    <string name="comments_stamp">Stamp</string>
+    <string name="comments_empty_error">Comment cannot be empty</string>
+    
+    <!-- Emoji Picker -->
+    <string name="emoji_button">Emoji</string>
+    <string name="emoji_tab_emoji">Emoji</string>
+    <string name="emoji_tab_stamp">Stamp</string>
 </resources>
 

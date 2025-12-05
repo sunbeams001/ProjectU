@@ -450,5 +450,28 @@
     <string name="user_relations_private">私人</string>
     <string name="user_relations_empty">暂无用户</string>
     <string name="user_relations_load_failed">加载用户列表失败</string>
+    
+    <!-- Comments -->
+    <string name="comments_title">评论</string>
+    <string name="comments_empty">暂无评论</string>
+    <string name="comments_input_hint">写下你的评论...</string>
+    <string name="comments_reply_hint">写下你的回复...</string>
+    <string name="comments_send">发送</string>
+    <string name="comments_reply">回复</string>
+    <string name="comments_delete">删除</string>
+    <string name="comments_show_replies">展开回复</string>
+    <string name="comments_hide_replies">收起回复</string>
+    <string name="comments_load_more_replies">加载更多回复</string>
+    <string name="comments_replying_to">回复 %1$s</string>
+    <string name="comments_cancel_reply">取消回复</string>
+    <string name="comments_reply_to">@%1$s</string>
+    <string name="comments_deleted_user">已注销用户</string>
+    <string name="comments_stamp">表情</string>
+    <string name="comments_empty_error">评论内容不能为空</string>
+    
+    <!-- Emoji Picker -->
+    <string name="emoji_button">表情</string>
+    <string name="emoji_tab_emoji">颜文字</string>
+    <string name="emoji_tab_stamp">贴图</string>
 </resources>
 

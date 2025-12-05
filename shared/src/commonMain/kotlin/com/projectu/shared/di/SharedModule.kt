@@ -11,6 +11,7 @@ import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.api.PixivApiClient
 import com.projectu.shared.data.repository.ArtworkRepositoryImpl
 import com.projectu.shared.data.repository.AuthRepositoryImpl
+import com.projectu.shared.data.repository.CommentRepositoryImpl
 import com.projectu.shared.data.repository.MangaSeriesRepositoryImpl
 import com.projectu.shared.data.repository.NovelRepositoryImpl
 import com.projectu.shared.data.repository.NovelSeriesRepositoryImpl
@@ -20,6 +21,7 @@ import com.projectu.shared.data.repository.UserRepositoryImpl
 import com.projectu.shared.data.repository.WatchListRepositoryImpl
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.AuthRepository
+import com.projectu.shared.domain.repository.CommentRepository
 import com.projectu.shared.domain.repository.MangaSeriesRepository
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.domain.repository.NovelSeriesRepository
@@ -169,6 +171,13 @@ val repositoryModule = module {
     single<WatchListRepository> {
         WatchListRepositoryImpl(
             followApi = get<PixivApi>().followApi
+        )
+    }
+    
+    // 评论仓储
+    single<CommentRepository> {
+        CommentRepositoryImpl(
+            pixivApi = get()
         )
     }
     

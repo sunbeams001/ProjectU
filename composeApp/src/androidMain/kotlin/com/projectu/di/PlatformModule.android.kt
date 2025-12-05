@@ -20,6 +20,7 @@ import com.projectu.ui.screens.followlatest.FollowLatestNovelsViewModel
 import com.projectu.ui.screens.followlatest.more.WatchListMangaViewModel
 import com.projectu.ui.screens.followlatest.more.WatchListNovelsViewModel
 import com.projectu.ui.screens.userrelations.UserRelationsViewModel
+import com.projectu.ui.screens.comment.CommentsViewModel
 import io.ktor.client.engine.cio.*
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
@@ -120,5 +121,8 @@ actual val viewModelModule: Module = module {
     
     // 用户关系 ScreenModel
     factory { UserRelationsViewModel(get(), get(), get(), get(), get()) }
+    
+    // 评论页面 ScreenModel
+    factory { CommentsViewModel(get(), get()) }
 }
 

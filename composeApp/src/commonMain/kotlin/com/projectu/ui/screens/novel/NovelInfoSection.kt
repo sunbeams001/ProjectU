@@ -57,6 +57,7 @@ import projectu.composeapp.generated.resources.*
  * @param onMarkerClick 点击书签按钮回调
  * @param onUserClick 点击用户区域回调
  * @param onSeriesClick 点击系列回调
+ * @param onCommentClick 点击评论回调
  * @param modifier 修饰符
  */
 @Composable
@@ -71,6 +72,7 @@ fun NovelInfoSection(
     onMarkerClick: () -> Unit = {},
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
+    onCommentClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -313,7 +315,8 @@ fun NovelInfoSection(
                         StatItem(
                             icon = Icons.AutoMirrored.Filled.Comment,
                             label = stringResource(Res.string.novel_stat_comments),
-                            value = formatNumber(novel.commentCount)
+                            value = formatNumber(novel.commentCount),
+                            onClick = onCommentClick
                         )
                     }
                     
@@ -483,17 +486,26 @@ private fun StatItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
             modifier = Modifier.size(20.dp),
-            tint = MaterialTheme.colorScheme.primary
+            tint = if (onClick != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(

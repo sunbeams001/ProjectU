@@ -28,7 +28,7 @@ data class CommentReply(
     val commentDate: String,
     val commentRootId: String? = null,   // 根评论ID（仅在回复中）
     val commentParentId: String? = null,
-    val commentUserId: String,
+    val commentUserId: String? = null,   // 评论用户ID（回复API中存在，小说根评论API不存在）
     val replyToUserId: String? = null,   // 回复目标用户ID（仅在回复中）
     val replyToUserName: String? = null, // 回复目标用户名（仅在回复中）
     val editable: Boolean = false,

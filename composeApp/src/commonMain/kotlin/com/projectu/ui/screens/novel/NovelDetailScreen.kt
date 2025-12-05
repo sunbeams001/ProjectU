@@ -25,9 +25,11 @@ import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.navigation.NavigationContextManager
+import com.projectu.ui.screens.comment.CommentsScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.util.PlatformBackHandler
+import com.projectu.shared.domain.model.CommentContentType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import projectu.composeapp.generated.resources.*
@@ -165,6 +167,17 @@ data class NovelDetailScreen(
             },
             onSeriesClick = { seriesId ->
                 navigator.push(NovelSeriesScreen(seriesId))
+            },
+            onCommentClick = {
+                state.novel?.let { novel ->
+                    navigator.push(
+                        CommentsScreen(
+                            contentId = novel.id,
+                            contentType = CommentContentType.NOVEL,
+                            contentTitle = novel.title
+                        )
+                    )
+                }
             }
         )
     }
@@ -186,6 +199,7 @@ private fun NovelDetailContent(
     onRetry: () -> Unit,
     onUserClick: ((userId: String) -> Unit)?,
     onSeriesClick: ((seriesId: String) -> Unit)?,
+    onCommentClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -221,6 +235,7 @@ private fun NovelDetailContent(
                     onMarkerClick = onMarkerClick,
                     onUserClick = onUserClick,
                     onSeriesClick = onSeriesClick,
+                    onCommentClick = onCommentClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -260,6 +275,7 @@ private fun NovelDetailLayout(
     onMarkerClick: () -> Unit,
     onUserClick: ((userId: String) -> Unit)?,
     onSeriesClick: ((seriesId: String) -> Unit)?,
+    onCommentClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val novel = state.novel ?: return
@@ -341,6 +357,7 @@ private fun NovelDetailLayout(
             onMarkerClick = onMarkerClick,
             onUserClick = onUserClick,
             onSeriesClick = onSeriesClick,
+            onCommentClick = onCommentClick,
             modifier = Modifier.fillMaxWidth()
         )
     }

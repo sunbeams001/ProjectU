@@ -179,5 +179,28 @@
     <string name="image_search_retry">再試行</string>
     <string name="image_search_cannot_read">画像を読み込めません</string>
     <string name="image_search_unknown_error">不明なエラー</string>
+    
+    <!-- Comments -->
+    <string name="comments_title">コメント</string>
+    <string name="comments_empty">コメントはまだありません</string>
+    <string name="comments_input_hint">コメントを入力...</string>
+    <string name="comments_reply_hint">返信を入力...</string>
+    <string name="comments_send">送信</string>
+    <string name="comments_reply">返信</string>
+    <string name="comments_delete">削除</string>
+    <string name="comments_show_replies">返信を表示</string>
+    <string name="comments_hide_replies">返信を隠す</string>
+    <string name="comments_load_more_replies">さらに返信を読み込む</string>
+    <string name="comments_replying_to">%1$sに返信中</string>
+    <string name="comments_cancel_reply">返信をキャンセル</string>
+    <string name="comments_reply_to">@%1$s</string>
+    <string name="comments_deleted_user">削除されたユーザー</string>
+    <string name="comments_stamp">スタンプ</string>
+    <string name="comments_empty_error">コメントを入力してください</string>
+    
+    <!-- Emoji Picker -->
+    <string name="emoji_button">絵文字</string>
+    <string name="emoji_tab_emoji">絵文字</string>
+    <string name="emoji_tab_stamp">スタンプ</string>
 </resources>
 
