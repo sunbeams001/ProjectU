@@ -188,3 +188,62 @@ object MapStringListOrEmptyArraySerializer : KSerializer<Map<String, List<String
         }
     }
 }
+
+/**
+ * 处理 planTranslationTitle 的情况：
+ * - 有数据时返回对象: {"en": {"planTitle": "...", "planTitleLang": "en"}, ...}
+ * - 无数据时返回空数组: []
+ */
+object PlanTitleTranslationOrEmptyArraySerializer : KSerializer<Map<String, PlanTitleTranslationItem>?> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("PlanTitleTranslationOrEmptyArray")
+
+    override fun deserialize(decoder: Decoder): Map<String, PlanTitleTranslationItem>? {
+        val jsonDecoder = decoder as? JsonDecoder ?: return null
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when {
+            element is JsonObject -> {
+                element.mapValues { (_, value) -> 
+                    when (value) {
+                        is JsonObject -> PlanTitleTranslationItem(
+                            planTitle = value["planTitle"]?.jsonPrimitive?.contentOrNull,
+                            planTitleLang = value["planTitleLang"]?.jsonPrimitive?.contentOrNull
+                        )
+                        else -> PlanTitleTranslationItem()
+                    }
+                }
+            }
+            element is JsonArray && element.isEmpty() -> {
+                // 空数组返回空Map
+                emptyMap()
+            }
+            else -> null
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: Map<String, PlanTitleTranslationItem>?) {
+        if (value == null) {
+            encoder.encodeNull()
+        } else {
+            val jsonEncoder = encoder as JsonEncoder
+            val jsonObject = buildJsonObject {
+                value.forEach { (key, item) ->
+                    put(key, buildJsonObject {
+                        item.planTitle?.let { put("planTitle", JsonPrimitive(it)) }
+                        item.planTitleLang?.let { put("planTitleLang", JsonPrimitive(it)) }
+                    })
+                }
+            }
+            jsonEncoder.encodeJsonElement(jsonObject)
+        }
+    }
+}
+
+/**
+ * planTranslationTitle 中的项
+ */
+@kotlinx.serialization.Serializable
+data class PlanTitleTranslationItem(
+    val planTitle: String? = null,
+    val planTitleLang: String? = null
+)

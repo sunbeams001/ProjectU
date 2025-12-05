@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -592,8 +593,14 @@ fun UserListLayout(
         users.flatMap { it.illusts ?: emptyList() }
     }
     
-    val artworkIndexMap = remember(allArtworks) {
-        allArtworks.mapIndexed { index, artwork -> artwork.id to index }.toMap()
+    // 预计算每个用户的作品起始索引（使用完整列表）
+    val userArtworkStartIndices = remember(users) {
+        var index = 0
+        users.map { user ->
+            val startIndex = index
+            index += (user.illusts?.size ?: 0)
+            startIndex
+        }
     }
     
     // 监听滚动，触发加载更多
@@ -623,14 +630,16 @@ fun UserListLayout(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(users, key = { it.id }) { user ->
+            itemsIndexed(users, key = { _, user -> user.id }) { index, user ->
+                val artworkStartIndex = userArtworkStartIndices.getOrElse(index) { 0 }
                 UserCard(
                     user = user,
                     onUserClick = { onUserClick(user) },
-                    onArtworkClick = { artwork ->
-                        val index = artworkIndexMap[artwork.id] ?: 0
-                        onArtworkClick(artwork, index)
-                    }
+                    onArtworkClick = { artwork, localIndex ->
+                        val globalIndex = artworkStartIndex + localIndex
+                        onArtworkClick(artwork, globalIndex)
+                    },
+                    artworkStartIndex = 0  // 传入 0，因为我们在外部计算全局索引
                 )
             }
             

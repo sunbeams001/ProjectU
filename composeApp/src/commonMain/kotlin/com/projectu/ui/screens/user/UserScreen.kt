@@ -72,6 +72,7 @@ import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
+import com.projectu.ui.screens.userrelations.UserRelationsScreen
 import com.projectu.ui.util.AppLogger
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -177,6 +178,10 @@ data class UserScreen(
                     navigator.push(UserScreen(clickedUserId))
                 }
             },
+            onFollowingClick = { clickedUserId, userName ->
+                // 跳转到用户关系页面
+                navigator.push(UserRelationsScreen(clickedUserId, userName))
+            },
             onBackClick = { navigator.pop() },
             onToggleTagFilter = viewModel::toggleTagFilter,
             onSelectTag = viewModel::selectTag
@@ -198,6 +203,7 @@ fun UserScreenContent(
     onNovelSeriesClick: (String) -> Unit,
     onMangaSeriesClick: (String) -> Unit,
     onUserClick: (String) -> Unit,
+    onFollowingClick: ((String, String) -> Unit)? = null,
     onBackClick: () -> Unit,
     // Tag筛选相关回调
     onToggleTagFilter: (UserProfileTab) -> Unit = {},
@@ -332,7 +338,8 @@ fun UserScreenContent(
                         // 用户信息区域
                         UserProfileHeader(
                             profile = state.userProfile,
-                            onUserClick = onUserClick
+                            onUserClick = onUserClick,
+                            onFollowingClick = onFollowingClick
                         )
                         
                         // Tab导航栏
@@ -436,7 +443,8 @@ fun UserScreenContent(
 @Composable
 fun UserProfileHeader(
     profile: UserProfile,
-    onUserClick: (String) -> Unit
+    onUserClick: (String) -> Unit,
+    onFollowingClick: ((String, String) -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
@@ -476,11 +484,16 @@ fun UserProfileHeader(
             }
         }
         
-        // 关注数
+        // 关注数 - 可点击
         Text(
             text = stringResource(Res.string.user_following_count, profile.following),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable(
+                enabled = onFollowingClick != null
+            ) {
+                onFollowingClick?.invoke(profile.userId, profile.name)
+            }
         )
     }
     

@@ -60,33 +60,64 @@ object RankingContentModeConfig {
         ),
         
         // NOVEL 支持的模式（最多，包含专属模式）
+        // 按官方网站顺序排列：
+        // 一般：今日，本周，本月，新人，本周原创，本周AI生成，受男性欢迎，受女性欢迎
+        // R-18：今日R-18，本周R-18，本周AI生成R-18，受男性欢迎R-18，受女性欢迎R-18，R-18G
         RankingContent.NOVEL to setOf(
             RankingMode.DAILY,
             RankingMode.WEEKLY,
             RankingMode.MONTHLY,
             RankingMode.ROOKIE,
+            RankingMode.WEEKLY_ORIGINAL,  // 本周原创（小说专属）
+            RankingMode.WEEKLY_AI,        // 本周AI生成（小说专属）
             RankingMode.MALE,
             RankingMode.FEMALE,
             RankingMode.DAILY_R18,
             RankingMode.WEEKLY_R18,
+            RankingMode.WEEKLY_R18_AI,    // 本周AI生成R-18（小说专属）
             RankingMode.MALE_R18,
             RankingMode.FEMALE_R18,
-            RankingMode.R18G,
-            // 小说专属模式
-            RankingMode.WEEKLY_ORIGINAL,
-            RankingMode.WEEKLY_AI,
-            RankingMode.WEEKLY_R18_AI
+            RankingMode.R18G
         )
+    )
+    
+    /**
+     * 小说排行榜的自定义排序（按官方网站顺序）
+     */
+    private val novelModeOrder: List<RankingMode> = listOf(
+        // 一般：今日，本周，本月，新人，本周原创，本周AI生成，受男性欢迎，受女性欢迎
+        RankingMode.DAILY,
+        RankingMode.WEEKLY,
+        RankingMode.MONTHLY,
+        RankingMode.ROOKIE,
+        RankingMode.WEEKLY_ORIGINAL,
+        RankingMode.WEEKLY_AI,
+        RankingMode.MALE,
+        RankingMode.FEMALE,
+        // R-18：今日R-18，本周R-18，本周AI生成R-18，受男性欢迎R-18，受女性欢迎R-18，R-18G
+        RankingMode.DAILY_R18,
+        RankingMode.WEEKLY_R18,
+        RankingMode.WEEKLY_R18_AI,
+        RankingMode.MALE_R18,
+        RankingMode.FEMALE_R18,
+        RankingMode.R18G
     )
     
     /**
      * 获取指定内容类型支持的所有排行榜模式
      * 
      * @param content 内容类型
-     * @return 支持的排行榜模式列表（按定义顺序）
+     * @return 支持的排行榜模式列表（按定义顺序，小说使用自定义顺序）
      */
     fun getSupportedModes(content: RankingContent): List<RankingMode> {
-        return contentModesMap[content]?.sortedBy { it.ordinal } ?: emptyList()
+        val supportedModes = contentModesMap[content] ?: return emptyList()
+        
+        // 小说使用自定义排序
+        return if (content == RankingContent.NOVEL) {
+            novelModeOrder.filter { supportedModes.contains(it) }
+        } else {
+            supportedModes.sortedBy { it.ordinal }
+        }
     }
     
     /**

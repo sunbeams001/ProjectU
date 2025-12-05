@@ -35,6 +35,7 @@ import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
 import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
 import com.projectu.shared.data.remote.dto.bookmark.UserBookmarkIllustsBody
 import com.projectu.shared.data.remote.dto.bookmark.UserBookmarkNovelsBody
+import com.projectu.shared.data.remote.dto.user.MyPixivBody
 import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
@@ -195,6 +196,7 @@ class ApiTestViewModel(
                         ApiMethod.GetUserNovels -> testGetUserNovels()
                         ApiMethod.GetUserFollowing -> testGetUserFollowing()
                         ApiMethod.GetUserFollowers -> testGetUserFollowers()
+                        ApiMethod.GetMyPixiv -> testGetMyPixiv()
                         ApiMethod.GetRecommendUsers -> testGetRecommendUsers()
                         ApiMethod.GetDiscoveryUsers -> testGetDiscoveryUsers()
                         ApiMethod.FollowUser -> testFollowUser()
@@ -833,6 +835,61 @@ class ApiTestViewModel(
                 appendLine("粉丝总数: ${body.total}")
                 appendLine("当前返回数量: ${body.users.size}")
             }
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetMyPixiv() {
+        val userId = getParam("userId").toLongOrNull() ?: 4966721L
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 24
+        
+        // 使用好P友列表接口
+        val response = pixivApi.userApi.getMyPixiv(
+            uid = userId,
+            offset = offset,
+            limit = limit
+        )
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<MyPixivBody>(
+            "/ajax/user/$userId/mypixiv",
+            mapOf(
+                "offset" to offset,
+                "limit" to limit
+            )
+        )
+        
+        val summary = buildString {
+            appendLine("✅ 好P友列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("偏移量: $offset")
+            appendLine("数量限制: $limit")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            val body = response.body
+            if (body != null) {
+                appendLine("好P友总数: ${body.total}")
+                appendLine("当前返回数量: ${body.users.size}")
+                if (body.users.isNotEmpty()) {
+                    appendLine()
+                    appendLine("好P友列表:")
+                    body.users.take(5).forEachIndexed { index, user ->
+                        appendLine("${index + 1}. ${user.userName} (ID: ${user.userId})")
+                        appendLine("   作品数: ${user.illusts.size}")
+                        user.userComment?.takeIf { it.isNotBlank() }?.let { comment ->
+                            appendLine("   简介: ${comment.take(50)}...")
+                        }
+                    }
+                    if (body.users.size > 5) {
+                        appendLine("... 还有 ${body.users.size - 5} 个好P友")
+                    }
+                }
+            }
+            appendLine()
             appendLine("请查看 JSON 标签页查看完整结果")
         }
         

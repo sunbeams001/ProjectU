@@ -2,6 +2,7 @@ package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.common.PixivResponse
 import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
+import com.projectu.shared.data.remote.dto.user.MyPixivBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.ProfileIllustsBody
 import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
@@ -218,6 +219,30 @@ class UserApi(private val client: PixivApiClient) {
             "mode" to "del",
             "type" to "bookuser",
             "id" to userId.toString()
+        ))
+    }
+
+    /**
+     * 获取好P友列表（MyPixiv）
+     * 
+     * 获取用户的好P友（互相关注的好友）列表
+     * 
+     * @param uid 用户ID
+     * @param offset 偏移量
+     * @param limit 返回数量（最大24）
+     * @return 好P友列表响应体
+     * 
+     * 接口地址: GET /ajax/user/{userId}/mypixiv
+     * 示例: https://www.pixiv.net/ajax/user/4966721/mypixiv?offset=0&limit=24&lang=zh
+     */
+    suspend fun getMyPixiv(
+        uid: Long,
+        offset: Int = 0,
+        limit: Int = 24
+    ): PixivResponse<MyPixivBody> {
+        return client.get("/ajax/user/$uid/mypixiv", mapOf(
+            "offset" to offset,
+            "limit" to limit
         ))
     }
 }

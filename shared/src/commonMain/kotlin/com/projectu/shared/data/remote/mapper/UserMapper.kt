@@ -1,10 +1,14 @@
 package com.projectu.shared.data.remote.mapper
 
+import com.projectu.shared.data.remote.dto.illust.IllustSimple
 import com.projectu.shared.data.remote.dto.user.DiscoveryUsersBody
 import com.projectu.shared.data.remote.dto.user.DiscoveryUserInfo
+import com.projectu.shared.data.remote.dto.user.FollowingUser
 import com.projectu.shared.data.remote.dto.user.IllustThumbnail
+import com.projectu.shared.data.remote.dto.user.MyPixivBody
 import com.projectu.shared.data.remote.dto.user.RecommendUserDetail
 import com.projectu.shared.data.remote.dto.user.TagTranslation
+import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
 import com.projectu.shared.domain.model.AgeLimit
 import com.projectu.shared.domain.model.Artwork
@@ -201,4 +205,114 @@ fun RecommendUserDetail.toUser(): User {
         illusts = emptyList(),
         novels = emptyList()
     )
+}
+
+/**
+ * 将 FollowingUser 转换为 User 实体
+ * 用于关注列表、粉丝列表的用户转换
+ * 
+ * @param ageLimitDeterminer 年龄限制判定工具
+ */
+fun FollowingUser.toUser(ageLimitDeterminer: AgeLimitDeterminer): User {
+    // 转换作品列表
+    val artworks = illusts.map { it.toArtwork(ageLimitDeterminer) }
+    
+    return User(
+        id = userId,
+        name = userName,
+        account = null, // FollowingUser 不包含 account 字段
+        profileImageUrl = profileImageUrl,
+        profileImageUrlBig = profileImageUrl, // 使用同一头像
+        comment = userComment,
+        followStatus = if (following) FollowStatus.PUBLIC else FollowStatus.NOT_FOLLOWING,
+        isMypixiv = isMypixiv,
+        isBlocking = isBlocking,
+        followedBack = followed,
+        isPremium = premium,
+        backgroundUrl = null, // FollowingUser 不包含背景图
+        acceptCommissionRequest = commission?.acceptRequest ?: false,
+        followingCount = 0, // FollowingUser 不包含关注数量
+        webpage = null, // FollowingUser 不包含网站信息
+        isOfficial = false, // FollowingUser 不包含官方标记
+        illusts = artworks,
+        novels = emptyList()
+    )
+}
+
+/**
+ * 将 IllustSimple 转换为 Artwork
+ * 用于关注列表中的作品预览
+ */
+fun IllustSimple.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork {
+    val artworkType = ArtworkType.fromIllustType(illustType)
+    
+    // 转换标签
+    val translatedTags = tags.map { tagName ->
+        Tag(name = tagName, translatedName = null)
+    }
+    
+    // 构建图片URL - 使用 url 字段作为缩略图
+    val imageUrls = ArtworkImageUrls(
+        pages = listOf(
+            PageImageUrls(
+                page = 0,
+                urls = ImageUrls(
+                    mini = null,
+                    squareMedium = url,  // 使用 url 字段作为方形缩略图
+                    medium = url,
+                    large = url,
+                    master1200 = null,
+                    original = null
+                ),
+                width = width,
+                height = height
+            )
+        )
+    )
+    
+    return Artwork(
+        id = id,
+        title = title,
+        description = description,
+        type = artworkType,
+        imageUrls = imageUrls,
+        width = width,
+        height = height,
+        pageCount = pageCount,
+        userId = userId,
+        userName = userName,
+        userProfileImageUrl = profileImageUrl ?: "",
+        tags = translatedTags,
+        viewCount = 0,
+        likeCount = 0,
+        bookmarkCount = 0,
+        commentCount = 0,
+        createdTime = createDate,
+        bookmarkStatus = if (bookmarkData != null) BookmarkStatus.PUBLIC else BookmarkStatus.NOT_BOOKMARKED,
+        bookmarkId = bookmarkData?.id,
+        isMuted = isMasked,
+        isAiGenerated = isAiGeneratedArtwork(aiType, tags),
+        totalView = 0,
+        totalBookmarks = 0,
+        ageLimit = ageLimitDeterminer.determine(
+            xRestrict = xRestrict,
+            sl = sl,
+            tags = tags
+        ),
+        ugoiraMetadata = null
+    )
+}
+
+/**
+ * 将 UserFollowingBody 转换为用户列表
+ */
+fun UserFollowingBody.toUsers(ageLimitDeterminer: AgeLimitDeterminer): List<User> {
+    return users.map { it.toUser(ageLimitDeterminer) }
+}
+
+/**
+ * 将 MyPixivBody 转换为用户列表
+ */
+fun MyPixivBody.toUsers(ageLimitDeterminer: AgeLimitDeterminer): List<User> {
+    return users.map { it.toUser(ageLimitDeterminer) }
 }

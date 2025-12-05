@@ -44,6 +44,7 @@ import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.screens.user.UserScreenContent
 import com.projectu.ui.screens.user.UserViewModel
 import com.projectu.ui.screens.user.UserProfileTab
+import com.projectu.ui.screens.userrelations.UserRelationsScreen
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.data.remote.api.PixivApi
@@ -634,6 +635,10 @@ object ProfileTab : Tab {
                     if (clickedUserId != currentUserId) {
                         parentNavigator?.push(UserScreen(clickedUserId))
                     }
+                },
+                onFollowingClick = { clickedUserId, userName ->
+                    // 跳转到用户关系页面
+                    parentNavigator?.push(UserRelationsScreen(clickedUserId, userName))
                 },
                 onBackClick = { /* 不需要返回操作 */ },
                 onToggleTagFilter = viewModel::toggleTagFilter,

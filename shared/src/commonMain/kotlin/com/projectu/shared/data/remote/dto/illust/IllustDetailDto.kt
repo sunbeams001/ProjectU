@@ -61,7 +61,7 @@ data class IllustDetailBody(
     val extraData: ExtraData? = null,
     val titleCaptionTranslation: TitleCaptionTranslation? = null,
     val isUnlisted: Boolean = false,
-    val request: String? = null,
+    val request: IllustRequestWrapper? = null,  // 改为复杂对象类型
     val commentOff: Int = 0,
     val aiType: Int = 0,
     val reuploadDate: String? = null,
@@ -201,5 +201,130 @@ data class ImageResponseOutData(
 @Serializable
 data class LikeBody(
     val isLiked: Boolean
+)
+
+// ===================== Request 相关 DTO =====================
+
+/**
+ * 约稿请求包装器
+ */
+@Serializable
+data class IllustRequestWrapper(
+    val request: IllustRequestInfo? = null,
+    val commentOff: Int = 0,
+    val creator: RequestUserInfo? = null,
+    val fan: RequestUserInfo? = null,
+    val collaborateStatus: CollaborateStatus? = null,
+    val editable: Boolean = false
+)
+
+/**
+ * 约稿请求详情
+ */
+@Serializable
+data class IllustRequestInfo(
+    val requestId: String? = null,
+    val requestStatus: String? = null,  // "complete" 等
+    val requestProposal: RequestProposal? = null,
+    val requestTags: List<String>? = null,
+    val requestAdultFlg: Boolean = false,
+    val requestPrice: Int = 0,
+    val role: String? = null,  // "others" 等
+    val postWork: String? = null,
+    val plan: RequestPlan? = null
+)
+
+/**
+ * 约稿提案
+ */
+@Serializable
+data class RequestProposal(
+    val requestOriginalProposal: String? = null,
+    val requestOriginalProposalLang: String? = null,
+    val requestTranslationProposal: Map<String, RequestTranslation>? = null
+)
+
+/**
+ * 提案翻译
+ */
+@Serializable
+data class RequestTranslation(
+    val requestProposal: String? = null,
+    val requestProposalLang: String? = null
+)
+
+/**
+ * 约稿计划
+ */
+@Serializable
+data class RequestPlan(
+    val currentPlanId: String? = null,
+    val planId: String? = null,
+    val creatorUserId: String? = null,
+    val planAcceptRequestFlg: Boolean = false,
+    val planStandardPrice: Int = 0,
+    val planTitle: PlanTitle? = null,
+    val planDescription: PlanDescription? = null,
+    val planAcceptAdultFlg: Boolean = false,
+    val planAcceptAnonymousFlg: Boolean = false,
+    val planAcceptIllustFlg: Boolean = false,
+    val planAcceptUgoiraFlg: Boolean = false,
+    val planAcceptMangaFlg: Boolean = false,
+    val planAcceptNovelFlg: Boolean = false,
+    val planCoverImage: String? = null,
+    val planAiType: Int = 0
+)
+
+/**
+ * 计划标题
+ */
+@Serializable
+data class PlanTitle(
+    val planOriginalTitle: String? = null,
+    val planOriginalTitleLang: String? = null,
+    @Serializable(with = com.projectu.shared.data.remote.serializers.PlanTitleTranslationOrEmptyArraySerializer::class)
+    val planTranslationTitle: Map<String, com.projectu.shared.data.remote.serializers.PlanTitleTranslationItem>? = null
+)
+
+/**
+ * 计划描述
+ */
+@Serializable
+data class PlanDescription(
+    val planOriginalDescription: String? = null,
+    val planOriginalDescriptionHtml: String? = null,
+    val planOriginalLang: String? = null,
+    val planTranslationDescription: Map<String, PlanTranslationItem>? = null
+)
+
+/**
+ * 计划描述翻译项
+ */
+@Serializable
+data class PlanTranslationItem(
+    val planDescription: String? = null,
+    val planDescriptionHtml: String? = null,
+    val planLang: String? = null
+)
+
+/**
+ * 请求用户信息
+ */
+@Serializable
+data class RequestUserInfo(
+    val userId: String? = null,
+    val userName: String? = null,
+    val profileImg: String? = null
+)
+
+/**
+ * 协作状态
+ */
+@Serializable
+data class CollaborateStatus(
+    val collaborating: Boolean = false,
+    val collaborateAnonymousFlg: Boolean = false,
+    val collaboratedCnt: Int = 0,
+    val userSamples: List<String>? = null  // 可能为空数组
 )
 

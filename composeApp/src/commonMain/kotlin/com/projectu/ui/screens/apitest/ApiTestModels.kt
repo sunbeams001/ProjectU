@@ -235,6 +235,18 @@ sealed class ApiMethod(
         priority = 1
     )
     
+    object GetMyPixiv : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getMyPixiv",
+        displayName = "好P友列表",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "4966721", required = true),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "24", required = false)
+        ),
+        priority = 2
+    )
+    
     // ==================== BookmarkApi ====================
 
     // 查询收藏
@@ -801,7 +813,7 @@ sealed class ApiMethod(
             GetIllustSeriesDetail, WatchIllustSeries, UnwatchIllustSeries,
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, GetUserNovels,
-            GetUserFollowing, GetUserFollowers,
+            GetUserFollowing, GetUserFollowers, GetMyPixiv,
             GetRecommendUsers, GetDiscoveryUsers, FollowUser, UnfollowUser,
             GetUserFollowDetail,
             // BookmarkApi

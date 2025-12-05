@@ -25,14 +25,16 @@ import org.koin.compose.koinInject
  * 
  * @param user 用户对象（包含作品列表）
  * @param onUserClick 用户点击回调
- * @param onArtworkClick 作品点击回调
+ * @param onArtworkClick 作品点击回调，参数为 (Artwork, 全局索引)
+ * @param artworkStartIndex 该用户作品在全局作品列表中的起始索引（用于列表导航）
  * @param modifier 修饰符
  */
 @Composable
 fun UserCard(
     user: User,
     onUserClick: (User) -> Unit,
-    onArtworkClick: (Artwork) -> Unit,
+    onArtworkClick: (Artwork, Int) -> Unit,
+    artworkStartIndex: Int = 0,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -110,7 +112,7 @@ fun UserCard(
                     user.illusts.take(3).forEachIndexed { index, artwork ->
                         ArtworkThumbnail(
                             artwork = artwork,
-                            onClick = { onArtworkClick(artwork) },
+                            onClick = { onArtworkClick(artwork, artworkStartIndex + index) },
                             modifier = Modifier.weight(1f),
                             position = when (index) {
                                 0 -> ThumbnailPosition.START // 最左侧

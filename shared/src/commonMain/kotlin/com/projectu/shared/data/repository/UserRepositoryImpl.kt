@@ -2,8 +2,10 @@ package com.projectu.shared.data.repository
 
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.mapper.toUser
+import com.projectu.shared.data.remote.mapper.toUsers
 import com.projectu.shared.data.remote.mapper.toUsersWithArtworks
 import com.projectu.shared.domain.model.User
+import com.projectu.shared.domain.repository.UserListResult
 import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.util.AgeLimitDeterminer
 import kotlinx.coroutines.flow.Flow
@@ -75,6 +77,72 @@ class UserRepositoryImpl(
         }
         val body = response.body ?: throw IllegalStateException("Discovery users data is empty")
         body.toUsersWithArtworks(ageLimitDeterminer)
+    }
+    
+    override suspend fun getUserFollowing(
+        userId: Long,
+        offset: Int,
+        limit: Int,
+        rest: String
+    ): Result<UserListResult> = runCatching {
+        val response = pixivApi.userApi.getUserFollowing(
+            uid = userId,
+            offset = offset,
+            limit = limit,
+            rest = rest
+        )
+        if (response.error) {
+            throw IllegalStateException(response.message)
+        }
+        val body = response.body ?: throw IllegalStateException("Following list data is empty")
+        UserListResult(
+            users = body.toUsers(ageLimitDeterminer),
+            total = body.total,
+            hasMore = offset + body.users.size < body.total
+        )
+    }
+    
+    override suspend fun getUserFollowers(
+        userId: Long,
+        offset: Int,
+        limit: Int
+    ): Result<UserListResult> = runCatching {
+        val response = pixivApi.userApi.getUserFollowers(
+            uid = userId,
+            offset = offset,
+            limit = limit
+        )
+        if (response.error) {
+            throw IllegalStateException(response.message)
+        }
+        val body = response.body ?: throw IllegalStateException("Followers list data is empty")
+        UserListResult(
+            users = body.toUsers(ageLimitDeterminer),
+            total = body.total,
+            hasMore = offset + body.users.size < body.total
+        )
+    }
+    
+    override suspend fun getMyPixiv(
+        userId: Long,
+        offset: Int,
+        limit: Int
+    ): Result<UserListResult> = runCatching {
+        val response = pixivApi.userApi.getMyPixiv(
+            uid = userId,
+            offset = offset,
+            limit = limit
+        )
+        if (response.error) {
+            throw IllegalStateException(response.message)
+        }
+        val body = response.body ?: throw IllegalStateException("MyPixiv list data is empty")
+        val total = body.total.toIntOrNull() ?: 0
+        UserListResult(
+            users = body.toUsers(ageLimitDeterminer),
+            total = total,
+            hasMore = offset + body.users.size < total
+        )
     }
 }
 

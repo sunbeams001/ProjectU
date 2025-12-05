@@ -438,5 +438,15 @@
     <string name="api_discovery_users_empty">Discovery users data is empty</string>
     <string name="api_load_series_detail_failed">Failed to load series detail</string>
     <string name="api_load_series_contents_failed">Failed to load series contents</string>
+    
+    <!-- User Relations -->
+    <string name="user_relations_title">%1$s\'s Relations</string>
+    <string name="user_relations_following">Following</string>
+    <string name="user_relations_mypixiv">My Pixiv</string>
+    <string name="user_relations_followers">Followers</string>
+    <string name="user_relations_public">Public</string>
+    <string name="user_relations_private">Private</string>
+    <string name="user_relations_empty">No users</string>
+    <string name="user_relations_load_failed">Failed to load user list</string>
 </resources>
 
