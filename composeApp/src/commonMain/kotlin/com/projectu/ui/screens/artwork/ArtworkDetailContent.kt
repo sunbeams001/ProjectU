@@ -1,5 +1,7 @@
 package com.projectu.ui.screens.artwork
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,12 +14,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -27,12 +31,12 @@ import com.projectu.shared.domain.model.ArtworkType
 import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.model.getUrlByQuality
 import com.projectu.ui.components.ErrorDisplay
-import org.jetbrains.compose.resources.stringResource
-import projectu.composeapp.generated.resources.*
 import com.projectu.ui.components.RetryableAsyncImage
 import com.projectu.ui.components.UgoiraDisplay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import projectu.composeapp.generated.resources.*
 
 /**
  * 作品详情页主内容
@@ -48,8 +52,13 @@ fun ArtworkDetailContent(
     onBackClick: () -> Unit,
     onPageChange: (Int) -> Unit = {},
     onRetry: () -> Unit = {},
+    onExpandInfo: () -> Unit = {},
+    onCollapseInfo: () -> Unit = {},
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
+    onCommentClick: (() -> Unit)? = null,
+    onSimilarClick: (() -> Unit)? = null,
+    onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -81,8 +90,13 @@ fun ArtworkDetailContent(
                     ArtworkListPager(
                         state = state,
                         onPageChange = onPageChange,
+                        onExpandInfo = onExpandInfo,
+                        onCollapseInfo = onCollapseInfo,
                         onUserClick = onUserClick,
                         onSeriesClick = onSeriesClick,
+                        onCommentClick = onCommentClick,
+                        onSimilarClick = onSimilarClick,
+                        onDownloadClick = onDownloadClick,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
@@ -90,8 +104,14 @@ fun ArtworkDetailContent(
                     ArtworkDetailLayout(
                         artwork = state.artwork,
                         authorFollowStatus = state.authorFollowStatus,
+                        isInfoExpanded = state.isInfoExpanded,
+                        onExpandInfo = onExpandInfo,
+                        onCollapseInfo = onCollapseInfo,
                         onUserClick = onUserClick,
                         onSeriesClick = onSeriesClick,
+                        onCommentClick = onCommentClick,
+                        onSimilarClick = onSimilarClick,
+                        onDownloadClick = onDownloadClick,
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
@@ -126,8 +146,13 @@ fun ArtworkDetailContent(
 private fun ArtworkListPager(
     state: ArtworkDetailState,
     onPageChange: (Int) -> Unit,
+    onExpandInfo: () -> Unit = {},
+    onCollapseInfo: () -> Unit = {},
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
+    onCommentClick: (() -> Unit)? = null,
+    onSimilarClick: (() -> Unit)? = null,
+    onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(
@@ -176,8 +201,14 @@ private fun ArtworkListPager(
                 ArtworkDetailLayout(
                     artwork = cachedArtwork,
                     authorFollowStatus = followStatus,
+                    isInfoExpanded = state.isInfoExpanded,
+                    onExpandInfo = onExpandInfo,
+                    onCollapseInfo = onCollapseInfo,
                     onUserClick = onUserClick,
                     onSeriesClick = onSeriesClick,
+                    onCommentClick = onCommentClick,
+                    onSimilarClick = onSimilarClick,
+                    onDownloadClick = onDownloadClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -189,8 +220,14 @@ private fun ArtworkListPager(
                 ArtworkDetailLayout(
                     artwork = state.artwork,
                     authorFollowStatus = state.authorFollowStatus,
+                    isInfoExpanded = state.isInfoExpanded,
+                    onExpandInfo = onExpandInfo,
+                    onCollapseInfo = onCollapseInfo,
                     onUserClick = onUserClick,
                     onSeriesClick = onSeriesClick,
+                    onCommentClick = onCommentClick,
+                    onSimilarClick = onSimilarClick,
+                    onDownloadClick = onDownloadClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -225,36 +262,128 @@ private fun ArtworkListPager(
 
 /**
  * 作品详情布局
- * 上方：作品展示区域（占据剩余空间）
- * 下方：固定高度的信息区域
+ * 分层结构：
+ * 底层：详情信息区域（固定在屏幕底部，高度为屏幕一半）
+ * 上层：作品展示区域 + 基础信息区域（上下排列，可通过手势上移）
+ * 注意：兼容系统导航栏高度
  */
 @Composable
 private fun ArtworkDetailLayout(
     artwork: Artwork,
     authorFollowStatus: com.projectu.shared.domain.model.FollowStatus,
+    isInfoExpanded: Boolean = false,
+    onExpandInfo: () -> Unit = {},
+    onCollapseInfo: () -> Unit = {},
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
+    onCommentClick: (() -> Unit)? = null,
+    onSimilarClick: (() -> Unit)? = null,
+    onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        // 作品展示区域（占据剩余空间）
-        Box(
+    BoxWithConstraints(
+        modifier = modifier.navigationBarsPadding()
+    ) {
+        val screenHeight = maxHeight
+        val density = LocalDensity.current
+        val coroutineScope = rememberCoroutineScope()
+        
+        // 记录基础信息区域的高度
+        var basicInfoHeight by remember { mutableStateOf(0.dp) }
+        
+        // 上移偏移量（使用 rememberSaveable 保存状态，页面返回时不会丢失）
+        // 但当作品ID变化时需要重置（通过 key 参数）
+        var dragOffset by rememberSaveable(artwork.id) { mutableFloatStateOf(0f) }
+        val maxDragOffset = remember(screenHeight) {
+            with(density) { (screenHeight / 2).toPx() }
+        }
+        
+        // 动画状态（使用作品ID作为key，切换作品时重置）
+        val animatedOffset = remember(artwork.id) { Animatable(dragOffset) }
+        
+        // 吸附阈值：当偏移量小于此值时，自动吸附到原位
+        val snapThreshold = maxDragOffset * 0.2f
+        
+        // 同步动画值到 dragOffset
+        LaunchedEffect(animatedOffset.value) {
+            dragOffset = animatedOffset.value
+        }
+        
+        // 底层：详情信息区域（固定在底部，高度为屏幕一半）
+        ArtworkDetailInfoSection(
+            artwork = artwork,
+            onCommentClick = onCommentClick,
+            onSimilarClick = onSimilarClick,
+            onDownloadClick = onDownloadClick,
+            onScrollAtTop = { delta ->
+                // 当详情区域滚动到顶部时，继续下滑会触发基础信息区域收起
+                if (delta > 0 && dragOffset > 0) {
+                    // 下滑且基础信息区域已展开，触发收起
+                    coroutineScope.launch {
+                        animatedOffset.animateTo(
+                            targetValue = 0f,
+                            animationSpec = tween(durationMillis = 150)
+                        )
+                    }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-        ) {
-            ArtworkDisplayArea(artwork = artwork)
-        }
-
-        // 作品信息区域（固定高度）
-        ArtworkInfoSection(
-            artwork = artwork,
-            authorFollowStatus = authorFollowStatus,
-            onUserClick = onUserClick,
-            onSeriesClick = onSeriesClick,
-            modifier = Modifier.fillMaxWidth()
+                .height(screenHeight / 2)
+                .align(Alignment.BottomCenter)
         )
+
+        // 上层：作品展示区域 + 基础信息区域（上下排列，可上移）
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(0, -dragOffset.toInt()) }
+        ) {
+            // 作品展示区域（占据剩余空间）
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            ) {
+                ArtworkDisplayArea(artwork = artwork)
+            }
+
+            // 基础信息区域（固定在底部，支持手势拖动）
+            ArtworkBasicInfoSection(
+                artwork = artwork,
+                authorFollowStatus = authorFollowStatus,
+                onUserClick = onUserClick,
+                onSeriesClick = onSeriesClick,
+                onDragDelta = { delta ->
+                    // 检测拖动方向，不再实时跟手
+                    // 只在手势结束时决定展开或收起
+                },
+                onDragEnd = {
+                    // 手势结束时，判断拖动方向并触发动画
+                    coroutineScope.launch {
+                        // 如果当前接近原位（未展开），则展开到最大位置
+                        if (dragOffset < maxDragOffset / 2) {
+                            animatedOffset.animateTo(
+                                targetValue = maxDragOffset,
+                                animationSpec = tween(durationMillis = 250)
+                            )
+                        } else {
+                            // 如果已经展开较多，则收起到原位
+                            animatedOffset.animateTo(
+                                targetValue = 0f,
+                                animationSpec = tween(durationMillis = 250)
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onSizeChanged { size ->
+                        basicInfoHeight = with(density) { size.height.toDp() }
+                    }
+            )
+        }
     }
 }
 
@@ -303,7 +432,7 @@ private fun ArtworkDisplayArea(
 
 /**
  * 单页作品展示
- * 居中并缩放至完全展示
+ * 宽度填充，高度自适应，垂直居中
  */
 @Composable
 private fun SinglePageDisplay(
@@ -318,8 +447,8 @@ private fun SinglePageDisplay(
         RetryableAsyncImage(
             model = imageUrl,
             contentDescription = contentDescription,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth(),
             showErrorDetails = true
         )
     }

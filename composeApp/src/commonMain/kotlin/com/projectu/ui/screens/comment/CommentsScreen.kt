@@ -609,7 +609,7 @@ fun CommentContent(
                 )
                 
                 Text(
-                    text = DateTimeFormatter.formatToLocalDateTime(comment.commentDate),
+                    text = DateTimeFormatter.formatJapanTimeToLocal(comment.commentDate),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

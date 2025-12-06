@@ -307,6 +307,23 @@
     <string name="novel_friends_only">Friends Only</string>
     <string name="novel_friends_only_desc">This content is only visible to my pixiv friends</string>
     
+    <!-- Artwork -->
+    <string name="artwork_collapse">Collapse</string>
+    <string name="artwork_expand">Expand</string>
+    <string name="artwork_stat_views">Views</string>
+    <string name="artwork_stat_likes">Likes</string>
+    <string name="artwork_stat_bookmarks">Bookmarks</string>
+    <string name="artwork_stat_comments">Comments</string>
+    <string name="artwork_info">Artwork Info</string>
+    <string name="artwork_resolution">Resolution</string>
+    <string name="artwork_page_count">Pages</string>
+    <string name="artwork_id">Artwork ID</string>
+    <string name="artwork_user_id">User ID</string>
+    <string name="artwork_description">Description</string>
+    <string name="artwork_tags">Tags</string>
+    <string name="artwork_publish_time">Publish time: %1$s</string>
+    <string name="artwork_similar">Similar</string>
+    
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d hours %2$d minutes</string>
     <string name="time_hours">%1$d hours</string>
@@ -393,7 +410,6 @@
     <string name="user_info_can_message">Can Send Message</string>
     
     <!-- Artwork -->
-    <string name="artwork_publish_time">Published: %1$s</string>
     <string name="artwork_detail_empty">Artwork detail is empty</string>
     <string name="artwork_not_bookmarked">Artwork is not bookmarked</string>
     <string name="artwork_ugoira_meta_empty">Ugoira metadata is empty</string>

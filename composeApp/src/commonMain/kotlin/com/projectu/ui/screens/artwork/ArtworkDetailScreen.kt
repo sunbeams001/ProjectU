@@ -9,6 +9,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
+import com.projectu.ui.screens.comment.CommentsScreen
+import com.projectu.shared.domain.model.CommentContentType
 import com.projectu.ui.util.PlatformBackHandler
 
 /**
@@ -19,7 +21,7 @@ import com.projectu.ui.util.PlatformBackHandler
  *   - 单页作品：居中缩放完全展示
  *   - 多页作品：宽度填充，可垂直滚动
  *   - 动图：居中展示（后期完善）
- * - 下方：固定高度的作品信息区域
+ * - 下方：可收缩/展开的作品信息区域
  * 
  * 支持列表上下文导航：
  * - 当提供 artworkIds 和 initialIndex 时，支持左右滑动浏览列表中的其他作品
@@ -104,8 +106,8 @@ data class ArtworkDetailScreen(
             }
         }
         
-        // 处理返回逻辑（统一处理按钮返回和系统返回）
-        val handleBack: () -> Unit = {
+        // 退出页面的处理逻辑（左上角返回按钮使用）
+        val handleExit: () -> Unit = {
             val currentIndex = viewModel.getCurrentIndex()
             context?.onReturnWithIndex?.invoke(currentIndex)
             // 清理上下文
@@ -115,28 +117,54 @@ data class ArtworkDetailScreen(
             navigator.pop()
         }
         
+        // 系统返回键的处理逻辑
+        val handleSystemBack: () -> Unit = {
+            if (state.isInfoExpanded) {
+                // 展开状态下，先收起信息区域
+                viewModel.toggleInfoExpanded()
+            } else {
+                // 收缩状态下，直接退出页面
+                handleExit()
+            }
+        }
+        
         // 页面销毁时清理上下文（防止内存泄漏）
         DisposableEffect(contextKey) {
             onDispose {
                 // 注意：这里不清理，因为可能是配置变化导致的重组
-                // 清理在 handleBack 中进行
+                // 清理在 handleExit 中进行
             }
         }
         
         // 拦截系统返回键和手势返回
-        PlatformBackHandler(enabled = true, onBack = handleBack)
+        PlatformBackHandler(enabled = true, onBack = handleSystemBack)
         
         ArtworkDetailContent(
             state = state,
-            onBackClick = handleBack,
+            onBackClick = handleExit,  // 左上角返回按钮直接退出
             onPageChange = { index -> viewModel.onPageChanged(index) },
             onRetry = { viewModel.retry() },
+            onExpandInfo = { viewModel.expandInfo() },
+            onCollapseInfo = { viewModel.collapseInfo() },
             onUserClick = { userId ->
                 navigator.push(UserScreen(userId))
             },
             onSeriesClick = { seriesId ->
                 navigator.push(MangaSeriesScreen(seriesId))
-            }
+            },
+            onCommentClick = {
+                state.artwork?.let { artwork ->
+                    navigator.push(
+                        CommentsScreen(
+                            contentId = artwork.id,
+                            contentType = CommentContentType.ILLUST,
+                            contentTitle = artwork.title
+                        )
+                    )
+                }
+            },
+            onSimilarClick = null,  // 暂未实现
+            onDownloadClick = null  // 暂未实现
         )
     }
 }

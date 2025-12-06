@@ -143,7 +143,8 @@ class ArtworkDetailViewModel(
             return
         }
         
-        _state.update { it.copy(currentIndex = newIndex) }
+        // 翻页时重置展开状态为折叠
+        _state.update { it.copy(currentIndex = newIndex, isInfoExpanded = false) }
         
         // 从缓存加载或异步加载
         val artworkId = artworkIds[newIndex]
@@ -411,6 +412,27 @@ class ArtworkDetailViewModel(
      * 获取当前索引（用于返回时定位）
      */
     fun getCurrentIndex(): Int = _state.value.currentIndex
+    
+    /**
+     * 切换信息区域展开/收起状态
+     */
+    fun toggleInfoExpanded() {
+        _state.update { it.copy(isInfoExpanded = !it.isInfoExpanded) }
+    }
+    
+    /**
+     * 展开信息区域
+     */
+    fun expandInfo() {
+        _state.update { it.copy(isInfoExpanded = true) }
+    }
+    
+    /**
+     * 收起信息区域
+     */
+    fun collapseInfo() {
+        _state.update { it.copy(isInfoExpanded = false) }
+    }
 }
 
 /**
@@ -423,6 +445,7 @@ class ArtworkDetailViewModel(
  * @param artworkIds 作品ID列表（列表导航模式）
  * @param currentIndex 当前作品在列表中的索引
  * @param artworkCache 已加载的作品缓存（artworkId -> Artwork）
+ * @param isInfoExpanded 作品信息区域是否展开
  */
 data class ArtworkDetailState(
     val artwork: Artwork? = null,
@@ -431,5 +454,6 @@ data class ArtworkDetailState(
     val error: String? = null,
     val artworkIds: List<String> = emptyList(),
     val currentIndex: Int = 0,
-    val artworkCache: Map<String, Artwork> = emptyMap()
+    val artworkCache: Map<String, Artwork> = emptyMap(),
+    val isInfoExpanded: Boolean = false
 )

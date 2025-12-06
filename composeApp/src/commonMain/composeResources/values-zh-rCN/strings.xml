@@ -305,6 +305,24 @@
     <string name="novel_expand">展开</string>
     <string name="novel_friends_only">好P友限定</string>
     <string name="novel_friends_only_desc">此内容仅对作者的好P友可见</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_collapse">收起</string>
+    <string name="artwork_expand">展开</string>
+    <string name="artwork_stat_views">浏览</string>
+    <string name="artwork_stat_likes">点赞</string>
+    <string name="artwork_stat_bookmarks">收藏</string>
+    <string name="artwork_stat_comments">评论</string>
+    <string name="artwork_info">作品信息</string>
+    <string name="artwork_resolution">分辨率</string>
+    <string name="artwork_page_count">页数</string>
+    <string name="artwork_id">作品ID</string>
+    <string name="artwork_user_id">用户ID</string>
+    <string name="artwork_description">简介</string>
+    <string name="artwork_tags">标签</string>
+    <string name="artwork_publish_time">发布时间: %1$s</string>
+    <string name="artwork_similar">相似作品</string>
+    
         <!-- Time Format -->
     <string name="time_hours_minutes">%1$d小时%2$d分钟</string>
     <string name="time_hours">%1$d小时</string>
@@ -391,7 +409,6 @@
     <string name="user_info_can_message">可发送消息</string>
     
     <!-- Artwork -->
-    <string name="artwork_publish_time">投稿时间: %1$s</string>
     <string name="artwork_detail_empty">作品详情为空</string>
     <string name="artwork_not_bookmarked">作品未收藏</string>
     <string name="artwork_ugoira_meta_empty">Ugoira元数据为空</string>
