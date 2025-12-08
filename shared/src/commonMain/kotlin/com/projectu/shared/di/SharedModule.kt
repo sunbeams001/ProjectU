@@ -278,6 +278,15 @@ val utilModule = module {
     
     // 下载路径构建器
     single { DownloadPathBuilder(FileSystem.SYSTEM) }
+    
+    // Ugoira GIF转换器
+    single { 
+        com.projectu.shared.data.util.UgoiraGifConverter(
+            httpClient = get(),
+            fileSystem = FileSystem.SYSTEM,
+            ugoiraCache = get()
+        )
+    }
 }
 
 /**
@@ -296,7 +305,8 @@ fun downloadModule(cachedFileProvider: com.projectu.shared.data.manager.CachedFi
             httpClient = get(),
             cachedFileProvider = cachedFileProvider,
             settingsCache = get(),
-            downloadRulesCache = get()
+            downloadRulesCache = get(),
+            ugoiraGifConverter = get()
         )
     }
 }

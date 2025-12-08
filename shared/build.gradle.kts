@@ -45,6 +45,9 @@ kotlin {
             
             // Okio文件处理
             implementation(libs.okio)
+            
+            // GIF.kt - GIF编解码
+            implementation(libs.gifkt)
         }
         
         androidMain.dependencies {

@@ -44,6 +44,13 @@ interface DownloadRepository {
     suspend fun addIllustrationDownload(illustId: Long, pageIndex: Int? = null): Result<String>
     
     /**
+     * 添加Ugoira动图下载任务
+     * @param artwork 作品对象（必须是UGOIRA类型）
+     * @return 任务ID
+     */
+    suspend fun addUgoiraDownload(artwork: Artwork): Result<String>
+    
+    /**
      * 开始下载任务
      */
     suspend fun startDownload(taskId: String)

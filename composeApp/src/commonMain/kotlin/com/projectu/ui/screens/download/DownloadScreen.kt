@@ -191,9 +191,10 @@ private fun DownloadTaskItem(
             modifier = Modifier.padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 缩略图（仅插画和漫画显示）
+            // 缩略图（插画、漫画和动图显示）
             if (task.resourceType == ResourceType.ILLUSTRATION || 
-                task.resourceType == ResourceType.MANGA) {
+                task.resourceType == ResourceType.MANGA ||
+                task.resourceType == ResourceType.UGOIRA) {
                 Box(
                     modifier = Modifier
                         .size(80.dp)

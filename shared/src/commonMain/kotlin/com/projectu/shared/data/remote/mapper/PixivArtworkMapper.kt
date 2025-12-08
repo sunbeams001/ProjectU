@@ -56,7 +56,7 @@ fun IllustDetailBody.toArtwork(ageLimitDeterminer: AgeLimitDeterminer): Artwork 
                 PageImageUrls(
                     page = 0,  // 单页作品页码为 0
                     urls = ImageUrls(
-                        mini = null,                      // 详情接口不提供 mini
+                        mini = this.urls.mini,           // 48x48 缩略图
                         squareMedium = this.urls.thumb,  // 250x250 custom-thumb
                         medium = null,                    // 详情接口不提供 360x360
                         large = this.urls.small,         // 540x540

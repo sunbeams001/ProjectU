@@ -36,6 +36,10 @@ class DownloadRepositoryImpl(
         return downloadManager.addIllustrationDownloadTask(illustId, pageIndex)
     }
     
+    override suspend fun addUgoiraDownload(artwork: Artwork): Result<String> {
+        return downloadManager.addUgoiraDownloadTask(artwork)
+    }
+    
     override suspend fun startDownload(taskId: String) {
         downloadManager.startDownload(taskId)
     }

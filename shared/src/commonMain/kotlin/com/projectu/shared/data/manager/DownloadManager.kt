@@ -6,8 +6,10 @@ import com.projectu.shared.data.local.dao.DownloadDao
 import com.projectu.shared.data.local.entity.toDownloadTask
 import com.projectu.shared.data.local.entity.toEntity
 import com.projectu.shared.data.remote.api.PixivApi
+import com.projectu.shared.data.remote.mapper.toUgoiraMetadata
 import com.projectu.shared.data.util.DownloadPathBuilder
 import com.projectu.shared.data.util.PlatformFileWriter
+import com.projectu.shared.data.util.UgoiraGifConverter
 import com.projectu.shared.domain.model.DownloadStatus
 import com.projectu.shared.domain.model.DownloadTask
 import com.projectu.shared.domain.model.ResourceType
@@ -58,6 +60,7 @@ class DownloadManager(
     private val cachedFileProvider: CachedFileProvider?,
     private val settingsCache: SettingsCache,
     private val downloadRulesCache: DownloadRulesCache,
+    private val ugoiraGifConverter: UgoiraGifConverter,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 ) {
     
@@ -452,11 +455,99 @@ class DownloadManager(
     }
     
     /**
-     * 下载Ugoira（暂时不实现，留待后续）
+     * 下载Ugoira并转换为GIF
      */
-    private suspend fun downloadUgoira(task: DownloadTask) {
-        // TODO: 实现Ugoira下载和GIF转换
-        throw NotImplementedError("Ugoira download not yet implemented")
+    private suspend fun downloadUgoira(task: DownloadTask) = withContext(Dispatchers.IO) {
+        // 1. 尝试从缓存加载元数据，如果不存在则从 API 获取
+        val metadata = ugoiraGifConverter.ugoiraCache.loadMetadata(task.resourceId)
+            ?: run {
+                // 从 API 获取元数据
+                val metadataResult = pixivApi.illustApi.getUgoiraMeta(task.resourceId.toLong())
+                if (metadataResult.error) {
+                    throw Exception(metadataResult.message ?: "Failed to get Ugoira metadata")
+                }
+                val metadataBody = metadataResult.body 
+                    ?: throw IllegalStateException("Ugoira metadata is null")
+                
+                // 转换为领域模型
+                val newMetadata = metadataBody.toUgoiraMetadata()
+                
+                // 保存到缓存以便下次使用
+                ugoiraGifConverter.ugoiraCache.saveMetadata(task.resourceId, newMetadata)
+                
+                newMetadata
+            }
+        
+        // 2. 使用规则系统获取目标路径
+        val rule = downloadRulesCache.findMatchingRule(task)
+        val baseDownloadPath = rule.targetPath
+        val relativePath = rule.buildRelativePath(task)
+        val fileName = task.fileName
+        
+        // 确保目录存在
+        platformFileWriter.ensureDirectoryExists(baseDownloadPath, relativePath)
+        
+        // 3. 使用 UgoiraGifConverter 转换为 GIF 字节数组（会自动使用缓存）
+        val gifBytes = ugoiraGifConverter.convertToGif(
+            artworkId = task.resourceId,
+            metadata = metadata,
+            onProgress = { current, total ->
+                // 更新进度（转换过程）
+                val progress = current.toFloat() / total
+                coroutineScope.launch {
+                    downloadDao.updateTaskProgress(task.id, progress, 0L)
+                }
+            }
+        )
+        
+        // 4. 使用 PlatformFileWriter 写入文件（支持 Content URI）
+        val sink = platformFileWriter.createSinkFromUri(baseDownloadPath, relativePath, fileName)
+        sink.buffer().use { bufferedSink ->
+            bufferedSink.write(gifBytes)
+        }
+    }
+    
+    /**
+     * 添加Ugoira动图下载任务
+     * @param artwork 作品对象（必须是UGOIRA类型）
+     */
+    suspend fun addUgoiraDownloadTask(
+        artwork: com.projectu.shared.domain.model.Artwork
+    ): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            // 验证作品类型
+            if (artwork.type != com.projectu.shared.domain.model.ArtworkType.UGOIRA) {
+                return@withContext Result.failure(IllegalArgumentException("Artwork is not a Ugoira"))
+            }
+            
+            // 获取缩略图 URL
+            val thumbnailUrl = artwork.imageUrls.pages.firstOrNull()?.urls?.squareMedium
+            
+            // 创建下载任务
+            val taskId = createDownloadTask(
+                resourceType = ResourceType.UGOIRA,
+                resourceId = artwork.id,
+                title = artwork.title,
+                authorId = artwork.userId,
+                authorName = artwork.userName,
+                pageIndex = null,
+                totalPages = 1,
+                isR18 = artwork.ageLimit == com.projectu.shared.domain.model.AgeLimit.R18 || 
+                        artwork.ageLimit == com.projectu.shared.domain.model.AgeLimit.R18G,
+                isAi = artwork.isAiGenerated,
+                tags = artwork.tags.map { it.name },
+                publishTime = System.currentTimeMillis(),
+                thumbnailUrl = thumbnailUrl
+            )
+            
+            // 自动开始下载
+            startDownload(taskId)
+            
+            Result.success(taskId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
     }
     
     /**
