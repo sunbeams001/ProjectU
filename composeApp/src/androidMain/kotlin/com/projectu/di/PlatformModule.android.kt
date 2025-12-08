@@ -2,11 +2,13 @@ package com.projectu.di
 
 import com.projectu.shared.data.cache.UgoiraCache
 import com.projectu.shared.data.local.SettingsStore
+import com.projectu.shared.data.local.dao.DownloadDao
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.database.AppDatabase
 import com.projectu.shared.data.local.database.getDatabaseBuilder
 import com.projectu.shared.data.local.database.getRoomDatabase
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
+import com.projectu.shared.di.downloadModule
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
 import com.projectu.ui.components.UgoiraLoaderManager
@@ -42,6 +44,8 @@ actual val databaseModule: Module = module {
     
     // DAO
     single<SettingsDao> { get<AppDatabase>().settingsDao() }
+    single<DownloadDao> { get<AppDatabase>().downloadDao() }
+    single { get<AppDatabase>().downloadRulesDao() }
     
     // 设置存储
     single { SettingsStore(get()) }
@@ -79,6 +83,12 @@ actual val viewModelModule: Module = module {
     
     // API 测试 ViewModel
     viewModel { ApiTestViewModel(get(), get()) }
+    
+    // 下载 ViewModel
+    viewModel { com.projectu.ui.screens.download.DownloadViewModel(get()) }
+    
+    // 下载规则管理 ViewModel
+    viewModel { com.projectu.presentation.settings.download.DownloadRulesViewModel(get()) }
     
     // 发现插画 ScreenModel
     single { DiscoveryIllustsViewModel(get(), get(), get()) }

@@ -53,6 +53,11 @@ data class SettingsEntity(
     val imageCacheSize: String = "MEDIUM",
     
     /**
+     * 下载基础路径
+     */
+    val baseDownloadPath: String = "",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -69,7 +74,8 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = this.preferredImageQuality.name,
         detailImageQuality = this.detailImageQuality.name,
-        imageCacheSize = this.imageCacheSize.name
+        imageCacheSize = this.imageCacheSize.name,
+        baseDownloadPath = this.downloadSettings.baseDownloadPath
     )
 }
 
@@ -84,6 +90,9 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = com.projectu.shared.domain.model.ImageQuality.fromName(this.preferredImageQuality),
         detailImageQuality = com.projectu.shared.domain.model.DetailImageQuality.fromName(this.detailImageQuality),
-        imageCacheSize = com.projectu.shared.domain.model.CacheSize.fromName(this.imageCacheSize)
+        imageCacheSize = com.projectu.shared.domain.model.CacheSize.fromName(this.imageCacheSize),
+        downloadSettings = com.projectu.shared.data.local.DownloadSettings(
+            baseDownloadPath = this.baseDownloadPath.ifEmpty { com.projectu.shared.data.local.getDefaultDownloadPath() }
+        )
     )
 }

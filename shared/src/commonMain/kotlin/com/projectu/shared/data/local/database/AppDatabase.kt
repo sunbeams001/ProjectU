@@ -6,9 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.projectu.shared.data.local.dao.ArtworkDao
+import com.projectu.shared.data.local.dao.DownloadDao
+import com.projectu.shared.data.local.dao.DownloadRulesDao
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.dao.UgoiraCacheDao
 import com.projectu.shared.data.local.entity.ArtworkEntity
+import com.projectu.shared.data.local.entity.DownloadRuleEntity
+import com.projectu.shared.data.local.entity.DownloadTaskEntity
 import com.projectu.shared.data.local.entity.SettingsEntity
 import com.projectu.shared.data.local.entity.UgoiraCacheEntity
 
@@ -20,9 +24,11 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
     entities = [
         ArtworkEntity::class,
         UgoiraCacheEntity::class,
-        SettingsEntity::class
+        SettingsEntity::class,
+        DownloadTaskEntity::class,
+        DownloadRuleEntity::class
     ],
-    version = 7, // 版本7: 在SettingsEntity中添加imageCacheSize字段
+    version = 12, // 版本12: 添加 subDirectory 字段到下载规则表
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -42,6 +48,16 @@ abstract class AppDatabase : RoomDatabase() {
      * 设置数据访问对象
      */
     abstract fun settingsDao(): SettingsDao
+    
+    /**
+     * 下载任务数据访问对象
+     */
+    abstract fun downloadDao(): DownloadDao
+    
+    /**
+     * 下载规则数据访问对象
+     */
+    abstract fun downloadRulesDao(): DownloadRulesDao
 }
 
 /**

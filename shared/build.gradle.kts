@@ -50,6 +50,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.cio)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.androidx.documentfile)
         }
         
         val desktopMain by getting {

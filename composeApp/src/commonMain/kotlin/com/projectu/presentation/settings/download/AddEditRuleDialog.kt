@@ -1,0 +1,241 @@
+package com.projectu.presentation.settings.download
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.projectu.shared.domain.model.AuthorGrouping
+import com.projectu.shared.domain.model.DownloadRule
+import com.projectu.shared.domain.model.FilterType
+import com.projectu.shared.domain.model.ResourceTypeFilter
+import com.projectu.ui.util.rememberPathPicker
+
+/**
+ * 添加/编辑规则对话框
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddEditRuleDialog(
+    existingRule: DownloadRule? = null,
+    onDismiss: () -> Unit,
+    onConfirm: (
+        resourceTypeFilter: ResourceTypeFilter,
+        r18Filter: FilterType,
+        aiFilter: FilterType,
+        authorGrouping: AuthorGrouping,
+        targetPath: String
+    ) -> Unit
+) {
+    var resourceTypeFilter by remember {
+        mutableStateOf(existingRule?.resourceTypeFilter ?: ResourceTypeFilter.ANY)
+    }
+    var r18Filter by remember {
+        mutableStateOf(existingRule?.r18Filter ?: FilterType.ANY)
+    }
+    var aiFilter by remember {
+        mutableStateOf(existingRule?.aiFilter ?: FilterType.ANY)
+    }
+    var authorGrouping by remember {
+        mutableStateOf(existingRule?.authorGrouping ?: AuthorGrouping.NONE)
+    }
+    var targetPath by remember {
+        mutableStateOf(existingRule?.targetPath ?: "")
+    }
+    
+    val pathPicker = rememberPathPicker()
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(if (existingRule == null) "添加规则" else "编辑规则") },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // 资源类型选择
+                Text(
+                    text = "资源类型",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                ResourceTypeFilterSelector(
+                    selected = resourceTypeFilter,
+                    onSelect = { resourceTypeFilter = it }
+                )
+                
+                // R-18 过滤
+                Text(
+                    text = "R-18 过滤",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                FilterTypeSelector(
+                    selected = r18Filter,
+                    onSelect = { r18Filter = it }
+                )
+                
+                // AI 生成过滤
+                Text(
+                    text = "AI 生成过滤",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                FilterTypeSelector(
+                    selected = aiFilter,
+                    onSelect = { aiFilter = it }
+                )
+                
+                // 作者分组
+                Text(
+                    text = "作者分组",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                AuthorGroupingSelector(
+                    selected = authorGrouping,
+                    onSelect = { authorGrouping = it }
+                )
+                
+                // 目标路径
+                Text(
+                    text = "保存路径",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                OutlinedButton(
+                    onClick = {
+                        pathPicker.pickDirectory(
+                            initialPath = targetPath.ifEmpty { null }
+                        ) { selectedPath ->
+                            selectedPath?.let { targetPath = it }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Folder,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = targetPath.ifEmpty { "点击选择路径" },
+                        modifier = Modifier.weight(1f),
+                        maxLines = 2
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (targetPath.isNotBlank()) {
+                        onConfirm(resourceTypeFilter, r18Filter, aiFilter, authorGrouping, targetPath)
+                    }
+                },
+                enabled = targetPath.isNotBlank()
+            ) {
+                Text("确定")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
+}
+
+/**
+ * 资源类型选择器
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ResourceTypeFilterSelector(
+    selected: ResourceTypeFilter,
+    onSelect: (ResourceTypeFilter) -> Unit
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        ResourceTypeFilter.entries.forEach { type ->
+            FilterChip(
+                selected = selected == type,
+                onClick = { onSelect(type) },
+                label = {
+                    Text(
+                        when (type) {
+                            ResourceTypeFilter.ILLUSTRATION -> "插画"
+                            ResourceTypeFilter.MANGA -> "漫画"
+                            ResourceTypeFilter.UGOIRA -> "动图"
+                            ResourceTypeFilter.NOVEL -> "小说"
+                            ResourceTypeFilter.NOVEL_SERIES -> "小说系列"
+                            ResourceTypeFilter.ANY -> "任意类型"
+                        }
+                    )
+                }
+            )
+        }
+    }
+}
+
+/**
+ * 过滤器类型选择器
+ */
+@Composable
+private fun FilterTypeSelector(
+    selected: FilterType,
+    onSelect: (FilterType) -> Unit
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FilterType.entries.forEach { type ->
+            FilterChip(
+                selected = selected == type,
+                onClick = { onSelect(type) },
+                label = {
+                    Text(
+                        when (type) {
+                            FilterType.MUST_BE -> "必须是"
+                            FilterType.MUST_NOT_BE -> "必须不是"
+                            FilterType.ANY -> "任意"
+                        }
+                    )
+                }
+            )
+        }
+    }
+}
+
+/**
+ * 作者分组选择器
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AuthorGroupingSelector(
+    selected: AuthorGrouping,
+    onSelect: (AuthorGrouping) -> Unit
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        AuthorGrouping.entries.forEach { grouping ->
+            FilterChip(
+                selected = selected == grouping,
+                onClick = { onSelect(grouping) },
+                label = {
+                    Text(
+                        when (grouping) {
+                            AuthorGrouping.BY_ID -> "按作者ID分组"
+                            AuthorGrouping.BY_NAME -> "按作者名分组"
+                            AuthorGrouping.NONE -> "不分组"
+                        }
+                    )
+                }
+            )
+        }
+    }
+}

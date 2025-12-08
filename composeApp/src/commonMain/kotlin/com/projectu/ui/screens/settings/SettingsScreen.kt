@@ -27,6 +27,7 @@ import com.projectu.shared.domain.model.DetailImageQuality
 import com.projectu.ui.util.CacheDetails
 import com.projectu.ui.util.ImageCacheManager
 import com.projectu.ui.util.LocalImageCacheManager
+import com.projectu.ui.util.rememberPathPicker
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.Res
@@ -128,6 +129,9 @@ class SettingsScreen : Screen {
         val currentCacheSize by cacheManager.currentCacheSize.collectAsState()
         val cacheDetails by cacheManager.cacheDetails.collectAsState()
         
+        // 下载设置
+        val downloadSettings = settings.downloadSettings
+        
         // 初始化时刷新缓存大小
         LaunchedEffect(Unit) {
             cacheManager.refreshCacheSize()
@@ -147,6 +151,8 @@ class SettingsScreen : Screen {
             currentCacheSizeBytes = currentCacheSize,
             cacheDetails = cacheDetails,
             maxCacheSizeBytes = cacheManager.maxCacheSize,
+            currentBaseDownloadPath = downloadSettings.baseDownloadPath,
+            navigator = navigator,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
             onThemeModeChange = { viewModel.updateThemeMode(it) },
@@ -158,7 +164,8 @@ class SettingsScreen : Screen {
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
             onNavigateBack = { navigator.pop() },
-            onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) }
+            onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) },
+            onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) }
         )
     }
 }
@@ -179,6 +186,8 @@ private fun SettingsScreenContent(
     currentCacheSizeBytes: Long,
     cacheDetails: CacheDetails,
     maxCacheSizeBytes: Long,
+    currentBaseDownloadPath: String,
+    navigator: cafe.adriel.voyager.navigator.Navigator,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
@@ -190,7 +199,8 @@ private fun SettingsScreenContent(
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
     onNavigateBack: () -> Unit,
-    onNavigateToApiTest: () -> Unit = {}
+    onNavigateToApiTest: () -> Unit = {},
+    onBaseDownloadPathChange: (String) -> Unit
 ) {
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
@@ -202,6 +212,8 @@ private fun SettingsScreenContent(
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showCacheSizeDialog by remember { mutableStateOf(false) }
     var showClearCacheConfirmDialog by remember { mutableStateOf(false) }
+    
+    val pathPicker = rememberPathPicker()
     
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -363,6 +375,47 @@ private fun SettingsScreenContent(
                     subtitle = stringResource(Res.string.settings_api_test_subtitle),
                     description = stringResource(Res.string.settings_api_test_desc),
                     onClick = onNavigateToApiTest
+                )
+            }
+            
+            // 下载设置分组
+            item {
+                SettingsGroupHeader(title = "下载设置")
+            }
+            
+            // 下载路径设置
+            item {
+                SettingsItem(
+                    title = "下载路径",
+                    subtitle = currentBaseDownloadPath.ifEmpty { "使用默认路径" },
+                    description = "设置作品下载保存的基础路径",
+                    onClick = {
+                        pathPicker.pickDirectory(
+                            initialPath = currentBaseDownloadPath.ifEmpty { null }
+                        ) { selectedPath ->
+                            selectedPath?.let { onBaseDownloadPathChange(it) }
+                        }
+                    }
+                )
+            }
+            
+            // 下载管理
+            item {
+                SettingsItem(
+                    title = "下载管理",
+                    subtitle = "管理下载任务",
+                    description = "查看和管理所有下载任务",
+                    onClick = { navigator.push(com.projectu.ui.screens.download.DownloadScreen()) }
+                )
+            }
+            
+            // 下载规则管理
+            item {
+                SettingsItem(
+                    title = "下载路径规则",
+                    subtitle = "自定义下载路径规则",
+                    description = "根据资源类型、R-18、AI 等条件自动分类保存",
+                    onClick = { navigator.push(com.projectu.presentation.settings.download.DownloadRulesScreen()) }
                 )
             }
             

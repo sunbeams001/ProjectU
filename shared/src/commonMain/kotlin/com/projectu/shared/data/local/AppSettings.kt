@@ -59,7 +59,13 @@ data class AppSettings(
      * 用于控制 Coil 图片缓存的磁盘空间占用
      * 默认：MEDIUM (512MB)
      */
-    val imageCacheSize: CacheSize = CacheSize.DEFAULT
+    val imageCacheSize: CacheSize = CacheSize.DEFAULT,
+    
+    /**
+     * 下载设置
+     * 包含下载路径、文件命名等配置
+     */
+    val downloadSettings: DownloadSettings = DownloadSettings.DEFAULT
 ) {
     companion object {
         /**

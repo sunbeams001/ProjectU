@@ -104,6 +104,15 @@ class SettingsViewModel(
     }
     
     /**
+     * 更新下载基础路径
+     */
+    fun updateBaseDownloadPath(path: String) {
+        viewModelScope.launch {
+            settingsRepository.updateBaseDownloadPath(path)
+        }
+    }
+    
+    /**
      * 重置设置
      */
     fun resetSettings() {

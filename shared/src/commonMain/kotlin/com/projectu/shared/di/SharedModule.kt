@@ -1,17 +1,23 @@
 package com.projectu.shared.di
 
 import com.projectu.shared.data.cache.ArtworkCacheManager
+import com.projectu.shared.data.cache.DownloadRulesCache
 import com.projectu.shared.data.cache.NovelCacheManager
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.createPixivConfigDataStore
+import com.projectu.shared.data.local.store.DownloadRulesStore
+import com.projectu.shared.data.manager.DownloadManager
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.api.PixivApiClient
 import com.projectu.shared.data.repository.ArtworkRepositoryImpl
 import com.projectu.shared.data.repository.AuthRepositoryImpl
 import com.projectu.shared.data.repository.CommentRepositoryImpl
+import com.projectu.shared.data.repository.DownloadRepositoryImpl
+import com.projectu.shared.data.repository.DownloadRulesRepository
+import com.projectu.shared.data.repository.DownloadRulesRepositoryImpl
 import com.projectu.shared.data.repository.MangaSeriesRepositoryImpl
 import com.projectu.shared.data.repository.NovelRepositoryImpl
 import com.projectu.shared.data.repository.NovelSeriesRepositoryImpl
@@ -19,9 +25,11 @@ import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.data.repository.StateCacheRepositoryInMemory
 import com.projectu.shared.data.repository.UserRepositoryImpl
 import com.projectu.shared.data.repository.WatchListRepositoryImpl
+import com.projectu.shared.data.util.DownloadPathBuilder
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.CommentRepository
+import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.shared.domain.repository.MangaSeriesRepository
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.domain.repository.NovelSeriesRepository
@@ -44,7 +52,9 @@ import com.projectu.shared.util.AgeLimitDeterminer
 import com.projectu.shared.util.TagTranslationUtil
 import io.ktor.client.*
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import okio.FileSystem
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -76,6 +86,11 @@ val dataStoreModule = module {
     // 应用设置缓存（统一配置缓存管理）
     single {
         SettingsCache(get())
+    }
+    
+    // 下载规则存储
+    single {
+        DownloadRulesStore(get())
     }
 }
 
@@ -185,6 +200,16 @@ val repositoryModule = module {
     single<StateCacheRepository> {
         StateCacheRepositoryInMemory()
     }
+    
+    // 下载仓储
+    single<DownloadRepository> {
+        DownloadRepositoryImpl(get())
+    }
+    
+    // 下载规则仓储
+    single<DownloadRulesRepository> {
+        DownloadRulesRepositoryImpl(get())
+    }
 }
 
 /**
@@ -206,6 +231,14 @@ val stateCacheModule = module {
     // 全局小说缓存管理器
     single {
         NovelCacheManager()
+    }
+    
+    // 下载规则缓存（动态获取 baseDownloadPath）
+    single {
+        DownloadRulesCache(
+            downloadRulesStore = get(),
+            baseDownloadPathProvider = { get<SettingsCache>().getBaseDownloadPath() }
+        )
     }
 }
 
@@ -242,4 +275,28 @@ val utilModule = module {
     
     // 年龄限制判定工具
     single { AgeLimitDeterminer(get()) }
+    
+    // 下载路径构建器
+    single { DownloadPathBuilder(FileSystem.SYSTEM) }
+}
+
+/**
+ * 下载管理模块
+ * cachedFileProvider是可选的，用于从UI层的图片缓存复用文件
+ */
+fun downloadModule(cachedFileProvider: com.projectu.shared.data.manager.CachedFileProvider? = null) = module {
+    // 下载管理器
+    single {
+        com.projectu.shared.data.manager.DownloadManager(
+            pixivApi = get(),
+            downloadDao = get(),
+            pathBuilder = get(),
+            fileSystem = FileSystem.SYSTEM,
+            platformFileWriter = get(),
+            httpClient = get(),
+            cachedFileProvider = cachedFileProvider,
+            settingsCache = get(),
+            downloadRulesCache = get()
+        )
+    }
 }

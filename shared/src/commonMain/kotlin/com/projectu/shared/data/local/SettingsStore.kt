@@ -101,6 +101,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置下载基础路径
+     */
+    suspend fun setBaseDownloadPath(path: String) {
+        settingsDao.updateBaseDownloadPath(path)
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

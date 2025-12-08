@@ -58,6 +58,13 @@ class SettingsCache(
     private val _detailImageQuality = MutableStateFlow(DetailImageQuality.LARGE)
     val detailImageQuality: StateFlow<DetailImageQuality> = _detailImageQuality.asStateFlow()
     
+    /**
+     * 下载基础路径缓存
+     * 用于下载管理器中快速获取下载路径（高频访问 - 每次下载都需要）
+     */
+    private val _baseDownloadPath = MutableStateFlow("")
+    val baseDownloadPath: StateFlow<String> = _baseDownloadPath.asStateFlow()
+    
     // TODO: 后续添加更多配置项缓存
     // private val _someOtherConfig = MutableStateFlow(defaultValue)
     // val someOtherConfig: StateFlow<Type> = _someOtherConfig.asStateFlow()
@@ -71,6 +78,7 @@ class SettingsCache(
                 _r18SanityLevelThreshold.value = settings.r18SanityLevelThreshold
                 _preferredImageQuality.value = settings.preferredImageQuality
                 _detailImageQuality.value = settings.detailImageQuality
+                _baseDownloadPath.value = settings.downloadSettings.baseDownloadPath
                 
                 // TODO: 后续添加更多字段的同步
                 // _someOtherConfig.value = settings.someOtherConfig
@@ -115,6 +123,18 @@ class SettingsCache(
      */
     fun getDetailImageQuality(): DetailImageQuality {
         return _detailImageQuality.value
+    }
+    
+    /**
+     * 获取当前下载基础路径（同步方法，使用内存缓存）
+     * 用于 DownloadManager 等组件快速获取下载路径设置
+     * 
+     * 性能说明：
+     * - 在大量下载场景下（批量下载50+作品），每个任务都需要获取路径
+     * - 使用内存缓存避免每次都查询数据库，显著提升性能
+     */
+    fun getBaseDownloadPath(): String {
+        return _baseDownloadPath.value
     }
     
     // TODO: 后续添加更多配置项的 getter

@@ -54,6 +54,10 @@ class SettingsRepositoryImpl(
         settingsStore.setImageCacheSize(size)
     }
     
+    override suspend fun updateBaseDownloadPath(path: String) {
+        settingsStore.setBaseDownloadPath(path)
+    }
+    
     override suspend fun updateSettings(settings: AppSettings) {
         settingsStore.updateSettings(settings)
     }

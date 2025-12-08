@@ -3,6 +3,16 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- 存储权限 - Android 10 以下需要 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    
+    <!-- Android 13+ 图片/视频权限 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application
         android:name=".PixivApplication"
@@ -10,7 +20,9 @@
         android:icon="@android:drawable/ic_menu_gallery"
         android:label="ProjectU"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ProjectU.Splash">
+        android:theme="@style/Theme.ProjectU.Splash"
+        android:requestLegacyExternalStorage="true">
+        <!-- requestLegacyExternalStorage: Android 10 临时兼容旧存储模式 -->
         
         <activity
             android:name=".MainActivity"

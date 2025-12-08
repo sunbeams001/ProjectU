@@ -76,6 +76,12 @@ interface SettingsDao {
     suspend fun updateImageCacheSize(size: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新下载基础路径
+     */
+    @Query("UPDATE app_settings SET baseDownloadPath = :path, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateBaseDownloadPath(path: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

@@ -1,0 +1,361 @@
+package com.projectu.shared.data.util
+
+import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.documentfile.provider.DocumentFile
+import okio.Path
+import okio.Path.Companion.toPath
+import okio.Sink
+import okio.sink
+import java.io.File
+
+/**
+ * Android 平台的文件写入器
+ * 根据项目配置 (minSdk=24, targetSdk=36) 使用不同的存储策略：
+ * - Android 7-9 (API 24-28): 传统外部存储 + WRITE_EXTERNAL_STORAGE 权限
+ * - Android 10-12 (API 29-32): MediaStore API (分区存储)
+ * - Android 13+ (API 33+): MediaStore API + READ_MEDIA_IMAGES 权限
+ */
+class AndroidFileWriter(
+    private val context: Context
+) : PlatformFileWriter {
+    
+    override suspend fun createSink(path: Path, displayName: String): Sink {
+        return when {
+            // Android 10+ (API 29+): 强制分区存储，使用 MediaStore API
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                createMediaStoreSink(path, displayName)
+            }
+            // Android 7-9 (API 24-28): 传统存储方式
+            else -> {
+                createLegacySink(path)
+            }
+        }
+    }
+    
+    /**
+     * 从 SAF URI 创建文件输出流
+     * 使用 DocumentFile API 处理 content:// URI
+     */
+    override suspend fun createSinkFromUri(baseUri: String, relativePath: String, fileName: String): Sink {
+        if (!baseUri.startsWith("content://")) {
+            // 如果不是 content:// URI，回退到传统路径处理
+            val fullPath = "$baseUri/$relativePath/$fileName"
+            return createLegacySink(fullPath.toPath())
+        }
+        
+        val baseDocumentFile = DocumentFile.fromTreeUri(context, Uri.parse(baseUri))
+            ?: throw IllegalStateException("Failed to access directory: $baseUri")
+        
+        // 创建子目录结构
+        val targetDir = ensureDocumentDirectoryExists(baseDocumentFile, relativePath)
+        
+        // 删除可能存在的同名文件
+        targetDir.findFile(fileName)?.delete()
+        
+        // 确定 MIME 类型
+        val mimeType = getMimeType(fileName)
+        
+        // 创建文件
+        val file = targetDir.createFile(mimeType, fileName)
+            ?: throw IllegalStateException("Failed to create file: $fileName in $relativePath")
+        
+        val outputStream = context.contentResolver.openOutputStream(file.uri)
+            ?: throw IllegalStateException("Failed to open output stream for ${file.uri}")
+        
+        return outputStream.sink()
+    }
+    
+    /**
+     * 确保 DocumentFile 目录存在
+     * 递归创建子目录
+     */
+    private fun ensureDocumentDirectoryExists(baseDir: DocumentFile, relativePath: String): DocumentFile {
+        if (relativePath.isEmpty() || relativePath == ".") {
+            return baseDir
+        }
+        
+        val parts = relativePath.split("/").filter { it.isNotEmpty() }
+        var currentDir = baseDir
+        
+        for (part in parts) {
+            val existing = currentDir.findFile(part)
+            currentDir = if (existing != null && existing.isDirectory) {
+                existing
+            } else {
+                currentDir.createDirectory(part)
+                    ?: throw IllegalStateException("Failed to create directory: $part")
+            }
+        }
+        
+        return currentDir
+    }
+    
+    /**
+     * 确保目录存在（支持 URI）
+     */
+    override suspend fun ensureDirectoryExists(baseUri: String, relativePath: String) {
+        if (baseUri.startsWith("content://")) {
+            // 使用 DocumentFile API
+            val baseDocumentFile = DocumentFile.fromTreeUri(context, Uri.parse(baseUri))
+                ?: throw IllegalStateException("Failed to access directory: $baseUri")
+            ensureDocumentDirectoryExists(baseDocumentFile, relativePath)
+        } else {
+            // 传统文件系统
+            val dir = File("$baseUri/$relativePath")
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+        }
+    }
+    
+    /**
+     * Android 7-9: 传统文件系统访问
+     * 需要 WRITE_EXTERNAL_STORAGE 权限
+     */
+    private fun createLegacySink(path: Path): Sink {
+        val file = File(path.toString())
+        
+        // 确保父目录存在
+        file.parentFile?.let { parent ->
+            if (!parent.exists()) {
+                parent.mkdirs()
+            }
+        }
+        
+        return file.sink()
+    }
+    
+    /**
+     * Android 10+: MediaStore API
+     * 自动处理分区存储，无需 WRITE_EXTERNAL_STORAGE 权限
+     */
+    private fun createMediaStoreSink(path: Path, displayName: String): Sink {
+        val relativePath = extractRelativePath(path)
+        val mimeType = getMimeType(displayName)
+        
+        // 先尝试删除可能存在的同名文件（避免重复记录）
+        deleteMediaStoreFileByName(displayName, relativePath)
+        
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+            put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+            
+            // IS_PENDING: 写入过程中对其他应用不可见，写入完成后才显示
+            put(MediaStore.MediaColumns.IS_PENDING, 1)
+        }
+        
+        // 根据 MIME 类型选择合适的 MediaStore 集合
+        val collection = when {
+            mimeType.startsWith("image/") -> {
+                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            }
+            mimeType.startsWith("video/") -> {
+                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            }
+            else -> {
+                // 其他文件类型使用 Downloads 集合
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                } else {
+                    MediaStore.Files.getContentUri("external")
+                }
+            }
+        }
+        
+        val uri = context.contentResolver.insert(collection, contentValues)
+            ?: throw IllegalStateException("Failed to create MediaStore entry for $displayName")
+        
+        val outputStream = context.contentResolver.openOutputStream(uri)
+            ?: throw IllegalStateException("Failed to open output stream for $uri")
+        
+        return MediaStoreSink(outputStream.sink(), uri, context)
+    }
+    
+    /**
+     * 从完整路径提取相对路径
+     * 例如: /storage/emulated/0/Pictures/ProjectU/Illustrations/xxx.jpg 
+     *      -> Pictures/ProjectU/Illustrations
+     */
+    private fun extractRelativePath(path: Path): String {
+        val pathStr = path.toString()
+        val dirPath = pathStr.substringBeforeLast('/')
+        
+        return when {
+            dirPath.contains("/Pictures/") -> {
+                "Pictures/" + dirPath.substringAfter("/Pictures/")
+            }
+            dirPath.contains("/Download/") || dirPath.contains("/Downloads/") -> {
+                Environment.DIRECTORY_DOWNLOADS + "/" + 
+                    (dirPath.substringAfter("/Download/", "")
+                        .ifEmpty { dirPath.substringAfter("/Downloads/") })
+            }
+            dirPath.contains("/DCIM/") -> {
+                Environment.DIRECTORY_DCIM + "/" + dirPath.substringAfter("/DCIM/")
+            }
+            else -> {
+                // 默认使用 Pictures
+                "Pictures/" + dirPath.substringAfterLast('/')
+            }
+        }
+    }
+    
+    private fun getMimeType(fileName: String): String {
+        return when (fileName.substringAfterLast('.', "").lowercase()) {
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "gif" -> "image/gif"
+            "webp" -> "image/webp"
+            "mp4" -> "video/mp4"
+            "webm" -> "video/webm"
+            "txt" -> "text/plain"
+            "zip" -> "application/zip"
+            else -> "application/octet-stream"
+        }
+    }
+    
+    override suspend fun moveFile(source: Path, destination: Path) {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                // MediaStore 不支持直接移动文件
+                // 如果需要此功能，应在下载时直接使用最终文件名
+                throw UnsupportedOperationException(
+                    "MediaStore does not support file move. Use createSink with final name instead."
+                )
+            }
+            else -> {
+                val sourceFile = File(source.toString())
+                val destFile = File(destination.toString())
+                destFile.parentFile?.mkdirs()
+                
+                if (!sourceFile.renameTo(destFile)) {
+                    throw IllegalStateException("Failed to move file from $source to $destination")
+                }
+            }
+        }
+    }
+    
+    override suspend fun deleteFile(path: Path): Boolean {
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                deleteMediaStoreFile(path)
+            }
+            else -> {
+                deleteLegacyFile(path)
+            }
+        }
+    }
+    
+    /**
+     * Android 7-9: 直接删除文件
+     */
+    private fun deleteLegacyFile(path: Path): Boolean {
+        return try {
+            val file = File(path.toString())
+            file.delete()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+    
+    /**
+     * Android 10+: 通过 MediaStore 删除
+     */
+    private fun deleteMediaStoreFile(path: Path): Boolean {
+        return try {
+            val fileName = path.name
+            
+            // 尝试从不同的 MediaStore 集合中删除
+            val collections = listOf(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                } else null
+            ).filterNotNull()
+            
+            val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
+            val selectionArgs = arrayOf(fileName)
+            
+            var deleted = 0
+            for (collection in collections) {
+                deleted += context.contentResolver.delete(collection, selection, selectionArgs)
+                if (deleted > 0) break
+            }
+            
+            deleted > 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+    
+    /**
+     * 通过文件名和相对路径删除 MediaStore 记录
+     * 用于在创建新文件前清理可能存在的旧记录
+     */
+    private fun deleteMediaStoreFileByName(displayName: String, relativePath: String) {
+        try {
+            val collections = listOf(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                } else null
+            ).filterNotNull()
+            
+            // 使用 DISPLAY_NAME 和 RELATIVE_PATH 精确匹配
+            val selection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
+            } else {
+                "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
+            }
+            
+            val selectionArgs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                arrayOf(displayName, relativePath)
+            } else {
+                arrayOf(displayName)
+            }
+            
+            for (collection in collections) {
+                val deleted = context.contentResolver.delete(collection, selection, selectionArgs)
+                if (deleted > 0) break
+            }
+        } catch (e: Exception) {
+            // 静默失败，删除失败不影响后续创建
+            e.printStackTrace()
+        }
+    }
+    
+    /**
+     * 自定义 Sink，在关闭时清除 MediaStore 的 IS_PENDING 标记
+     */
+    private class MediaStoreSink(
+        private val delegate: Sink,
+        private val uri: android.net.Uri,
+        private val context: Context
+    ) : Sink by delegate {
+        
+        override fun close() {
+            try {
+                delegate.close()
+                
+                // 清除 IS_PENDING 标记，使文件对其他应用可见
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val values = ContentValues().apply {
+                        put(MediaStore.MediaColumns.IS_PENDING, 0)
+                    }
+                    context.contentResolver.update(uri, values, null, null)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+}

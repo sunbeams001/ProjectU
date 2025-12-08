@@ -20,6 +20,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
         repositoryModule,
         com.projectu.shared.di.repositoryModule, // Shared Repository (包括AuthRepository)
         com.projectu.shared.di.stateCacheModule, // 全局状态缓存
+        // sharedPlatformModule 在 Android 中需要单独加载（需要 Context）
+        com.projectu.shared.di.downloadModule(), // 下载模块
         useCaseModule,
         com.projectu.shared.di.useCaseModule,    // Shared UseCase
         com.projectu.shared.di.utilModule,       // Shared Util (包括TagTranslationUtil)

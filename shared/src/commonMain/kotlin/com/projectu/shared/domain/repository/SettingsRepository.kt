@@ -61,6 +61,12 @@ interface SettingsRepository {
      * @param size 缓存大小设置
      */
     suspend fun updateImageCacheSize(size: CacheSize)
+    
+    /**
+     * 更新下载基础路径
+     * @param path 下载基础路径
+     */
+    suspend fun updateBaseDownloadPath(path: String)
 
     /**
      * 更新完整设置

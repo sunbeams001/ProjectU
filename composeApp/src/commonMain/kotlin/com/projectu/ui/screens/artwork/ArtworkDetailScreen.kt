@@ -10,8 +10,12 @@ import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.comment.CommentsScreen
+import com.projectu.ui.screens.download.DownloadScreen
 import com.projectu.shared.domain.model.CommentContentType
+import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.ui.util.PlatformBackHandler
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 /**
  * 作品详情页面
@@ -61,6 +65,8 @@ data class ArtworkDetailScreen(
         val viewModel = koinScreenModel<ArtworkDetailViewModel>()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
+        val downloadRepository: DownloadRepository = koinInject()
+        val coroutineScope = rememberCoroutineScope()
         
         // 从 NavigationContextManager 获取上下文
         val context = remember(contextKey) {
@@ -164,7 +170,22 @@ data class ArtworkDetailScreen(
                 }
             },
             onSimilarClick = null,  // 暂未实现
-            onDownloadClick = null  // 暂未实现
+            onDownloadClick = {
+                state.artwork?.let { artwork ->
+                    coroutineScope.launch {
+                        // 直接传入artwork对象，避免重复请求
+                        val result = downloadRepository.addIllustrationDownload(
+                            artwork = artwork,
+                            pageIndex = null  // null表示下载所有页
+                        )
+                        if (result.isSuccess) {
+                            // 可以显示一个提示：已添加到下载列表
+                            // 跳转到下载页面
+                            navigator.push(DownloadScreen())
+                        }
+                    }
+                }
+            }
         )
     }
 }
