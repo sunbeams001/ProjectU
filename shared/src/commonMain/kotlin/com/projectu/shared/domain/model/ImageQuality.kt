@@ -166,3 +166,82 @@ fun PageImageUrls.getUrlByQuality(preferredQuality: DetailImageQuality): String 
     // 兜底：返回 squareMedium（必定存在）
     return this.urls.squareMedium
 }
+
+/**
+ * 小说下载图片质量设置
+ * 
+ * 定义了下载小说为 EPUB 时，内嵌图片的质量级别
+ */
+enum class NovelDownloadImageQuality(val displayNameKey: String) {
+    /**
+     * 240px 小图（体积最小，适合阅读器）
+     */
+    SMALL("novel_download_image_quality_small"),
+    
+    /**
+     * 480px 中图（默认推荐）
+     */
+    MEDIUM("novel_download_image_quality_medium"),
+    
+    /**
+     * 1200px 大图（高质量）
+     */
+    LARGE("novel_download_image_quality_large"),
+    
+    /**
+     * 原图（最高质量，文件较大）
+     */
+    ORIGINAL("novel_download_image_quality_original");
+    
+    companion object {
+        /**
+         * 从名称获取枚举
+         */
+        fun fromName(name: String): NovelDownloadImageQuality {
+            return values().find { it.name == name } ?: LARGE
+        }
+        
+        /**
+         * 获取所有质量级别，按质量从低到高排序
+         */
+        fun getAllSortedByQuality(): List<NovelDownloadImageQuality> {
+            return listOf(SMALL, MEDIUM, LARGE, ORIGINAL)
+        }
+    }
+}
+
+/**
+ * NovelEmbeddedImageInfo 扩展函数：根据质量偏好获取 URL
+ */
+fun com.projectu.shared.domain.model.NovelEmbeddedImageInfo.getUrlByQuality(
+    preferredQuality: NovelDownloadImageQuality
+): String? {
+    val getUrl: (NovelDownloadImageQuality) -> String? = { quality ->
+        when (quality) {
+            NovelDownloadImageQuality.SMALL -> this.smallUrl
+            NovelDownloadImageQuality.MEDIUM -> this.mediumUrl
+            NovelDownloadImageQuality.LARGE -> this.largeUrl
+            NovelDownloadImageQuality.ORIGINAL -> this.originalUrl
+        }
+    }
+    
+    // 先尝试获取首选质量
+    getUrl(preferredQuality)?.let { return it }
+    
+    // 获取所有质量级别
+    val allQualities = NovelDownloadImageQuality.getAllSortedByQuality()
+    val preferredIndex = allQualities.indexOf(preferredQuality)
+    
+    // 向低质量顺延
+    for (i in (preferredIndex - 1) downTo 0) {
+        getUrl(allQualities[i])?.let { return it }
+    }
+    
+    // 向高质量顺延
+    for (i in (preferredIndex + 1) until allQualities.size) {
+        getUrl(allQualities[i])?.let { return it }
+    }
+    
+    // 返回 null，调用方需要处理
+    return null
+}

@@ -6,6 +6,7 @@ import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.NovelDownloadImageQuality
 import com.projectu.shared.domain.model.CacheSize
 import kotlinx.coroutines.flow.Flow
 
@@ -55,6 +56,11 @@ interface SettingsRepository {
      * 更新插画详情页首选图片质量
      */
     suspend fun updateDetailImageQuality(quality: DetailImageQuality)
+    
+    /**
+     * 更新小说下载首选图片质量
+     */
+    suspend fun updateNovelDownloadImageQuality(quality: NovelDownloadImageQuality)
     
     /**
      * 更新图片缓存大小

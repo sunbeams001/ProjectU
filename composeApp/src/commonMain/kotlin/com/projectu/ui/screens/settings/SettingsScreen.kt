@@ -24,6 +24,7 @@ import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.NovelDownloadImageQuality
 import com.projectu.ui.util.CacheDetails
 import com.projectu.ui.util.ImageCacheManager
 import com.projectu.ui.util.LocalImageCacheManager
@@ -80,6 +81,12 @@ import projectu.composeapp.generated.resources.detail_image_quality_medium
 import projectu.composeapp.generated.resources.detail_image_quality_large
 import projectu.composeapp.generated.resources.detail_image_quality_master_1200
 import projectu.composeapp.generated.resources.detail_image_quality_original
+import projectu.composeapp.generated.resources.settings_novel_download_image_quality
+import projectu.composeapp.generated.resources.settings_novel_download_image_quality_desc
+import projectu.composeapp.generated.resources.novel_download_image_quality_small
+import projectu.composeapp.generated.resources.novel_download_image_quality_medium
+import projectu.composeapp.generated.resources.novel_download_image_quality_large
+import projectu.composeapp.generated.resources.novel_download_image_quality_original
 import projectu.composeapp.generated.resources.settings_cache_management
 import projectu.composeapp.generated.resources.settings_image_cache_size
 import projectu.composeapp.generated.resources.settings_image_cache_size_desc
@@ -147,6 +154,7 @@ class SettingsScreen : Screen {
             currentR18SanityThreshold = settings.r18SanityLevelThreshold,
             currentPreferredImageQuality = settings.preferredImageQuality,
             currentDetailImageQuality = settings.detailImageQuality,
+            currentNovelDownloadImageQuality = settings.novelDownloadImageQuality,
             currentImageCacheSize = settings.imageCacheSize,
             currentCacheSizeBytes = currentCacheSize,
             cacheDetails = cacheDetails,
@@ -159,6 +167,7 @@ class SettingsScreen : Screen {
             onR18SanityThresholdChange = { viewModel.updateR18SanityLevelThreshold(it) },
             onPreferredImageQualityChange = { viewModel.updatePreferredImageQuality(it) },
             onDetailImageQualityChange = { viewModel.updateDetailImageQuality(it) },
+            onNovelDownloadImageQualityChange = { viewModel.updateNovelDownloadImageQuality(it) },
             onImageCacheSizeChange = { viewModel.updateImageCacheSize(it) },
             onClearCache = { cacheManager.clearCache() },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
@@ -182,6 +191,7 @@ private fun SettingsScreenContent(
     currentR18SanityThreshold: Int,
     currentPreferredImageQuality: ImageQuality,
     currentDetailImageQuality: DetailImageQuality,
+    currentNovelDownloadImageQuality: NovelDownloadImageQuality,
     currentImageCacheSize: CacheSize,
     currentCacheSizeBytes: Long,
     cacheDetails: CacheDetails,
@@ -194,6 +204,7 @@ private fun SettingsScreenContent(
     onR18SanityThresholdChange: (Int) -> Unit,
     onPreferredImageQualityChange: (ImageQuality) -> Unit,
     onDetailImageQualityChange: (DetailImageQuality) -> Unit,
+    onNovelDownloadImageQualityChange: (NovelDownloadImageQuality) -> Unit,
     onImageCacheSizeChange: (CacheSize) -> Unit,
     onClearCache: suspend () -> Unit,
     onEditPhpSessionId: (String) -> Unit,
@@ -208,6 +219,7 @@ private fun SettingsScreenContent(
     var showR18ThresholdDialog by remember { mutableStateOf(false) }
     var showImageQualityDialog by remember { mutableStateOf(false) }
     var showDetailImageQualityDialog by remember { mutableStateOf(false) }
+    var showNovelDownloadImageQualityDialog by remember { mutableStateOf(false) }
     var showEditPhpSessionIdDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showCacheSizeDialog by remember { mutableStateOf(false) }
@@ -333,6 +345,21 @@ private fun SettingsScreenContent(
                     },
                     description = stringResource(Res.string.settings_detail_image_quality_desc),
                     onClick = { showDetailImageQualityDialog = true }
+                )
+            }
+            
+            // 小说下载首选图片质量设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_novel_download_image_quality),
+                    subtitle = when (currentNovelDownloadImageQuality) {
+                        NovelDownloadImageQuality.SMALL -> stringResource(Res.string.novel_download_image_quality_small)
+                        NovelDownloadImageQuality.MEDIUM -> stringResource(Res.string.novel_download_image_quality_medium)
+                        NovelDownloadImageQuality.LARGE -> stringResource(Res.string.novel_download_image_quality_large)
+                        NovelDownloadImageQuality.ORIGINAL -> stringResource(Res.string.novel_download_image_quality_original)
+                    },
+                    description = stringResource(Res.string.settings_novel_download_image_quality_desc),
+                    onClick = { showNovelDownloadImageQualityDialog = true }
                 )
             }
             
@@ -549,6 +576,18 @@ private fun SettingsScreenContent(
                 showDetailImageQualityDialog = false
             },
             onDismiss = { showDetailImageQualityDialog = false }
+        )
+    }
+    
+    // 小说下载图片质量选择对话框
+    if (showNovelDownloadImageQualityDialog) {
+        NovelDownloadImageQualitySelectionDialog(
+            currentQuality = currentNovelDownloadImageQuality,
+            onSelect = { quality ->
+                onNovelDownloadImageQualityChange(quality)
+                showNovelDownloadImageQualityDialog = false
+            },
+            onDismiss = { showNovelDownloadImageQualityDialog = false }
         )
     }
     
@@ -1060,6 +1099,61 @@ private fun DetailImageQualitySelectionDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.settings_detail_image_quality)) },
+        text = {
+            Column {
+                qualities.forEach { (quality, name) ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(quality) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = quality == currentQuality,
+                                onClick = { onSelect(quality) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 小说下载图片质量选择对话框
+ */
+@Composable
+private fun NovelDownloadImageQualitySelectionDialog(
+    currentQuality: NovelDownloadImageQuality,
+    onSelect: (NovelDownloadImageQuality) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val qualities = listOf(
+        NovelDownloadImageQuality.SMALL to stringResource(Res.string.novel_download_image_quality_small),
+        NovelDownloadImageQuality.MEDIUM to stringResource(Res.string.novel_download_image_quality_medium),
+        NovelDownloadImageQuality.LARGE to stringResource(Res.string.novel_download_image_quality_large),
+        NovelDownloadImageQuality.ORIGINAL to stringResource(Res.string.novel_download_image_quality_original)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_novel_download_image_quality)) },
         text = {
             Column {
                 qualities.forEach { (quality, name) ->

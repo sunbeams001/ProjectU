@@ -94,6 +94,15 @@ class SettingsViewModel(
     }
     
     /**
+     * 更新小说下载首选图片质量
+     */
+    fun updateNovelDownloadImageQuality(quality: com.projectu.shared.domain.model.NovelDownloadImageQuality) {
+        viewModelScope.launch {
+            settingsRepository.updateNovelDownloadImageQuality(quality)
+        }
+    }
+    
+    /**
      * 更新图片缓存大小
      * 注意：缓存大小变更需要重启应用才能完全生效
      */

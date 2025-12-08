@@ -51,6 +51,20 @@ interface DownloadRepository {
     suspend fun addUgoiraDownload(artwork: Artwork): Result<String>
     
     /**
+     * 添加小说下载任务
+     * @param novelId 小说ID
+     * @return 任务ID
+     */
+    suspend fun addNovelDownload(novelId: String): Result<String>
+    
+    /**
+     * 添加小说系列下载任务
+     * @param seriesId 系列ID
+     * @return 任务ID
+     */
+    suspend fun addNovelSeriesDownload(seriesId: String): Result<String>
+    
+    /**
      * 开始下载任务
      */
     suspend fun startDownload(taskId: String)

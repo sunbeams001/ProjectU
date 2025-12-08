@@ -6,12 +6,19 @@ import com.projectu.shared.data.local.dao.DownloadDao
 import com.projectu.shared.data.local.entity.toDownloadTask
 import com.projectu.shared.data.local.entity.toEntity
 import com.projectu.shared.data.remote.api.PixivApi
+import com.projectu.shared.data.remote.api.NovelApi
+import com.projectu.shared.data.remote.api.NovelSeriesApi
+import com.projectu.shared.data.remote.mapper.toNovel
+import com.projectu.shared.data.remote.mapper.toNovelSeries
 import com.projectu.shared.data.remote.mapper.toUgoiraMetadata
 import com.projectu.shared.data.util.DownloadPathBuilder
+import com.projectu.shared.data.util.EpubBuilder
+import com.projectu.shared.data.util.NovelToEpubConverter
 import com.projectu.shared.data.util.PlatformFileWriter
 import com.projectu.shared.data.util.UgoiraGifConverter
 import com.projectu.shared.domain.model.DownloadStatus
 import com.projectu.shared.domain.model.DownloadTask
+import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.ResourceType
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -52,6 +59,8 @@ interface CachedFileProvider {
  */
 class DownloadManager(
     private val pixivApi: PixivApi,
+    private val novelApi: NovelApi,
+    private val novelSeriesApi: NovelSeriesApi,
     private val downloadDao: DownloadDao,
     private val pathBuilder: DownloadPathBuilder,
     private val fileSystem: FileSystem,
@@ -61,6 +70,7 @@ class DownloadManager(
     private val settingsCache: SettingsCache,
     private val downloadRulesCache: DownloadRulesCache,
     private val ugoiraGifConverter: UgoiraGifConverter,
+    private val ageLimitDeterminer: com.projectu.shared.util.AgeLimitDeterminer,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 ) {
     
@@ -69,6 +79,11 @@ class DownloadManager(
     
     // 最大并发下载数
     private val maxConcurrentDownloads = 3
+    
+    // 小说内容转换器（懒加载）
+    private val novelConverter by lazy {
+        NovelToEpubConverter(httpClient, settingsCache)
+    }
     
     /**
      * 获取所有下载任务流
@@ -551,19 +566,266 @@ class DownloadManager(
     }
     
     /**
-     * 下载小说（暂时不实现，留待后续）
+     * 添加小说下载任务
+     * @param novelId 小说ID
      */
-    private suspend fun downloadNovel(task: DownloadTask) {
-        // TODO: 实现小说下载
-        throw NotImplementedError("Novel download not yet implemented")
+    suspend fun addNovelDownloadTask(
+        novelId: String
+    ): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            // 获取小说详情
+            val response = novelApi.getDetail(novelId.toLong())
+            val novelBody = response.body ?: throw Exception("Failed to fetch novel details")
+            
+            // 创建下载任务
+            val taskId = createDownloadTask(
+                resourceType = ResourceType.NOVEL,
+                resourceId = novelBody.id,
+                title = novelBody.title,
+                authorId = novelBody.userId,
+                authorName = novelBody.userName,
+                pageIndex = null,
+                totalPages = 1,
+                isR18 = novelBody.xRestrict > 0,
+                isAi = false, // 小说 DTO 没有直接的 AI 字段
+                tags = novelBody.tags.tags.map { it.tag },
+                publishTime = System.currentTimeMillis(),
+                thumbnailUrl = novelBody.coverUrl
+            )
+            
+            // 自动开始下载
+            startDownload(taskId)
+            
+            Result.success(taskId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
     }
     
     /**
-     * 下载小说系列（暂时不实现，留待后续）
+     * 添加小说系列下载任务
+     * @param seriesId 系列ID
      */
-    private suspend fun downloadNovelSeries(task: DownloadTask) {
-        // TODO: 实现小说系列下载
-        throw NotImplementedError("Novel series download not yet implemented")
+    suspend fun addNovelSeriesDownloadTask(
+        seriesId: String
+    ): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            // 获取系列详情
+            val response = novelSeriesApi.getDetail(seriesId.toLong())
+            val seriesBody = response.body ?: throw Exception("Failed to fetch series details")
+            
+            // 创建下载任务
+            val taskId = createDownloadTask(
+                resourceType = ResourceType.NOVEL_SERIES,
+                resourceId = seriesBody.id,
+                title = seriesBody.title,
+                authorId = seriesBody.userId,
+                authorName = seriesBody.userName,
+                pageIndex = null,
+                totalPages = 1,
+                isR18 = seriesBody.xRestrict > 0,
+                isAi = false,
+                tags = seriesBody.tags,
+                publishTime = System.currentTimeMillis(),
+                thumbnailUrl = seriesBody.cover?.urls?.size480mw
+            )
+            
+            // 自动开始下载
+            startDownload(taskId)
+            
+            Result.success(taskId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * 下载小说为 EPUB 格式
+     */
+    private suspend fun downloadNovel(task: DownloadTask) = withContext(Dispatchers.IO) {
+        // 1. 获取小说详情（包含完整内容）
+        val novelResponse = pixivApi.novelApi.getDetail(task.resourceId.toLong())
+        if (novelResponse.error) {
+            throw Exception(novelResponse.message ?: "Failed to get novel detail")
+        }
+        val novelBody = novelResponse.body ?: throw IllegalStateException("Novel body is null")
+        val novel = novelBody.toNovel(ageLimitDeterminer)
+        
+        // 2. 转换为 EPUB 格式
+        val conversionResult = novelConverter.convert(
+            novel = novel,
+            downloadImages = true
+        )
+        
+        // 3. 使用规则系统获取目标路径
+        val rule = downloadRulesCache.findMatchingRule(task)
+        val baseDownloadPath = rule.targetPath
+        val relativePath = rule.buildRelativePath(task)
+        val fileName = task.fileName
+        
+        // 确保目录存在
+        platformFileWriter.ensureDirectoryExists(baseDownloadPath, relativePath)
+        
+        // 4. 创建输出 Sink（使用 PlatformFileWriter 支持 Android SAF）
+        val sink = platformFileWriter.createSinkFromUri(baseDownloadPath, relativePath, fileName)
+        
+        // 5. 使用 buffer() 包装 Sink 并自动关闭
+        sink.buffer().use { bufferedSink ->
+            // 创建 EPUB 构建器
+            val epubBuilder = EpubBuilder(
+                fileSystem = fileSystem,
+                outputSink = bufferedSink
+            )
+            
+            // 设置元数据
+            epubBuilder.setMetadata(
+                EpubBuilder.Metadata(
+                    title = novel.title,
+                    author = novel.userName,
+                    language = novel.language,
+                    identifier = "pixiv-novel-${novel.id}",
+                    publisher = "Pixiv",
+                    description = novel.description
+                )
+            )
+            
+            // 添加章节
+            conversionResult.chapters.forEach { chapter ->
+                epubBuilder.addChapter(
+                    EpubBuilder.Chapter(
+                        id = chapter.id,
+                        title = chapter.title,
+                        htmlContent = chapter.htmlContent,
+                        order = chapter.order
+                    )
+                )
+            }
+            
+            // 添加图片
+            conversionResult.images.forEach { image ->
+                epubBuilder.addImage(
+                    EpubBuilder.Image(
+                        id = image.id,
+                        fileName = image.fileName,
+                        data = image.data,
+                        mimeType = image.mimeType
+                    )
+                )
+            }
+            
+            // 构建 EPUB
+            epubBuilder.build()
+        }
+    }
+    
+    /**
+     * 下载小说系列为 EPUB 格式
+     */
+    private suspend fun downloadNovelSeries(task: DownloadTask) = withContext(Dispatchers.IO) {
+        // 1. 获取系列详情
+        val seriesResponse = pixivApi.novelSeriesApi.getDetail(task.resourceId.toLong())
+        if (seriesResponse.error) {
+            throw Exception(seriesResponse.message ?: "Failed to get series detail")
+        }
+        val seriesBody = seriesResponse.body ?: throw IllegalStateException("Series body is null")
+        
+        // 2. 获取系列中所有章节的标题和ID
+        val titlesResponse = pixivApi.novelSeriesApi.getTitles(task.resourceId.toLong())
+        if (titlesResponse.error) {
+            throw Exception(titlesResponse.message ?: "Failed to get series titles")
+        }
+        val titles = titlesResponse.body ?: throw IllegalStateException("Series titles is null")
+        
+        // 3. 逐个获取每个章节的详细内容
+        val novels = mutableListOf<Novel>()
+        for ((index, titleInfo) in titles.withIndex()) {
+            if (!titleInfo.available) {
+                // 跳过不可用的章节
+                continue
+            }
+            
+            val novelResponse = pixivApi.novelApi.getDetail(titleInfo.id.toLong())
+            if (!novelResponse.error) {
+                val novelBody = novelResponse.body
+                if (novelBody != null) {
+                    novels.add(novelBody.toNovel(ageLimitDeterminer))
+                }
+            }
+            
+            // 更新进度（前50%用于下载章节）
+            val progress = (index + 1).toFloat() / titles.size * 0.5f
+            downloadDao.updateTaskProgress(task.id, progress, 0L)
+        }
+        
+        // 4. 转换为 EPUB 格式
+        val conversionResult = novelConverter.convertSeries(
+            novels = novels,
+            seriesTitle = seriesBody.title,
+            downloadImages = true
+        )
+        
+        // 5. 使用规则系统获取目标路径
+        val rule = downloadRulesCache.findMatchingRule(task)
+        val baseDownloadPath = rule.targetPath
+        val relativePath = rule.buildRelativePath(task)
+        val fileName = task.fileName
+        
+        // 确保目录存在
+        platformFileWriter.ensureDirectoryExists(baseDownloadPath, relativePath)
+        
+        // 6. 创建输出 Sink（使用 PlatformFileWriter 支持 Android SAF）
+        val sink = platformFileWriter.createSinkFromUri(baseDownloadPath, relativePath, fileName)
+        
+        // 7. 使用 buffer() 包装 Sink 并自动关闭
+        sink.buffer().use { bufferedSink ->
+            // 创建 EPUB 构建器
+            val epubBuilder = EpubBuilder(
+                fileSystem = fileSystem,
+                outputSink = bufferedSink
+            )
+            
+            // 设置元数据
+            epubBuilder.setMetadata(
+                EpubBuilder.Metadata(
+                    title = seriesBody.title,
+                    author = task.authorName,
+                    language = "ja",
+                    identifier = "pixiv-series-${task.resourceId}",
+                    publisher = "Pixiv",
+                    description = seriesBody.caption
+                )
+            )
+            
+            // 添加章节
+            conversionResult.chapters.forEach { chapter ->
+                epubBuilder.addChapter(
+                    EpubBuilder.Chapter(
+                        id = chapter.id,
+                        title = chapter.title,
+                        htmlContent = chapter.htmlContent,
+                        order = chapter.order
+                    )
+                )
+            }
+            
+            // 添加图片
+            conversionResult.images.forEach { image ->
+                epubBuilder.addImage(
+                    EpubBuilder.Image(
+                        id = image.id,
+                        fileName = image.fileName,
+                        data = image.data,
+                        mimeType = image.mimeType
+                    )
+                )
+            }
+            
+            // 构建 EPUB
+            downloadDao.updateTaskProgress(task.id, 0.9f, 0L)
+            epubBuilder.build()
+        }
     }
     
     /**
@@ -675,7 +937,7 @@ class DownloadManager(
         return when (resourceType) {
             ResourceType.ILLUSTRATION, ResourceType.MANGA -> "jpg"
             ResourceType.UGOIRA -> "gif"
-            ResourceType.NOVEL, ResourceType.NOVEL_SERIES -> "txt"
+            ResourceType.NOVEL, ResourceType.NOVEL_SERIES -> "epub"
         }
     }
 }

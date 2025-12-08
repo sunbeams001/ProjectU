@@ -50,6 +50,10 @@ class SettingsRepositoryImpl(
         settingsStore.setDetailImageQuality(quality)
     }
     
+    override suspend fun updateNovelDownloadImageQuality(quality: com.projectu.shared.domain.model.NovelDownloadImageQuality) {
+        settingsStore.setNovelDownloadImageQuality(quality)
+    }
+    
     override suspend fun updateImageCacheSize(size: CacheSize) {
         settingsStore.setImageCacheSize(size)
     }

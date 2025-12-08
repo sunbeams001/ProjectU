@@ -2,6 +2,7 @@ package com.projectu.shared.data.local
 
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.NovelDownloadImageQuality
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,6 +60,13 @@ class SettingsCache(
     val detailImageQuality: StateFlow<DetailImageQuality> = _detailImageQuality.asStateFlow()
     
     /**
+     * 小说下载首选图片质量缓存
+     * 用于下载小说为 EPUB 时快速获取图片质量设置（高频访问 - 每次下载小说都需要）
+     */
+    private val _novelDownloadImageQuality = MutableStateFlow(NovelDownloadImageQuality.LARGE)
+    val novelDownloadImageQuality: StateFlow<NovelDownloadImageQuality> = _novelDownloadImageQuality.asStateFlow()
+    
+    /**
      * 下载基础路径缓存
      * 用于下载管理器中快速获取下载路径（高频访问 - 每次下载都需要）
      */
@@ -78,6 +86,7 @@ class SettingsCache(
                 _r18SanityLevelThreshold.value = settings.r18SanityLevelThreshold
                 _preferredImageQuality.value = settings.preferredImageQuality
                 _detailImageQuality.value = settings.detailImageQuality
+                _novelDownloadImageQuality.value = settings.novelDownloadImageQuality
                 _baseDownloadPath.value = settings.downloadSettings.baseDownloadPath
                 
                 // TODO: 后续添加更多字段的同步
@@ -123,6 +132,18 @@ class SettingsCache(
      */
     fun getDetailImageQuality(): DetailImageQuality {
         return _detailImageQuality.value
+    }
+    
+    /**
+     * 获取当前小说下载首选图片质量（同步方法，使用内存缓存）
+     * 用于 NovelToEpubConverter 等组件快速获取图片质量设置
+     * 
+     * 性能说明：
+     * - 每次下载小说都需要获取图片质量设置
+     * - 使用内存缓存避免每次都查询数据库，显著提升性能
+     */
+    fun getNovelDownloadImageQuality(): NovelDownloadImageQuality {
+        return _novelDownloadImageQuality.value
     }
     
     /**

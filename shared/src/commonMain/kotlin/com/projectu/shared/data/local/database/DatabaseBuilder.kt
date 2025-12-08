@@ -79,13 +79,23 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
     }
 }
 
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(connection: SQLiteConnection) {
+        // 添加 novelDownloadImageQuality 列（默认为LARGE）
+        connection.execSQL("""
+            ALTER TABLE app_settings 
+            ADD COLUMN novelDownloadImageQuality TEXT NOT NULL DEFAULT 'LARGE'
+        """.trimIndent())
+    }
+}
+
 fun getRoomDatabase(
     builder: RoomDatabase.Builder<AppDatabase>
 ): AppDatabase {
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-        .addMigrations(MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
+        .addMigrations(MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
         .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 }

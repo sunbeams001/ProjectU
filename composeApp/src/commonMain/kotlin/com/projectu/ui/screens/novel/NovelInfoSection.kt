@@ -73,6 +73,7 @@ fun NovelInfoSection(
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
     onCommentClick: (() -> Unit)? = null,
+    onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -144,6 +145,21 @@ fun NovelInfoSection(
                                 imageVector = icon,
                                 contentDescription = contentDesc,
                                 tint = tint,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                    
+                    // 下载按钮
+                    if (onDownloadClick != null) {
+                        IconButton(
+                            onClick = onDownloadClick,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Download,
+                                contentDescription = "下载小说",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(24.dp)
                             )
                         }

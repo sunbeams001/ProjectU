@@ -40,6 +40,14 @@ class DownloadRepositoryImpl(
         return downloadManager.addUgoiraDownloadTask(artwork)
     }
     
+    override suspend fun addNovelDownload(novelId: String): Result<String> {
+        return downloadManager.addNovelDownloadTask(novelId)
+    }
+    
+    override suspend fun addNovelSeriesDownload(seriesId: String): Result<String> {
+        return downloadManager.addNovelSeriesDownloadTask(seriesId)
+    }
+    
     override suspend fun startDownload(taskId: String) {
         downloadManager.startDownload(taskId)
     }

@@ -191,52 +191,52 @@ private fun DownloadTaskItem(
             modifier = Modifier.padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 缩略图（插画、漫画和动图显示）
-            if (task.resourceType == ResourceType.ILLUSTRATION || 
-                task.resourceType == ResourceType.MANGA ||
-                task.resourceType == ResourceType.UGOIRA) {
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    val thumbnailUrl = getThumbnailUrl(task)
-                    if (thumbnailUrl != null) {
-                        AsyncImage(
-                            model = thumbnailUrl,
-                            contentDescription = task.title,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        // 如果没有缩略图 URL，显示占位图标
-                        Icon(
-                            imageVector = Icons.Default.Image,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
+            // 缩略图（所有类型都显示）
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                val thumbnailUrl = getThumbnailUrl(task)
+                if (thumbnailUrl != null) {
+                    AsyncImage(
+                        model = thumbnailUrl,
+                        contentDescription = task.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // 如果没有缩略图 URL，根据类型显示不同图标
+                    val icon = when (task.resourceType) {
+                        ResourceType.NOVEL, ResourceType.NOVEL_SERIES -> Icons.Default.Book
+                        else -> Icons.Default.Image
                     }
-                    
-                    // 状态图标覆盖在缩略图上
-                    Box(
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(4.dp),
-                        contentAlignment = Alignment.TopEnd
+                            .padding(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
+                
+                // 状态图标覆盖在缩略图上
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
                     ) {
-                        Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
-                        ) {
-                            StatusIcon(
-                                status = task.status,
-                                modifier = Modifier.padding(2.dp).size(16.dp)
-                            )
-                        }
+                        StatusIcon(
+                            status = task.status,
+                            modifier = Modifier.padding(2.dp).size(16.dp)
+                        )
                     }
                 }
             }
@@ -263,12 +263,6 @@ private fun DownloadTaskItem(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
-                    
-                    // 非图片类型显示状态图标
-                    if (task.resourceType != ResourceType.ILLUSTRATION && 
-                        task.resourceType != ResourceType.MANGA) {
-                        StatusIcon(status = task.status)
                     }
                 }
                 

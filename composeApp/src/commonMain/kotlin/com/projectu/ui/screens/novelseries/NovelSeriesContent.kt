@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Refresh
@@ -55,6 +56,7 @@ fun NovelSeriesContent(
     onRefresh: () -> Unit,
     onNovelClick: (Novel) -> Unit,
     onUserClick: (String) -> Unit,
+    onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -141,7 +143,8 @@ fun NovelSeriesContent(
                                 series = state.series,
                                 isWatchLoading = state.isWatchLoading,
                                 onToggleWatch = onToggleWatch,
-                                onUserClick = onUserClick
+                                onUserClick = onUserClick,
+                                onDownloadClick = onDownloadClick
                             )
                         }
                         
@@ -222,6 +225,7 @@ private fun NovelSeriesHeaderCard(
     isWatchLoading: Boolean,
     onToggleWatch: () -> Unit,
     onUserClick: (String) -> Unit,
+    onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // R-18颜色
@@ -494,6 +498,22 @@ private fun NovelSeriesHeaderCard(
                     Text(
                         text = if (series.isWatched) stringResource(Res.string.series_remove_watch) else stringResource(Res.string.series_add_watch)
                     )
+                }
+            }
+            
+            // 下载按钮
+            if (onDownloadClick != null) {
+                OutlinedButton(
+                    onClick = onDownloadClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Download,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "下载系列为 EPUB")
                 }
             }
         }

@@ -121,6 +121,16 @@ val pixivApiModule = module {
     single {
         PixivApi(get())
     }
+    
+    // 小说 API
+    single {
+        get<PixivApi>().novelApi
+    }
+    
+    // 小说系列 API
+    single {
+        get<PixivApi>().novelSeriesApi
+    }
 }
 
 /**
@@ -298,6 +308,8 @@ fun downloadModule(cachedFileProvider: com.projectu.shared.data.manager.CachedFi
     single {
         com.projectu.shared.data.manager.DownloadManager(
             pixivApi = get(),
+            novelApi = get(),
+            novelSeriesApi = get(),
             downloadDao = get(),
             pathBuilder = get(),
             fileSystem = FileSystem.SYSTEM,
@@ -306,7 +318,8 @@ fun downloadModule(cachedFileProvider: com.projectu.shared.data.manager.CachedFi
             cachedFileProvider = cachedFileProvider,
             settingsCache = get(),
             downloadRulesCache = get(),
-            ugoiraGifConverter = get()
+            ugoiraGifConverter = get(),
+            ageLimitDeterminer = get()
         )
     }
 }

@@ -48,6 +48,11 @@ data class SettingsEntity(
     val detailImageQuality: String = "LARGE",
     
     /**
+     * 小说下载首选图片质量
+     */
+    val novelDownloadImageQuality: String = "LARGE",
+    
+    /**
      * 图片磁盘缓存大小
      */
     val imageCacheSize: String = "MEDIUM",
@@ -74,6 +79,7 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = this.preferredImageQuality.name,
         detailImageQuality = this.detailImageQuality.name,
+        novelDownloadImageQuality = this.novelDownloadImageQuality.name,
         imageCacheSize = this.imageCacheSize.name,
         baseDownloadPath = this.downloadSettings.baseDownloadPath
     )
@@ -90,6 +96,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = com.projectu.shared.domain.model.ImageQuality.fromName(this.preferredImageQuality),
         detailImageQuality = com.projectu.shared.domain.model.DetailImageQuality.fromName(this.detailImageQuality),
+        novelDownloadImageQuality = com.projectu.shared.domain.model.NovelDownloadImageQuality.fromName(this.novelDownloadImageQuality),
         imageCacheSize = com.projectu.shared.domain.model.CacheSize.fromName(this.imageCacheSize),
         downloadSettings = com.projectu.shared.data.local.DownloadSettings(
             baseDownloadPath = this.baseDownloadPath.ifEmpty { com.projectu.shared.data.local.getDefaultDownloadPath() }

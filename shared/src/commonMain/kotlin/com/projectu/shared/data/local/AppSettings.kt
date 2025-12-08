@@ -2,6 +2,7 @@ package com.projectu.shared.data.local
 
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.NovelDownloadImageQuality
 import com.projectu.shared.domain.model.CacheSize
 
 /**
@@ -53,6 +54,13 @@ data class AppSettings(
      * 默认：LARGE (540x540)
      */
     val detailImageQuality: DetailImageQuality = DetailImageQuality.LARGE,
+    
+    /**
+     * 小说下载首选图片质量
+     * 用于下载小说为 EPUB 时，内嵌图片的质量
+     * 默认：LARGE (1200px)
+     */
+    val novelDownloadImageQuality: NovelDownloadImageQuality = NovelDownloadImageQuality.LARGE,
     
     /**
      * 图片磁盘缓存大小

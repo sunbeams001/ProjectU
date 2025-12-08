@@ -22,10 +22,12 @@ import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.domain.repository.UserRepository
+import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.comment.CommentsScreen
+import com.projectu.ui.screens.download.DownloadScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.util.PlatformBackHandler
@@ -33,6 +35,7 @@ import com.projectu.shared.domain.model.CommentContentType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import projectu.composeapp.generated.resources.*
+import kotlinx.coroutines.launch
 
 /**
  * 小说详情页面
@@ -80,6 +83,8 @@ data class NovelDetailScreen(
         }
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
+        val downloadRepository: DownloadRepository = koinInject()
+        val coroutineScope = rememberCoroutineScope()
         
         // 从 NavigationContextManager 获取上下文
         val context = remember(contextKey) {
@@ -178,6 +183,16 @@ data class NovelDetailScreen(
                         )
                     )
                 }
+            },
+            onDownloadClick = {
+                state.novel?.let { novel ->
+                    coroutineScope.launch {
+                        val result = downloadRepository.addNovelDownload(novelId = novel.id)
+                        if (result.isSuccess) {
+                            navigator.push(DownloadScreen())
+                        }
+                    }
+                }
             }
         )
     }
@@ -200,6 +215,7 @@ private fun NovelDetailContent(
     onUserClick: ((userId: String) -> Unit)?,
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
+    onDownloadClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -236,6 +252,7 @@ private fun NovelDetailContent(
                     onUserClick = onUserClick,
                     onSeriesClick = onSeriesClick,
                     onCommentClick = onCommentClick,
+                    onDownloadClick = onDownloadClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -276,6 +293,7 @@ private fun NovelDetailLayout(
     onUserClick: ((userId: String) -> Unit)?,
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
+    onDownloadClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val novel = state.novel ?: return
@@ -358,6 +376,7 @@ private fun NovelDetailLayout(
             onUserClick = onUserClick,
             onSeriesClick = onSeriesClick,
             onCommentClick = onCommentClick,
+            onDownloadClick = onDownloadClick,
             modifier = Modifier.fillMaxWidth()
         )
     }

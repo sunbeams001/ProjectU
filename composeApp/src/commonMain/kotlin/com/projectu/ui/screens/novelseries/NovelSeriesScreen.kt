@@ -7,6 +7,10 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.user.UserScreen
+import com.projectu.ui.screens.download.DownloadScreen
+import com.projectu.shared.domain.repository.DownloadRepository
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 /**
  * 小说系列详情页面
@@ -26,6 +30,8 @@ data class NovelSeriesScreen(
         val viewModel = koinScreenModel<NovelSeriesViewModel>()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
+        val downloadRepository: DownloadRepository = koinInject()
+        val coroutineScope = rememberCoroutineScope()
         
         // 加载系列数据
         LaunchedEffect(seriesId) {
@@ -46,6 +52,14 @@ data class NovelSeriesScreen(
             },
             onUserClick = { userId ->
                 navigator.push(UserScreen(userId))
+            },
+            onDownloadClick = {
+                coroutineScope.launch {
+                    val result = downloadRepository.addNovelSeriesDownload(seriesId = seriesId)
+                    if (result.isSuccess) {
+                        navigator.push(DownloadScreen())
+                    }
+                }
             }
         )
     }

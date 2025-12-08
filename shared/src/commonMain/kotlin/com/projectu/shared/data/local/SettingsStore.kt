@@ -94,6 +94,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置小说下载首选图片质量
+     */
+    suspend fun setNovelDownloadImageQuality(quality: com.projectu.shared.domain.model.NovelDownloadImageQuality) {
+        settingsDao.updateNovelDownloadImageQuality(quality.name)
+    }
+    
+    /**
      * 设置图片磁盘缓存大小
      */
     suspend fun setImageCacheSize(size: com.projectu.shared.domain.model.CacheSize) {

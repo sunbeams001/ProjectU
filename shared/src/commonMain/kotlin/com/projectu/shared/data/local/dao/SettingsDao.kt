@@ -70,6 +70,12 @@ interface SettingsDao {
     suspend fun updateDetailImageQuality(quality: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新小说下载首选图片质量
+     */
+    @Query("UPDATE app_settings SET novelDownloadImageQuality = :quality, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateNovelDownloadImageQuality(quality: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 更新图片磁盘缓存大小
      */
     @Query("UPDATE app_settings SET imageCacheSize = :size, updatedAt = :timestamp WHERE id = 1")
