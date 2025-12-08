@@ -439,47 +439,14 @@ fun CommentItemView(
         CommentContent(
             comment = comment,
             isDeleting = isDeleting,
+            hasReplies = comment.hasReplies,
+            isExpanded = commentItem.isExpanded,
+            isLoadingReplies = commentItem.isLoadingReplies && commentItem.replies.isEmpty(),
+            onToggleReplies = onToggleReplies,
             onReply = { onReply(comment) },
             onDelete = { onDelete(comment) },
             onUserClick = onUserClick
         )
-        
-        // 展开/收起按钮（仅当有回复时显示）
-        if (comment.hasReplies) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 56.dp, top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(
-                    onClick = onToggleReplies,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    if (commentItem.isLoadingReplies && commentItem.replies.isEmpty()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    Icon(
-                        imageVector = if (commentItem.isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (commentItem.isExpanded) {
-                            stringResource(Res.string.comments_hide_replies)
-                        } else {
-                            stringResource(Res.string.comments_show_replies)
-                        },
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        }
         
         // 回复列表
         AnimatedVisibility(
@@ -498,7 +465,7 @@ fun CommentItemView(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                commentItem.replies.forEach { reply ->
+                commentItem.replies.asReversed().forEach { reply ->
                     CommentContent(
                         comment = reply,
                         isDeleting = isDeletingId == reply.id,
@@ -541,6 +508,10 @@ fun CommentContent(
     comment: Comment,
     isDeleting: Boolean,
     isReply: Boolean = false,
+    hasReplies: Boolean = false,
+    isExpanded: Boolean = false,
+    isLoadingReplies: Boolean = false,
+    onToggleReplies: (() -> Unit)? = null,
     onReply: () -> Unit,
     onDelete: () -> Unit,
     onUserClick: (String) -> Unit
@@ -655,6 +626,36 @@ fun CommentContent(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 展开/收起回复按钮（仅当有回复且非回复本身时显示）
+                if (!isReply && hasReplies && onToggleReplies != null) {
+                    TextButton(
+                        onClick = onToggleReplies,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        if (isLoadingReplies) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (isExpanded) {
+                                stringResource(Res.string.comments_hide_replies)
+                            } else {
+                                stringResource(Res.string.comments_show_replies)
+                            },
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+                
                 // 回复按钮
                 TextButton(
                     onClick = onReply,
