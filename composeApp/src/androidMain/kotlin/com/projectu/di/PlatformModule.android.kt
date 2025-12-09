@@ -8,7 +8,6 @@ import com.projectu.shared.data.local.database.AppDatabase
 import com.projectu.shared.data.local.database.getDatabaseBuilder
 import com.projectu.shared.data.local.database.getRoomDatabase
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
-import com.projectu.shared.di.downloadModule
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.util.NetworkClient
 import com.projectu.ui.components.UgoiraLoaderManager
@@ -23,6 +22,7 @@ import com.projectu.ui.screens.followlatest.more.WatchListMangaViewModel
 import com.projectu.ui.screens.followlatest.more.WatchListNovelsViewModel
 import com.projectu.ui.screens.userrelations.UserRelationsViewModel
 import com.projectu.ui.screens.comment.CommentsViewModel
+import com.projectu.ui.screens.download.DownloadRulesViewModel
 import io.ktor.client.engine.cio.*
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
@@ -88,7 +88,7 @@ actual val viewModelModule: Module = module {
     viewModel { com.projectu.ui.screens.download.DownloadViewModel(get()) }
     
     // 下载规则管理 ViewModel
-    viewModel { com.projectu.presentation.settings.download.DownloadRulesViewModel(get()) }
+    viewModel { DownloadRulesViewModel(get()) }
     
     // 发现插画 ScreenModel
     single { DiscoveryIllustsViewModel(get(), get(), get()) }

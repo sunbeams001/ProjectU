@@ -1,4 +1,4 @@
-package com.projectu.presentation.settings.download
+package com.projectu.ui.screens.download
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,7 +6,7 @@ import com.projectu.shared.data.repository.DownloadRulesRepository
 import com.projectu.shared.domain.model.AuthorGrouping
 import com.projectu.shared.domain.model.DownloadRule
 import com.projectu.shared.domain.model.FilterType
-import com.projectu.shared.domain.model.ResourceTypeFilter
+import com.projectu.shared.domain.model.ResourceType
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -37,7 +37,7 @@ class DownloadRulesViewModel(
      * 添加规则
      */
     fun addRule(
-        resourceTypeFilter: ResourceTypeFilter,
+        resourceTypes: Set<ResourceType>,
         r18Filter: FilterType,
         aiFilter: FilterType,
         authorGrouping: AuthorGrouping,
@@ -48,7 +48,7 @@ class DownloadRulesViewModel(
                 val newRule = DownloadRule(
                     id = 0L, // 新规则，ID 由数据库自动生成
                     order = rules.value.size, // 默认排在最后
-                    resourceTypeFilter = resourceTypeFilter,
+                    resourceTypes = resourceTypes,
                     r18Filter = r18Filter,
                     aiFilter = aiFilter,
                     authorGrouping = authorGrouping,

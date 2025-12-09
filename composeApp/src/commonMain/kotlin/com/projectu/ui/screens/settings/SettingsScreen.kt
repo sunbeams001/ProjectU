@@ -25,8 +25,8 @@ import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
 import com.projectu.shared.domain.model.NovelDownloadImageQuality
+import com.projectu.ui.screens.download.DownloadRulesScreen
 import com.projectu.ui.util.CacheDetails
-import com.projectu.ui.util.ImageCacheManager
 import com.projectu.ui.util.LocalImageCacheManager
 import com.projectu.ui.util.rememberPathPicker
 import kotlinx.coroutines.launch
@@ -442,7 +442,7 @@ private fun SettingsScreenContent(
                     title = "下载路径规则",
                     subtitle = "自定义下载路径规则",
                     description = "根据资源类型、R-18、AI 等条件自动分类保存",
-                    onClick = { navigator.push(com.projectu.presentation.settings.download.DownloadRulesScreen()) }
+                    onClick = { navigator.push(DownloadRulesScreen()) }
                 )
             }
             

@@ -1,4 +1,4 @@
-package com.projectu.presentation.settings.download
+package com.projectu.ui.screens.download
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -134,8 +134,8 @@ private fun DownloadRulesContent(
     if (showAddDialog) {
         AddEditRuleDialog(
             onDismiss = { showAddDialog = false },
-            onConfirm = { resourceType, r18, ai, authorGrouping, targetPath ->
-                viewModel.addRule(resourceType, r18, ai, authorGrouping, targetPath)
+            onConfirm = { resourceTypes, r18, ai, authorGrouping, targetPath ->
+                viewModel.addRule(resourceTypes, r18, ai, authorGrouping, targetPath)
                 showAddDialog = false
             }
         )
@@ -146,10 +146,10 @@ private fun DownloadRulesContent(
         AddEditRuleDialog(
             existingRule = rule,
             onDismiss = { editingRule = null },
-            onConfirm = { resourceType, r18, ai, authorGrouping, targetPath ->
+            onConfirm = { resourceTypes, r18, ai, authorGrouping, targetPath ->
                 viewModel.updateRule(
                     rule.copy(
-                        resourceTypeFilter = resourceType,
+                        resourceTypes = resourceTypes,
                         r18Filter = r18,
                         aiFilter = ai,
                         authorGrouping = authorGrouping,

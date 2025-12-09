@@ -1,4 +1,4 @@
-package com.projectu.presentation.settings.download
+package com.projectu.ui.screens.download
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.projectu.shared.domain.model.AuthorGrouping
 import com.projectu.shared.domain.model.DownloadRule
 import com.projectu.shared.domain.model.FilterType
-import com.projectu.shared.domain.model.ResourceTypeFilter
+import com.projectu.shared.domain.model.ResourceType
 
 /**
  * 规则卡片组件
@@ -64,7 +64,7 @@ fun RuleCard(
             
             // 规则条件
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                RuleConditionText("资源类型", getResourceTypeLabel(rule.resourceTypeFilter))
+                RuleConditionText("资源类型", getResourceTypesLabel(rule.resourceTypes))
                 RuleConditionText("R-18", getFilterTypeLabel(rule.r18Filter))
                 RuleConditionText("AI 生成", getFilterTypeLabel(rule.aiFilter))
                 RuleConditionText("作者分组", getAuthorGroupingLabel(rule.authorGrouping))
@@ -155,16 +155,19 @@ private fun RuleConditionText(label: String, value: String) {
 }
 
 /**
- * 获取资源类型标签
+ * 获取资源类型标签（多选）
  */
-private fun getResourceTypeLabel(filter: ResourceTypeFilter): String {
-    return when (filter) {
-        ResourceTypeFilter.ILLUSTRATION -> "插画"
-        ResourceTypeFilter.MANGA -> "漫画"
-        ResourceTypeFilter.UGOIRA -> "动图"
-        ResourceTypeFilter.NOVEL -> "小说"
-        ResourceTypeFilter.NOVEL_SERIES -> "小说系列"
-        ResourceTypeFilter.ANY -> "任意"
+private fun getResourceTypesLabel(types: Set<ResourceType>): String {
+    if (types.isEmpty()) return "任意"
+    
+    return types.joinToString(", ") { type ->
+        when (type) {
+            ResourceType.ILLUSTRATION -> "插画"
+            ResourceType.MANGA -> "漫画"
+            ResourceType.UGOIRA -> "动图"
+            ResourceType.NOVEL -> "小说"
+            ResourceType.NOVEL_SERIES -> "小说系列"
+        }
     }
 }
 

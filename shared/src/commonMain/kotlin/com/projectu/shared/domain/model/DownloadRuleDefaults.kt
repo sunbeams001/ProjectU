@@ -30,7 +30,7 @@ object DownloadRuleDefaults {
         DownloadRule(
             id = -1,
             order = 0,
-            resourceTypeFilter = ResourceTypeFilter.ILLUSTRATION,
+            resourceTypes = setOf(ResourceType.ILLUSTRATION),
             r18Filter = FilterType.ANY,
             aiFilter = FilterType.ANY,
             authorGrouping = AuthorGrouping.NONE,
@@ -41,7 +41,7 @@ object DownloadRuleDefaults {
         DownloadRule(
             id = -2,
             order = 1,
-            resourceTypeFilter = ResourceTypeFilter.MANGA,
+            resourceTypes = setOf(ResourceType.MANGA),
             r18Filter = FilterType.ANY,
             aiFilter = FilterType.ANY,
             authorGrouping = AuthorGrouping.NONE,
@@ -52,7 +52,7 @@ object DownloadRuleDefaults {
         DownloadRule(
             id = -3,
             order = 2,
-            resourceTypeFilter = ResourceTypeFilter.UGOIRA,
+            resourceTypes = setOf(ResourceType.UGOIRA),
             r18Filter = FilterType.ANY,
             aiFilter = FilterType.ANY,
             authorGrouping = AuthorGrouping.NONE,
@@ -63,7 +63,7 @@ object DownloadRuleDefaults {
         DownloadRule(
             id = -4,
             order = 3,
-            resourceTypeFilter = ResourceTypeFilter.NOVEL,
+            resourceTypes = setOf(ResourceType.NOVEL),
             r18Filter = FilterType.ANY,
             aiFilter = FilterType.ANY,
             authorGrouping = AuthorGrouping.NONE,
@@ -74,7 +74,7 @@ object DownloadRuleDefaults {
         DownloadRule(
             id = -5,
             order = 4,
-            resourceTypeFilter = ResourceTypeFilter.NOVEL_SERIES,
+            resourceTypes = setOf(ResourceType.NOVEL_SERIES),
             r18Filter = FilterType.ANY,
             aiFilter = FilterType.ANY,
             authorGrouping = AuthorGrouping.NONE,

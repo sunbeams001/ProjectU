@@ -28,7 +28,7 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         DownloadTaskEntity::class,
         DownloadRuleEntity::class
     ],
-    version = 13, // 版本13: 添加 novelDownloadImageQuality 字段到设置表
+    version = 14,
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)

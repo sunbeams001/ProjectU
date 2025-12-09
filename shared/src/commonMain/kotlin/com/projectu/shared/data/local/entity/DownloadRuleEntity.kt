@@ -6,7 +6,10 @@ import androidx.room.PrimaryKey
 import com.projectu.shared.domain.model.AuthorGrouping
 import com.projectu.shared.domain.model.DownloadRule
 import com.projectu.shared.domain.model.FilterType
-import com.projectu.shared.domain.model.ResourceTypeFilter
+import com.projectu.shared.domain.model.ResourceType
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
 
 /**
  * 下载规则实体（数据库表）
@@ -26,10 +29,13 @@ data class DownloadRuleEntity(
     val ruleOrder: Int,
     
     /**
-     * 资源类型过滤器
-     * ILLUSTRATION / MANGA / UGOIRA / NOVEL / NOVEL_SERIES / ANY
+     * 资源类型集合（JSON数组格式）
+     * - 空字符串或"[]"表示匹配所有类型
+     * - JSON数组示例："["ILLUSTRATION","MANGA"]"
+     * 
+     * 历史字段：resourceTypeFilter（单选，已废弃）
      */
-    val resourceTypeFilter: String,
+    val resourceTypes: String,
     
     /**
      * R-18 过滤器
@@ -85,7 +91,17 @@ data class DownloadRuleEntity(
 fun DownloadRuleEntity.toDownloadRule() = DownloadRule(
     id = id,
     order = ruleOrder,
-    resourceTypeFilter = ResourceTypeFilter.valueOf(resourceTypeFilter),
+    resourceTypes = try {
+        if (resourceTypes.isBlank() || resourceTypes == "[]") {
+            emptySet()
+        } else {
+            Json.decodeFromString<List<String>>(resourceTypes)
+                .map { ResourceType.valueOf(it) }
+                .toSet()
+        }
+    } catch (e: Exception) {
+        emptySet() // 解析失败则默认匹配所有类型
+    },
     r18Filter = FilterType.valueOf(r18Filter),
     aiFilter = FilterType.valueOf(aiFilter),
     authorGrouping = AuthorGrouping.valueOf(authorGrouping),
@@ -102,7 +118,11 @@ fun DownloadRuleEntity.toDownloadRule() = DownloadRule(
 fun DownloadRule.toEntity() = DownloadRuleEntity(
     id = id,
     ruleOrder = order,
-    resourceTypeFilter = resourceTypeFilter.name,
+    resourceTypes = if (resourceTypes.isEmpty()) {
+        "[]"
+    } else {
+        Json.encodeToString(resourceTypes.map { it.name })
+    },
     r18Filter = r18Filter.name,
     aiFilter = aiFilter.name,
     authorGrouping = authorGrouping.name,

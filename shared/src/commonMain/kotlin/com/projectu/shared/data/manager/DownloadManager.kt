@@ -319,10 +319,21 @@ class DownloadManager(
             fileName = "" // 暂时为空
         )
         
-        val targetPath = pathBuilder.buildPath(tempTask, settings)
+        // 使用规则系统获取真实路径（而非旧的pathBuilder）
+        val rule = downloadRulesCache.findMatchingRule(tempTask)
+        val targetPath = rule.targetPath
+        val relativePath = rule.buildRelativePath(tempTask)
+        
+        // 生成文件名
         val fileExtension = customFileExtension ?: getExtension(resourceType)
         val fileName = pathBuilder.buildFileName(tempTask, settings, fileExtension)
-        val fullPath = targetPath / fileName
+        
+        // 构建完整路径检查文件是否存在
+        val fullPath = if (relativePath.isNotEmpty()) {
+            targetPath.toPath() / relativePath / fileName
+        } else {
+            targetPath.toPath() / fileName
+        }
         
         // 检查文件是否已存在，如果存在则直接标记为已完成，避免重复下载
         val (initialStatus, initialProgress) = if (fileSystem.exists(fullPath)) {
@@ -332,7 +343,7 @@ class DownloadManager(
         }
         
         val task = tempTask.copy(
-            targetPath = targetPath.toString(),
+            targetPath = targetPath,  // 存储基础路径即可，下载时会重新计算
             fileName = fileName,
             status = initialStatus,
             progress = initialProgress

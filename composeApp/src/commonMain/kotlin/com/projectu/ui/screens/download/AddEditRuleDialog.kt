@@ -1,4 +1,4 @@
-package com.projectu.presentation.settings.download
+package com.projectu.ui.screens.download
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.projectu.shared.domain.model.AuthorGrouping
 import com.projectu.shared.domain.model.DownloadRule
 import com.projectu.shared.domain.model.FilterType
-import com.projectu.shared.domain.model.ResourceTypeFilter
+import com.projectu.shared.domain.model.ResourceType
 import com.projectu.ui.util.rememberPathPicker
 
 /**
@@ -24,15 +24,15 @@ fun AddEditRuleDialog(
     existingRule: DownloadRule? = null,
     onDismiss: () -> Unit,
     onConfirm: (
-        resourceTypeFilter: ResourceTypeFilter,
+        resourceTypes: Set<ResourceType>,
         r18Filter: FilterType,
         aiFilter: FilterType,
         authorGrouping: AuthorGrouping,
         targetPath: String
     ) -> Unit
 ) {
-    var resourceTypeFilter by remember {
-        mutableStateOf(existingRule?.resourceTypeFilter ?: ResourceTypeFilter.ANY)
+    var resourceTypes by remember {
+        mutableStateOf(existingRule?.resourceTypes ?: emptySet())
     }
     var r18Filter by remember {
         mutableStateOf(existingRule?.r18Filter ?: FilterType.ANY)
@@ -59,14 +59,14 @@ fun AddEditRuleDialog(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 资源类型选择
+                // 资源类型选择（多选）
                 Text(
-                    text = "资源类型",
+                    text = "资源类型（可多选，留空表示匹配所有类型）",
                     style = MaterialTheme.typography.labelMedium
                 )
-                ResourceTypeFilterSelector(
-                    selected = resourceTypeFilter,
-                    onSelect = { resourceTypeFilter = it }
+                ResourceTypeSelector(
+                    selectedTypes = resourceTypes,
+                    onSelectionChange = { resourceTypes = it }
                 )
                 
                 // R-18 过滤
@@ -132,7 +132,7 @@ fun AddEditRuleDialog(
             TextButton(
                 onClick = {
                     if (targetPath.isNotBlank()) {
-                        onConfirm(resourceTypeFilter, r18Filter, aiFilter, authorGrouping, targetPath)
+                        onConfirm(resourceTypes, r18Filter, aiFilter, authorGrouping, targetPath)
                     }
                 },
                 enabled = targetPath.isNotBlank()
@@ -149,31 +149,37 @@ fun AddEditRuleDialog(
 }
 
 /**
- * 资源类型选择器
+ * 资源类型选择器（多选）
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ResourceTypeFilterSelector(
-    selected: ResourceTypeFilter,
-    onSelect: (ResourceTypeFilter) -> Unit
+private fun ResourceTypeSelector(
+    selectedTypes: Set<ResourceType>,
+    onSelectionChange: (Set<ResourceType>) -> Unit
 ) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        ResourceTypeFilter.entries.forEach { type ->
+        ResourceType.entries.forEach { type ->
             FilterChip(
-                selected = selected == type,
-                onClick = { onSelect(type) },
+                selected = type in selectedTypes,
+                onClick = {
+                    val newSelection = if (type in selectedTypes) {
+                        selectedTypes - type
+                    } else {
+                        selectedTypes + type
+                    }
+                    onSelectionChange(newSelection)
+                },
                 label = {
                     Text(
                         when (type) {
-                            ResourceTypeFilter.ILLUSTRATION -> "插画"
-                            ResourceTypeFilter.MANGA -> "漫画"
-                            ResourceTypeFilter.UGOIRA -> "动图"
-                            ResourceTypeFilter.NOVEL -> "小说"
-                            ResourceTypeFilter.NOVEL_SERIES -> "小说系列"
-                            ResourceTypeFilter.ANY -> "任意类型"
+                            ResourceType.ILLUSTRATION -> "插画"
+                            ResourceType.MANGA -> "漫画"
+                            ResourceType.UGOIRA -> "动图"
+                            ResourceType.NOVEL -> "小说"
+                            ResourceType.NOVEL_SERIES -> "小说系列"
                         }
                     )
                 }

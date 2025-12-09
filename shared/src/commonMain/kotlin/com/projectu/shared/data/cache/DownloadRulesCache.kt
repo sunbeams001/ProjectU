@@ -68,7 +68,7 @@ class DownloadRulesCache(
         if (enabledRules.isNotEmpty()) {
             println("[DownloadRulesCache] Checking ${enabledRules.size} custom rules...")
             for (rule in enabledRules) {
-                println("[DownloadRulesCache] - Rule #${rule.order}: ${rule.resourceTypeFilter}, path: ${rule.targetPath}")
+                println("[DownloadRulesCache] - Rule #${rule.order}: ${rule.resourceTypes}, path: ${rule.targetPath}")
                 if (rule.matches(task)) {
                     println("[DownloadRulesCache] ✓ Matched custom rule #${rule.order}, path: ${rule.targetPath}")
                     return rule
@@ -91,10 +91,10 @@ class DownloadRulesCache(
         println("[DownloadRulesCache] Built-in rules count: ${builtInRules.size}")
         
         for (rule in builtInRules) {
-            println("[DownloadRulesCache] - Built-in rule: ${rule.resourceTypeFilter}, basePath: ${rule.targetPath}, subDir: ${rule.subDirectory}")
+            println("[DownloadRulesCache] - Built-in rule: ${rule.resourceTypes}, basePath: ${rule.targetPath}, subDir: ${rule.subDirectory}")
             if (rule.matches(task)) {
                 val relativePath = rule.buildRelativePath(task)
-                println("[DownloadRulesCache] ✓ Matched built-in rule: ${rule.resourceTypeFilter}")
+                println("[DownloadRulesCache] ✓ Matched built-in rule: ${rule.resourceTypes}")
                 println("[DownloadRulesCache]   - Base path: ${rule.targetPath}")
                 println("[DownloadRulesCache]   - Relative path: $relativePath")
                 return rule

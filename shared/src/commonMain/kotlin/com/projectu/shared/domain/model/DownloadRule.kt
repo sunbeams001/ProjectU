@@ -6,7 +6,17 @@ package com.projectu.shared.domain.model
 data class DownloadRule(
     val id: Long = 0,
     val order: Int,
-    val resourceTypeFilter: ResourceTypeFilter,
+    /**
+     * 资源类型过滤器（多选）
+     * - 空集表示匹配所有类型
+     * - 非空集表示仅匹配集合中的类型
+     * 
+     * 示例：
+     * - emptySet() -> 匹配所有类型
+     * - setOf(ILLUSTRATION, MANGA) -> 仅匹配插画和漫画
+     * - setOf(NOVEL, NOVEL_SERIES) -> 仅匹配小说相关
+     */
+    val resourceTypes: Set<ResourceType> = emptySet(),
     val r18Filter: FilterType,
     val aiFilter: FilterType,
     val authorGrouping: AuthorGrouping,
@@ -24,16 +34,9 @@ data class DownloadRule(
      */
     fun matches(task: DownloadTask): Boolean {
         // 1. 资源类型匹配
-        if (resourceTypeFilter != ResourceTypeFilter.ANY) {
-            val expectedType = when (resourceTypeFilter) {
-                ResourceTypeFilter.ILLUSTRATION -> ResourceType.ILLUSTRATION
-                ResourceTypeFilter.MANGA -> ResourceType.MANGA
-                ResourceTypeFilter.UGOIRA -> ResourceType.UGOIRA
-                ResourceTypeFilter.NOVEL -> ResourceType.NOVEL
-                ResourceTypeFilter.NOVEL_SERIES -> ResourceType.NOVEL_SERIES
-                ResourceTypeFilter.ANY -> null // 不会进入这个分支
-            }
-            if (task.resourceType != expectedType) return false
+        // 空集表示匹配所有类型
+        if (resourceTypes.isNotEmpty() && task.resourceType !in resourceTypes) {
+            return false
         }
         
         // 2. R-18 匹配
