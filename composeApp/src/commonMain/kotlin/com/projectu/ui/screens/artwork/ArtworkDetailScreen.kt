@@ -6,6 +6,8 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.projectu.shared.data.local.UgoiraFormat
+import com.projectu.shared.domain.model.ArtworkType
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
@@ -173,15 +175,39 @@ data class ArtworkDetailScreen(
             onDownloadClick = {
                 state.artwork?.let { artwork ->
                     coroutineScope.launch {
-                        // 直接传入artwork对象，避免重复请求
-                        val result = downloadRepository.addIllustrationDownload(
-                            artwork = artwork,
-                            pageIndex = null  // null表示下载所有页
-                        )
+                        // 根据作品类型选择下载方法
+                        val result = when (artwork.type) {
+                            ArtworkType.UGOIRA -> {
+                                // Ugoira 默认下载为 GIF（点击）
+                                downloadRepository.addUgoiraDownload(artwork, UgoiraFormat.GIF)
+                            }
+                            else -> {
+                                // 插画和漫画使用插画下载方法
+                                downloadRepository.addIllustrationDownload(
+                                    artwork = artwork,
+                                    pageIndex = null  // null表示下载所有页
+                                )
+                            }
+                        }
                         if (result.isSuccess) {
                             // 可以显示一个提示：已添加到下载列表
                             // 跳转到下载页面
                             navigator.push(DownloadScreen())
+                        }
+                    }
+                }
+            },
+            onDownloadLongClick = {
+                state.artwork?.let { artwork ->
+                    coroutineScope.launch {
+                        // 长按仅对 Ugoira 有效，下载为 MP4
+                        if (artwork.type == ArtworkType.UGOIRA) {
+                            val result = downloadRepository.addUgoiraDownload(artwork, UgoiraFormat.MP4)
+                            if (result.isSuccess) {
+                                // 可以显示一个提示：已添加到下载列表（MP4格式）
+                                // 跳转到下载页面
+                                navigator.push(DownloadScreen())
+                            }
                         }
                     }
                 }

@@ -182,12 +182,12 @@ enum class AuthorFolderMode {
  */
 enum class UgoiraFormat {
     /**
-     * GIF格式
+     * GIF格式（体积较大，兼容性好）
      */
     GIF,
     
     /**
-     * MP4格式（未来支持）
+     * MP4格式（H.264编码，体积小90%，高质量）
      */
     MP4
 }

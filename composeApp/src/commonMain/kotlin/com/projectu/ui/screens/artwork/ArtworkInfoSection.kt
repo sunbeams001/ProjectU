@@ -1,6 +1,7 @@
 package com.projectu.ui.screens.artwork
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -243,6 +244,7 @@ fun ArtworkDetailInfoSection(
     onCommentClick: (() -> Unit)? = null,
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
+    onDownloadLongClick: (() -> Unit)? = null,
     onScrollAtTop: ((Float) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -463,11 +465,12 @@ fun ArtworkDetailInfoSection(
                     enabled = onSimilarClick != null
                 )
                 
-                // 下载按钮（暂时不实现功能）
+                // 下载按钮（点击下载GIF，长按下载MP4）
                 ActionButton(
                     icon = Icons.Default.Download,
                     label = stringResource(Res.string.artwork_download),
                     onClick = { onDownloadClick?.invoke() },
+                    onLongClick = { onDownloadLongClick?.invoke() },
                     enabled = onDownloadClick != null
                 )
             }
@@ -561,14 +564,18 @@ private fun ActionButton(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .then(
                 if (enabled) {
-                    Modifier.clickable(onClick = onClick)
+                    Modifier.combinedClickable(
+                        onClick = onClick,
+                        onLongClick = onLongClick
+                    )
                 } else {
                     Modifier
                 }

@@ -15,6 +15,7 @@ kotlinx-serialization = "1.9.0"
 kotlinx-datetime = "0.7.1"
 okio = "3.16.4"
 gifkt = "0.3.0"
+javacv = "1.5.12"
 ksp = "2.2.21-2.0.4"
 androidx-activity-compose = "1.12.1"
 androidx-lifecycle = "2.10.0"
@@ -69,6 +70,9 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 # GIF.kt - GIF编解码库
 gifkt = { module = "com.shakster:gifkt", version.ref = "gifkt" }
+
+# JavaCV - FFmpeg封装 (Desktop MP4编码)
+javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
 
 # AndroidX
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }

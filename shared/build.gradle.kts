@@ -60,6 +60,8 @@ kotlin {
             dependencies {
                 implementation(libs.ktor.client.cio)
                 implementation(libs.kotlinx.coroutines.swing)
+                // JavaCV for MP4 encoding on Desktop
+                implementation(libs.javacv.platform)
             }
         }
         

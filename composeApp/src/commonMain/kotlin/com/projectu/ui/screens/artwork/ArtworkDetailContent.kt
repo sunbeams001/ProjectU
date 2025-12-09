@@ -59,6 +59,7 @@ fun ArtworkDetailContent(
     onCommentClick: (() -> Unit)? = null,
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
+    onDownloadLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -97,6 +98,7 @@ fun ArtworkDetailContent(
                         onCommentClick = onCommentClick,
                         onSimilarClick = onSimilarClick,
                         onDownloadClick = onDownloadClick,
+                        onDownloadLongClick = onDownloadLongClick,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
@@ -112,6 +114,7 @@ fun ArtworkDetailContent(
                         onCommentClick = onCommentClick,
                         onSimilarClick = onSimilarClick,
                         onDownloadClick = onDownloadClick,
+                        onDownloadLongClick = onDownloadLongClick,
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
@@ -153,6 +156,7 @@ private fun ArtworkListPager(
     onCommentClick: (() -> Unit)? = null,
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
+    onDownloadLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(
@@ -209,6 +213,7 @@ private fun ArtworkListPager(
                     onCommentClick = onCommentClick,
                     onSimilarClick = onSimilarClick,
                     onDownloadClick = onDownloadClick,
+                    onDownloadLongClick = onDownloadLongClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -228,6 +233,7 @@ private fun ArtworkListPager(
                     onCommentClick = onCommentClick,
                     onSimilarClick = onSimilarClick,
                     onDownloadClick = onDownloadClick,
+                    onDownloadLongClick = onDownloadLongClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -279,6 +285,7 @@ private fun ArtworkDetailLayout(
     onCommentClick: (() -> Unit)? = null,
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
+    onDownloadLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -315,6 +322,7 @@ private fun ArtworkDetailLayout(
             onCommentClick = onCommentClick,
             onSimilarClick = onSimilarClick,
             onDownloadClick = onDownloadClick,
+            onDownloadLongClick = onDownloadLongClick,
             onScrollAtTop = { delta ->
                 // 当详情区域滚动到顶部时，继续下滑会触发基础信息区域收起
                 if (delta > 0 && dragOffset > 0) {

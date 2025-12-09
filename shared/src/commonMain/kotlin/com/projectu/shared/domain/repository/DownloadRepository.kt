@@ -1,5 +1,6 @@
 package com.projectu.shared.domain.repository
 
+import com.projectu.shared.data.local.UgoiraFormat
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.DownloadStatus
 import com.projectu.shared.domain.model.DownloadTask
@@ -44,11 +45,19 @@ interface DownloadRepository {
     suspend fun addIllustrationDownload(illustId: Long, pageIndex: Int? = null): Result<String>
     
     /**
-     * 添加Ugoira动图下载任务
+     * 添加Ugoira动图下载任务（默认GIF格式）
      * @param artwork 作品对象（必须是UGOIRA类型）
      * @return 任务ID
      */
     suspend fun addUgoiraDownload(artwork: Artwork): Result<String>
+    
+    /**
+     * 添加Ugoira动图下载任务（指定格式）
+     * @param artwork 作品对象（必须是UGOIRA类型）
+     * @param format 下载格式（GIF或MP4）
+     * @return 任务ID
+     */
+    suspend fun addUgoiraDownload(artwork: Artwork, format: UgoiraFormat): Result<String>
     
     /**
      * 添加小说下载任务

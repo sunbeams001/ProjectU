@@ -1,5 +1,6 @@
 package com.projectu.shared.data.repository
 
+import com.projectu.shared.data.local.UgoiraFormat
 import com.projectu.shared.data.manager.DownloadManager
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.DownloadStatus
@@ -37,7 +38,11 @@ class DownloadRepositoryImpl(
     }
     
     override suspend fun addUgoiraDownload(artwork: Artwork): Result<String> {
-        return downloadManager.addUgoiraDownloadTask(artwork)
+        return downloadManager.addUgoiraDownloadTask(artwork, UgoiraFormat.GIF)
+    }
+    
+    override suspend fun addUgoiraDownload(artwork: Artwork, format: UgoiraFormat): Result<String> {
+        return downloadManager.addUgoiraDownloadTask(artwork, format)
     }
     
     override suspend fun addNovelDownload(novelId: String): Result<String> {

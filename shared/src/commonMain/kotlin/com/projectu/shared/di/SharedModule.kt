@@ -297,6 +297,15 @@ val utilModule = module {
             ugoiraCache = get()
         )
     }
+    
+    // Ugoira MP4转换器
+    single {
+        com.projectu.shared.data.util.UgoiraMp4Converter(
+            httpClient = get(),
+            fileSystem = FileSystem.SYSTEM,
+            ugoiraCache = get()
+        )
+    }
 }
 
 /**
@@ -319,6 +328,7 @@ fun downloadModule(cachedFileProvider: com.projectu.shared.data.manager.CachedFi
             settingsCache = get(),
             downloadRulesCache = get(),
             ugoiraGifConverter = get(),
+            ugoiraMp4Converter = get(),
             ageLimitDeterminer = get()
         )
     }

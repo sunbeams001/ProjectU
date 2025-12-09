@@ -16,6 +16,8 @@ import com.projectu.shared.data.util.EpubBuilder
 import com.projectu.shared.data.util.NovelToEpubConverter
 import com.projectu.shared.data.util.PlatformFileWriter
 import com.projectu.shared.data.util.UgoiraGifConverter
+import com.projectu.shared.data.util.UgoiraMp4Converter
+import com.projectu.shared.data.local.UgoiraFormat
 import com.projectu.shared.domain.model.DownloadStatus
 import com.projectu.shared.domain.model.DownloadTask
 import com.projectu.shared.domain.model.Novel
@@ -70,6 +72,7 @@ class DownloadManager(
     private val settingsCache: SettingsCache,
     private val downloadRulesCache: DownloadRulesCache,
     private val ugoiraGifConverter: UgoiraGifConverter,
+    private val ugoiraMp4Converter: UgoiraMp4Converter,
     private val ageLimitDeterminer: com.projectu.shared.util.AgeLimitDeterminer,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 ) {
@@ -288,7 +291,8 @@ class DownloadManager(
         isAi: Boolean,
         tags: List<String>,
         publishTime: Long,
-        thumbnailUrl: String? = null
+        thumbnailUrl: String? = null,
+        customFileExtension: String? = null
     ): String {
         val settings = getCurrentDownloadSettings()
         val taskId = UUID.randomUUID().toString()
@@ -316,7 +320,8 @@ class DownloadManager(
         )
         
         val targetPath = pathBuilder.buildPath(tempTask, settings)
-        val fileName = pathBuilder.buildFileName(tempTask, settings, getExtension(resourceType))
+        val fileExtension = customFileExtension ?: getExtension(resourceType)
+        val fileName = pathBuilder.buildFileName(tempTask, settings, fileExtension)
         val fullPath = targetPath / fileName
         
         // 检查文件是否已存在，如果存在则直接标记为已完成，避免重复下载
@@ -470,7 +475,7 @@ class DownloadManager(
     }
     
     /**
-     * 下载Ugoira并转换为GIF
+     * 下载Ugoira并转换为指定格式（GIF或MP4）
      */
     private suspend fun downloadUgoira(task: DownloadTask) = withContext(Dispatchers.IO) {
         // 1. 尝试从缓存加载元数据，如果不存在则从 API 获取
@@ -502,32 +507,50 @@ class DownloadManager(
         // 确保目录存在
         platformFileWriter.ensureDirectoryExists(baseDownloadPath, relativePath)
         
-        // 3. 使用 UgoiraGifConverter 转换为 GIF 字节数组（会自动使用缓存）
-        val gifBytes = ugoiraGifConverter.convertToGif(
-            artworkId = task.resourceId,
-            metadata = metadata,
-            onProgress = { current, total ->
-                // 更新进度（转换过程）
-                val progress = current.toFloat() / total
-                coroutineScope.launch {
-                    downloadDao.updateTaskProgress(task.id, progress, 0L)
+        // 3. 根据文件扩展名判断格式，调用对应的转换器
+        val fileBytes = if (fileName.endsWith(".mp4", ignoreCase = true)) {
+            // 使用 MP4 转换器
+            ugoiraMp4Converter.convertToMp4(
+                artworkId = task.resourceId,
+                metadata = metadata,
+                onProgress = { current, total ->
+                    // 更新进度（转换过程）
+                    val progress = current.toFloat() / total
+                    coroutineScope.launch {
+                        downloadDao.updateTaskProgress(task.id, progress, 0L)
+                    }
                 }
-            }
-        )
+            )
+        } else {
+            // 默认使用 GIF 转换器
+            ugoiraGifConverter.convertToGif(
+                artworkId = task.resourceId,
+                metadata = metadata,
+                onProgress = { current, total ->
+                    // 更新进度（转换过程）
+                    val progress = current.toFloat() / total
+                    coroutineScope.launch {
+                        downloadDao.updateTaskProgress(task.id, progress, 0L)
+                    }
+                }
+            )
+        }
         
         // 4. 使用 PlatformFileWriter 写入文件（支持 Content URI）
         val sink = platformFileWriter.createSinkFromUri(baseDownloadPath, relativePath, fileName)
         sink.buffer().use { bufferedSink ->
-            bufferedSink.write(gifBytes)
+            bufferedSink.write(fileBytes)
         }
     }
     
     /**
      * 添加Ugoira动图下载任务
      * @param artwork 作品对象（必须是UGOIRA类型）
+     * @param format 下载格式（GIF或MP4），默认为GIF
      */
     suspend fun addUgoiraDownloadTask(
-        artwork: com.projectu.shared.domain.model.Artwork
+        artwork: com.projectu.shared.domain.model.Artwork,
+        format: UgoiraFormat = UgoiraFormat.GIF
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
             // 验证作品类型
@@ -538,7 +561,14 @@ class DownloadManager(
             // 获取缩略图 URL
             val thumbnailUrl = artwork.imageUrls.pages.firstOrNull()?.urls?.squareMedium
             
-            // 创建下载任务
+            // 根据格式确定文件扩展名
+            val fileExtension = when (format) {
+                UgoiraFormat.GIF -> "gif"
+                UgoiraFormat.MP4 -> "mp4"
+                else -> "gif" // 默认 GIF
+            }
+            
+            // 创建下载任务（文件名模板会被应用，但需要确保扩展名正确）
             val taskId = createDownloadTask(
                 resourceType = ResourceType.UGOIRA,
                 resourceId = artwork.id,
@@ -552,7 +582,8 @@ class DownloadManager(
                 isAi = artwork.isAiGenerated,
                 tags = artwork.tags.map { it.name },
                 publishTime = System.currentTimeMillis(),
-                thumbnailUrl = thumbnailUrl
+                thumbnailUrl = thumbnailUrl,
+                customFileExtension = fileExtension // 使用自定义扩展名
             )
             
             // 自动开始下载
