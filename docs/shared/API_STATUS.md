@@ -153,12 +153,12 @@
 | 获取标签信息 | `/ajax/tag/info` | ✅ | ✅ | ✅ 已重构 | TagInfoBody 完全重构 |
 
 **新增接口详情**:
-- **搜索建议** (`getSearchSuggestion`): 
+- **搜索框推荐内容** (`getSearchRecommendations`): 
   - 点击搜索框时触发，无需输入关键字
   - 返回热门标签(插画/小说)、推荐标签、基于标签的推荐、我的收藏标签、标签翻译、缩略图预览
   - 支持模式: `all`(全部作品), `r18`(R18作品)
-- **标签搜索建议** (`getSearchSuggest`):
-  - 输入关键字时的实时搜索建议
+- **标签自动补全** (`searchTagAutocomplete`):
+  - 输入关键字时的实时标签搜索
   - RPC 接口，返回格式不同于标准 PixivResponse
 
 **DTO 修复记录**:
@@ -182,8 +182,8 @@
 ### 2025-11-20
 - ✅ NovelSeriesApi 所有 DTO 完全重构
 - ✅ 新增 watch/unwatch 接口（追更功能）
-- ✅ TagApi 新增 getSearchSuggestion 接口（搜索建议）
-- ✅ TagApi 新增 getSearchSuggest 接口（RPC标签搜索）
+- ✅ TagApi 新增 getSearchRecommendations 接口（搜索框推荐）
+- ✅ TagApi 新增 searchTagAutocomplete 接口（标签自动补全）
 - ✅ TagApi DTO 修复（TagCandidate, TagInfoBody）
 - ✅ 移除废弃的 getPopularTags 接口
 - ✅ 新增语言支持：Thai (th)、Malay (ms)

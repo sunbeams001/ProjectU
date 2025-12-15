@@ -33,6 +33,23 @@
     <string name="discovery_search_hint">搜尋作品、用戶...</string>
     <string name="discovery_trending_tags">熱門標籤</string>
     <string name="discovery_recent_searches">最近搜尋</string>
+    
+    <!-- Search Preparation Screen -->
+    <string name="search_input_hint">搜尋作品、標籤、用戶...</string>
+    <string name="search_button">搜尋</string>
+    <string name="search_clear">清空</string>
+    <string name="search_history_title">搜尋歷史</string>
+    <string name="search_history_clear">清空歷史</string>
+    <string name="search_history_empty">暫無搜尋歷史</string>
+    <string name="search_recommendations_title">搜尋建議</string>
+    <string name="search_recommendations_refresh">刷新</string>
+    <string name="search_recommendations_retry">重試</string>
+    <string name="search_recommendations_popular_illust">🔥 熱門標籤（插畫）</string>
+    <string name="search_recommendations_popular_novel">🔥 熱門標籤（小說）</string>
+    <string name="search_recommendations_recommended">⭐ 推薦標籤</string>
+    <string name="search_recommendations_bookmark">📚 收藏標籤</string>
+    <string name="search_recommendations_my_favorite">⭐ 我喜歡的標籤</string>
+    <string name="search_recommendations_thumbnails">🖼️ 作品預覽</string>
     <string name="discovery_recommended_users">推薦用戶</string>
     <string name="discovery_recommended_illusts">推薦插畫·漫畫</string>
     <string name="discovery_recommended_novels">推薦小說</string>

@@ -18,6 +18,23 @@
     <string name="discovery_search_hint">搜索作品、用户...</string>
     <string name="discovery_trending_tags">热门标签</string>
     <string name="discovery_recent_searches">最近搜索</string>
+    
+    <!-- Search Preparation Screen -->
+    <string name="search_input_hint">搜索作品、标签、用户...</string>
+    <string name="search_button">搜索</string>
+    <string name="search_clear">清空</string>
+    <string name="search_history_title">搜索历史</string>
+    <string name="search_history_clear">清空历史</string>
+    <string name="search_history_empty">暂无搜索历史</string>
+    <string name="search_recommendations_title">搜索建议</string>
+    <string name="search_recommendations_refresh">刷新</string>
+    <string name="search_recommendations_retry">重试</string>
+    <string name="search_recommendations_popular_illust">🔥 热门标签（插画）</string>
+    <string name="search_recommendations_popular_novel">🔥 热门标签（小说）</string>
+    <string name="search_recommendations_recommended">⭐ 推荐标签</string>
+    <string name="search_recommendations_bookmark">📚 收藏标签</string>
+    <string name="search_recommendations_my_favorite">⭐ 我喜欢的标签</string>
+    <string name="search_recommendations_thumbnails">🖼️ 作品预览</string>
     <string name="discovery_recommended_users">推荐用户</string>
     <string name="discovery_recommended_illusts">推荐插画·漫画</string>
     <string name="discovery_recommended_novels">推荐小说</string>

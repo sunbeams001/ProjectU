@@ -190,17 +190,17 @@
 | API 方法 | 端点 | 优先级 | 测试状态 | 备注 |
 |---------|------|--------|---------|------|
 | `getSuggestByWord` | `/ajax/tags/suggest_by_word` | P1 | ✅ | 添加标签时的建议 |
-| `getSearchSuggestion` | `/ajax/search/suggestion` | P1 | ✅ | 点击搜索框时触发 |
-| `getSearchSuggest` | `/rpc/cps.php` | P1 | ✅ | RPC 标签搜索建议 |
+| `getSearchRecommendations` | `/ajax/search/suggestion` | P1 | ✅ | 点击搜索框时触发 |
+| `searchTagAutocomplete` | `/rpc/cps.php` | P1 | ✅ | RPC 标签自动补全 |
 | `getTagInfo` | `/ajax/tags/{tag}` | P2 | ✅ | 标签信息 |
 
 ⚠️ **注意**: 
 - `TagCandidate` DTO 已修复（illustCount, totalCount, suggestType）
 - `TagInfoBody` 已重构，包含完整的翻译信息（en, ja, en_new, ja_new）
-- **新增** `getSearchSuggestion`: 返回热门标签、推荐标签、我的收藏标签、标签翻译、缩略图预览
+- **新增** `getSearchRecommendations`: 返回热门标签、推荐标签、我的收藏标签、标签翻译、缩略图预览
   - 支持模式: `all`(全部作品), `r18`(R18作品)
   - 包含 DTO: SearchSuggestionBody, PopularTags, TagTranslationInfo, ThumbnailInfo, BookmarkData
-- **新增** `getSearchSuggest`: RPC 接口，输入关键字时的实时搜索建议
+- **新增** `searchTagAutocomplete`: RPC 接口，输入关键字时的实时标签搜索
 
 ---
 

@@ -18,3 +18,12 @@ actual fun createPixivConfigDataStore(): DataStore<Preferences> {
         produceFile = { dataStoreFile.absolutePath.toPath() }
     )
 }
+
+actual fun createSearchHistoryDataStore(): DataStore<Preferences> {
+    val context = ContextHolder.getContext()
+    val dataStoreFile = context.filesDir.resolve("search_history.preferences_pb")
+    
+    return PreferenceDataStoreFactory.createWithPath(
+        produceFile = { dataStoreFile.absolutePath.toPath() }
+    )
+}

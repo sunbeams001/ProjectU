@@ -4,6 +4,7 @@ import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.DiscoveryMode
+import com.projectu.shared.data.remote.model.IllustSearchMode
 import com.projectu.shared.domain.model.UgoiraMetadata
 import kotlinx.coroutines.flow.Flow
 
@@ -50,12 +51,14 @@ interface ArtworkRepository {
     
     /**
      * 搜索作品
+     * @param aiType AI作品过滤：1(隐藏AI作品), null(显示AI作品)
      */
     suspend fun searchArtworks(
         keyword: String,
         page: Int = 1,
-        searchMode: String = "s_tag",
-        order: String = "date_desc"
+        searchMode: String = IllustSearchMode.DEFAULT.value,
+        order: String = "date_desc",
+        aiType: Int? = null
     ): Result<List<Artwork>>
     
     /**

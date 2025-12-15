@@ -5,9 +5,11 @@ import com.projectu.shared.data.cache.DownloadRulesCache
 import com.projectu.shared.data.cache.NovelCacheManager
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.local.PixivConfigStore
+import com.projectu.shared.data.local.SearchHistoryStore
 import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.createPixivConfigDataStore
+import com.projectu.shared.data.local.createSearchHistoryDataStore
 import com.projectu.shared.data.local.store.DownloadRulesStore
 import com.projectu.shared.data.manager.DownloadManager
 import com.projectu.shared.data.remote.api.PixivApi
@@ -78,6 +80,11 @@ val dataStoreModule = module {
         PixivConfigStore(createPixivConfigDataStore())
     }
     
+    // 搜索历史存储
+    single {
+        SearchHistoryStore(createSearchHistoryDataStore())
+    }
+    
     // 应用设置存储
     single {
         SettingsStore(get())
@@ -130,6 +137,16 @@ val pixivApiModule = module {
     // 小说系列 API
     single {
         get<PixivApi>().novelSeriesApi
+    }
+    
+    // 标签 API
+    single {
+        get<PixivApi>().tagApi
+    }
+    
+    // 搜索 API
+    single {
+        get<PixivApi>().searchApi
     }
 }
 

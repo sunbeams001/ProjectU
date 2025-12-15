@@ -10,6 +10,8 @@ import com.projectu.shared.data.remote.dto.user.RecommendUserDetail
 import com.projectu.shared.data.remote.dto.user.TagTranslation
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
+import com.projectu.shared.data.remote.dto.user.UserSearchBody
+import com.projectu.shared.data.remote.dto.user.UserSearchItem
 import com.projectu.shared.domain.model.AgeLimit
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.ArtworkImageUrls
@@ -315,4 +317,60 @@ fun UserFollowingBody.toUsers(ageLimitDeterminer: AgeLimitDeterminer): List<User
  */
 fun MyPixivBody.toUsers(ageLimitDeterminer: AgeLimitDeterminer): List<User> {
     return users.map { it.toUser(ageLimitDeterminer) }
+}
+
+/**
+ * 将 UserSearchItem 转换为 User 实体（不含作品）
+ */
+fun UserSearchItem.toUser(): User {
+    return User(
+        id = userId,
+        name = name,
+        account = null,
+        profileImageUrl = image,
+        profileImageUrlBig = imageBig,
+        comment = comment,
+        followStatus = when {
+            isFollowed -> FollowStatus.PUBLIC
+            else -> FollowStatus.NOT_FOLLOWING
+        },
+        isMypixiv = isMypixiv,
+        isBlocking = isBlocking,
+        followedBack = followedBack,
+        isPremium = premium,
+        backgroundUrl = background,
+        acceptCommissionRequest = commission?.acceptRequest ?: false,
+        followingCount = 0,
+        webpage = null,
+        isOfficial = false,
+        illusts = emptyList(), // 需要通过 toUsersWithArtworks 填充
+        novels = emptyList()
+    )
+}
+
+/**
+ * 将 UserSearchBody 转换为 User 列表，并填充作品
+ * 
+ * @param ageLimitDeterminer 年龄限制判定工具
+ * @return 包含完整作品信息的用户列表
+ */
+fun UserSearchBody.toUsersWithArtworks(ageLimitDeterminer: AgeLimitDeterminer): List<User> {
+    // 构建插画ID到插画对象的映射
+    val illustMap: Map<String, IllustSimple> = thumbnails.illust.associateBy { it.id }
+    
+    // 转换用户并填充作品
+    return users.map { userItem ->
+        // 从 page.workIds 获取该用户的作品ID列表
+        val userWorkIds = page.workIds[userItem.userId] ?: emptyList()
+        
+        // 筛选出插画类型的作品并转换
+        val userArtworks: List<Artwork> = userWorkIds
+            .filter { it.type == "illust" }
+            .mapNotNull { workInfo ->
+                illustMap[workInfo.id]?.toArtwork(ageLimitDeterminer)
+            }
+        
+        // 转换用户并填充作品
+        userItem.toUser().copy(illusts = userArtworks)
+    }
 }

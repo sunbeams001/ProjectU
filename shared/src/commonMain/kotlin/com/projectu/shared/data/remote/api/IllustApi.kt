@@ -6,11 +6,9 @@ import com.projectu.shared.data.remote.dto.illust.DiscoveryBody
 import com.projectu.shared.data.remote.dto.illust.IllustDetailBody
 import com.projectu.shared.data.remote.dto.illust.IllustRecommendBody
 import com.projectu.shared.data.remote.dto.illust.IllustRecommendInitBody
-import com.projectu.shared.data.remote.dto.illust.IllustSearchBody
 import com.projectu.shared.data.remote.dto.illust.LikeBody
 import com.projectu.shared.data.remote.dto.illust.PageInfo
 import com.projectu.shared.data.remote.dto.illust.UgoiraMetaBody
-import io.ktor.http.encodeURLPath
 
 /**
  * 插画作品 API
@@ -52,41 +50,6 @@ class IllustApi(private val client: PixivApiClient) {
      */
     suspend fun getUgoiraMeta(pid: Long): PixivResponse<UgoiraMetaBody> {
         return client.get("/ajax/illust/$pid/ugoira_meta")
-    }
-
-    /**
-     * 搜索插画
-     * @param keyword 关键词（需要UTF-8编码，空格替换为%20）
-     * @param searchMode 搜索模式：s_tag(标签部分匹配), s_tag_full(标签完全匹配), s_tc(标题说明)
-     * @param order 排序：date_d(从新到旧), date(从旧到新)
-     * @param mode 模式：all, safe, r18
-     * @param page 页码
-     * @param scd 发布时间起始（格式：yyyy-MM-dd）
-     * @param ecd 发布时间结束（格式：yyyy-MM-dd）
-     */
-    suspend fun search(
-        keyword: String,
-        searchMode: String = "s_tag",
-        order: String = "date_d",
-        mode: String = "all",
-        page: Int = 1,
-        scd: String? = null,
-        ecd: String? = null
-    ): PixivResponse<IllustSearchBody> {
-        // URL 编码关键词
-        val encodedKeyword = keyword.encodeURLPath()
-        
-        val params = mutableMapOf<String, Any?>(
-            "word" to keyword,
-            "s_mode" to searchMode,
-            "order" to order,
-            "mode" to mode,
-            "p" to page
-        )
-        scd?.let { params["scd"] = it }
-        ecd?.let { params["ecd"] = it }
-
-        return client.get("/ajax/search/artworks/$encodedKeyword", params)
     }
 
     /**

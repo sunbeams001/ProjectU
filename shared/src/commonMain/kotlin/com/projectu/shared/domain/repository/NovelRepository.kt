@@ -1,6 +1,7 @@
 package com.projectu.shared.domain.repository
 
 import com.projectu.shared.data.remote.model.DiscoveryMode
+import com.projectu.shared.data.remote.model.NovelSearchMode
 import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.domain.model.Novel
@@ -26,14 +27,16 @@ interface NovelRepository {
      * @param order 排序方式
      * @param mode 内容模式
      * @param page 页码
+     * @param aiType AI作品过滤：1(隐藏AI作品), null(显示AI作品)
      * @return 小说列表
      */
     suspend fun searchNovels(
         keyword: String,
-        searchMode: String = "s_tag",
+        searchMode: String = NovelSearchMode.DEFAULT.value,
         order: String = "date_d",
         mode: String = "all",
-        page: Int = 1
+        page: Int = 1,
+        aiType: Int? = null
     ): Result<List<Novel>>
     
     /**

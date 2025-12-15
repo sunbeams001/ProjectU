@@ -29,6 +29,7 @@ import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesTitle
 import com.projectu.shared.data.remote.dto.ranking.RankingResponse
 import com.projectu.shared.data.remote.dto.tag.SearchSuggestionBody
 import com.projectu.shared.data.remote.dto.tag.TagInfoBody
+import com.projectu.shared.data.remote.dto.tag.TagSearchSuggestBody
 import com.projectu.shared.data.remote.dto.tag.TagSuggestBody
 import com.projectu.shared.data.remote.dto.user.ProfileAllBody
 import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
@@ -40,6 +41,7 @@ import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
 import com.projectu.shared.data.remote.dto.user.UserRecommendBody
+import com.projectu.shared.data.remote.dto.user.UserSearchBody
 import com.projectu.shared.data.remote.model.RankingCategory
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.RankingMode
@@ -182,7 +184,6 @@ class ApiTestViewModel(
                     when (method) {
                         // ==================== IllustApi ====================
                         ApiMethod.GetIllustDetail -> testGetIllustDetail()
-                        ApiMethod.SearchIllust -> testSearchIllust()
                         ApiMethod.GetRecommendInit -> testGetRecommendInit()
                         ApiMethod.GetRecommendIllusts -> testGetRecommendIllusts()
                         ApiMethod.GetDiscoveryIllust -> testGetDiscoveryIllust()
@@ -232,7 +233,6 @@ class ApiTestViewModel(
                         // ==================== NovelApi ====================
                         ApiMethod.GetNovelDetail -> testGetNovelDetail()
                         ApiMethod.GetNovelBookmarkData -> testGetNovelBookmarkData()
-                        ApiMethod.SearchNovel -> testSearchNovel()
                         ApiMethod.GetNovelDiscovery -> testGetNovelDiscovery()
                         
                         // ==================== IllustSeriesApi ====================
@@ -263,6 +263,11 @@ class ApiTestViewModel(
                         ApiMethod.AddNovelMarker -> testAddNovelMarker()
                         ApiMethod.DeleteNovelMarker -> testDeleteNovelMarker()
                         ApiMethod.GetNovelMarkerList -> testGetNovelMarkerList()
+                        
+                        // ==================== SearchApi ====================
+                        ApiMethod.SearchIllust -> testSearchIllust()
+                        ApiMethod.SearchNovel -> testSearchNovel()
+                        ApiMethod.SearchUser -> testSearchUser()
                     }
                 }
                 
@@ -2011,6 +2016,92 @@ class ApiTestViewModel(
         updateResultWithRaw(responseWithRaw.rawJson, summary)
     }
     
+    private suspend fun testSearchUser() {
+        val keyword = getParam("keyword")
+        val searchMode = getParam("searchMode")
+        val hasWork = getParam("hasWork").toIntOrNull() ?: 1
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<UserSearchBody>(
+            "/ajax/search/users",
+            mapOf(
+                "nick" to keyword,
+                "s_mode" to searchMode,
+                "i" to hasWork,
+                "p" to page
+            )
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 用户搜索成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("关键词: $keyword")
+            appendLine("搜索模式: $searchMode (${if (searchMode == "s_usr_full") "完全一致" else "部分一致"})")
+            appendLine("投稿作品: ${if (hasWork == 1) "仅有作品用户" else "全部用户"}")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            response.body?.let { body ->
+                appendLine("用户总数: ${body.page.total}")
+                appendLine("当前页用户数: ${body.users.size}")
+                appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                appendLine("用户列表:")
+                body.users.take(5).forEach { user ->
+                    appendLine("  • ${user.name} (ID: ${user.userId})")
+                    appendLine("    - Premium: ${if (user.premium) "是" else "否"}")
+                    appendLine("    - 已关注: ${if (user.isFollowed) "是" else "否"}")
+                    if (user.comment.isNotBlank()) {
+                        val shortComment = if (user.comment.length > 50) 
+                            user.comment.take(50) + "..." 
+                        else 
+                            user.comment
+                        appendLine("    - 简介: $shortComment")
+                    }
+                }
+                if (body.users.size > 5) {
+                    appendLine("  ... 还有 ${body.users.size - 5} 位用户")
+                }
+                
+                if (body.thumbnails.illust.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("缩略图插画数: ${body.thumbnails.illust.size}")
+                    body.thumbnails.illust.take(3).forEach { illust ->
+                        appendLine("  • ${illust.title} (ID: ${illust.id})")
+                        appendLine("    作者: ${illust.userName} (${illust.userId})")
+                    }
+                }
+                
+                if (body.thumbnails.novel.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("缩略图小说数: ${body.thumbnails.novel.size}")
+                    body.thumbnails.novel.take(3).forEach { novel ->
+                        appendLine("  • ${novel.title} (ID: ${novel.id})")
+                        appendLine("    作者: ${novel.userName} (${novel.userId})")
+                        appendLine("    字数: ${novel.textCount}, 阅读时间: ${novel.readingTime}分")
+                    }
+                }
+                
+                if (body.page.workIds.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("用户作品信息:")
+                    body.page.workIds.entries.take(3).forEach { (userId, works) ->
+                        appendLine("  用户 $userId: ${works.size} 个作品")
+                        works.take(2).forEach { work ->
+                            appendLine("    - ${work.type}: ${work.id}")
+                        }
+                    }
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
     private suspend fun testGetNovelDiscovery() {
         val mode = getParam("mode")
         val limit = getParam("limit").toIntOrNull() ?: 100
@@ -2739,25 +2830,13 @@ class ApiTestViewModel(
     private suspend fun testGetTagSearchSuggest() {
         val keyword = getParam("keyword")
         
-        val response = pixivApi.tagApi.getSearchSuggest(keyword)
+        // 使用 getRawWithJson 获取原始响应
+        val responseWithJson = pixivApi.client.getRawWithJson<TagSearchSuggestBody>(
+            "/rpc/cps.php",
+            mapOf("keyword" to keyword)
+        )
         
-        // 手动构建 JSON（因为这不是 PixivResponse 包装的）
-        val rawJson = buildString {
-            appendLine("{")
-            appendLine("  \"candidates\": [")
-            response.candidates.forEachIndexed { index, candidate ->
-                appendLine("    {")
-                appendLine("      \"tag_name\": \"${candidate.tagName}\",")
-                appendLine("      \"access_count\": \"${candidate.accessCount}\",")
-                appendLine("      \"type\": \"${candidate.type}\"")
-                candidate.tagTranslation?.let {
-                    appendLine("      ,\"tag_translation\": \"$it\"")
-                }
-                appendLine("    }${if (index < response.candidates.size - 1) "," else ""}")
-            }
-            appendLine("  ]")
-            appendLine("}")
-        }
+        val response = responseWithJson.data
         
         val summary = buildString {
             appendLine("✅ 标签搜索建议获取成功 (RPC)")
@@ -2780,7 +2859,7 @@ class ApiTestViewModel(
             }
         }
         
-        updateResultWithRaw(rawJson, summary)
+        updateResultWithRaw(responseWithJson.rawJson, summary)
     }
     
     private suspend fun testGetTagInfo() {

@@ -2,7 +2,7 @@
 core-splashscreen = "1.2.0"
 kotlin = "2.2.21"
 compose-plugin = "1.9.3"
-agp = "8.13.1"
+agp = "8.13.2"
 koin = "4.1.1"
 ktor = "3.3.3"
 room = "2.8.4"

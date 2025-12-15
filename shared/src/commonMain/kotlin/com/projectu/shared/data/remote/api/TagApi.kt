@@ -34,10 +34,11 @@ class TagApi(private val client: PixivApiClient) {
     }
 
     /**
-     * 获取搜索建议（点击搜索框时触发，无需输入关键字）
+     * 获取搜索框推荐内容（点击搜索框时触发）
+     * 返回热门标签、推荐标签、收藏标签、缩略图等
      * @param mode 模式（all: 全部作品, r18: R18作品）
      */
-    suspend fun getSearchSuggestion(
+    suspend fun getSearchRecommendations(
         mode: String = "all"
     ): PixivResponse<SearchSuggestionBody> {
         return client.get("/ajax/search/suggestion", mapOf(
@@ -46,10 +47,10 @@ class TagApi(private val client: PixivApiClient) {
     }
 
     /**
-     * 标签搜索建议（用于搜索时的标签提示）
+     * 搜索标签自动补全（输入时实时调用）
      * @param keyword 关键字
      */
-    suspend fun getSearchSuggest(
+    suspend fun searchTagAutocomplete(
         keyword: String
     ): TagSearchSuggestBody {
         return client.getRaw("/rpc/cps.php", mapOf(

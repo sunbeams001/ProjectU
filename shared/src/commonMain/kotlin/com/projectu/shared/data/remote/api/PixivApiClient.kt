@@ -2,6 +2,7 @@ package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.common.PixivResponse
 import com.projectu.shared.data.remote.dto.common.PixivResponseWithRaw
+import com.projectu.shared.data.remote.dto.common.RawResponseWithJson
 import com.projectu.shared.util.AppJson
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -169,6 +170,51 @@ class PixivApiClient(
         }
         
         return httpResponse.body()
+    }
+
+    /**
+     * 执行GET请求（带原始JSON，直接返回解析后的对象，不包装在PixivResponse中）
+     * 用于不遵循标准响应格式的API（如 /rpc/cps.php）- API测试专用
+     */
+    suspend inline fun <reified T> getRawWithJson(
+        url: String,
+        queryParams: Map<String, Any?>? = null
+    ): RawResponseWithJson<T> {
+        val httpResponse = httpClient.get("$host$url") {
+            header(HEADER_REFERER, DEFAULT_HOST)
+            header(HEADER_COOKIE, cookie)
+            // 添加完整的浏览器请求头以绕过 Cloudflare 验证（精确匹配 Chrome 142 真实请求）
+            header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36")
+            header("Accept", "*/*")
+            header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,en-US;q=0.7,zh-TW;q=0.6,ja;q=0.5,ru;q=0.4")
+            header("Priority", "u=1, i")
+            header("Sec-Ch-Ua", "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\"")
+            header("Sec-Ch-Ua-Mobile", "?0")
+            header("Sec-Ch-Ua-Platform", "\"Windows\"")
+            header("Sec-Fetch-Dest", "empty")
+            header("Sec-Fetch-Mode", "cors")
+            header("Sec-Fetch-Site", "same-origin")
+            parameter("lang", langProvider())
+            queryParams?.forEach { (key, value) ->
+                when (value) {
+                    is Collection<*> -> {
+                        value.forEach { item ->
+                            parameter(key, item.toString())
+                        }
+                    }
+                    null -> {
+                        // 忽略null值
+                    }
+                    else -> {
+                        parameter(key, value.toString())
+                    }
+                }
+            }
+        }
+        
+        val rawJson = httpResponse.bodyAsText()
+        val data = jsonParser.decodeFromString<T>(rawJson)
+        return RawResponseWithJson(data, rawJson)
     }
 
     /**

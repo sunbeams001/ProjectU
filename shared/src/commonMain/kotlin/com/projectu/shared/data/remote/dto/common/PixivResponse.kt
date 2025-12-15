@@ -28,3 +28,12 @@ data class PixivResponseWithRaw<T>(
     val response: PixivResponse<T>,
     val rawJson: String
 )
+
+/**
+ * Raw API 响应包装类（不包装在 PixivResponse 中）
+ * 用于 RPC 等直接返回数据的 API（如 /rpc/cps.php）
+ */
+data class RawResponseWithJson<T>(
+    val data: T,
+    val rawJson: String
+)

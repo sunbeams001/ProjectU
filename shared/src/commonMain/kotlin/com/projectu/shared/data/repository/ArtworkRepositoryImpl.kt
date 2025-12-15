@@ -111,13 +111,15 @@ class ArtworkRepositoryImpl(
         keyword: String,
         page: Int,
         searchMode: String,
-        order: String
+        order: String,
+        aiType: Int?
     ): Result<List<Artwork>> = runCatching {
-        val response = pixivApi.illustApi.search(
+        val response = pixivApi.searchApi.searchIllust(
             keyword = keyword,
             searchMode = searchMode,
             order = order,
-            page = page
+            page = page,
+            aiType = aiType
         )
         if (response.error) {
             throw IllegalStateException(response.message)

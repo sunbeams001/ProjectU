@@ -209,8 +209,8 @@
 | 方法 | 测试参数 | 状态 | 备注 |
 |------|---------|------|------|
 | getSuggestByWord | `RO635` | ✅ 已测试 | 添加标签时的建议 |
-| getSearchSuggestion | `mode=all` | ✅ 已测试 | 点击搜索框时触发 |
-| getSearchSuggest | `RO635` | ✅ 已测试 | RPC 标签搜索建议 |
+| getSearchRecommendations | `mode=all` | ✅ 已测试 | 点击搜索框时触发 |
+| searchTagAutocomplete | `RO635` | ✅ 已测试 | RPC 标签自动补全 |
 | getTagInfo | `初音ミク` | ✅ 已测试 | DTO 已重构 |
 
 ⚠️ **新增接口详情**:

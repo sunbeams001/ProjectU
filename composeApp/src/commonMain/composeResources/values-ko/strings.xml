@@ -33,6 +33,23 @@
     <string name="discovery_search_hint">작품, 사용자 검색...</string>
     <string name="discovery_trending_tags">인기 태그</string>
     <string name="discovery_recent_searches">최근 검색</string>
+    
+    <!-- Search Preparation Screen -->
+    <string name="search_input_hint">작품, 태그, 사용자 검색...</string>
+    <string name="search_button">검색</string>
+    <string name="search_clear">지우기</string>
+    <string name="search_history_title">검색 기록</string>
+    <string name="search_history_clear">기록 지우기</string>
+    <string name="search_history_empty">검색 기록이 없습니다</string>
+    <string name="search_recommendations_title">검색 추천</string>
+    <string name="search_recommendations_refresh">새로고침</string>
+    <string name="search_recommendations_retry">다시 시도</string>
+    <string name="search_recommendations_popular_illust">🔥 인기 태그（일러스트）</string>
+    <string name="search_recommendations_popular_novel">🔥 인기 태그（소설）</string>
+    <string name="search_recommendations_recommended">⭐ 추천 태그</string>
+    <string name="search_recommendations_bookmark">📚 북마크 태그</string>
+    <string name="search_recommendations_my_favorite">⭐ 내가 좋아하는 태그</string>
+    <string name="search_recommendations_thumbnails">🖼️ 작품 미리보기</string>
     <string name="discovery_recommended_users">추천 사용자</string>
     <string name="discovery_recommended_illusts">추천 일러스트·만화</string>
     <string name="discovery_recommended_novels">추천 소설</string>

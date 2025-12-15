@@ -33,6 +33,23 @@
     <string name="discovery_search_hint">作品、ユーザーを検索...</string>
     <string name="discovery_trending_tags">人気のタグ</string>
     <string name="discovery_recent_searches">最近の検索</string>
+    
+    <!-- Search Preparation Screen -->
+    <string name="search_input_hint">作品、タグ、ユーザーを検索...</string>
+    <string name="search_button">検索</string>
+    <string name="search_clear">クリア</string>
+    <string name="search_history_title">検索履歴</string>
+    <string name="search_history_clear">履歴をクリア</string>
+    <string name="search_history_empty">検索履歴はありません</string>
+    <string name="search_recommendations_title">検索候補</string>
+    <string name="search_recommendations_refresh">更新</string>
+    <string name="search_recommendations_retry">再試行</string>
+    <string name="search_recommendations_popular_illust">🔥 人気のタグ（イラスト）</string>
+    <string name="search_recommendations_popular_novel">🔥 人気のタグ（小説）</string>
+    <string name="search_recommendations_recommended">⭐ おすすめタグ</string>
+    <string name="search_recommendations_bookmark">📚 ブックマークタグ</string>
+    <string name="search_recommendations_my_favorite">⭐ お気に入りタグ</string>
+    <string name="search_recommendations_thumbnails">🖼️ 作品プレビュー</string>
     <string name="discovery_recommended_users">おすすめユーザー</string>
     <string name="discovery_recommended_illusts">おすすめイラスト・マンガ</string>
     <string name="discovery_recommended_novels">おすすめ小説</string>

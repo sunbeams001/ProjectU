@@ -200,6 +200,11 @@ class ArtworkDetailViewModel(
      * @param silent 静默加载（预加载时使用，不显示加载状态）
      */
     fun loadArtworkDetail(artworkId: String, silent: Boolean = false) {
+        // 记录当前作品ID（用于重试）
+        if (!silent) {
+            _state.update { it.copy(currentArtworkId = artworkId) }
+        }
+        
         // 检查会话缓存
         if (sessionCache.containsKey(artworkId)) {
             return
@@ -383,6 +388,7 @@ class ArtworkDetailViewModel(
     fun retry() {
         val artworkIds = _state.value.artworkIds
         if (artworkIds.isNotEmpty()) {
+            // 列表导航模式
             val currentId = artworkIds.getOrNull(_state.value.currentIndex)
             if (currentId != null) {
                 // 清除缓存中的失败数据
@@ -395,8 +401,9 @@ class ArtworkDetailViewModel(
                 }
             }
         } else {
-            // 单个作品模式，从 state 中获取
-            _state.value.artwork?.id?.let { artworkId ->
+            // 单个作品模式，使用 currentArtworkId
+            val artworkId = _state.value.currentArtworkId ?: _state.value.artwork?.id
+            if (artworkId != null) {
                 sessionCache.remove(artworkId)
                 failedArtworkErrors.remove(artworkId)
                 // 同时从全局缓存中移除，强制重新加载
@@ -455,5 +462,6 @@ data class ArtworkDetailState(
     val artworkIds: List<String> = emptyList(),
     val currentIndex: Int = 0,
     val artworkCache: Map<String, Artwork> = emptyMap(),
-    val isInfoExpanded: Boolean = false
+    val isInfoExpanded: Boolean = false,
+    val currentArtworkId: String? = null  // 当前作品ID（用于单个作品模式的重试）
 )

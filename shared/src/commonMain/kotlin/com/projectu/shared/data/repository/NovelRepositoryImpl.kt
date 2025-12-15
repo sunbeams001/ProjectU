@@ -38,15 +38,17 @@ class NovelRepositoryImpl(
         searchMode: String,
         order: String,
         mode: String,
-        page: Int
+        page: Int,
+        aiType: Int?
     ): Result<List<Novel>> {
         return try {
-            val response = pixivApi.novelApi.search(
+            val response = pixivApi.searchApi.searchNovel(
                 keyword = keyword,
                 searchMode = searchMode,
                 order = order,
                 mode = mode,
-                page = page
+                page = page,
+                aiType = aiType
             )
             
             if (response.error || response.body == null) {

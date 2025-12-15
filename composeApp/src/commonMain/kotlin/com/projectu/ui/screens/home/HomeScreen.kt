@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
@@ -48,13 +49,15 @@ import com.projectu.ui.screens.userrelations.UserRelationsScreen
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.data.remote.api.PixivApi
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.util.AgeLimitDeterminer
 import com.projectu.shared.util.TagTranslationUtil
 import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
 import org.koin.compose.koinInject
-import cafe.adriel.voyager.koin.koinScreenModel
+import com.projectu.ui.screens.search.SearchPreparationContent
+import com.projectu.ui.screens.search.SearchPreparationViewModel
 
 /**
  * 主屏幕 - 包含底部导航栏的容器
@@ -238,37 +241,58 @@ object HomeTab : Tab {
     
     @Composable
     override fun Content() {
-        HomeTabContent()
+        val viewModel = koinScreenModel<SearchPreparationViewModel>()
+        val state by viewModel.state.collectAsState()
+        val scope = rememberCoroutineScope()
+        val parentNavigator = LocalNavigator.current?.parent
+        
+        HomeTabContent(
+            state = state,
+            onSearchKeywordChange = viewModel::onSearchKeywordChange,
+            onSearch = {
+                scope.launch {
+                    val keyword = viewModel.performSearch()
+                    if (keyword != null) {
+                        // Navigate to search result screen using parent navigator
+                        parentNavigator?.push(com.projectu.ui.screens.search.SearchResultScreen(keyword))
+                    }
+                }
+            },
+            onSearchHistoryClick = viewModel::onHistoryClick,
+            onClearHistory = viewModel::clearHistory,
+            viewModel = viewModel,
+            parentNavigator = parentNavigator
+        )
     }
 }
 
 @Composable
-fun HomeTabContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Home,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = stringResource(Res.string.nav_home),
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = stringResource(Res.string.home_framework_complete),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+fun HomeTabContent(
+    state: com.projectu.ui.screens.search.SearchPreparationState,
+    onSearchKeywordChange: (androidx.compose.ui.text.input.TextFieldValue) -> Unit,
+    onSearch: () -> Unit,
+    onSearchHistoryClick: (String) -> Unit,
+    onClearHistory: () -> Unit,
+    viewModel: com.projectu.ui.screens.search.SearchPreparationViewModel,
+    parentNavigator: Navigator?
+) {
+    SearchPreparationContent(
+        state = state,
+        onSearchKeywordChange = onSearchKeywordChange,
+        onSearch = onSearch,
+        onAutocompleteSuggestionClick = viewModel::onAutocompleteSuggestionClick,
+        onHistoryClick = onSearchHistoryClick,
+        onRecommendationTagClick = viewModel::onRecommendationTagClick,
+        onClearHistory = onClearHistory,
+        onRefreshRecommendations = viewModel::refreshRecommendations,
+        onThumbnailClick = { thumbnail ->
+            // 根据 illustType 判断导航到插画还是小说详情页
+            when (thumbnail.illustType) {
+                3 -> parentNavigator?.push(NovelDetailScreen(novelId = thumbnail.id))
+                else -> parentNavigator?.push(ArtworkDetailScreen(artworkId = thumbnail.id))
+            }
         }
-    }
+    )
 }
 
 // 发现标签

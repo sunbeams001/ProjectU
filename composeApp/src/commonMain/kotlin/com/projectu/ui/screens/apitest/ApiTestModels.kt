@@ -14,7 +14,8 @@ enum class ApiModule(val displayName: String) {
     NOVEL_SERIES("小说系列 API (NovelSeriesApi)"),
     TAG("标签 API (TagApi)"),
     MARKER("书签 API (MarkerApi)"),
-    FOLLOW("关注 API (FollowApi)")
+    FOLLOW("关注 API (FollowApi)"),
+    SEARCH("搜索 API (SearchApi)")
 }
 
 /**
@@ -40,7 +41,7 @@ sealed class ApiMethod(
     )
     
     object SearchIllust : ApiMethod(
-        module = ApiModule.ILLUST,
+        module = ApiModule.SEARCH,
         methodName = "searchIllust",
         displayName = "搜索作品",
         parameters = listOf(
@@ -48,7 +49,7 @@ sealed class ApiMethod(
             ApiParameter("mode", "模式", "safe", required = false, 
                 options = listOf("safe", "r18")),
             ApiParameter("order", "排序", "date_d", required = false,
-                options = listOf("date_d", "date_asc", "popular_d")),
+                options = listOf("date_d", "date", "popular_d")),
             ApiParameter("sMode", "搜索模式", "s_tag", required = false,
                 options = listOf("s_tag", "s_tc")),
             ApiParameter("type", "类型", "all", required = false,
@@ -564,7 +565,7 @@ sealed class ApiMethod(
     )
     
     object SearchNovel : ApiMethod(
-        module = ApiModule.NOVEL,
+        module = ApiModule.SEARCH,
         methodName = "searchNovel",
         displayName = "搜索小说",
         parameters = listOf(
@@ -575,6 +576,21 @@ sealed class ApiMethod(
                 options = listOf("date_d", "date")),
             ApiParameter("mode", "模式", "all", required = false,
                 options = listOf("all", "safe", "r18")),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 0
+    )
+    
+    object SearchUser : ApiMethod(
+        module = ApiModule.SEARCH,
+        methodName = "searchUser",
+        displayName = "搜索用户",
+        parameters = listOf(
+            ApiParameter("keyword", "用户昵称", "少女", required = true),
+            ApiParameter("searchMode", "搜索模式", "s_usr", required = false,
+                options = listOf("s_usr", "s_usr_full")),
+            ApiParameter("hasWork", "投稿作品", "1", required = false,
+                options = listOf("1", "0")),
             ApiParameter("page", "页码", "1", required = false)
         ),
         priority = 0
@@ -807,7 +823,7 @@ sealed class ApiMethod(
          */
         fun getAllMethods(): List<ApiMethod> = listOf(
             // IllustApi
-            GetIllustDetail, SearchIllust, GetRecommendInit, 
+            GetIllustDetail, GetRecommendInit, 
             GetRecommendIllusts, GetDiscoveryIllust, GetUgoiraMetadata, GetIllustPages,
             // IllustSeriesApi
             GetIllustSeriesDetail, WatchIllustSeries, UnwatchIllustSeries,
@@ -826,7 +842,7 @@ sealed class ApiMethod(
             GetIllustCommentRoots, GetCommentReplies, PostIllustComment, DeleteIllustComment,
             GetNovelCommentRoots, GetNovelCommentReplies, PostNovelComment, DeleteNovelComment,
             // NovelApi
-            GetNovelDetail, GetNovelBookmarkData, SearchNovel, 
+            GetNovelDetail, GetNovelBookmarkData, 
             GetNovelDiscovery,
             // FollowApi
             GetFollowLatestIllust, GetFollowLatestNovel, GetWatchListManga, GetWatchListNovel,
@@ -836,7 +852,9 @@ sealed class ApiMethod(
             // TagApi
             GetTagSuggest, GetSearchSuggestion, GetTagSearchSuggest, GetTagInfo,
             // MarkerApi
-            AddNovelMarker, DeleteNovelMarker, GetNovelMarkerList
+            AddNovelMarker, DeleteNovelMarker, GetNovelMarkerList,
+            // SearchApi
+            SearchIllust, SearchNovel, SearchUser
         )
         
         /**

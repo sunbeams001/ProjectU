@@ -19,6 +19,23 @@
     <string name="discovery_search_hint">Search artworks, users...</string>
     <string name="discovery_trending_tags">Trending Tags</string>
     <string name="discovery_recent_searches">Recent Searches</string>
+    
+    <!-- Search Preparation Screen -->
+    <string name="search_input_hint">Search artworks, tags, users...</string>
+    <string name="search_button">Search</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_history_title">Search History</string>
+    <string name="search_history_clear">Clear History</string>
+    <string name="search_history_empty">No search history</string>
+    <string name="search_recommendations_title">Search Suggestions</string>
+    <string name="search_recommendations_refresh">Refresh</string>
+    <string name="search_recommendations_retry">Retry</string>
+    <string name="search_recommendations_popular_illust">🔥 Popular Tags (Illustrations)</string>
+    <string name="search_recommendations_popular_novel">🔥 Popular Tags (Novels)</string>
+    <string name="search_recommendations_recommended">⭐ Recommended Tags</string>
+    <string name="search_recommendations_bookmark">📚 Bookmarked Tags</string>
+    <string name="search_recommendations_my_favorite">⭐ My Favorite Tags</string>
+    <string name="search_recommendations_thumbnails">🖼️ Artwork Previews</string>
     <string name="discovery_recommended_users">Recommended Users</string>
     <string name="discovery_recommended_illusts">Recommended Illusts &amp; Manga</string>
     <string name="discovery_recommended_novels">Recommended Novels</string>
