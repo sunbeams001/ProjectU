@@ -15,6 +15,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
+import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.cache.NovelCacheManager
@@ -59,6 +61,10 @@ data class NovelDetailScreen(
     val initialIndex: Int = 0,
     val contextKey: String = ""
 ) : Screen {
+    
+    // 为每个实例生成唯一的 key，确保 Voyager 将它们视为不同的 Screen
+    // 这样在导航栈中就会有真正的页面切换动画和独立的 ViewModel
+    override val key: ScreenKey = uniqueScreenKey
     
     @Composable
     override fun Content() {
