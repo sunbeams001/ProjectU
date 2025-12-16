@@ -187,6 +187,10 @@ object NovelContentParser {
     
     /**
      * 将文本分割为段落元素
+     * 
+     * 策略：
+     * 1. 首先按双换行（\n\n+）分割段落
+     * 2. 对于超长段落（>5000字），按单换行进一步拆分以优化渲染性能
      */
     private fun addTextElements(text: String, elements: MutableList<ContentElement>) {
         val trimmedText = text.trim()
@@ -194,14 +198,47 @@ object NovelContentParser {
             return
         }
         
-        // 按换行符分割段落
+        // 按双换行分割段落
         val paragraphs = trimmedText.split(Regex("\n\n+"))
         
         paragraphs.forEachIndexed { index, paragraph ->
             val trimmedParagraph = paragraph.trim()
             if (trimmedParagraph.isNotEmpty()) {
-                elements.add(ContentElement.Text(trimmedParagraph))
+                // 如果段落过长（>5000字），按单换行进一步拆分
+                if (trimmedParagraph.length > 5000) {
+                    val lines = trimmedParagraph.split("\n")
+                    var currentChunk = StringBuilder()
+                    
+                    lines.forEach { line ->
+                        val trimmedLine = line.trim()
+                        if (trimmedLine.isNotEmpty()) {
+                            // 如果当前块加上新行后超过3000字，先保存当前块
+                            if (currentChunk.length > 0 && currentChunk.length + trimmedLine.length > 3000) {
+                                elements.add(ContentElement.Text(currentChunk.toString().trim()))
+                                currentChunk = StringBuilder()
+                            }
+                            
+                            // 添加当前行到块中
+                            if (currentChunk.length > 0) {
+                                currentChunk.append("\n")
+                            }
+                            currentChunk.append(trimmedLine)
+                        } else if (currentChunk.length > 0) {
+                            // 保留空行（在段落内部）
+                            currentChunk.append("\n")
+                        }
+                    }
+                    
+                    // 添加最后一块
+                    if (currentChunk.isNotEmpty()) {
+                        elements.add(ContentElement.Text(currentChunk.toString().trim()))
+                    }
+                } else {
+                    // 段落长度适中，直接添加
+                    elements.add(ContentElement.Text(trimmedParagraph))
+                }
             }
+            
             // 添加段落间的空行（除了最后一个）
             if (index < paragraphs.size - 1) {
                 elements.add(ContentElement.EmptyLine)
