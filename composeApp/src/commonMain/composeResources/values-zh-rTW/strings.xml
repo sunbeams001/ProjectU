@@ -13,6 +13,7 @@
     <!-- Home Screen -->
     <string name="home_recommended">推薦</string>
     <string name="home_following">關注</string>
+    <string name="home_new_works">最新作品</string>
     <string name="home_framework_complete">專案框架搭建完成</string>
     
     <!-- Follow Latest (動態) -->
@@ -65,6 +66,23 @@
     <string name="ranking_original">原創</string>
     <string name="ranking_male">男性向</string>
     <string name="ranking_female">女性向</string>
+    <string name="ranking_ai">AI生成</string>
+    <string name="ranking_weekly_original">本週原創</string>
+    <string name="ranking_weekly_ai">本週AI</string>
+    <string name="ranking_weekly_r18_ai">本週R-18 AI</string>
+    <string name="ranking_daily_r18">日榜R-18</string>
+    <string name="ranking_weekly_r18">週榜R-18</string>
+    <string name="ranking_male_r18">男性向R-18</string>
+    <string name="ranking_female_r18">女性向R-18</string>
+    <string name="ranking_ai_r18">AI生成R-18</string>
+    <string name="ranking_r18g">R-18G</string>
+    
+    <!-- Ranking Content Types -->
+    <string name="ranking_content_all">綜合</string>
+    <string name="ranking_content_illust">插畫</string>
+    <string name="ranking_content_manga">漫畫</string>
+    <string name="ranking_content_ugoira">動圖</string>
+    <string name="ranking_content_novel">小說</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">收藏</string>
@@ -142,9 +160,39 @@
     <string name="ugoira_speed">速度</string>
     <string name="ugoira_downloading">正在下載動圖...</string>
     
+    <!-- Login Screen (New) -->
+    <string name="login_subtitle">登入 Pixiv 以存取您的個人化內容</string>
+    <string name="login_phpsessid_title">PHPSESSID 登入</string>
+    <string name="login_phpsessid_description">從瀏覽器 Cookie 中輸入您的 PHPSESSID</string>
+    <string name="login_phpsessid_label">PHPSESSID</string>
+    <string name="login_logging_in">登入中...</string>
+    <string name="login_help">如何取得 PHPSESSID？</string>
+    <string name="login_help_step1">1. 在瀏覽器中開啟 https://www.pixiv.net/ 並登入</string>
+    <string name="login_help_step2">2. 開啟開發者工具 (F12)</string>
+    <string name="login_help_step3">3. 前往 應用程式/儲存 → Cookies → https://www.pixiv.net</string>
+    <string name="login_help_step4">4. 複製 \'PHPSESSID\' 的值（格式：12345678_xxxx）</string>
+    <string name="login_help_warning">⚠️ 警告：切勿將您的 PHPSESSID 分享給他人！</string>
+    <string name="login_error_invalid_format">PHPSESSID 格式無效。預期格式：userid_xxxxx</string>
+    <string name="login_error_empty">請輸入 PHPSESSID</string>
+    <string name="login_session_expired">登入階段已過期，請重新登入。</string>
+    <string name="common_ok">確定</string>
+    
+    <!-- Settings - Account Management -->
+    <string name="settings_account">帳號管理</string>
+    <string name="settings_user_id">用戶 ID</string>
+    <string name="settings_phpsessid">PHPSESSID</string>
+    <string name="settings_phpsessid_desc">用於 Pixiv API 認證的會話憑據</string>
+    <string name="settings_not_logged_in">未登入</string>
+    <string name="settings_unknown">未知</string>
+    <string name="settings_edit_phpsessid">編輯 PHPSESSID</string>
+    <string name="settings_phpsessid_input_hint">輸入從瀏覽器取得的 PHPSESSID</string>
+    <string name="settings_phpsessid_warning">⚠️ 修改後將立即生效，請確保輸入正確</string>
+    <string name="settings_logout_confirm_title">確認登出</string>
+    <string name="settings_logout_confirm_message">登出後需要重新輸入 PHPSESSID 才能使用 Pixiv 功能</string>
+    
     <!-- Settings - Content Filter -->
     <string name="settings_content_filter">內容過濾</string>
-    <string name="settings_r18_sanity_threshold">R18 健全度阈值</string>
+    <string name="settings_r18_sanity_threshold">R18 健全度閾值</string>
     <string name="settings_r18_sanity_threshold_desc">健全度 ≥ 此值的作品將被標記為 R18</string>
     <string name="settings_r18_sanity_level_safe">安全 (0–1)</string>
     <string name="settings_r18_sanity_level_normal">正常 (2–3)</string>
@@ -157,6 +205,8 @@
     <string name="settings_preferred_image_quality_desc">用於列表和瀑布流中的縮略圖質量</string>
     <string name="settings_detail_image_quality">插畫詳情頁首選圖片質量</string>
     <string name="settings_detail_image_quality_desc">作品詳情頁的圖片質量</string>
+    <string name="settings_novel_download_image_quality">小說下載首選圖片質量</string>
+    <string name="settings_novel_download_image_quality_desc">下載小說為 EPUB 時，內嵌圖片的質量</string>
     <string name="image_quality_square_medium">標準 (250×250)</string>
     <string name="image_quality_medium">中等 (360×360)</string>
     <string name="image_quality_large">大 (540×540)</string>
@@ -166,6 +216,10 @@
     <string name="detail_image_quality_large">大 (540×540)</string>
     <string name="detail_image_quality_master_1200">最大 (1200px)</string>
     <string name="detail_image_quality_original">原始</string>
+    <string name="novel_download_image_quality_small">小圖 (240px)</string>
+    <string name="novel_download_image_quality_medium">中圖 (480px)</string>
+    <string name="novel_download_image_quality_large">大圖 (1200px)</string>
+    <string name="novel_download_image_quality_original">原圖</string>
     
     <!-- 設定 - 快取管理 -->
     <string name="settings_cache_management">快取管理</string>
@@ -186,8 +240,79 @@
     <string name="cache_type_image">圖片</string>
     <string name="cache_type_ugoira">動圖 (Ugoira)</string>
     
+    <!-- Bookmark Status -->
+    <string name="bookmark_not_bookmarked">未收藏</string>
+    <string name="bookmark_public">公開收藏</string>
+    <string name="bookmark_private">私人收藏</string>
+    
+    <!-- Follow Status -->
+    <string name="follow_follow">關注</string>
+    <string name="follow_unfollow">取消關注</string>
+    <string name="follow_unfollow_private">取消悄悄關注</string>
+    
+    <!-- Error Messages -->
+    <string name="error_icon_desc">錯誤</string>
+    <string name="error_load_failed">載入失敗</string>
+    <string name="error_image_load_failed">圖片載入失敗</string>
+    <string name="error_unknown">未知錯誤</string>
+    <string name="error_network">網路錯誤</string>
+    <string name="error_data_empty">資料為空</string>
+    <string name="error_invalid_artwork_id">無效的作品ID</string>
+    <string name="error_cannot_load_frames">無法載入幀圖片</string>
+    
+    <!-- Series -->
+    <string name="series_watching">追更中</string>
+    <string name="series_total_episodes">共 %1$d 篇</string>
+    <string name="series_update">更新: %1$s</string>
+    <string name="series_concluded">完結</string>
+    <string name="series_ongoing">連載</string>
+    <string name="series_original">原創</string>
+    <string name="series_word_count">%1$s字</string>
+    <string name="series_works_list">作品列表（共 %1$d 篇）</string>
+    <string name="series_last_update">最後更新: %1$s</string>
+    <string name="series_add_watch">加入追更</string>
+    <string name="series_remove_watch">取消追更</string>
+    <string name="series_label">系列: %1$s</string>
+    <string name="series_watch_count">%1$d 人追更</string>
+    <string name="novel_series">小說系列</string>
+    <string name="manga_series">漫畫系列</string>
+    
+    <!-- Content Types -->
+    <string name="content_illusts">插畫</string>
+    <string name="content_manga">漫畫</string>
+    <string name="content_novels">小說</string>
+    <string name="content_manga_series">漫畫系列</string>
+    <string name="content_novel_series">小說系列</string>
+    <string name="content_bookmark_illusts_public">公開收藏·插畫</string>
+    <string name="content_bookmark_illusts_private">私人收藏·插畫</string>
+    <string name="content_bookmark_novels_public">公開收藏·小說</string>
+    <string name="content_bookmark_novels_private">私人收藏·小說</string>
+    <string name="content_all">全部</string>
+    <string name="content_ugoira">動圖</string>
+    
+    <!-- Ranking (Additional) -->
+    <string name="ranking_category_general">一般</string>
+    <string name="ranking_ai_type_normal">普通</string>
+    <string name="ranking_ai_type_ai">AI生成</string>
+    <string name="ranking_select_date">選擇日期</string>
+    <string name="ranking_latest">最新榜單</string>
+    <string name="ranking_current">目前: %1$s</string>
+    <string name="ranking_previous_day">前一天: %1$s</string>
+    <string name="ranking_next_day">後一天: %1$s</string>
+    <string name="ranking_select_ranking_date">選擇排行榜日期</string>
+    
+    <!-- Ugoira Player -->
+    <string name="ugoira_playback_speed">倍速</string>
+    <string name="ugoira_getting_info">取得動圖資訊...</string>
+    <string name="ugoira_downloading_file">下載動畫檔案...</string>
+    <string name="ugoira_extracting_frames">解壓幀圖片...</string>
+    <string name="ugoira_loading_frames">載入幀圖片 %1$d/%2$d</string>
+    <string name="ugoira_loading_frames_percent">載入幀圖片... %1$d%%</string>
+    <string name="ugoira_load_failed">載入失敗: %1$s</string>
+    
     <!-- Navigation -->
     <string name="nav_back">返回</string>
+    <string name="nav_refresh">刷新</string>
     
     <!-- Image Search -->
     <string name="image_search_title">以圖搜圖</string>
@@ -196,5 +321,199 @@
     <string name="image_search_retry">重試</string>
     <string name="image_search_cannot_read">無法讀取圖片</string>
     <string name="image_search_unknown_error">未知錯誤</string>
+    
+    <!-- Novel -->
+    <string name="novel_page_number">第%1$d頁</string>
+    <string name="novel_no_content">暫無內容</string>
+    <string name="novel_pixiv_illust">Pixiv 插圖 %1$s</string>
+    <string name="novel_illust">插圖 %1$s</string>
+    <string name="novel_illust_image">小說插圖</string>
+    <string name="novel_text_count">%1$s字</string>
+    <string name="novel_page_count">共%1$d頁</string>
+    <string name="novel_stat_views">瀏覽</string>
+    <string name="novel_stat_likes">點讚</string>
+    <string name="novel_stat_bookmarks">收藏</string>
+    <string name="novel_stat_comments">評論</string>
+    <string name="novel_description">簡介</string>
+    <string name="novel_tags">標籤</string>
+    <string name="novel_publish_time">發布時間: %1$s</string>
+    <string name="novel_remove_marker">移除書籤</string>
+    <string name="novel_add_marker">新增書籤</string>
+    <string name="novel_update_marker">更新書籤</string>
+    <string name="novel_collapse">收起</string>
+    <string name="novel_expand">展開</string>
+    <string name="novel_friends_only">好P友限定</string>
+    <string name="novel_friends_only_desc">此內容僅對作者的好P友可見</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_collapse">收起</string>
+    <string name="artwork_expand">展開</string>
+    <string name="artwork_stat_views">瀏覽</string>
+    <string name="artwork_stat_likes">點讚</string>
+    <string name="artwork_stat_bookmarks">收藏</string>
+    <string name="artwork_stat_comments">評論</string>
+    <string name="artwork_info">作品資訊</string>
+    <string name="artwork_resolution">解析度</string>
+    <string name="artwork_page_count">頁數</string>
+    <string name="artwork_id">作品ID</string>
+    <string name="artwork_user_id">用戶ID</string>
+    <string name="artwork_description">簡介</string>
+    <string name="artwork_tags">標籤</string>
+    <string name="artwork_publish_time">發布時間: %1$s</string>
+    <string name="artwork_similar">相似作品</string>
+    
+    <!-- Time Format -->
+    <string name="time_hours_minutes">%1$d小時%2$d分鐘</string>
+    <string name="time_hours">%1$d小時</string>
+    <string name="time_minutes">%1$d分鐘</string>
+    <string name="time_less_than_minute">不到1分鐘</string>
+    
+    <!-- Login -->
+    <string name="login_in_app">應用程式內登入</string>
+    <string name="login_in_development">此功能正在開發中，敬請期待！</string>
+    <string name="login_password_hide">隱藏</string>
+    <string name="login_password_show">顯示</string>
+    <string name="login_phpsessid_login">PHPSESSID 登入</string>
+    <string name="login_failed">登入失敗</string>
+    <string name="login_failed_check_format">登入失敗，請檢查 PHPSESSID 格式</string>
+    <string name="login_failed_with_message">登入失敗: %1$s</string>
+    
+    <!-- User -->
+    <string name="user_no_works">該用戶暫無作品</string>
+    <string name="user_following_count">關注 %1$d</string>
+    <string name="user_load_info_failed">載入用戶資訊失敗</string>
+    <string name="user_info_empty">用戶資訊為空</string>
+    <string name="user_load_works_failed">載入作品列表失敗</string>
+    <string name="user_works_empty">作品概況為空</string>
+    <string name="user_load_more_failed">載入更多失敗</string>
+    
+    <!-- User Profile Tabs -->
+    <string name="user_tab_info">詳情</string>
+    <string name="user_tab_illusts">插畫</string>
+    <string name="user_tab_manga">漫畫</string>
+    <string name="user_tab_novels">小說</string>
+    <string name="user_tab_manga_series">漫畫系列</string>
+    <string name="user_tab_novel_series">小說系列</string>
+    <string name="user_tab_bookmark_illusts_public">公開收藏·插畫</string>
+    <string name="user_tab_bookmark_illusts_private">私人收藏·插畫</string>
+    <string name="user_tab_bookmark_novels_public">公開收藏·小說</string>
+    <string name="user_tab_bookmark_novels_private">私人收藏·小說</string>
+    <string name="user_network_error">網路錯誤</string>
+    <string name="user_load_failed">載入失敗</string>
+    
+    <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_expand">按標籤篩選</string>
+    <string name="bookmark_tag_filter_collapse">收起</string>
+    <string name="bookmark_tag_loading">正在載入標籤…</string>
+    <string name="bookmark_tag_empty">暫無標籤</string>
+    
+    <!-- User Info Detail -->
+    <string name="user_info_basic">基本資訊</string>
+    <string name="user_info_user_id">用戶ID</string>
+    <string name="user_info_bio">簡介</string>
+    <string name="user_info_social">社交</string>
+    <string name="user_info_following">關注</string>
+    <string name="user_info_mypixiv">好P友</string>
+    <string name="user_info_followed_back">互相關注</string>
+    <string name="user_followed">已關注</string>
+    <string name="user_info_is_mypixiv">是我的好P友</string>
+    <string name="user_info_links">連結</string>
+    <string name="user_info_webpage">個人網站</string>
+    <string name="user_info_personal">個人資訊</string>
+    <string name="user_info_region">地區</string>
+    <string name="user_info_gender">性別</string>
+    <string name="user_info_age">年齡</string>
+    <string name="user_info_birthday">生日</string>
+    <string name="user_info_job">職業</string>
+    <string name="user_info_workspace">工作環境</string>
+    <string name="user_info_workspace_pc">電腦</string>
+    <string name="user_info_workspace_monitor">顯示器</string>
+    <string name="user_info_workspace_tool">軟體</string>
+    <string name="user_info_workspace_tablet">數位板</string>
+    <string name="user_info_workspace_mouse">滑鼠</string>
+    <string name="user_info_workspace_scanner">掃描器</string>
+    <string name="user_info_workspace_printer">印表機</string>
+    <string name="user_info_workspace_desktop">桌面</string>
+    <string name="user_info_workspace_desk">桌子</string>
+    <string name="user_info_workspace_chair">椅子</string>
+    <string name="user_info_workspace_music">繪圖時聽的音樂</string>
+    <string name="user_info_workspace_comment">其他</string>
+    <string name="user_info_commission">接稿狀態</string>
+    <string name="user_info_commission_request">接稿</string>
+    <string name="user_info_commission_fan_request">粉絲約稿</string>
+    <string name="user_info_groups">群組</string>
+    <string name="user_info_status">帳號狀態</string>
+    <string name="user_info_premium">Premium會員</string>
+    <string name="user_info_official">官方帳號</string>
+    <string name="user_info_can_message">可發送訊息</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_detail_empty">作品詳情為空</string>
+    <string name="artwork_not_bookmarked">作品未收藏</string>
+    <string name="artwork_ugoira_meta_empty">Ugoira元資料為空</string>
+    <string name="artwork_pages_empty">多頁作品詳情為空</string>
+    
+    <!-- Settings Debug -->
+    <string name="settings_api_test_tool">API 測試工具 🔧</string>
+    <string name="settings_api_test_subtitle">除錯 Pixiv API 介面</string>
+    <string name="settings_api_test_desc">系統化測試所有已整合的 Pixiv API</string>
+    <string name="settings_phpsessid_empty">PHPSESSID 不能為空</string>
+    <string name="settings_phpsessid_invalid_format">格式無效，應為: userid_xxxxx</string>
+    
+    <!-- API Errors -->
+
+    <string name="api_post_comment_failed">發表評論失敗</string>
+    <string name="api_delete_comment_failed">刪除評論失敗</string>
+    <string name="api_unknown_title">未知標題</string>
+    <string name="api_unknown_author">未知作者</string>
+    <string name="api_cannot_get_csrf">無法取得CSRF Token</string>
+    <string name="api_novel_ranking_empty">小說排行榜資料為空</string>
+    <string name="api_get_novel_detail_failed">取得小說詳情失敗</string>
+    <string name="api_search_novel_failed">搜尋小說失敗</string>
+    <string name="api_get_recommended_novels_failed">取得推薦小說失敗</string>
+    <string name="api_add_bookmark_failed">新增收藏失敗</string>
+    <string name="api_get_series_detail_failed">取得系列詳情失敗</string>
+    <string name="api_get_series_contents_failed">取得系列內容失敗</string>
+    <string name="api_watch_failed">追更失敗</string>
+    <string name="api_unwatch_failed">取消追更失敗</string>
+    <string name="api_operation_failed">操作失敗</string>
+    <string name="api_web_login_not_supported">Web API 不支援直接登入，請使用 PHPSESSID</string>
+    <string name="api_user_info_empty">用戶資訊為空</string>
+    <string name="api_discovery_users_empty">發現用戶資料為空</string>
+    <string name="api_load_series_detail_failed">載入系列詳情失敗</string>
+    <string name="api_load_series_contents_failed">載入系列內容失敗</string>
+    
+    <!-- User Relations -->
+    <string name="user_relations_title">%1$s 的社交關係</string>
+    <string name="user_relations_following">已關注</string>
+    <string name="user_relations_mypixiv">好P友</string>
+    <string name="user_relations_followers">粉絲</string>
+    <string name="user_relations_public">公開</string>
+    <string name="user_relations_private">私人</string>
+    <string name="user_relations_empty">暫無用戶</string>
+    <string name="user_relations_load_failed">載入用戶列表失敗</string>
+    
+    <!-- Comments -->
+    <string name="comments_title">評論</string>
+    <string name="comments_empty">暫無評論</string>
+    <string name="comments_input_hint">寫下你的評論...</string>
+    <string name="comments_reply_hint">寫下你的回覆...</string>
+    <string name="comments_send">發送</string>
+    <string name="comments_reply">回覆</string>
+    <string name="comments_delete">刪除</string>
+    <string name="comments_show_replies">展開回覆</string>
+    <string name="comments_hide_replies">收起回覆</string>
+    <string name="comments_load_more_replies">載入更多回覆</string>
+    <string name="comments_replying_to">回覆 %1$s</string>
+    <string name="comments_cancel_reply">取消回覆</string>
+    <string name="comments_reply_to">@%1$s</string>
+    <string name="comments_deleted_user">已註銷用戶</string>
+    <string name="comments_stamp">表情</string>
+    <string name="comments_empty_error">評論內容不能為空</string>
+    
+    <!-- Emoji Picker -->
+    <string name="emoji_button">表情</string>
+    <string name="emoji_tab_emoji">顏文字</string>
+    <string name="emoji_tab_stamp">貼圖</string>
 </resources>
 

@@ -13,6 +13,7 @@
     <!-- Home Screen -->
     <string name="home_recommended">추천</string>
     <string name="home_following">팔로잉</string>
+    <string name="home_new_works">신착 작품</string>
     <string name="home_framework_complete">프로젝트 프레임워크 구축 완료</string>
     
     <!-- Follow Latest (팔로우 최신) -->
@@ -65,6 +66,23 @@
     <string name="ranking_original">오리지널</string>
     <string name="ranking_male">남성향</string>
     <string name="ranking_female">여성향</string>
+    <string name="ranking_ai">AI 생성</string>
+    <string name="ranking_weekly_original">주간 오리지널</string>
+    <string name="ranking_weekly_ai">주간 AI</string>
+    <string name="ranking_weekly_r18_ai">주간 R-18 AI</string>
+    <string name="ranking_daily_r18">일간 R-18</string>
+    <string name="ranking_weekly_r18">주간 R-18</string>
+    <string name="ranking_male_r18">남성향 R-18</string>
+    <string name="ranking_female_r18">여성향 R-18</string>
+    <string name="ranking_ai_r18">AI 생성 R-18</string>
+    <string name="ranking_r18g">R-18G</string>
+    
+    <!-- Ranking Content Types -->
+    <string name="ranking_content_all">종합</string>
+    <string name="ranking_content_illust">일러스트</string>
+    <string name="ranking_content_manga">만화</string>
+    <string name="ranking_content_ugoira">우고이라</string>
+    <string name="ranking_content_novel">소설</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">북마크</string>
@@ -140,7 +158,37 @@
     <string name="ugoira_play">재생</string>
     <string name="ugoira_pause">일시 정지</string>
     <string name="ugoira_speed">속도</string>
-    <string name="ugoira_downloading">움직이는 읽러오기 중...</string>
+    <string name="ugoira_downloading">움직이는 일러스트 다운로드 중...</string>
+    
+    <!-- Login Screen (New) -->
+    <string name="login_subtitle">Pixiv에 로그인하여 맞춤 콘텐츠를 이용하세요</string>
+    <string name="login_phpsessid_title">PHPSESSID 로그인</string>
+    <string name="login_phpsessid_description">브라우저 쿠키에서 PHPSESSID를 입력하세요</string>
+    <string name="login_phpsessid_label">PHPSESSID</string>
+    <string name="login_logging_in">로그인 중...</string>
+    <string name="login_help">PHPSESSID 얻는 방법</string>
+    <string name="login_help_step1">1. 브라우저에서 https://www.pixiv.net/ 을 열고 로그인</string>
+    <string name="login_help_step2">2. 개발자 도구 열기 (F12)</string>
+    <string name="login_help_step3">3. Application/Storage → Cookies → https://www.pixiv.net 이동</string>
+    <string name="login_help_step4">4. \'PHPSESSID\' 값을 복사 (형식: 12345678_xxxx)</string>
+    <string name="login_help_warning">⚠️ 경고: PHPSESSID를 다른 사람과 공유하지 마세요!</string>
+    <string name="login_error_invalid_format">잘못된 PHPSESSID 형식입니다. 예상 형식: userid_xxxxx</string>
+    <string name="login_error_empty">PHPSESSID를 입력하세요</string>
+    <string name="login_session_expired">로그인 세션이 만료되었습니다. 다시 로그인하세요.</string>
+    <string name="common_ok">확인</string>
+    
+    <!-- Settings - Account Management -->
+    <string name="settings_account">계정</string>
+    <string name="settings_user_id">사용자 ID</string>
+    <string name="settings_phpsessid">PHPSESSID</string>
+    <string name="settings_phpsessid_desc">Pixiv API 로그인 자격 증명</string>
+    <string name="settings_not_logged_in">로그인하지 않음</string>
+    <string name="settings_unknown">알 수 없음</string>
+    <string name="settings_edit_phpsessid">PHPSESSID 편집</string>
+    <string name="settings_phpsessid_input_hint">브라우저 쿠키에서 PHPSESSID를 입력하세요</string>
+    <string name="settings_phpsessid_warning">⚠️ PHPSESSID 변경 시 로그인 자격 증명이 업데이트됩니다</string>
+    <string name="settings_logout_confirm_title">로그아웃</string>
+    <string name="settings_logout_confirm_message">정말 로그아웃하시겠습니까? 다시 로그인해야 합니다.</string>
     
     <!-- Settings - Content Filter -->
     <string name="settings_content_filter">콘텐츠 필터</string>
@@ -153,7 +201,7 @@
     
     <!-- 설정 - 이미지 품질 -->
     <string name="settings_image_quality">이미지 품질</string>
-    <string name="settings_preferred_image_quality">읽스트 카드 이미지 품질</string>
+    <string name="settings_preferred_image_quality">일러스트 카드 이미지 품질</string>
     <string name="settings_preferred_image_quality_desc">목록과 그리드의 썸네일 품질</string>
     <string name="settings_detail_image_quality">일러스트 상세 페이지 이미지 품질</string>
     <string name="settings_detail_image_quality_desc">작품 상세 페이지의 이미지 품질</string>
@@ -188,6 +236,7 @@
     
     <!-- Navigation -->
     <string name="nav_back">뒤로</string>
+    <string name="nav_refresh">새로고침</string>
     
     <!-- Image Search -->
     <string name="image_search_title">이미지 검색</string>
@@ -196,5 +245,268 @@
     <string name="image_search_retry">재시도</string>
     <string name="image_search_cannot_read">이미지를 읽을 수 없습니다</string>
     <string name="image_search_unknown_error">알 수 없는 오류</string>
+    
+    <!-- Bookmark Status -->
+    <string name="bookmark_not_bookmarked">북마크하지 않음</string>
+    <string name="bookmark_public">공개 북마크</string>
+    <string name="bookmark_private">비공개 북마크</string>
+    
+    <!-- Follow Status -->
+    <string name="follow_follow">팔로우</string>
+    <string name="follow_unfollow">팔로우 취소</string>
+    <string name="follow_unfollow_private">비공개 팔로우 취소</string>
+    
+    <!-- Error Messages -->
+    <string name="error_icon_desc">오류</string>
+    <string name="error_load_failed">로드 실패</string>
+    <string name="error_image_load_failed">이미지 로드 실패</string>
+    <string name="error_unknown">알 수 없는 오류</string>
+    <string name="error_network">네트워크 오류</string>
+    <string name="error_data_empty">데이터가 비어 있습니다</string>
+    <string name="error_invalid_artwork_id">잘못된 작품 ID</string>
+    <string name="error_cannot_load_frames">프레임을 로드할 수 없습니다</string>
+    
+    <!-- Series -->
+    <string name="series_watching">구독 중</string>
+    <string name="series_total_episodes">총 %1$d화</string>
+    <string name="series_update">업데이트: %1$s</string>
+    <string name="series_concluded">완결</string>
+    <string name="series_ongoing">연재 중</string>
+    <string name="series_original">오리지널</string>
+    <string name="series_word_count">%1$s자</string>
+    <string name="series_works_list">작품 목록 (총 %1$d)</string>
+    <string name="series_last_update">최근 업데이트: %1$s</string>
+    <string name="series_add_watch">구독 목록에 추가</string>
+    <string name="series_remove_watch">구독 목록에서 삭제</string>
+    <string name="series_label">시리즈: %1$s</string>
+    <string name="series_watch_count">구독자 %1$d명</string>
+    <string name="novel_series">소설 시리즈</string>
+    <string name="manga_series">만화 시리즈</string>
+    
+    <!-- Content Types -->
+    <string name="content_illusts">일러스트</string>
+    <string name="content_manga">만화</string>
+    <string name="content_novels">소설</string>
+    <string name="content_manga_series">만화 시리즈</string>
+    <string name="content_novel_series">소설 시리즈</string>
+    <string name="content_bookmark_illusts_public">공개 북마크 (일러스트)</string>
+    <string name="content_bookmark_illusts_private">비공개 북마크 (일러스트)</string>
+    <string name="content_bookmark_novels_public">공개 북마크 (소설)</string>
+    <string name="content_bookmark_novels_private">비공개 북마크 (소설)</string>
+    <string name="content_all">전체</string>
+    <string name="content_ugoira">우고이라</string>
+    
+    <!-- Ranking (Additional) -->
+    <string name="ranking_category_general">일반</string>
+    <string name="ranking_ai_type_normal">일반</string>
+    <string name="ranking_ai_type_ai">AI 생성</string>
+    <string name="ranking_select_date">날짜 선택</string>
+    <string name="ranking_latest">최신 랭킹</string>
+    <string name="ranking_current">현재: %1$s</string>
+    <string name="ranking_previous_day">이전 날짜: %1$s</string>
+    <string name="ranking_next_day">다음 날짜: %1$s</string>
+    <string name="ranking_select_ranking_date">랭킹 날짜 선택</string>
+    
+    <!-- Ugoira Player -->
+    <string name="ugoira_playback_speed">재생 속도</string>
+    <string name="ugoira_getting_info">우고이라 정보 가져오는 중...</string>
+    <string name="ugoira_downloading_file">애니메이션 파일 다운로드 중...</string>
+    <string name="ugoira_extracting_frames">프레임 추출 중...</string>
+    <string name="ugoira_loading_frames">프레임 로드 중 %1$d/%2$d</string>
+    <string name="ugoira_loading_frames_percent">프레임 로드 중... %1$d%%</string>
+    <string name="ugoira_load_failed">로드 실패: %1$s</string>
+    
+    <!-- Novel -->
+    <string name="novel_page_number">페이지 %1$d</string>
+    <string name="novel_no_content">콘텐츠 없음</string>
+    <string name="novel_pixiv_illust">Pixiv 일러스트 %1$s</string>
+    <string name="novel_illust">일러스트 %1$s</string>
+    <string name="novel_illust_image">소설 일러스트</string>
+    <string name="novel_text_count">%1$s자</string>
+    <string name="novel_page_count">총 %1$d페이지</string>
+    <string name="novel_stat_views">조회수</string>
+    <string name="novel_stat_likes">좋아요</string>
+    <string name="novel_stat_bookmarks">북마크</string>
+    <string name="novel_stat_comments">댓글</string>
+    <string name="novel_description">설명</string>
+    <string name="novel_tags">태그</string>
+    <string name="novel_publish_time">게시 시간: %1$s</string>
+    <string name="novel_remove_marker">북마크 삭제</string>
+    <string name="novel_add_marker">북마크 추가</string>
+    <string name="novel_update_marker">북마크 업데이트</string>
+    <string name="novel_collapse">접기</string>
+    <string name="novel_expand">펼치기</string>
+    <string name="novel_friends_only">친구 공개</string>
+    <string name="novel_friends_only_desc">이 콘텐츠는 내 pixiv 친구에게만 공개됩니다</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_collapse">접기</string>
+    <string name="artwork_expand">펼치기</string>
+    <string name="artwork_stat_views">조회수</string>
+    <string name="artwork_stat_likes">좋아요</string>
+    <string name="artwork_stat_bookmarks">북마크</string>
+    <string name="artwork_stat_comments">댓글</string>
+    <string name="artwork_info">작품 정보</string>
+    <string name="artwork_resolution">해상도</string>
+    <string name="artwork_page_count">페이지</string>
+    <string name="artwork_id">작품 ID</string>
+    <string name="artwork_user_id">사용자 ID</string>
+    <string name="artwork_description">설명</string>
+    <string name="artwork_tags">태그</string>
+    <string name="artwork_publish_time">게시 시간: %1$s</string>
+    <string name="artwork_similar">유사한 작품</string>
+    
+    <!-- Time Format -->
+    <string name="time_hours_minutes">%1$d시간 %2$d분</string>
+    <string name="time_hours">%1$d시간</string>
+    <string name="time_minutes">%1$d분</string>
+    <string name="time_less_than_minute">1분 미만</string>
+    
+    <!-- Login -->
+    <string name="login_in_app">앱 내 로그인</string>
+    <string name="login_in_development">이 기능은 개발 중입니다. 기대해 주세요!</string>
+    <string name="login_password_hide">숨기기</string>
+    <string name="login_password_show">보기</string>
+    <string name="login_phpsessid_login">PHPSESSID 로그인</string>
+    <string name="login_failed">로그인 실패</string>
+    <string name="login_failed_check_format">로그인 실패, PHPSESSID 형식을 확인하세요</string>
+    <string name="login_failed_with_message">로그인 실패: %1$s</string>
+    
+    <!-- User -->
+    <string name="user_no_works">이 사용자는 작품이 없습니다</string>
+    <string name="user_following_count">팔로잉 %1$d</string>
+    <string name="user_load_info_failed">사용자 정보 로드 실패</string>
+    <string name="user_info_empty">사용자 정보가 비어 있습니다</string>
+    <string name="user_load_works_failed">작품 목록 로드 실패</string>
+    <string name="user_works_empty">작품 개요가 비어 있습니다</string>
+    <string name="user_load_more_failed">더보기 로드 실패</string>
+    
+    <!-- User Profile Tabs -->
+    <string name="user_tab_info">정보</string>
+    <string name="user_tab_illusts">일러스트</string>
+    <string name="user_tab_manga">만화</string>
+    <string name="user_tab_novels">소설</string>
+    <string name="user_tab_manga_series">만화 시리즈</string>
+    <string name="user_tab_novel_series">소설 시리즈</string>
+    <string name="user_tab_bookmark_illusts_public">공개 북마크 (일러스트)</string>
+    <string name="user_tab_bookmark_illusts_private">비공개 북마크 (일러스트)</string>
+    <string name="user_tab_bookmark_novels_public">공개 북마크 (소설)</string>
+    <string name="user_tab_bookmark_novels_private">비공개 북마크 (소설)</string>
+    <string name="user_network_error">네트워크 오류</string>
+    <string name="user_load_failed">로드 실패</string>
+    
+    <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_expand">태그로 필터링</string>
+    <string name="bookmark_tag_filter_collapse">접기</string>
+    <string name="bookmark_tag_loading">태그 로드 중…</string>
+    <string name="bookmark_tag_empty">태그 없음</string>
+    
+    <!-- User Info Detail -->
+    <string name="user_info_basic">기본 정보</string>
+    <string name="user_info_user_id">사용자 ID</string>
+    <string name="user_info_bio">소개</string>
+    <string name="user_info_social">소셜</string>
+    <string name="user_info_following">팔로잉</string>
+    <string name="user_info_mypixiv">마이픽시브 친구</string>
+    <string name="user_info_followed_back">맞팔로우</string>
+    <string name="user_followed">팔로우함</string>
+    <string name="user_info_is_mypixiv">마이픽시브 친구임</string>
+    <string name="user_info_links">링크</string>
+    <string name="user_info_webpage">웹사이트</string>
+    <string name="user_info_personal">개인 정보</string>
+    <string name="user_info_region">지역</string>
+    <string name="user_info_gender">성별</string>
+    <string name="user_info_age">나이</string>
+    <string name="user_info_birthday">생일</string>
+    <string name="user_info_job">직업</string>
+    <string name="user_info_workspace">작업 환경</string>
+    <string name="user_info_workspace_pc">PC</string>
+    <string name="user_info_workspace_monitor">모니터</string>
+    <string name="user_info_workspace_tool">소프트웨어</string>
+    <string name="user_info_workspace_tablet">태블릿</string>
+    <string name="user_info_workspace_mouse">마우스</string>
+    <string name="user_info_workspace_scanner">스캐너</string>
+    <string name="user_info_workspace_printer">프린터</string>
+    <string name="user_info_workspace_desktop">데스크탑</string>
+    <string name="user_info_workspace_desk">책상</string>
+    <string name="user_info_workspace_chair">의자</string>
+    <string name="user_info_workspace_music">배경 음악</string>
+    <string name="user_info_workspace_comment">기타</string>
+    <string name="user_info_commission">커미션</string>
+    <string name="user_info_commission_request">의뢰 상태</string>
+    <string name="user_info_commission_fan_request">팬 의뢰 상태</string>
+    <string name="user_info_groups">그룹</string>
+    <string name="user_info_status">계정 상태</string>
+    <string name="user_info_premium">프리미엄 회원</string>
+    <string name="user_info_official">공식 계정</string>
+    <string name="user_info_can_message">메시지 전송 가능</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_detail_empty">작품 상세 정보가 비어 있습니다</string>
+    <string name="artwork_not_bookmarked">작품이 북마크되지 않았습니다</string>
+    <string name="artwork_ugoira_meta_empty">우고이라 메타데이터가 비어 있습니다</string>
+    <string name="artwork_pages_empty">다중 페이지 작품 상세 정보가 비어 있습니다</string>
+    
+    <!-- Settings Debug -->
+    <string name="settings_api_test_tool">API 테스트 도구 🔧</string>
+    <string name="settings_api_test_subtitle">Pixiv API 디버그</string>
+    <string name="settings_api_test_desc">모든 통합 Pixiv API를 체계적으로 테스트</string>
+    <string name="settings_phpsessid_empty">PHPSESSID는 비워둘 수 없습니다</string>
+    <string name="settings_phpsessid_invalid_format">잘못된 형식, 예상: userid_xxxxx</string>
+    
+    <!-- API Errors -->
+    <string name="api_post_comment_failed">댓글 게시 실패</string>
+    <string name="api_delete_comment_failed">댓글 삭제 실패</string>
+    <string name="api_unknown_title">알 수 없는 제목</string>
+    <string name="api_unknown_author">알 수 없는 작가</string>
+    <string name="api_cannot_get_csrf">CSRF 토큰을 가져올 수 없습니다</string>
+    <string name="api_novel_ranking_empty">소설 랭킹 데이터가 비어 있습니다</string>
+    <string name="api_get_novel_detail_failed">소설 상세 정보 가져오기 실패</string>
+    <string name="api_search_novel_failed">소설 검색 실패</string>
+    <string name="api_get_recommended_novels_failed">추천 소설 가져오기 실패</string>
+    <string name="api_add_bookmark_failed">북마크 추가 실패</string>
+    <string name="api_get_series_detail_failed">시리즈 상세 정보 가져오기 실패</string>
+    <string name="api_get_series_contents_failed">시리즈 콘텐츠 가져오기 실패</string>
+    <string name="api_watch_failed">구독 목록에 추가 실패</string>
+    <string name="api_unwatch_failed">구독 목록에서 삭제 실패</string>
+    <string name="api_operation_failed">작업 실패</string>
+    <string name="api_web_login_not_supported">Web API는 직접 로그인을 지원하지 않습니다. PHPSESSID를 사용하세요</string>
+    <string name="api_user_info_empty">사용자 정보가 비어 있습니다</string>
+    <string name="api_discovery_users_empty">발견 사용자 데이터가 비어 있습니다</string>
+    <string name="api_load_series_detail_failed">시리즈 상세 정보 로드 실패</string>
+    <string name="api_load_series_contents_failed">시리즈 콘텐츠 로드 실패</string>
+    
+    <!-- User Relations -->
+    <string name="user_relations_title">%1$s의 관계</string>
+    <string name="user_relations_following">팔로잉</string>
+    <string name="user_relations_mypixiv">마이픽시브</string>
+    <string name="user_relations_followers">팔로워</string>
+    <string name="user_relations_public">공개</string>
+    <string name="user_relations_private">비공개</string>
+    <string name="user_relations_empty">사용자 없음</string>
+    <string name="user_relations_load_failed">사용자 목록 로드 실패</string>
+    
+    <!-- Comments -->
+    <string name="comments_title">댓글</string>
+    <string name="comments_empty">댓글이 없습니다</string>
+    <string name="comments_input_hint">댓글을 입력하세요...</string>
+    <string name="comments_reply_hint">답글을 입력하세요...</string>
+    <string name="comments_send">전송</string>
+    <string name="comments_reply">답글</string>
+    <string name="comments_delete">삭제</string>
+    <string name="comments_show_replies">답글 보기</string>
+    <string name="comments_hide_replies">답글 숨기기</string>
+    <string name="comments_load_more_replies">답글 더보기</string>
+    <string name="comments_replying_to">%1$s에게 답글</string>
+    <string name="comments_cancel_reply">답글 취소</string>
+    <string name="comments_reply_to">@%1$s</string>
+    <string name="comments_deleted_user">삭제된 사용자</string>
+    <string name="comments_stamp">스탬프</string>
+    <string name="comments_empty_error">댓글을 입력하세요</string>
+    
+    <!-- Emoji Picker -->
+    <string name="emoji_button">이모지</string>
+    <string name="emoji_tab_emoji">이모지</string>
+    <string name="emoji_tab_stamp">스탬프</string>
 </resources>
 

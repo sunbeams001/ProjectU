@@ -13,6 +13,7 @@
     <!-- Home Screen -->
     <string name="home_recommended">おすすめ</string>
     <string name="home_following">フォロー中</string>
+    <string name="home_new_works">新着作品</string>
     <string name="home_framework_complete">プロジェクトフレームワーク構築完了</string>
     
     <!-- Follow Latest (動態) -->
@@ -65,6 +66,23 @@
     <string name="ranking_original">オリジナル</string>
     <string name="ranking_male">男子に人気</string>
     <string name="ranking_female">女子に人気</string>
+    <string name="ranking_ai">AI生成</string>
+    <string name="ranking_weekly_original">ウィークリーオリジナル</string>
+    <string name="ranking_weekly_ai">ウィークリーAI</string>
+    <string name="ranking_weekly_r18_ai">ウィークリーR-18 AI</string>
+    <string name="ranking_daily_r18">デイリーR-18</string>
+    <string name="ranking_weekly_r18">ウィークリーR-18</string>
+    <string name="ranking_male_r18">男子に人気R-18</string>
+    <string name="ranking_female_r18">女子に人気R-18</string>
+    <string name="ranking_ai_r18">AI生成R-18</string>
+    <string name="ranking_r18g">R-18G</string>
+    
+    <!-- Ranking Content Types -->
+    <string name="ranking_content_all">総合</string>
+    <string name="ranking_content_illust">イラスト</string>
+    <string name="ranking_content_manga">マンガ</string>
+    <string name="ranking_content_ugoira">うごイラ</string>
+    <string name="ranking_content_novel">小説</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">ブックマーク</string>
@@ -142,6 +160,36 @@
     <string name="ugoira_speed">速度</string>
     <string name="ugoira_downloading">うごイラをダウンロード中...</string>
     
+    <!-- Login Screen (New) -->
+    <string name="login_subtitle">Pixivにログインして、パーソナライズされたコンテンツにアクセス</string>
+    <string name="login_phpsessid_title">PHPSESSIDでログイン</string>
+    <string name="login_phpsessid_description">ブラウザのCookieからPHPSESSIDを入力してください</string>
+    <string name="login_phpsessid_label">PHPSESSID</string>
+    <string name="login_logging_in">ログイン中...</string>
+    <string name="login_help">PHPSESSIDの取得方法</string>
+    <string name="login_help_step1">1. ブラウザで https://www.pixiv.net/ を開きログインします</string>
+    <string name="login_help_step2">2. 開発者ツールを開きます（F12）</string>
+    <string name="login_help_step3">3. アプリケーション/ストレージ → Cookie → https://www.pixiv.net に移動</string>
+    <string name="login_help_step4">4. \'PHPSESSID\' の値をコピー（形式：12345678_xxxx）</string>
+    <string name="login_help_warning">⚠️ 警告：PHPSESSIDは他人と共有しないでください！</string>
+    <string name="login_error_invalid_format">無効なPHPSESSID形式。期待される形式：userid_xxxxx</string>
+    <string name="login_error_empty">PHPSESSIDを入力してください</string>
+    <string name="login_session_expired">ログインセッションが期限切れです。再度ログインしてください。</string>
+    <string name="common_ok">OK</string>
+    
+    <!-- Settings - Account Management -->
+    <string name="settings_account">アカウント</string>
+    <string name="settings_user_id">ユーザーID</string>
+    <string name="settings_phpsessid">PHPSESSID</string>
+    <string name="settings_phpsessid_desc">Pixiv APIのログイン認証情報</string>
+    <string name="settings_not_logged_in">ログインしていません</string>
+    <string name="settings_unknown">不明</string>
+    <string name="settings_edit_phpsessid">PHPSESSIDを編集</string>
+    <string name="settings_phpsessid_input_hint">ブラウザのCookieからPHPSESSIDを入力してください</string>
+    <string name="settings_phpsessid_warning">⚠️ PHPSESSIDを変更すると、ログイン認証情報が更新されます</string>
+    <string name="settings_logout_confirm_title">ログアウト</string>
+    <string name="settings_logout_confirm_message">ログアウトしてもよろしいですか？再度ログインする必要があります。</string>
+    
     <!-- Settings - Content Filter -->
     <string name="settings_content_filter">コンテンツフィルター</string>
     <string name="settings_r18_sanity_threshold">R18健全度しきい値</string>
@@ -186,8 +234,79 @@
     <string name="cache_type_image">画像</string>
     <string name="cache_type_ugoira">アニメーション (Ugoira)</string>
     
+    <!-- Bookmark Status -->
+    <string name="bookmark_not_bookmarked">未ブックマーク</string>
+    <string name="bookmark_public">公開ブックマーク</string>
+    <string name="bookmark_private">非公開ブックマーク</string>
+    
+    <!-- Follow Status -->
+    <string name="follow_follow">フォロー</string>
+    <string name="follow_unfollow">フォロー解除</string>
+    <string name="follow_unfollow_private">非公開フォローを解除</string>
+    
+    <!-- Error Messages -->
+    <string name="error_icon_desc">エラー</string>
+    <string name="error_load_failed">読み込みに失敗しました</string>
+    <string name="error_image_load_failed">画像の読み込みに失敗しました</string>
+    <string name="error_unknown">不明なエラー</string>
+    <string name="error_network">ネットワークエラー</string>
+    <string name="error_data_empty">データが空です</string>
+    <string name="error_invalid_artwork_id">無効な作品ID</string>
+    <string name="error_cannot_load_frames">フレームを読み込めません</string>
+    
+    <!-- Series -->
+    <string name="series_watching">フォロー中</string>
+    <string name="series_total_episodes">全 %1$d 話</string>
+    <string name="series_update">更新：%1$s</string>
+    <string name="series_concluded">完結</string>
+    <string name="series_ongoing">連載中</string>
+    <string name="series_original">オリジナル</string>
+    <string name="series_word_count">%1$s 文字</string>
+    <string name="series_works_list">作品リスト（全 %1$d）</string>
+    <string name="series_last_update">最終更新：%1$s</string>
+    <string name="series_add_watch">ウォッチリストに追加</string>
+    <string name="series_remove_watch">ウォッチリストから削除</string>
+    <string name="series_label">シリーズ：%1$s</string>
+    <string name="series_watch_count">%1$d 人がウォッチ中</string>
+    <string name="novel_series">小説シリーズ</string>
+    <string name="manga_series">マンガシリーズ</string>
+    
+    <!-- Content Types -->
+    <string name="content_illusts">イラスト</string>
+    <string name="content_manga">マンガ</string>
+    <string name="content_novels">小説</string>
+    <string name="content_manga_series">マンガシリーズ</string>
+    <string name="content_novel_series">小説シリーズ</string>
+    <string name="content_bookmark_illusts_public">公開ブックマーク（イラスト）</string>
+    <string name="content_bookmark_illusts_private">非公開ブックマーク（イラスト）</string>
+    <string name="content_bookmark_novels_public">公開ブックマーク（小説）</string>
+    <string name="content_bookmark_novels_private">非公開ブックマーク（小説）</string>
+    <string name="content_all">すべて</string>
+    <string name="content_ugoira">うごイラ</string>
+    
+    <!-- Ranking (Additional) -->
+    <string name="ranking_category_general">一般</string>
+    <string name="ranking_ai_type_normal">通常</string>
+    <string name="ranking_ai_type_ai">AI生成</string>
+    <string name="ranking_select_date">日付を選択</string>
+    <string name="ranking_latest">最新ランキング</string>
+    <string name="ranking_current">現在：%1$s</string>
+    <string name="ranking_previous_day">前日：%1$s</string>
+    <string name="ranking_next_day">翌日：%1$s</string>
+    <string name="ranking_select_ranking_date">ランキング日付を選択</string>
+    
+    <!-- Ugoira Player -->
+    <string name="ugoira_playback_speed">再生速度</string>
+    <string name="ugoira_getting_info">うごイラ情報を取得中...</string>
+    <string name="ugoira_downloading_file">アニメーションファイルをダウンロード中...</string>
+    <string name="ugoira_extracting_frames">フレームを抽出中...</string>
+    <string name="ugoira_loading_frames">フレームを読み込み中 %1$d/%2$d</string>
+    <string name="ugoira_loading_frames_percent">フレームを読み込み中... %1$d%%</string>
+    <string name="ugoira_load_failed">読み込み失敗：%1$s</string>
+    
     <!-- Navigation -->
     <string name="nav_back">戻る</string>
+    <string name="nav_refresh">更新</string>
     
     <!-- Image Search -->
     <string name="image_search_title">画像で検索</string>
@@ -196,6 +315,176 @@
     <string name="image_search_retry">再試行</string>
     <string name="image_search_cannot_read">画像を読み込めません</string>
     <string name="image_search_unknown_error">不明なエラー</string>
+    
+    <!-- Novel -->
+    <string name="novel_page_number">ページ %1$d</string>
+    <string name="novel_no_content">内容がありません</string>
+    <string name="novel_pixiv_illust">Pixivイラスト %1$s</string>
+    <string name="novel_illust">イラスト %1$s</string>
+    <string name="novel_illust_image">小説の挿絵</string>
+    <string name="novel_text_count">%1$s 文字</string>
+    <string name="novel_page_count">全 %1$d ページ</string>
+    <string name="novel_stat_views">閲覧数</string>
+    <string name="novel_stat_likes">いいね</string>
+    <string name="novel_stat_bookmarks">ブックマーク</string>
+    <string name="novel_stat_comments">コメント</string>
+    <string name="novel_description">説明</string>
+    <string name="novel_tags">タグ</string>
+    <string name="novel_publish_time">投稿日時：%1$s</string>
+    <string name="novel_remove_marker">しおりを削除</string>
+    <string name="novel_add_marker">しおりを追加</string>
+    <string name="novel_update_marker">しおりを更新</string>
+    <string name="novel_collapse">折りたたむ</string>
+    <string name="novel_expand">展開</string>
+    <string name="novel_friends_only">マイピク限定</string>
+    <string name="novel_friends_only_desc">この作品はマイピクのみ閲覧可能です</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_collapse">折りたたむ</string>
+    <string name="artwork_expand">展開</string>
+    <string name="artwork_stat_views">閲覧数</string>
+    <string name="artwork_stat_likes">いいね</string>
+    <string name="artwork_stat_bookmarks">ブックマーク</string>
+    <string name="artwork_stat_comments">コメント</string>
+    <string name="artwork_info">作品情報</string>
+    <string name="artwork_resolution">解像度</string>
+    <string name="artwork_page_count">ページ数</string>
+    <string name="artwork_id">作品ID</string>
+    <string name="artwork_user_id">ユーザーID</string>
+    <string name="artwork_description">説明</string>
+    <string name="artwork_tags">タグ</string>
+    <string name="artwork_publish_time">投稿日時：%1$s</string>
+    <string name="artwork_similar">似ている作品</string>
+    
+    <!-- Time Format -->
+    <string name="time_hours_minutes">%1$d 時間 %2$d 分</string>
+    <string name="time_hours">%1$d 時間</string>
+    <string name="time_minutes">%1$d 分</string>
+    <string name="time_less_than_minute">1分未満</string>
+    
+    <!-- Login -->
+    <string name="login_in_app">アプリ内ログイン</string>
+    <string name="login_in_development">この機能は開発中です。お楽しみに！</string>
+    <string name="login_password_hide">非表示</string>
+    <string name="login_password_show">表示</string>
+    <string name="login_phpsessid_login">PHPSESSIDでログイン</string>
+    <string name="login_failed">ログイン失敗</string>
+    <string name="login_failed_check_format">ログインに失敗しました。PHPSESSID形式を確認してください</string>
+    <string name="login_failed_with_message">ログイン失敗：%1$s</string>
+    
+    <!-- User -->
+    <string name="user_no_works">このユーザーは作品を投稿していません</string>
+    <string name="user_following_count">フォロー中 %1$d</string>
+    <string name="user_load_info_failed">ユーザー情報の読み込みに失敗しました</string>
+    <string name="user_info_empty">ユーザー情報が空です</string>
+    <string name="user_load_works_failed">作品リストの読み込みに失敗しました</string>
+    <string name="user_works_empty">作品概要が空です</string>
+    <string name="user_load_more_failed">追加読み込みに失敗しました</string>
+    
+    <!-- User Profile Tabs -->
+    <string name="user_tab_info">情報</string>
+    <string name="user_tab_illusts">イラスト</string>
+    <string name="user_tab_manga">マンガ</string>
+    <string name="user_tab_novels">小説</string>
+    <string name="user_tab_manga_series">マンガシリーズ</string>
+    <string name="user_tab_novel_series">小説シリーズ</string>
+    <string name="user_tab_bookmark_illusts_public">公開ブックマーク（イラスト）</string>
+    <string name="user_tab_bookmark_illusts_private">非公開ブックマーク（イラスト）</string>
+    <string name="user_tab_bookmark_novels_public">公開ブックマーク（小説）</string>
+    <string name="user_tab_bookmark_novels_private">非公開ブックマーク（小説）</string>
+    <string name="user_network_error">ネットワークエラー</string>
+    <string name="user_load_failed">読み込みに失敗しました</string>
+    
+    <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_expand">タグで絞り込む</string>
+    <string name="bookmark_tag_filter_collapse">折りたたむ</string>
+    <string name="bookmark_tag_loading">タグを読み込み中…</string>
+    <string name="bookmark_tag_empty">タグがありません</string>
+    
+    <!-- User Info Detail -->
+    <string name="user_info_basic">基本情報</string>
+    <string name="user_info_user_id">ユーザーID</string>
+    <string name="user_info_bio">自己紹介</string>
+    <string name="user_info_social">ソーシャル</string>
+    <string name="user_info_following">フォロー中</string>
+    <string name="user_info_mypixiv">マイピク</string>
+    <string name="user_info_followed_back">フォローバック</string>
+    <string name="user_followed">フォロー済み</string>
+    <string name="user_info_is_mypixiv">マイピクです</string>
+    <string name="user_info_links">リンク</string>
+    <string name="user_info_webpage">ウェブサイト</string>
+    <string name="user_info_personal">個人情報</string>
+    <string name="user_info_region">地域</string>
+    <string name="user_info_gender">性別</string>
+    <string name="user_info_age">年齢</string>
+    <string name="user_info_birthday">誕生日</string>
+    <string name="user_info_job">職業</string>
+    <string name="user_info_workspace">作業環境</string>
+    <string name="user_info_workspace_pc">PC</string>
+    <string name="user_info_workspace_monitor">モニター</string>
+    <string name="user_info_workspace_tool">ソフトウェア</string>
+    <string name="user_info_workspace_tablet">タブレット</string>
+    <string name="user_info_workspace_mouse">マウス</string>
+    <string name="user_info_workspace_scanner">スキャナー</string>
+    <string name="user_info_workspace_printer">プリンター</string>
+    <string name="user_info_workspace_desktop">デスクトップ</string>
+    <string name="user_info_workspace_desk">机</string>
+    <string name="user_info_workspace_chair">椅子</string>
+    <string name="user_info_workspace_music">BGM</string>
+    <string name="user_info_workspace_comment">その他</string>
+    <string name="user_info_commission">コミッション</string>
+    <string name="user_info_commission_request">リクエスト状況</string>
+    <string name="user_info_commission_fan_request">ファンリクエスト状況</string>
+    <string name="user_info_groups">グループ</string>
+    <string name="user_info_status">アカウント状況</string>
+    <string name="user_info_premium">プレミアム会員</string>
+    <string name="user_info_official">公式アカウント</string>
+    <string name="user_info_can_message">メッセージ送信可</string>
+    
+    <!-- Artwork -->
+    <string name="artwork_detail_empty">作品詳細が空です</string>
+    <string name="artwork_not_bookmarked">作品はブックマークされていません</string>
+    <string name="artwork_ugoira_meta_empty">うごイラのメタデータが空です</string>
+    <string name="artwork_pages_empty">複数ページ作品の詳細が空です</string>
+    
+    <!-- Settings Debug -->
+    <string name="settings_api_test_tool">APIテストツール 🔧</string>
+    <string name="settings_api_test_subtitle">Pixiv APIをデバッグ</string>
+    <string name="settings_api_test_desc">統合されたすべてのPixiv APIを体系的にテスト</string>
+    <string name="settings_phpsessid_empty">PHPSESSIDは空にできません</string>
+    <string name="settings_phpsessid_invalid_format">無効な形式です。期待される形式：userid_xxxxx</string>
+    
+    <!-- API Errors -->
+    <string name="api_post_comment_failed">コメントの投稿に失敗しました</string>
+    <string name="api_delete_comment_failed">コメントの削除に失敗しました</string>
+    <string name="api_unknown_title">不明なタイトル</string>
+    <string name="api_unknown_author">不明な作者</string>
+    <string name="api_cannot_get_csrf">CSRFトークンを取得できません</string>
+    <string name="api_novel_ranking_empty">小説ランキングデータが空です</string>
+    <string name="api_get_novel_detail_failed">小説詳細の取得に失敗しました</string>
+    <string name="api_search_novel_failed">小説の検索に失敗しました</string>
+    <string name="api_get_recommended_novels_failed">おすすめ小説の取得に失敗しました</string>
+    <string name="api_add_bookmark_failed">ブックマークの追加に失敗しました</string>
+    <string name="api_get_series_detail_failed">シリーズ詳細の取得に失敗しました</string>
+    <string name="api_get_series_contents_failed">シリーズコンテンツの取得に失敗しました</string>
+    <string name="api_watch_failed">ウォッチリストへの追加に失敗しました</string>
+    <string name="api_unwatch_failed">ウォッチリストからの削除に失敗しました</string>
+    <string name="api_operation_failed">操作に失敗しました</string>
+    <string name="api_web_login_not_supported">Web APIは直接ログインをサポートしていません。PHPSESSIDを使用してください</string>
+    <string name="api_user_info_empty">ユーザー情報が空です</string>
+    <string name="api_discovery_users_empty">発見ユーザーデータが空です</string>
+    <string name="api_load_series_detail_failed">シリーズ詳細の読み込みに失敗しました</string>
+    <string name="api_load_series_contents_failed">シリーズコンテンツの読み込みに失敗しました</string>
+    
+    <!-- User Relations -->
+    <string name="user_relations_title">%1$s の関係</string>
+    <string name="user_relations_following">フォロー中</string>
+    <string name="user_relations_mypixiv">マイピク</string>
+    <string name="user_relations_followers">フォロワー</string>
+    <string name="user_relations_public">公開</string>
+    <string name="user_relations_private">非公開</string>
+    <string name="user_relations_empty">ユーザーがいません</string>
+    <string name="user_relations_load_failed">ユーザーリストの読み込みに失敗しました</string>
     
     <!-- Comments -->
     <string name="comments_title">コメント</string>
