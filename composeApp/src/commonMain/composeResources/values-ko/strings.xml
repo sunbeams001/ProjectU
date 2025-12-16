@@ -119,7 +119,22 @@
     <string name="settings_app_language">앱 언어</string>
     <string name="settings_pixiv_language">Pixiv 언어 설정</string>
     <string name="settings_pixiv_language_desc">Pixiv 데이터 가져올 때 언어 설정</string>
-    <string name="settings_theme_mode">테마 모드</string>
+    <string name="settings_bookmark_behavior">북마크 동작 설정</string>
+    <string name="settings_click_bookmark_action">클릭 시 동작</string>
+    <string name="settings_click_bookmark_action_desc">북마크 버튼을 클릭할 때의 기본 동작을 설정합니다</string>
+    <string name="settings_long_press_bookmark_action">길게 누르기 시 동작</string>
+    <string name="settings_long_press_bookmark_action_desc">북마크 버튼을 길게 누를 때의 기본 동작을 설정합니다</string>
+    <string name="settings_select_bookmark_action">북마크 동작 선택</string>
+    <string name="bookmark_action_public">공개 북마크</string>
+    <string name="bookmark_action_private">비공개 북마크</string>
+    <string name="bookmark_action_with_tags">태그로 북마크</string>    <string name="bookmark_with_tags_title">태그와 함께 북마크</string>
+    <string name="bookmark_tag_input_label">태그</string>
+    <string name="bookmark_tag_input_placeholder">태그 입력</string>
+    <string name="bookmark_add_tag">태그 추가</string>
+    <string name="bookmark_remove_tag">태그 제거</string>
+    <string name="bookmark_added_tags">추가된 태그</string>
+    <string name="bookmark_suggested_tags">추천 태그</string>
+    <string name="bookmark_set_private">비공개로 설정</string>    <string name="settings_theme_mode">테마 모드</string>
     <string name="settings_select_app_language">앱 언어 선택</string>
     <string name="settings_select_pixiv_language">Pixiv 언어 선택</string>
     <string name="settings_select_theme">테마 선택</string>

@@ -7,6 +7,7 @@ import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.AppSettings
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.domain.model.BookmarkAction
 import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.repository.AuthRepository
@@ -147,6 +148,24 @@ class SettingsViewModel(
             authRepository.clearCredentials()
             // 跳转到登录页面
             navigator.replaceAll(LoginScreen())
+        }
+    }
+    
+    /**
+     * 更新点击收藏按钮的行为
+     */
+    fun updateClickBookmarkAction(action: BookmarkAction) {
+        viewModelScope.launch {
+            settingsRepository.updateClickBookmarkAction(action)
+        }
+    }
+    
+    /**
+     * 更新长按收藏按钮的行为
+     */
+    fun updateLongPressBookmarkAction(action: BookmarkAction) {
+        viewModelScope.launch {
+            settingsRepository.updateLongPressBookmarkAction(action)
         }
     }
 }

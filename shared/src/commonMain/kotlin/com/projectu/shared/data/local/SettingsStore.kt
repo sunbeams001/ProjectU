@@ -108,6 +108,20 @@ class SettingsStore(
     }
     
     /**
+     * 设置点击收藏按钮的行为
+     */
+    suspend fun setClickBookmarkAction(action: com.projectu.shared.domain.model.BookmarkAction) {
+        settingsDao.updateClickBookmarkAction(action.name)
+    }
+    
+    /**
+     * 设置长按收藏按钮的行为
+     */
+    suspend fun setLongPressBookmarkAction(action: com.projectu.shared.domain.model.BookmarkAction) {
+        settingsDao.updateLongPressBookmarkAction(action.name)
+    }
+    
+    /**
      * 设置下载基础路径
      */
     suspend fun setBaseDownloadPath(path: String) {

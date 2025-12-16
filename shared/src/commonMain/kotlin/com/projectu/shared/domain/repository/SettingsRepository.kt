@@ -69,6 +69,18 @@ interface SettingsRepository {
     suspend fun updateImageCacheSize(size: CacheSize)
     
     /**
+     * 更新点击收藏按钮的行为
+     * @param action 收藏行为
+     */
+    suspend fun updateClickBookmarkAction(action: com.projectu.shared.domain.model.BookmarkAction)
+    
+    /**
+     * 更新长按收藏按钮的行为
+     * @param action 收藏行为
+     */
+    suspend fun updateLongPressBookmarkAction(action: com.projectu.shared.domain.model.BookmarkAction)
+    
+    /**
      * 更新下载基础路径
      * @param path 下载基础路径
      */

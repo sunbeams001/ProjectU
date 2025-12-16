@@ -58,6 +58,14 @@ class SettingsRepositoryImpl(
         settingsStore.setImageCacheSize(size)
     }
     
+    override suspend fun updateClickBookmarkAction(action: com.projectu.shared.domain.model.BookmarkAction) {
+        settingsStore.setClickBookmarkAction(action)
+    }
+    
+    override suspend fun updateLongPressBookmarkAction(action: com.projectu.shared.domain.model.BookmarkAction) {
+        settingsStore.setLongPressBookmarkAction(action)
+    }
+    
     override suspend fun updateBaseDownloadPath(path: String) {
         settingsStore.setBaseDownloadPath(path)
     }

@@ -4,6 +4,7 @@ import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
 import com.projectu.shared.domain.model.NovelDownloadImageQuality
 import com.projectu.shared.domain.model.CacheSize
+import com.projectu.shared.domain.model.BookmarkAction
 
 /**
  * 应用设置数据模型
@@ -68,6 +69,18 @@ data class AppSettings(
      * 默认：MEDIUM (512MB)
      */
     val imageCacheSize: CacheSize = CacheSize.DEFAULT,
+    
+    /**
+     * 点击收藏按钮的行为
+     * 默认：PUBLIC (添加公开收藏)
+     */
+    val clickBookmarkAction: BookmarkAction = BookmarkAction.PUBLIC,
+    
+    /**
+     * 长按收藏按钮的行为
+     * 默认：PRIVATE (添加私人收藏)
+     */
+    val longPressBookmarkAction: BookmarkAction = BookmarkAction.PRIVATE,
     
     /**
      * 下载设置

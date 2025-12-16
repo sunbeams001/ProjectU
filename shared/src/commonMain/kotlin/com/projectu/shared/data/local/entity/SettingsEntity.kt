@@ -58,6 +58,16 @@ data class SettingsEntity(
     val imageCacheSize: String = "MEDIUM",
     
     /**
+     * 点击收藏按钮的行为
+     */
+    val clickBookmarkAction: String = "PUBLIC",
+    
+    /**
+     * 长按收藏按钮的行为
+     */
+    val longPressBookmarkAction: String = "PRIVATE",
+    
+    /**
      * 下载基础路径
      */
     val baseDownloadPath: String = "",
@@ -81,6 +91,8 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         detailImageQuality = this.detailImageQuality.name,
         novelDownloadImageQuality = this.novelDownloadImageQuality.name,
         imageCacheSize = this.imageCacheSize.name,
+        clickBookmarkAction = this.clickBookmarkAction.name,
+        longPressBookmarkAction = this.longPressBookmarkAction.name,
         baseDownloadPath = this.downloadSettings.baseDownloadPath
     )
 }
@@ -98,6 +110,8 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         detailImageQuality = com.projectu.shared.domain.model.DetailImageQuality.fromName(this.detailImageQuality),
         novelDownloadImageQuality = com.projectu.shared.domain.model.NovelDownloadImageQuality.fromName(this.novelDownloadImageQuality),
         imageCacheSize = com.projectu.shared.domain.model.CacheSize.fromName(this.imageCacheSize),
+        clickBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.clickBookmarkAction),
+        longPressBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.longPressBookmarkAction),
         downloadSettings = com.projectu.shared.data.local.DownloadSettings(
             baseDownloadPath = this.baseDownloadPath.ifEmpty { com.projectu.shared.data.local.getDefaultDownloadPath() }
         )

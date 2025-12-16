@@ -82,6 +82,18 @@ interface SettingsDao {
     suspend fun updateImageCacheSize(size: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新点击收藏按钮的行为
+     */
+    @Query("UPDATE app_settings SET clickBookmarkAction = :action, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateClickBookmarkAction(action: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
+     * 更新长按收藏按钮的行为
+     */
+    @Query("UPDATE app_settings SET longPressBookmarkAction = :action, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateLongPressBookmarkAction(action: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 更新下载基础路径
      */
     @Query("UPDATE app_settings SET baseDownloadPath = :path, updatedAt = :timestamp WHERE id = 1")

@@ -12,7 +12,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.domain.model.Artwork
+import com.projectu.shared.domain.model.BookmarkAction
 import com.projectu.shared.domain.model.BookmarkStatus
+import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.usecase.BookmarkArtworkUseCase
 import com.projectu.shared.domain.usecase.UnbookmarkArtworkUseCase
 import com.projectu.ui.components.icons.PixivBookmarkIcons
@@ -31,8 +33,9 @@ import projectu.composeapp.generated.resources.*
  * - 私人收藏：实心爱心（粉色）+ 小锁图标叠加在右下角
  * 
  * 交互逻辑：
- * - 短按：切换收藏状态（未收藏→公开收藏→未收藏）
- * - 长按：如果已收藏，切换公开/私人状态；如果未收藏，添加为私人收藏
+ * - 短按：根据设置中的 clickBookmarkAction 配置执行对应行为
+ * - 长按：根据设置中的 longPressBookmarkAction 配置执行对应行为
+ * - 如果配置为 WITH_TAGS，则弹出标签选择对话框（目前暂未实现，会提示用户）
  * 
  * @param artwork 作品对象（需要包含完整的收藏信息）
  * @param size 组件大小
@@ -48,11 +51,21 @@ fun BookmarkIndicator(
     modifier: Modifier = Modifier,
     stateCacheManager: StateCacheManager = koinInject(),
     bookmarkUseCase: BookmarkArtworkUseCase = koinInject(),
-    unbookmarkUseCase: UnbookmarkArtworkUseCase = koinInject()
+    unbookmarkUseCase: UnbookmarkArtworkUseCase = koinInject(),
+    settingsRepository: SettingsRepository = koinInject()
 ) {
     var currentStatus by remember { mutableStateOf(artwork.bookmarkStatus) }
     var isProcessing by remember { mutableStateOf(false) }
+    var showTagDialog by remember { mutableStateOf(false) }
+    var tagDialogTrigger by remember { mutableStateOf<BookmarkAction?>(null) }
     val scope = rememberCoroutineScope()
+    
+    // 从设置中读取收藏行为配置
+    val settings by settingsRepository.getSettings().collectAsState(
+        initial = com.projectu.shared.data.local.AppSettings.DEFAULT
+    )
+    val clickAction = settings.clickBookmarkAction
+    val longPressAction = settings.longPressBookmarkAction
     
     // 监听全局状态变化
     LaunchedEffect(artwork.id) {
@@ -96,16 +109,38 @@ fun BookmarkIndicator(
                         try {
                             when (currentStatus) {
                                 BookmarkStatus.NOT_BOOKMARKED -> {
-                                    // 添加公开收藏
-                                    println("📌 BookmarkIndicator: 添加公开收藏 - 作品ID: ${artwork.id}")
-                                    bookmarkUseCase(
-                                        artworkId = artwork.id.toLong(),
-                                        isPrivate = false
-                                    ).onSuccess {
-                                        onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
-                                        println("✅ 收藏成功：公开收藏")
-                                    }.onFailure { e ->
-                                        println("❌ 收藏失败: ${e.message}")
+                                    // 根据配置执行收藏行为
+                                    when (clickAction) {
+                                        BookmarkAction.PUBLIC -> {
+                                            println("📌 BookmarkIndicator: 添加公开收藏（配置） - 作品ID: ${artwork.id}")
+                                            bookmarkUseCase(
+                                                artworkId = artwork.id.toLong(),
+                                                isPrivate = false
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
+                                                println("✅ 收藏成功：公开收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.PRIVATE -> {
+                                            println("📌 BookmarkIndicator: 添加私人收藏（配置） - 作品ID: ${artwork.id}")
+                                            bookmarkUseCase(
+                                                artworkId = artwork.id.toLong(),
+                                                isPrivate = true
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
+                                                println("✅ 收藏成功：私人收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.WITH_TAGS -> {
+                                            // 显示标签选择对话框
+                                            println("📌 BookmarkIndicator: 打开标签收藏对话框 - 作品ID: ${artwork.id}")
+                                            tagDialogTrigger = clickAction
+                                            showTagDialog = true
+                                        }
                                     }
                                 }
                                 BookmarkStatus.PUBLIC, BookmarkStatus.PRIVATE -> {
@@ -133,20 +168,42 @@ fun BookmarkIndicator(
                         try {
                             when (currentStatus) {
                                 BookmarkStatus.NOT_BOOKMARKED -> {
-                                    // 添加私人收藏
-                                    println("📌 BookmarkIndicator: 添加私人收藏 - 作品ID: ${artwork.id}")
-                                    bookmarkUseCase(
-                                        artworkId = artwork.id.toLong(),
-                                        isPrivate = true
-                                    ).onSuccess {
-                                        onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
-                                        println("✅ 收藏成功：私人收藏")
-                                    }.onFailure { e ->
-                                        println("❌ 私人收藏失败: ${e.message}")
+                                    // 根据配置执行收藏行为
+                                    when (longPressAction) {
+                                        BookmarkAction.PUBLIC -> {
+                                            println("📌 BookmarkIndicator: 长按添加公开收藏（配置） - 作品ID: ${artwork.id}")
+                                            bookmarkUseCase(
+                                                artworkId = artwork.id.toLong(),
+                                                isPrivate = false
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
+                                                println("✅ 收藏成功：公开收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.PRIVATE -> {
+                                            println("📌 BookmarkIndicator: 长按添加私人收藏（配置） - 作品ID: ${artwork.id}")
+                                            bookmarkUseCase(
+                                                artworkId = artwork.id.toLong(),
+                                                isPrivate = true
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
+                                                println("✅ 收藏成功：私人收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.WITH_TAGS -> {
+                                            // 显示标签选择对话框
+                                            println("📌 BookmarkIndicator: 长按打开标签收藏对话框 - 作品ID: ${artwork.id}")
+                                            tagDialogTrigger = longPressAction
+                                            showTagDialog = true
+                                        }
                                     }
                                 }
                                 BookmarkStatus.PUBLIC -> {
-                                    // 先取消，再添加为私人收藏
+                                    // 切换为私人收藏
                                     println("📌 BookmarkIndicator: 公开→私人 - 作品ID: ${artwork.id}")
                                     unbookmarkUseCase(artwork.id.toLong())
                                         .onSuccess {
@@ -166,7 +223,7 @@ fun BookmarkIndicator(
                                         }
                                 }
                                 BookmarkStatus.PRIVATE -> {
-                                    // 先取消，再添加为公开收藏
+                                    // 切换为公开收藏
                                     println("📌 BookmarkIndicator: 私人→公开 - 作品ID: ${artwork.id}")
                                     unbookmarkUseCase(artwork.id.toLong())
                                         .onSuccess {
@@ -191,4 +248,40 @@ fun BookmarkIndicator(
                 }
             )
     )
+    
+    // 标签收藏对话框
+    if (showTagDialog) {
+        BookmarkWithTagsDialog(
+            onDismiss = {
+                showTagDialog = false
+                tagDialogTrigger = null
+            },
+            onConfirm = { tags, isPrivate ->
+                scope.launch {
+                    isProcessing = true
+                    try {
+                        println("📌 BookmarkIndicator: 按标签收藏 - 作品ID: ${artwork.id}, 标签: $tags, 私人: $isPrivate")
+                        bookmarkUseCase(
+                            artworkId = artwork.id.toLong(),
+                            isPrivate = isPrivate,
+                            tags = tags  // ✅ 传递标签参数
+                        ).onSuccess {
+                            onStatusChanged?.invoke(if (isPrivate) BookmarkStatus.PRIVATE else BookmarkStatus.PUBLIC)
+                            println("✅ 收藏成功：${if (isPrivate) "私人" else "公开"}收藏，标签: $tags")
+                            // ✅ 只在成功时关闭对话框
+                            showTagDialog = false
+                            tagDialogTrigger = null
+                        }.onFailure { e ->
+                            println("❌ 收藏失败: ${e.message}")
+                            // ❌ 失败时不关闭对话框，让用户可以重试
+                        }
+                    } finally {
+                        isProcessing = false
+                    }
+                }
+            },
+            suggestedTags = artwork.tags.map { it.name }, // 使用作品标签作为建议
+            initialPrivate = false
+        )
+    }
 }

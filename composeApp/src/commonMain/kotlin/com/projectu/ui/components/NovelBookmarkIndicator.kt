@@ -11,8 +11,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.projectu.shared.data.cache.StateCacheManager
+import com.projectu.shared.domain.model.BookmarkAction
 import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.model.Novel
+import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.usecase.BookmarkNovelUseCase
 import com.projectu.shared.domain.usecase.UnbookmarkNovelUseCase
 import com.projectu.ui.components.icons.PixivBookmarkIcons
@@ -31,8 +33,9 @@ import projectu.composeapp.generated.resources.*
  * - 私人收藏：实心爱心（粉色）+ 小锁图标叠加在右下角
  * 
  * 交互逻辑：
- * - 短按：切换收藏状态（未收藏→公开收藏→未收藏）
- * - 长按：如果已收藏，切换公开/私人状态；如果未收藏，添加为私人收藏
+ * - 短按：根据设置中的 clickBookmarkAction 配置执行对应行为
+ * - 长按：根据设置中的 longPressBookmarkAction 配置执行对应行为
+ * - 如果配置为 WITH_TAGS，则弹出标签选择对话框（目前暂未实现，会提示用户）
  * 
  * @param novel 小说对象（需要包含完整的收藏信息）
  * @param size 组件大小
@@ -48,11 +51,21 @@ fun NovelBookmarkIndicator(
     modifier: Modifier = Modifier,
     stateCacheManager: StateCacheManager = koinInject(),
     bookmarkUseCase: BookmarkNovelUseCase = koinInject(),
-    unbookmarkUseCase: UnbookmarkNovelUseCase = koinInject()
+    unbookmarkUseCase: UnbookmarkNovelUseCase = koinInject(),
+    settingsRepository: SettingsRepository = koinInject()
 ) {
     var currentStatus by remember { mutableStateOf(novel.bookmarkStatus) }
     var isProcessing by remember { mutableStateOf(false) }
+    var showTagDialog by remember { mutableStateOf(false) }
+    var tagDialogTrigger by remember { mutableStateOf<BookmarkAction?>(null) }
     val scope = rememberCoroutineScope()
+    
+    // 从设置中读取收藏行为配置
+    val settings by settingsRepository.getSettings().collectAsState(
+        initial = com.projectu.shared.data.local.AppSettings.DEFAULT
+    )
+    val clickAction = settings.clickBookmarkAction
+    val longPressAction = settings.longPressBookmarkAction
     
     // 监听全局状态变化
     LaunchedEffect(novel.id) {
@@ -96,16 +109,38 @@ fun NovelBookmarkIndicator(
                         try {
                             when (currentStatus) {
                                 BookmarkStatus.NOT_BOOKMARKED -> {
-                                    // 添加公开收藏
-                                    println("📌 NovelBookmarkIndicator: 添加公开收藏 - 小说ID: ${novel.id}")
-                                    bookmarkUseCase(
-                                        novelId = novel.id.toLong(),
-                                        isPrivate = false
-                                    ).onSuccess {
-                                        onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
-                                        println("✅ 收藏成功：公开收藏")
-                                    }.onFailure { e ->
-                                        println("❌ 收藏失败: ${e.message}")
+                                    // 根据配置执行收藏行为
+                                    when (clickAction) {
+                                        BookmarkAction.PUBLIC -> {
+                                            println("📌 NovelBookmarkIndicator: 添加公开收藏（配置） - 小说ID: ${novel.id}")
+                                            bookmarkUseCase(
+                                                novelId = novel.id.toLong(),
+                                                isPrivate = false
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
+                                                println("✅ 收藏成功：公开收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.PRIVATE -> {
+                                            println("📌 NovelBookmarkIndicator: 添加私人收藏（配置） - 小说ID: ${novel.id}")
+                                            bookmarkUseCase(
+                                                novelId = novel.id.toLong(),
+                                                isPrivate = true
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
+                                                println("✅ 收藏成功：私人收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.WITH_TAGS -> {
+                                            // 显示标签选择对话框
+                                            println("📌 NovelBookmarkIndicator: 打开标签收藏对话框 - 小说ID: ${novel.id}")
+                                            tagDialogTrigger = clickAction
+                                            showTagDialog = true
+                                        }
                                     }
                                 }
                                 BookmarkStatus.PUBLIC, BookmarkStatus.PRIVATE -> {
@@ -133,16 +168,38 @@ fun NovelBookmarkIndicator(
                         try {
                             when (currentStatus) {
                                 BookmarkStatus.NOT_BOOKMARKED -> {
-                                    // 添加私人收藏
-                                    println("📌 NovelBookmarkIndicator: 添加私人收藏 - 小说ID: ${novel.id}")
-                                    bookmarkUseCase(
-                                        novelId = novel.id.toLong(),
-                                        isPrivate = true
-                                    ).onSuccess {
-                                        onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
-                                        println("✅ 收藏成功：私人收藏")
-                                    }.onFailure { e ->
-                                        println("❌ 私人收藏失败: ${e.message}")
+                                    // 根据配置执行收藏行为
+                                    when (longPressAction) {
+                                        BookmarkAction.PUBLIC -> {
+                                            println("📌 NovelBookmarkIndicator: 添加公开收藏（长按配置） - 小说ID: ${novel.id}")
+                                            bookmarkUseCase(
+                                                novelId = novel.id.toLong(),
+                                                isPrivate = false
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
+                                                println("✅ 收藏成功：公开收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.PRIVATE -> {
+                                            println("📌 NovelBookmarkIndicator: 添加私人收藏（长按配置） - 小说ID: ${novel.id}")
+                                            bookmarkUseCase(
+                                                novelId = novel.id.toLong(),
+                                                isPrivate = true
+                                            ).onSuccess {
+                                                onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
+                                                println("✅ 收藏成功：私人收藏")
+                                            }.onFailure { e ->
+                                                println("❌ 私人收藏失败: ${e.message}")
+                                            }
+                                        }
+                                        BookmarkAction.WITH_TAGS -> {
+                                            // 显示标签选择对话框
+                                            println("📌 NovelBookmarkIndicator: 长按打开标签收藏对话框 - 小说ID: ${novel.id}")
+                                            tagDialogTrigger = longPressAction
+                                            showTagDialog = true
+                                        }
                                     }
                                 }
                                 BookmarkStatus.PUBLIC -> {
@@ -191,6 +248,42 @@ fun NovelBookmarkIndicator(
                 }
             )
     )
+    
+    // 标签收藏对话框
+    if (showTagDialog) {
+        BookmarkWithTagsDialog(
+            onDismiss = {
+                showTagDialog = false
+                tagDialogTrigger = null
+            },
+            onConfirm = { tags, isPrivate ->
+                scope.launch {
+                    isProcessing = true
+                    try {
+                        println("📌 NovelBookmarkIndicator: 按标签收藏 - 小说ID: ${novel.id}, 标签: $tags, 私人: $isPrivate")
+                        bookmarkUseCase(
+                            novelId = novel.id.toLong(),
+                            isPrivate = isPrivate,
+                            tags = tags  // ✅ 传递标签参数
+                        ).onSuccess {
+                            onStatusChanged?.invoke(if (isPrivate) BookmarkStatus.PRIVATE else BookmarkStatus.PUBLIC)
+                            println("✅ 收藏成功：${if (isPrivate) "私人" else "公开"}收藏，标签: $tags")
+                            // ✅ 只在成功时关闭对话框
+                            showTagDialog = false
+                            tagDialogTrigger = null
+                        }.onFailure { e ->
+                            println("❌ 收藏失败: ${e.message}")
+                            // ❌ 失败时不关闭对话框，让用户可以重试
+                        }
+                    } finally {
+                        isProcessing = false
+                    }
+                }
+            },
+            suggestedTags = novel.tags.map { it.name }, // 使用小说标签作为建议
+            initialPrivate = false
+        )
+    }
 }
 
 

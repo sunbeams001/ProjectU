@@ -111,6 +111,15 @@ import projectu.composeapp.generated.resources.login_password_hide
 import projectu.composeapp.generated.resources.login_password_show
 import projectu.composeapp.generated.resources.settings_phpsessid_empty
 import projectu.composeapp.generated.resources.settings_phpsessid_invalid_format
+import projectu.composeapp.generated.resources.settings_bookmark_behavior
+import projectu.composeapp.generated.resources.settings_click_bookmark_action
+import projectu.composeapp.generated.resources.settings_click_bookmark_action_desc
+import projectu.composeapp.generated.resources.settings_long_press_bookmark_action
+import projectu.composeapp.generated.resources.settings_long_press_bookmark_action_desc
+import projectu.composeapp.generated.resources.settings_select_bookmark_action
+import projectu.composeapp.generated.resources.bookmark_action_public
+import projectu.composeapp.generated.resources.bookmark_action_private
+import projectu.composeapp.generated.resources.bookmark_action_with_tags
 import org.koin.compose.koinInject
 
 /**
@@ -151,6 +160,8 @@ class SettingsScreen : Screen {
             isLoggedIn = isLoggedIn,
             currentPhpSessionId = pixivConfig.phpSessionId,
             currentUserId = pixivConfig.getUserId(),
+            currentClickBookmarkAction = settings.clickBookmarkAction,
+            currentLongPressBookmarkAction = settings.longPressBookmarkAction,
             currentR18SanityThreshold = settings.r18SanityLevelThreshold,
             currentPreferredImageQuality = settings.preferredImageQuality,
             currentDetailImageQuality = settings.detailImageQuality,
@@ -172,6 +183,8 @@ class SettingsScreen : Screen {
             onClearCache = { cacheManager.clearCache() },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
+            onClickBookmarkActionChange = { viewModel.updateClickBookmarkAction(it) },
+            onLongPressBookmarkActionChange = { viewModel.updateLongPressBookmarkAction(it) },
             onNavigateBack = { navigator.pop() },
             onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) },
             onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) }
@@ -188,6 +201,8 @@ private fun SettingsScreenContent(
     isLoggedIn: Boolean,
     currentPhpSessionId: String,
     currentUserId: Long?,
+    currentClickBookmarkAction: com.projectu.shared.domain.model.BookmarkAction,
+    currentLongPressBookmarkAction: com.projectu.shared.domain.model.BookmarkAction,
     currentR18SanityThreshold: Int,
     currentPreferredImageQuality: ImageQuality,
     currentDetailImageQuality: DetailImageQuality,
@@ -209,6 +224,8 @@ private fun SettingsScreenContent(
     onClearCache: suspend () -> Unit,
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
+    onClickBookmarkActionChange: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
+    onLongPressBookmarkActionChange: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToApiTest: () -> Unit = {},
     onBaseDownloadPathChange: (String) -> Unit
@@ -216,6 +233,8 @@ private fun SettingsScreenContent(
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showClickBookmarkActionDialog by remember { mutableStateOf(false) }
+    var showLongPressBookmarkActionDialog by remember { mutableStateOf(false) }
     var showR18ThresholdDialog by remember { mutableStateOf(false) }
     var showImageQualityDialog by remember { mutableStateOf(false) }
     var showDetailImageQualityDialog by remember { mutableStateOf(false) }
@@ -289,6 +308,45 @@ private fun SettingsScreenContent(
                     subtitle = currentPixivLanguage.displayName,
                     description = stringResource(Res.string.settings_pixiv_language_desc),
                     onClick = { showPixivLanguageDialog = true }
+                )
+            }
+            
+            // 收藏行为设置分组
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_bookmark_behavior))
+            }
+            
+            // 点击收藏按钮行为设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_click_bookmark_action),
+                    subtitle = when (currentClickBookmarkAction) {
+                        com.projectu.shared.domain.model.BookmarkAction.PUBLIC -> 
+                            stringResource(Res.string.bookmark_action_public)
+                        com.projectu.shared.domain.model.BookmarkAction.PRIVATE -> 
+                            stringResource(Res.string.bookmark_action_private)
+                        com.projectu.shared.domain.model.BookmarkAction.WITH_TAGS -> 
+                            stringResource(Res.string.bookmark_action_with_tags)
+                    },
+                    description = stringResource(Res.string.settings_click_bookmark_action_desc),
+                    onClick = { showClickBookmarkActionDialog = true }
+                )
+            }
+            
+            // 长按收藏按钮行为设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_long_press_bookmark_action),
+                    subtitle = when (currentLongPressBookmarkAction) {
+                        com.projectu.shared.domain.model.BookmarkAction.PUBLIC -> 
+                            stringResource(Res.string.bookmark_action_public)
+                        com.projectu.shared.domain.model.BookmarkAction.PRIVATE -> 
+                            stringResource(Res.string.bookmark_action_private)
+                        com.projectu.shared.domain.model.BookmarkAction.WITH_TAGS -> 
+                            stringResource(Res.string.bookmark_action_with_tags)
+                    },
+                    description = stringResource(Res.string.settings_long_press_bookmark_action_desc),
+                    onClick = { showLongPressBookmarkActionDialog = true }
                 )
             }
             
@@ -540,6 +598,32 @@ private fun SettingsScreenContent(
                 showThemeDialog = false
             },
             onDismiss = { showThemeDialog = false }
+        )
+    }
+    
+    // 点击收藏按钮行为选择对话框
+    if (showClickBookmarkActionDialog) {
+        BookmarkActionSelectionDialog(
+            title = stringResource(Res.string.settings_click_bookmark_action),
+            currentAction = currentClickBookmarkAction,
+            onSelect = { action ->
+                onClickBookmarkActionChange(action)
+                showClickBookmarkActionDialog = false
+            },
+            onDismiss = { showClickBookmarkActionDialog = false }
+        )
+    }
+    
+    // 长按收藏按钮行为选择对话框
+    if (showLongPressBookmarkActionDialog) {
+        BookmarkActionSelectionDialog(
+            title = stringResource(Res.string.settings_long_press_bookmark_action),
+            currentAction = currentLongPressBookmarkAction,
+            onSelect = { action ->
+                onLongPressBookmarkActionChange(action)
+                showLongPressBookmarkActionDialog = false
+            },
+            onDismiss = { showLongPressBookmarkActionDialog = false }
         )
     }
     
@@ -1335,4 +1419,55 @@ private fun CacheInfoItem(
         }
     }
     HorizontalDivider()
+}
+
+/**
+ * 收藏行为选择对话框
+ */
+@Composable
+private fun BookmarkActionSelectionDialog(
+    title: String,
+    currentAction: com.projectu.shared.domain.model.BookmarkAction,
+    onSelect: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column {
+                com.projectu.shared.domain.model.BookmarkAction.values().forEach { action ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(action) }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = action == currentAction,
+                            onClick = { onSelect(action) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = when (action) {
+                                com.projectu.shared.domain.model.BookmarkAction.PUBLIC -> 
+                                    stringResource(Res.string.bookmark_action_public)
+                                com.projectu.shared.domain.model.BookmarkAction.PRIVATE -> 
+                                    stringResource(Res.string.bookmark_action_private)
+                                com.projectu.shared.domain.model.BookmarkAction.WITH_TAGS -> 
+                                    stringResource(Res.string.bookmark_action_with_tags)
+                            },
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
 }
