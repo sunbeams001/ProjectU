@@ -34,6 +34,7 @@ import com.projectu.shared.data.remote.dto.tag.SearchSuggestionBody
 import com.projectu.shared.data.remote.dto.tag.ThumbnailInfo
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
+import com.projectu.ui.components.ErrorDisplay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -374,26 +375,14 @@ fun SearchRecommendationsSection(
                 }
             }
             error != null -> {
-                Box(
+                ErrorDisplay(
+                    message = error,
+                    onRetry = onRefresh,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = error,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Button(onClick = onRefresh) {
-                            Text(stringResource(Res.string.search_recommendations_retry))
-                        }
-                    }
-                }
+                    isFullScreen = false
+                )
             }
             else -> {
                 // 我的收藏标签（纯标签芯片）
