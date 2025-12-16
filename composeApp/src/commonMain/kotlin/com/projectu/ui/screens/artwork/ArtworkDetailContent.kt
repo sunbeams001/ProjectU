@@ -308,6 +308,9 @@ private fun ArtworkDetailLayout(
         // 动画状态（使用作品ID作为key，切换作品时重置）
         val animatedOffset = remember(artwork.id) { Animatable(dragOffset) }
         
+        // 标志位：防止收起动画在滚动时重复触发
+        var isCollapsing by remember(artwork.id) { mutableStateOf(false) }
+        
         // 吸附阈值：当偏移量小于此值时，自动吸附到原位
         val snapThreshold = maxDragOffset * 0.2f
         
@@ -325,13 +328,15 @@ private fun ArtworkDetailLayout(
             onDownloadLongClick = onDownloadLongClick,
             onScrollAtTop = { delta ->
                 // 当详情区域滚动到顶部时，继续下滑会触发基础信息区域收起
-                if (delta > 0 && dragOffset > 0) {
-                    // 下滑且基础信息区域已展开，触发收起
+                if (delta > 0 && dragOffset > 0 && !isCollapsing) {
+                    // 下滑且基础信息区域已展开，且未在收起中，触发收起
+                    isCollapsing = true
                     coroutineScope.launch {
                         animatedOffset.animateTo(
                             targetValue = 0f,
-                            animationSpec = tween(durationMillis = 150)
+                            animationSpec = tween(durationMillis = 300)
                         )
+                        isCollapsing = false
                     }
                 }
             },
@@ -417,18 +422,9 @@ private fun ArtworkDisplayArea(
             )
         }
 
-        // 单页作品（插画或漫画）
-        pages.size == 1 -> {
-            SinglePageDisplay(
-                imageUrl = pages.first().getUrlByQuality(imageQuality),
-                contentDescription = artwork.title,
-                modifier = modifier
-            )
-        }
-
-        // 多页作品
+        // 插画或漫画作品（单页或多页统一处理）
         else -> {
-            MultiPageDisplay(
+            ArtworkPagesDisplay(
                 pages = pages,
                 imageQuality = imageQuality,
                 contentDescription = artwork.title,
@@ -439,37 +435,13 @@ private fun ArtworkDisplayArea(
 }
 
 /**
- * 单页作品展示
- * 宽度填充，高度自适应，垂直居中
- */
-@Composable
-private fun SinglePageDisplay(
-    imageUrl: String,
-    contentDescription: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        RetryableAsyncImage(
-            model = imageUrl,
-            contentDescription = contentDescription,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth(),
-            showErrorDetails = true
-        )
-    }
-}
-
-/**
- * 多页作品展示
+ * 作品图片展示（统一处理单页和多页）
  * 每一页宽度填充，高度根据实际情况自适应
  * 如果总高度小于等于区域高度，垂直居中展示
  * 如果总高度超过区域高度，第一张置顶，可滚动浏览
  */
 @Composable
-private fun MultiPageDisplay(
+private fun ArtworkPagesDisplay(
     pages: List<com.projectu.shared.domain.model.PageImageUrls>,
     imageQuality: com.projectu.shared.domain.model.DetailImageQuality,
     contentDescription: String,
@@ -500,7 +472,11 @@ private fun MultiPageDisplay(
             items(pages) { page ->
                 RetryableAsyncImage(
                     model = page.getUrlByQuality(imageQuality),
-                    contentDescription = "$contentDescription - ${stringResource(Res.string.novel_page_number, page.page + 1)}",
+                    contentDescription = if (pages.size > 1) {
+                        "$contentDescription - ${stringResource(Res.string.novel_page_number, page.page + 1)}"
+                    } else {
+                        contentDescription
+                    },
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .fillMaxWidth()
