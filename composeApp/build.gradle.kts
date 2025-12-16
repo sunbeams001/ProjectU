@@ -107,8 +107,23 @@ android {
     }
     
     buildTypes {
-        release {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            isDebuggable = true
+        }
+        
+        getByName("release") {
+            // 使用默认的 debug 签名（用于测试）
+            // 如需正式发布，请配置 signingConfigs
             isMinifyEnabled = false
+            isShrinkResources = false
+            isDebuggable = false
+            
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     
