@@ -17,7 +17,7 @@
     <application
         android:name=".PixivApplication"
         android:allowBackup="true"
-        android:icon="@android:drawable/ic_menu_gallery"
+        android:icon="@mipmap/ic_launcher"
         android:label="ProjectU"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectU.Splash"
