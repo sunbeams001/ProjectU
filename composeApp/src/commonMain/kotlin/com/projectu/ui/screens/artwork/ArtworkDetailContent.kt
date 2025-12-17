@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -60,6 +62,7 @@ fun ArtworkDetailContent(
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     onDownloadLongClick: (() -> Unit)? = null,
+    onImageClick: ((pageIndex: Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -99,6 +102,7 @@ fun ArtworkDetailContent(
                         onSimilarClick = onSimilarClick,
                         onDownloadClick = onDownloadClick,
                         onDownloadLongClick = onDownloadLongClick,
+                        onImageClick = onImageClick,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
@@ -115,6 +119,7 @@ fun ArtworkDetailContent(
                         onSimilarClick = onSimilarClick,
                         onDownloadClick = onDownloadClick,
                         onDownloadLongClick = onDownloadLongClick,
+                        onImageClick = onImageClick,
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
@@ -157,6 +162,7 @@ private fun ArtworkListPager(
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     onDownloadLongClick: (() -> Unit)? = null,
+    onImageClick: ((pageIndex: Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(
@@ -214,6 +220,7 @@ private fun ArtworkListPager(
                     onSimilarClick = onSimilarClick,
                     onDownloadClick = onDownloadClick,
                     onDownloadLongClick = onDownloadLongClick,
+                    onImageClick = onImageClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -234,6 +241,7 @@ private fun ArtworkListPager(
                     onSimilarClick = onSimilarClick,
                     onDownloadClick = onDownloadClick,
                     onDownloadLongClick = onDownloadLongClick,
+                    onImageClick = onImageClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -286,6 +294,7 @@ private fun ArtworkDetailLayout(
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     onDownloadLongClick: (() -> Unit)? = null,
+    onImageClick: ((pageIndex: Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -359,7 +368,10 @@ private fun ArtworkDetailLayout(
                     .weight(1f)
                     .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             ) {
-                ArtworkDisplayArea(artwork = artwork)
+                ArtworkDisplayArea(
+                    artwork = artwork,
+                    onImageClick = onImageClick
+                )
             }
 
             // 基础信息区域（固定在底部，支持手势拖动）
@@ -408,7 +420,8 @@ private fun ArtworkDetailLayout(
 private fun ArtworkDisplayArea(
     artwork: Artwork,
     modifier: Modifier = Modifier,
-    settingsCache: SettingsCache = koinInject()
+    settingsCache: SettingsCache = koinInject(),
+    onImageClick: ((pageIndex: Int) -> Unit)? = null
 ) {
     val imageQuality = settingsCache.getDetailImageQuality()
     val pages = artwork.imageUrls.pages
@@ -428,6 +441,7 @@ private fun ArtworkDisplayArea(
                 pages = pages,
                 imageQuality = imageQuality,
                 contentDescription = artwork.title,
+                onImageClick = onImageClick,
                 modifier = modifier
             )
         }
@@ -445,7 +459,8 @@ private fun ArtworkPagesDisplay(
     pages: List<com.projectu.shared.domain.model.PageImageUrls>,
     imageQuality: com.projectu.shared.domain.model.DetailImageQuality,
     contentDescription: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onImageClick: ((pageIndex: Int) -> Unit)? = null
 ) {
     BoxWithConstraints(
         modifier = modifier.fillMaxSize()
@@ -469,7 +484,8 @@ private fun ArtworkPagesDisplay(
             verticalArrangement = if (needsScroll) Arrangement.Top else Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(pages) { page ->
+            items(pages.size) { index ->
+                val page = pages[index]
                 RetryableAsyncImage(
                     model = page.getUrlByQuality(imageQuality),
                     contentDescription = if (pages.size > 1) {
@@ -480,7 +496,18 @@ private fun ArtworkPagesDisplay(
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(page.width.toFloat() / page.height.toFloat()),
+                        .aspectRatio(page.width.toFloat() / page.height.toFloat())
+                        .let { mod ->
+                            if (onImageClick != null) {
+                                mod.pointerInput(index) {
+                                    detectTapGestures {
+                                        onImageClick(index)
+                                    }
+                                }
+                            } else {
+                                mod
+                            }
+                        },
                     showErrorDetails = true
                 )
             }

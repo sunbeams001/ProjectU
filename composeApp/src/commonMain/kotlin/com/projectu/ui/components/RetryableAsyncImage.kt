@@ -29,29 +29,33 @@ fun RetryableAsyncImage(
     showErrorDetails: Boolean = true
 ) {
     var retryKey by remember { mutableStateOf(0) }
+    var imageState by remember { mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty) }
     
-    SubcomposeAsyncImage(
-        model = model,
-        contentDescription = contentDescription,
-        modifier = modifier,
-        contentScale = contentScale
-    ) {
-        val state = painter.state
-        if (state is AsyncImagePainter.State.Loading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp
-                )
+    Box(modifier = modifier) {
+        // 使用 AsyncImage 代替 SubcomposeAsyncImage
+        coil3.compose.AsyncImage(
+            model = model,
+            contentDescription = contentDescription,
+            modifier = Modifier.matchParentSize(),
+            contentScale = contentScale,
+            onState = { imageState = it }
+        )
+        
+        // 根据状态显示覆盖层
+        when (imageState) {
+            is AsyncImagePainter.State.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        } else if (state is AsyncImagePainter.State.Error) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            is AsyncImagePainter.State.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                 if (showErrorDetails) {
                     // 显示详细错误信息和重试按钮
                     Column(
@@ -111,9 +115,10 @@ fun RetryableAsyncImage(
                     }
                 }
             }
-        } else {
-            // 成功状态或其他状态，显示图片
-            SubcomposeAsyncImageContent()
+            }
+            else -> {
+                // 成功或空状态，图片已自动显示
+            }
         }
     }
     

@@ -211,6 +211,22 @@ data class ArtworkDetailScreen(
                         }
                     }
                 }
+            },
+            onImageClick = { pageIndex ->
+                // 点击图片，跳转到大图浏览页面
+                state.artwork?.let { artwork ->
+                    // 只对插画和漫画有效（不包括动图）
+                    if (artwork.type != ArtworkType.UGOIRA) {
+                        navigator.push(
+                            ArtworkImageViewerScreen(
+                                artworkId = artwork.id,
+                                artworkTitle = artwork.title,
+                                pages = artwork.imageUrls.pages,
+                                initialPage = pageIndex
+                            )
+                        )
+                    }
+                }
             }
         )
     }
