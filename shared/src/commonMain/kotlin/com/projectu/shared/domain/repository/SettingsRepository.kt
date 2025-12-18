@@ -2,6 +2,7 @@ package com.projectu.shared.domain.repository
 
 import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.AppSettings
+import com.projectu.shared.data.local.FileNameMode
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.ImageQuality
@@ -85,6 +86,18 @@ interface SettingsRepository {
      * @param path 下载基础路径
      */
     suspend fun updateBaseDownloadPath(path: String)
+    
+    /**
+     * 更新文件命名模式
+     * @param mode 文件命名模式
+     */
+    suspend fun updateFileNameMode(mode: FileNameMode)
+    
+    /**
+     * 更新自定义文件命名模板
+     * @param template 自定义模板
+     */
+    suspend fun updateCustomFileNameTemplate(template: String)
 
     /**
      * 更新完整设置

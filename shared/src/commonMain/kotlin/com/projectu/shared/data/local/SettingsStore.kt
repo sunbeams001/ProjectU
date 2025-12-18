@@ -129,6 +129,20 @@ class SettingsStore(
     }
     
     /**
+     * 设置文件命名模式
+     */
+    suspend fun setFileNameMode(mode: FileNameMode) {
+        settingsDao.updateFileNameMode(mode.name)
+    }
+    
+    /**
+     * 设置自定义文件命名模板
+     */
+    suspend fun setCustomFileNameTemplate(template: String) {
+        settingsDao.updateCustomFileNameTemplate(template)
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

@@ -19,7 +19,14 @@ data class DownloadSettings(
     val baseDownloadPath: String = getDefaultDownloadPath(),
     
     /**
-     * 文件命名模板
+     * 文件命名模式
+     * STANDARD: 标准模式（推荐）
+     * CUSTOM: 自定义模板
+     */
+    val fileNameMode: FileNameMode = FileNameMode.STANDARD,
+    
+    /**
+     * 自定义文件命名模板（仅当 fileNameMode = CUSTOM 时使用）
      * 
      * 支持的变量：
      * - {id}: 作品ID
@@ -33,7 +40,7 @@ data class DownloadSettings(
      * - {r18}: R-18标识
      * - {tags}: 标签（多个用_连接）
      */
-    val fileNameTemplate: String = "{id}_{p}_{title}",
+    val customFileNameTemplate: String = "{id}_{p}_{title}",
     
     /**
      * Ugoira动图格式
@@ -85,4 +92,22 @@ enum class DownloadQuality {
      * 优先使用已缓存的图片
      */
     CACHED
+}
+
+/**
+ * 文件命名模式枚举
+ */
+enum class FileNameMode {
+    /**
+     * 标准模式（推荐）
+     * 模板: {id}_{p}_{title}
+     * 示例: 123456789_0_风景.jpg
+     */
+    STANDARD,
+    
+    /**
+     * 自定义模式
+     * 使用用户自定义的 customFileNameTemplate
+     */
+    CUSTOM
 }

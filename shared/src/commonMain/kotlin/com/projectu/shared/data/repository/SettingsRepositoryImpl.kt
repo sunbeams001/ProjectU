@@ -2,6 +2,7 @@ package com.projectu.shared.data.repository
 
 import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.AppSettings
+import com.projectu.shared.data.local.FileNameMode
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.SettingsStore
 import com.projectu.shared.data.local.ThemeMode
@@ -68,6 +69,14 @@ class SettingsRepositoryImpl(
     
     override suspend fun updateBaseDownloadPath(path: String) {
         settingsStore.setBaseDownloadPath(path)
+    }
+    
+    override suspend fun updateFileNameMode(mode: FileNameMode) {
+        settingsStore.setFileNameMode(mode)
+    }
+    
+    override suspend fun updateCustomFileNameTemplate(template: String) {
+        settingsStore.setCustomFileNameTemplate(template)
     }
     
     override suspend fun updateSettings(settings: AppSettings) {

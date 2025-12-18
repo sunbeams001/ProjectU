@@ -25,6 +25,7 @@ import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
 import com.projectu.shared.domain.model.NovelDownloadImageQuality
+import com.projectu.shared.data.local.FileNameMode
 import com.projectu.ui.screens.download.DownloadRulesScreen
 import com.projectu.ui.util.CacheDetails
 import com.projectu.ui.util.LocalImageCacheManager
@@ -171,6 +172,8 @@ class SettingsScreen : Screen {
             cacheDetails = cacheDetails,
             maxCacheSizeBytes = cacheManager.maxCacheSize,
             currentBaseDownloadPath = downloadSettings.baseDownloadPath,
+            currentFileNameMode = downloadSettings.fileNameMode,
+            currentCustomFileNameTemplate = downloadSettings.customFileNameTemplate,
             navigator = navigator,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
@@ -212,6 +215,8 @@ private fun SettingsScreenContent(
     cacheDetails: CacheDetails,
     maxCacheSizeBytes: Long,
     currentBaseDownloadPath: String,
+    currentFileNameMode: FileNameMode,
+    currentCustomFileNameTemplate: String,
     navigator: cafe.adriel.voyager.navigator.Navigator,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
@@ -243,6 +248,7 @@ private fun SettingsScreenContent(
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showCacheSizeDialog by remember { mutableStateOf(false) }
     var showClearCacheConfirmDialog by remember { mutableStateOf(false) }
+    var showFileNameVariableHelpDialog by remember { mutableStateOf(false) }
     
     val pathPicker = rememberPathPicker()
     
@@ -494,13 +500,26 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 下载规则管理
+            // 下载路径规则管理
             item {
                 SettingsItem(
                     title = "下载路径规则",
                     subtitle = "自定义下载路径规则",
                     description = "根据资源类型、R-18、AI 等条件自动分类保存",
                     onClick = { navigator.push(DownloadRulesScreen()) }
+                )
+            }
+            
+            // 文件命名规则管理
+            item {
+                SettingsItem(
+                    title = "文件命名规则",
+                    subtitle = when (currentFileNameMode) {
+                        com.projectu.shared.data.local.FileNameMode.STANDARD -> "标准模式"
+                        com.projectu.shared.data.local.FileNameMode.CUSTOM -> "自定义: $currentCustomFileNameTemplate"
+                    },
+                    description = "设置下载文件的命名格式",
+                    onClick = { navigator.push(FileNameRulesScreen()) }
                 )
             }
             

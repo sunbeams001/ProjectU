@@ -73,6 +73,16 @@ data class SettingsEntity(
     val baseDownloadPath: String = "",
     
     /**
+     * 文件命名模式
+     */
+    val fileNameMode: String = "STANDARD",
+    
+    /**
+     * 自定义文件命名模板
+     */
+    val customFileNameTemplate: String = "{id}_{p}_{title}",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -93,7 +103,9 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         imageCacheSize = this.imageCacheSize.name,
         clickBookmarkAction = this.clickBookmarkAction.name,
         longPressBookmarkAction = this.longPressBookmarkAction.name,
-        baseDownloadPath = this.downloadSettings.baseDownloadPath
+        baseDownloadPath = this.downloadSettings.baseDownloadPath,
+        fileNameMode = this.downloadSettings.fileNameMode.name,
+        customFileNameTemplate = this.downloadSettings.customFileNameTemplate
     )
 }
 
@@ -113,7 +125,13 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         clickBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.clickBookmarkAction),
         longPressBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.longPressBookmarkAction),
         downloadSettings = com.projectu.shared.data.local.DownloadSettings(
-            baseDownloadPath = this.baseDownloadPath.ifEmpty { com.projectu.shared.data.local.getDefaultDownloadPath() }
+            baseDownloadPath = this.baseDownloadPath.ifEmpty { com.projectu.shared.data.local.getDefaultDownloadPath() },
+            fileNameMode = try {
+                com.projectu.shared.data.local.FileNameMode.valueOf(this.fileNameMode)
+            } catch (e: Exception) {
+                com.projectu.shared.data.local.FileNameMode.STANDARD
+            },
+            customFileNameTemplate = this.customFileNameTemplate.ifEmpty { "{id}_{p}_{title}" }
         )
     )
 }

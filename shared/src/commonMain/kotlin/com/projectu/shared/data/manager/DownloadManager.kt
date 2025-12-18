@@ -106,7 +106,9 @@ class DownloadManager(
      */
     private fun getCurrentDownloadSettings(): com.projectu.shared.data.local.DownloadSettings {
         return com.projectu.shared.data.local.DownloadSettings(
-            baseDownloadPath = settingsCache.getBaseDownloadPath()
+            baseDownloadPath = settingsCache.getBaseDownloadPath(),
+            fileNameMode = settingsCache.getFileNameMode(),
+            customFileNameTemplate = settingsCache.getCustomFileNameTemplate()
         )
     }
     

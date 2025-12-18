@@ -73,6 +73,20 @@ class SettingsCache(
     private val _baseDownloadPath = MutableStateFlow("")
     val baseDownloadPath: StateFlow<String> = _baseDownloadPath.asStateFlow()
     
+    /**
+     * 文件命名模式缓存
+     * 用于下载管理器中快速获取文件命名模式（高频访问 - 每次下载都需要）
+     */
+    private val _fileNameMode = MutableStateFlow(FileNameMode.STANDARD)
+    val fileNameMode: StateFlow<FileNameMode> = _fileNameMode.asStateFlow()
+    
+    /**
+     * 自定义文件命名模板缓存
+     * 用于下载管理器中快速获取自定义模板（高频访问 - 每次下载都需要）
+     */
+    private val _customFileNameTemplate = MutableStateFlow("{id}_{p}_{title}")
+    val customFileNameTemplate: StateFlow<String> = _customFileNameTemplate.asStateFlow()
+    
     // TODO: 后续添加更多配置项缓存
     // private val _someOtherConfig = MutableStateFlow(defaultValue)
     // val someOtherConfig: StateFlow<Type> = _someOtherConfig.asStateFlow()
@@ -88,6 +102,8 @@ class SettingsCache(
                 _detailImageQuality.value = settings.detailImageQuality
                 _novelDownloadImageQuality.value = settings.novelDownloadImageQuality
                 _baseDownloadPath.value = settings.downloadSettings.baseDownloadPath
+                _fileNameMode.value = settings.downloadSettings.fileNameMode
+                _customFileNameTemplate.value = settings.downloadSettings.customFileNameTemplate
                 
                 // TODO: 后续添加更多字段的同步
                 // _someOtherConfig.value = settings.someOtherConfig
@@ -156,6 +172,30 @@ class SettingsCache(
      */
     fun getBaseDownloadPath(): String {
         return _baseDownloadPath.value
+    }
+    
+    /**
+     * 获取当前文件命名模式（同步方法，使用内存缓存）
+     * 用于 DownloadManager 中快速获取文件命名模式
+     * 
+     * 性能说明：
+     * - 每次创建下载任务都需要生成文件名
+     * - 使用内存缓存避免每次都查询数据库
+     */
+    fun getFileNameMode(): FileNameMode {
+        return _fileNameMode.value
+    }
+    
+    /**
+     * 获取当前自定义文件命名模板（同步方法，使用内存缓存）
+     * 用于 DownloadManager 中快速获取自定义模板
+     * 
+     * 性能说明：
+     * - 每次创建下载任务都需要生成文件名
+     * - 使用内存缓存避免每次都查询数据库
+     */
+    fun getCustomFileNameTemplate(): String {
+        return _customFileNameTemplate.value
     }
     
     // TODO: 后续添加更多配置项的 getter

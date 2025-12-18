@@ -1,7 +1,9 @@
 package com.projectu.shared.data.util
 
 import com.projectu.shared.data.local.DownloadSettings
+import com.projectu.shared.data.local.FileNameMode
 import com.projectu.shared.domain.model.DownloadTask
+import com.projectu.shared.domain.model.ResourceType
 import okio.FileSystem
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,12 +24,34 @@ class DownloadPathBuilder(
      * 生成文件名（含扩展名）
      * 
      * 这是唯一保留的功能，路径生成已由 DownloadRule 系统接管
+     * 
+     * 命名规则：
+     * - 插画/漫画：使用完整模板（包含 {p} 页码）
+     * - 动图/小说/小说系列：移除 {p} 变量（它们永远是单文件）
      */
     fun buildFileName(task: DownloadTask, settings: DownloadSettings, extension: String = "jpg"): String {
-        val template = settings.fileNameTemplate
+        // 根据模式获取模板
+        val baseTemplate = when (settings.fileNameMode) {
+            FileNameMode.STANDARD -> "{id}_{p}_{title}"
+            FileNameMode.CUSTOM -> settings.customFileNameTemplate
+        }
+        
+        // 对于动图、小说、小说系列，它们永远只有单个文件，移除模板中的 {p} 及其前后的下划线
+        val effectiveTemplate = when (task.resourceType) {
+            ResourceType.UGOIRA, ResourceType.NOVEL, ResourceType.NOVEL_SERIES -> {
+                // 移除 {p} 及其前后的下划线
+                // 例如: "{id}_{p}_{title}" -> "{id}_{title}"
+                baseTemplate
+                    .replace("_{p}_", "_")   // 中间的 _{p}_
+                    .replace("_{p}", "")     // 末尾的 _{p}
+                    .replace("{p}_", "")     // 开头的 {p}_
+                    .replace("{p}", "")      // 单独的 {p}
+            }
+            else -> baseTemplate  // 插画和漫画保持原样
+        }
         
         // 替换模板变量
-        val fileName = template
+        val fileName = effectiveTemplate
             .replace("{id}", task.resourceId)
             .replace("{p}", task.pageIndex?.toString() ?: "0")
             .replace("{title}", sanitizeFileName(task.title))

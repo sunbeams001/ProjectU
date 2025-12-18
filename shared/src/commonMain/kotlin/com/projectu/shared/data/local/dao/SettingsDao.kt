@@ -100,6 +100,18 @@ interface SettingsDao {
     suspend fun updateBaseDownloadPath(path: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新文件命名模式
+     */
+    @Query("UPDATE app_settings SET fileNameMode = :mode, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateFileNameMode(mode: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
+     * 更新自定义文件命名模板
+     */
+    @Query("UPDATE app_settings SET customFileNameTemplate = :template, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateCustomFileNameTemplate(template: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")
