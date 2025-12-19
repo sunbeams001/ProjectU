@@ -37,12 +37,14 @@ class NovelToEpubConverter(
 ) {
     /**
      * 解析后的章节
+     * @param parentId 父章节ID，用于创建多级目录结构。如果为null，表示顶层章节
      */
     data class ParsedChapter(
         val id: String,
         val title: String,
         val htmlContent: String,
-        val order: Int
+        val order: Int,
+        val parentId: String? = null
     )
     
     /**
@@ -160,29 +162,81 @@ class NovelToEpubConverter(
         
         var chapterIndex = 0
         
-        novels.forEach { novel ->
+        novels.forEachIndexed { novelIndex, novel ->
             val content = novel.content ?: ""
             val embeddedImages = novel.embeddedImages
             
-            // 为每个小说添加一个章节
-            val (htmlContent, novelImages) = parsePageContent(
-                pageText = content,
-                embeddedImages = embeddedImages,
-                downloadImages = downloadImages,
-                downloadedImageIds = downloadedImageIds
-            )
+            // 按 [newpage] 分割页面
+            val pageTexts = NEW_PAGE_PATTERN.split(content)
             
-            chapters.add(
-                ParsedChapter(
-                    id = "chapter${chapterIndex + 1}",
-                    title = novel.title,
-                    htmlContent = htmlContent,
-                    order = chapterIndex
+            if (pageTexts.size > 1) {
+                // 多页小说：创建父章节（空内容）和子章节（所有分页）
+                val parentId = "chapter${chapterIndex + 1}"
+                
+                // 创建父章节（只作为目录节点，内容为空）
+                chapters.add(
+                    ParsedChapter(
+                        id = parentId,
+                        title = novel.title,
+                        htmlContent = "<p>${escapeHtml(novel.title)}</p>",
+                        order = chapterIndex,
+                        parentId = null
+                    )
                 )
-            )
-            
-            images.addAll(novelImages)
-            chapterIndex++
+                chapterIndex++
+                
+                // 创建子章节（所有分页，从第1页开始）
+                pageTexts.forEachIndexed { pageIndex, pageText ->
+                    val trimmedText = pageText.trim()
+                    if (trimmedText.isEmpty()) return@forEachIndexed
+                    
+                    val (htmlContent, pageImages) = parsePageContent(
+                        pageText = trimmedText,
+                        embeddedImages = embeddedImages,
+                        downloadImages = downloadImages,
+                        downloadedImageIds = downloadedImageIds
+                    )
+                    
+                    chapters.add(
+                        ParsedChapter(
+                            id = "chapter${chapterIndex + 1}",
+                            title = formatPageTitle(pageIndex + 1),
+                            htmlContent = htmlContent,
+                            order = chapterIndex,
+                            parentId = parentId
+                        )
+                    )
+                    
+                    images.addAll(pageImages)
+                    chapterIndex++
+                }
+            } else {
+                // 单页小说：只创建顶层章节
+                pageTexts.forEachIndexed { pageIndex, pageText ->
+                    val trimmedText = pageText.trim()
+                    if (trimmedText.isEmpty()) return@forEachIndexed
+                    
+                    val (htmlContent, pageImages) = parsePageContent(
+                        pageText = trimmedText,
+                        embeddedImages = embeddedImages,
+                        downloadImages = downloadImages,
+                        downloadedImageIds = downloadedImageIds
+                    )
+                    
+                    chapters.add(
+                        ParsedChapter(
+                            id = "chapter${chapterIndex + 1}",
+                            title = novel.title,
+                            htmlContent = htmlContent,
+                            order = chapterIndex,
+                            parentId = null
+                        )
+                    )
+                    
+                    images.addAll(pageImages)
+                    chapterIndex++
+                }
+            }
         }
         
         ConversionResult(chapters, images)

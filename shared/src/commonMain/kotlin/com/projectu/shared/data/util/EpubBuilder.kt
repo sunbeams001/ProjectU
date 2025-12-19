@@ -49,12 +49,14 @@ class EpubBuilder(
     
     /**
      * 章节数据
+     * @param parentId 父章节ID，用于创建多级目录结构。如果为null，表示顶层章节
      */
     data class Chapter(
         val id: String,
         val title: String,
         val htmlContent: String,
-        val order: Int
+        val order: Int,
+        val parentId: String? = null
     )
     
     /**
@@ -337,22 +339,56 @@ $spineItems
      * @return 新的偏移量
      */
     private fun writeTocNcxEntry(sink: BufferedSink, meta: Metadata, zipEntries: MutableList<ZipEntry>, offset: Long): Long {
-        val navPoints = chapters.mapIndexed { index, chapter ->
-            """
-                <navPoint id="navPoint-${index + 1}" playOrder="${index + 1}">
-                    <navLabel>
-                        <text>${escapeXml(chapter.title)}</text>
-                    </navLabel>
-                    <content src="Text/${chapter.id}.xhtml"/>
-                </navPoint>
-            """.trimIndent()
-        }.joinToString("\n")
+        // 构建章节层级结构
+        val topLevelChapters = chapters.filter { it.parentId == null }
+        val childrenMap = chapters.filter { it.parentId != null }.groupBy { it.parentId }
+        
+        // 计算目录深度
+        val maxDepth = if (childrenMap.isEmpty()) 1 else 2
+        
+        // 生成嵌套的navPoint
+        var playOrder = 1
+        fun generateNavPoint(chapter: Chapter, level: Int = 0): String {
+            val currentPlayOrder = playOrder++
+            val indent = "    ".repeat(level + 2)
+            val children = childrenMap[chapter.id] ?: emptyList()
+            
+            return if (children.isEmpty()) {
+                // 叶子节点
+                """
+$indent<navPoint id="navPoint-$currentPlayOrder" playOrder="$currentPlayOrder">
+$indent    <navLabel>
+$indent        <text>${escapeXml(chapter.title)}</text>
+$indent    </navLabel>
+$indent    <content src="Text/${chapter.id}.xhtml"/>
+$indent</navPoint>
+                """.trimIndent()
+            } else {
+                // 有子节点的父节点
+                val childNavPoints = children.sortedBy { it.order }.joinToString("\n") { child ->
+                    generateNavPoint(child, level + 1)
+                }
+                """
+$indent<navPoint id="navPoint-$currentPlayOrder" playOrder="$currentPlayOrder">
+$indent    <navLabel>
+$indent        <text>${escapeXml(chapter.title)}</text>
+$indent    </navLabel>
+$indent    <content src="Text/${chapter.id}.xhtml"/>
+$childNavPoints
+$indent</navPoint>
+                """.trimIndent()
+            }
+        }
+        
+        val navPoints = topLevelChapters.sortedBy { it.order }.joinToString("\n") { chapter ->
+            generateNavPoint(chapter)
+        }
         
         val xml = """<?xml version="1.0" encoding="UTF-8"?>
 <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
     <head>
         <meta name="dtb:uid" content="${escapeXml(meta.identifier)}"/>
-        <meta name="dtb:depth" content="1"/>
+        <meta name="dtb:depth" content="$maxDepth"/>
         <meta name="dtb:totalPageCount" content="0"/>
         <meta name="dtb:maxPageNumber" content="0"/>
     </head>
