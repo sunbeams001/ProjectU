@@ -94,6 +94,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置作品大图浏览页首选图片质量
+     */
+    suspend fun setViewerImageQuality(quality: com.projectu.shared.domain.model.ViewerImageQuality) {
+        settingsDao.updateViewerImageQuality(quality.name)
+    }
+    
+    /**
      * 设置小说下载首选图片质量
      */
     suspend fun setNovelDownloadImageQuality(quality: com.projectu.shared.domain.model.NovelDownloadImageQuality) {

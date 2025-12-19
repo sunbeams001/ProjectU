@@ -23,7 +23,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.projectu.shared.domain.model.PageImageUrls
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.getUrlByViewerQuality
 import com.projectu.shared.domain.repository.DownloadRepository
+import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.ui.components.RetryableAsyncImage
 import com.projectu.ui.util.HideSystemUI
 import kotlinx.coroutines.launch
@@ -44,9 +46,14 @@ fun ArtworkImageViewerContent(
     initialPage: Int,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    downloadRepository: DownloadRepository = koinInject()
+    downloadRepository: DownloadRepository = koinInject(),
+    settingsRepository: SettingsRepository = koinInject()
 ) {
     val coroutineScope = rememberCoroutineScope()
+    
+    // 获取图片质量设置
+    val settings by settingsRepository.getSettings().collectAsState(initial = com.projectu.shared.data.local.AppSettings.DEFAULT)
+    val viewerImageQuality = settings.viewerImageQuality
     
     // 是否显示底部信息蒙版
     var showOverlay by remember { mutableStateOf(false) }
@@ -78,6 +85,7 @@ fun ArtworkImageViewerContent(
             
             ZoomableImage(
                 page = page,
+                viewerImageQuality = viewerImageQuality,
                 contentDescription = if (pages.size > 1) {
                     "$artworkTitle - ${stringResource(Res.string.novel_page_number, pageIndex + 1)}"
                 } else {
@@ -155,6 +163,7 @@ fun ArtworkImageViewerContent(
 @Composable
 private fun ZoomableImage(
     page: PageImageUrls,
+    viewerImageQuality: com.projectu.shared.domain.model.ViewerImageQuality,
     contentDescription: String,
     onSingleTap: () -> Unit,
     onZoomChange: (Boolean) -> Unit,
@@ -283,8 +292,8 @@ private fun ZoomableImage(
             },
         contentAlignment = Alignment.Center
     ) {
-        // 使用原图质量
-        val imageUrl = page.urls.original ?: page.urls.master1200 ?: page.urls.large ?: ""
+        // 根据设置选择图片质量
+        val imageUrl = page.getUrlByViewerQuality(viewerImageQuality)
         
         // RetryableAsyncImage已经内置了加载指示器
         RetryableAsyncImage(

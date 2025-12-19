@@ -245,3 +245,46 @@ fun com.projectu.shared.domain.model.NovelEmbeddedImageInfo.getUrlByQuality(
     // 返回 null，调用方需要处理
     return null
 }
+
+/**
+ * 作品大图浏览页图片质量设置
+ * 
+ * 定义了大图浏览页可用的图片质量级别
+ */
+enum class ViewerImageQuality(val displayNameKey: String) {
+    /**
+     * master1200 最大缩略图（默认，1200px）
+     */
+    MASTER_1200("viewer_image_quality_master_1200"),
+    
+    /**
+     * 原图（最高质量）
+     */
+    ORIGINAL("viewer_image_quality_original");
+    
+    companion object {
+        /**
+         * 从名称获取枚举
+         */
+        fun fromName(name: String): ViewerImageQuality {
+            return values().find { it.name == name } ?: MASTER_1200
+        }
+        
+        /**
+         * 获取所有质量级别，按质量从低到高排序
+         */
+        fun getAllSortedByQuality(): List<ViewerImageQuality> {
+            return listOf(MASTER_1200, ORIGINAL)
+        }
+    }
+}
+
+/**
+ * PageImageUrls 扩展函数：根据大图浏览页质量偏好获取 URL
+ */
+fun PageImageUrls.getUrlByViewerQuality(preferredQuality: ViewerImageQuality): String {
+    return when (preferredQuality) {
+        ViewerImageQuality.MASTER_1200 -> this.urls.master1200 ?: this.urls.original ?: this.urls.large ?: this.urls.squareMedium
+        ViewerImageQuality.ORIGINAL -> this.urls.original ?: this.urls.master1200 ?: this.urls.large ?: this.urls.squareMedium
+    }
+}

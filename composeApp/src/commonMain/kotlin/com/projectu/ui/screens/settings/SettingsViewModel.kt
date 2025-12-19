@@ -97,6 +97,15 @@ class SettingsViewModel(
     }
     
     /**
+     * 更新作品大图浏览页首选图片质量
+     */
+    fun updateViewerImageQuality(quality: com.projectu.shared.domain.model.ViewerImageQuality) {
+        viewModelScope.launch {
+            settingsRepository.updateViewerImageQuality(quality)
+        }
+    }
+    
+    /**
      * 更新小说下载首选图片质量
      */
     fun updateNovelDownloadImageQuality(quality: com.projectu.shared.domain.model.NovelDownloadImageQuality) {

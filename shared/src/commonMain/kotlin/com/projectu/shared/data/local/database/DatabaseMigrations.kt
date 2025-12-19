@@ -21,3 +21,16 @@ val MIGRATION_14_15 = object : Migration(14, 15) {
         )
     }
 }
+
+/**
+ * 数据库迁移：版本 16 -> 17
+ * 添加大图浏览页首选图片质量字段
+ */
+val MIGRATION_16_17 = object : Migration(16, 17) {
+    override fun migrate(connection: SQLiteConnection) {
+        // 添加 viewerImageQuality 字段，默认值为 "MASTER_1200"
+        connection.execSQL(
+            "ALTER TABLE app_settings ADD COLUMN viewerImageQuality TEXT NOT NULL DEFAULT 'MASTER_1200'"
+        )
+    }
+}

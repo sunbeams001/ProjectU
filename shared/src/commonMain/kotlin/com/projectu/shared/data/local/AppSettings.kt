@@ -2,6 +2,7 @@ package com.projectu.shared.data.local
 
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
+import com.projectu.shared.domain.model.ViewerImageQuality
 import com.projectu.shared.domain.model.NovelDownloadImageQuality
 import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.BookmarkAction
@@ -55,6 +56,13 @@ data class AppSettings(
      * 默认：LARGE (540x540)
      */
     val detailImageQuality: DetailImageQuality = DetailImageQuality.LARGE,
+    
+    /**
+     * 作品大图浏览页首选图片质量
+     * 用于全屏查看作品时的图片显示
+     * 默认：MASTER_1200 (1200px，平衡质量与速度)
+     */
+    val viewerImageQuality: ViewerImageQuality = ViewerImageQuality.MASTER_1200,
     
     /**
      * 小说下载首选图片质量

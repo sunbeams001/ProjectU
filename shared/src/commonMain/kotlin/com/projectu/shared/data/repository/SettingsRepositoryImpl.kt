@@ -51,6 +51,10 @@ class SettingsRepositoryImpl(
         settingsStore.setDetailImageQuality(quality)
     }
     
+    override suspend fun updateViewerImageQuality(quality: com.projectu.shared.domain.model.ViewerImageQuality) {
+        settingsStore.setViewerImageQuality(quality)
+    }
+    
     override suspend fun updateNovelDownloadImageQuality(quality: com.projectu.shared.domain.model.NovelDownloadImageQuality) {
         settingsStore.setNovelDownloadImageQuality(quality)
     }

@@ -167,6 +167,7 @@ class SettingsScreen : Screen {
             currentR18SanityThreshold = settings.r18SanityLevelThreshold,
             currentPreferredImageQuality = settings.preferredImageQuality,
             currentDetailImageQuality = settings.detailImageQuality,
+            currentViewerImageQuality = settings.viewerImageQuality,
             currentNovelDownloadImageQuality = settings.novelDownloadImageQuality,
             currentImageCacheSize = settings.imageCacheSize,
             currentCacheSizeBytes = currentCacheSize,
@@ -182,6 +183,7 @@ class SettingsScreen : Screen {
             onR18SanityThresholdChange = { viewModel.updateR18SanityLevelThreshold(it) },
             onPreferredImageQualityChange = { viewModel.updatePreferredImageQuality(it) },
             onDetailImageQualityChange = { viewModel.updateDetailImageQuality(it) },
+            onViewerImageQualityChange = { viewModel.updateViewerImageQuality(it) },
             onNovelDownloadImageQualityChange = { viewModel.updateNovelDownloadImageQuality(it) },
             onImageCacheSizeChange = { viewModel.updateImageCacheSize(it) },
             onClearCache = { cacheManager.clearCache() },
@@ -210,6 +212,7 @@ private fun SettingsScreenContent(
     currentR18SanityThreshold: Int,
     currentPreferredImageQuality: ImageQuality,
     currentDetailImageQuality: DetailImageQuality,
+    currentViewerImageQuality: com.projectu.shared.domain.model.ViewerImageQuality,
     currentNovelDownloadImageQuality: NovelDownloadImageQuality,
     currentImageCacheSize: CacheSize,
     currentCacheSizeBytes: Long,
@@ -225,6 +228,7 @@ private fun SettingsScreenContent(
     onR18SanityThresholdChange: (Int) -> Unit,
     onPreferredImageQualityChange: (ImageQuality) -> Unit,
     onDetailImageQualityChange: (DetailImageQuality) -> Unit,
+    onViewerImageQualityChange: (com.projectu.shared.domain.model.ViewerImageQuality) -> Unit,
     onNovelDownloadImageQualityChange: (NovelDownloadImageQuality) -> Unit,
     onImageCacheSizeChange: (CacheSize) -> Unit,
     onClearCache: suspend () -> Unit,
@@ -244,6 +248,7 @@ private fun SettingsScreenContent(
     var showR18ThresholdDialog by remember { mutableStateOf(false) }
     var showImageQualityDialog by remember { mutableStateOf(false) }
     var showDetailImageQualityDialog by remember { mutableStateOf(false) }
+    var showViewerImageQualityDialog by remember { mutableStateOf(false) }
     var showNovelDownloadImageQualityDialog by remember { mutableStateOf(false) }
     var showEditPhpSessionIdDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
@@ -375,6 +380,19 @@ private fun SettingsScreenContent(
                     },
                     description = stringResource(Res.string.settings_detail_image_quality_desc),
                     onClick = { showDetailImageQualityDialog = true }
+                )
+            }
+            
+            // 大图浏览页首选图片质量设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_viewer_image_quality),
+                    subtitle = when (currentViewerImageQuality) {
+                        com.projectu.shared.domain.model.ViewerImageQuality.MASTER_1200 -> stringResource(Res.string.viewer_image_quality_master_1200)
+                        com.projectu.shared.domain.model.ViewerImageQuality.ORIGINAL -> stringResource(Res.string.viewer_image_quality_original)
+                    },
+                    description = stringResource(Res.string.settings_viewer_image_quality_desc),
+                    onClick = { showViewerImageQualityDialog = true }
                 )
             }
             
@@ -687,6 +705,18 @@ private fun SettingsScreenContent(
                 showDetailImageQualityDialog = false
             },
             onDismiss = { showDetailImageQualityDialog = false }
+        )
+    }
+    
+    // 大图浏览页图片质量选择对话框
+    if (showViewerImageQualityDialog) {
+        ViewerImageQualitySelectionDialog(
+            currentQuality = currentViewerImageQuality,
+            onSelect = { quality ->
+                onViewerImageQualityChange(quality)
+                showViewerImageQualityDialog = false
+            },
+            onDismiss = { showViewerImageQualityDialog = false }
         )
     }
     
@@ -1210,6 +1240,59 @@ private fun DetailImageQualitySelectionDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.settings_detail_image_quality)) },
+        text = {
+            Column {
+                qualities.forEach { (quality, name) ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(quality) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = quality == currentQuality,
+                                onClick = { onSelect(quality) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 大图浏览页图片质量选择对话框
+ */
+@Composable
+private fun ViewerImageQualitySelectionDialog(
+    currentQuality: com.projectu.shared.domain.model.ViewerImageQuality,
+    onSelect: (com.projectu.shared.domain.model.ViewerImageQuality) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val qualities = listOf(
+        com.projectu.shared.domain.model.ViewerImageQuality.MASTER_1200 to stringResource(Res.string.viewer_image_quality_master_1200),
+        com.projectu.shared.domain.model.ViewerImageQuality.ORIGINAL to stringResource(Res.string.viewer_image_quality_original)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_viewer_image_quality)) },
         text = {
             Column {
                 qualities.forEach { (quality, name) ->

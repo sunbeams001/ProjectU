@@ -48,6 +48,11 @@ data class SettingsEntity(
     val detailImageQuality: String = "LARGE",
     
     /**
+     * 作品大图浏览页首选图片质量
+     */
+    val viewerImageQuality: String = "MASTER_1200",
+    
+    /**
      * 小说下载首选图片质量
      */
     val novelDownloadImageQuality: String = "LARGE",
@@ -99,6 +104,7 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = this.preferredImageQuality.name,
         detailImageQuality = this.detailImageQuality.name,
+        viewerImageQuality = this.viewerImageQuality.name,
         novelDownloadImageQuality = this.novelDownloadImageQuality.name,
         imageCacheSize = this.imageCacheSize.name,
         clickBookmarkAction = this.clickBookmarkAction.name,
@@ -120,6 +126,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         r18SanityLevelThreshold = this.r18SanityLevelThreshold,
         preferredImageQuality = com.projectu.shared.domain.model.ImageQuality.fromName(this.preferredImageQuality),
         detailImageQuality = com.projectu.shared.domain.model.DetailImageQuality.fromName(this.detailImageQuality),
+        viewerImageQuality = com.projectu.shared.domain.model.ViewerImageQuality.fromName(this.viewerImageQuality),
         novelDownloadImageQuality = com.projectu.shared.domain.model.NovelDownloadImageQuality.fromName(this.novelDownloadImageQuality),
         imageCacheSize = com.projectu.shared.domain.model.CacheSize.fromName(this.imageCacheSize),
         clickBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.clickBookmarkAction),

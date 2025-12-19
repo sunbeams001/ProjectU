@@ -226,6 +226,8 @@
     <string name="settings_preferred_image_quality_desc">用於列表和瀑布流中的縮略圖質量</string>
     <string name="settings_detail_image_quality">插畫詳情頁首選圖片質量</string>
     <string name="settings_detail_image_quality_desc">作品詳情頁的圖片質量</string>
+    <string name="settings_viewer_image_quality">大圖瀏覽頁首選圖片質量</string>
+    <string name="settings_viewer_image_quality_desc">用於全屏查看作品時的圖片質量</string>
     <string name="settings_novel_download_image_quality">小說下載首選圖片質量</string>
     <string name="settings_novel_download_image_quality_desc">下載小說為 EPUB 時，內嵌圖片的質量</string>
     <string name="image_quality_square_medium">標準 (250×250)</string>
@@ -237,6 +239,8 @@
     <string name="detail_image_quality_large">大 (540×540)</string>
     <string name="detail_image_quality_master_1200">最大 (1200px)</string>
     <string name="detail_image_quality_original">原始</string>
+    <string name="viewer_image_quality_master_1200">最大 (1200px)</string>
+    <string name="viewer_image_quality_original">原始</string>
     <string name="novel_download_image_quality_small">小圖 (240px)</string>
     <string name="novel_download_image_quality_medium">中圖 (480px)</string>
     <string name="novel_download_image_quality_large">大圖 (1200px)</string>
