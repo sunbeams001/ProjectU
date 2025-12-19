@@ -159,6 +159,8 @@
     <string name="common_edit">Edit</string>
     <string name="common_done">Done</string>
     <string name="common_no_data">No data</string>
+    <string name="common_back">Back</string>
+    <string name="common_close">Close</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">Play</string>
@@ -181,6 +183,11 @@
     <string name="login_error_invalid_format">Invalid PHPSESSID format. Expected: userid_xxxxx</string>
     <string name="login_error_empty">Please enter PHPSESSID</string>
     <string name="login_session_expired">Login session expired. Please login again.</string>
+    <string name="login_webview_title">Pixiv Login</string>
+    <string name="login_webview_button">Login with Browser</string>
+    <string name="login_webview_hint">✨ Tip: Login in the browser, and we\'ll automatically extract your credentials</string>
+    <string name="login_webview_extracting">Extracting login credentials...</string>
+    <string name="login_or_divider">OR</string>
     <string name="common_ok">OK</string>
     
     <!-- Settings - Account Management -->

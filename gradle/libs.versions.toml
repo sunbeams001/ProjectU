@@ -17,9 +17,10 @@ okio = "3.16.4"
 gifkt = "0.3.0"
 javacv = "1.5.12"
 ksp = "2.2.21-2.0.4"
-androidx-activity-compose = "1.12.1"
+androidx-activity-compose = "1.12.2"
 androidx-lifecycle = "2.10.0"
 androidx-documentfile = "1.1.0"
+compose-webview-multiplatform = "2.0.3"
 
 [libraries]
 # Kotlin
@@ -80,6 +81,9 @@ androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmode
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "androidx-documentfile" }
+
+# Compose WebView Multiplatform
+compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "compose-webview-multiplatform" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

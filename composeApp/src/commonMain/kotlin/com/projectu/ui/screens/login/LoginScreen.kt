@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -62,6 +63,7 @@ private fun LoginScreenContent(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var passwordVisible by remember { mutableStateOf(false) }
+    var showWebViewLogin by remember { mutableStateOf(false) }
     
     Scaffold(
         topBar = {
@@ -126,6 +128,35 @@ private fun LoginScreenContent(
                         },
                         onErrorDismiss = { onIntent(LoginIntent.ClearError) }
                     )
+                    
+                    // WebView登录分隔符和按钮
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        HorizontalDivider(modifier = Modifier.weight(1f))
+                        Text(
+                            text = stringResource(Res.string.login_or_divider),
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        HorizontalDivider(modifier = Modifier.weight(1f))
+                    }
+                    
+                    OutlinedButton(
+                        onClick = { showWebViewLogin = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !state.isLoading
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Language,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(Res.string.login_webview_button))
+                    }
                 }
                 
                 LoginMode.APP_LOGIN -> {
@@ -140,6 +171,20 @@ private fun LoginScreenContent(
     if (state.showHelpDialog) {
         HelpDialog(
             onDismiss = { onIntent(LoginIntent.ToggleHelpDialog(false)) }
+        )
+    }
+    
+    // WebView登录对话框
+    if (showWebViewLogin) {
+        WebViewLoginDialog(
+            onSuccess = { phpsessid ->
+                showWebViewLogin = false
+                onIntent(LoginIntent.PhpSessionIdChanged(phpsessid))
+                onIntent(LoginIntent.LoginClicked)
+            },
+            onDismiss = {
+                showWebViewLogin = false
+            }
         )
     }
 }

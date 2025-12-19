@@ -159,6 +159,8 @@
     <string name="common_edit">编辑</string>
     <string name="common_done">完成</string>
     <string name="common_no_data">暂无数据</string>
+    <string name="common_back">返回</string>
+    <string name="common_close">关闭</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">播放</string>
@@ -181,6 +183,11 @@
     <string name="login_error_invalid_format">PHPSESSID 格式无效。预期格式：userid_xxxxx</string>
     <string name="login_error_empty">请输入 PHPSESSID</string>
     <string name="login_session_expired">登录会话已过期，请重新登录。</string>
+    <string name="login_webview_title">Pixiv 登录</string>
+    <string name="login_webview_button">使用浏览器登录</string>
+    <string name="login_webview_hint">✨ 提示：在浏览器中登录，我们将自动提取您的登录凭据</string>
+    <string name="login_webview_extracting">正在提取登录凭据...</string>
+    <string name="login_or_divider">或者</string>
     <string name="common_ok">确定</string>
     
     <!-- Settings - Account Management -->

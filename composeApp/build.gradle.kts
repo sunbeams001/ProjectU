@@ -63,6 +63,9 @@ kotlin {
             // Lifecycle
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            
+            // WebView Multiplatform
+            api(libs.compose.webview.multiplatform)
         }
         
         androidMain.dependencies {
