@@ -115,11 +115,15 @@
     <!-- Settings -->
     <string name="settings_title">설정</string>
     <string name="settings_general">일반 설정</string>
+    <string name="settings_interaction_preferences">상호작용 기본 설정</string>
+    <string name="settings_browsing_experience">탐색 경험</string>
     <string name="settings_pixiv">Pixiv 설정</string>
+    <string name="settings_content_management">콘텐츠 관리</string>
+    <string name="settings_developer_options">개발자 옵션</string>
     <string name="settings_app_language">앱 언어</string>
     <string name="settings_pixiv_language">Pixiv 언어 설정</string>
     <string name="settings_pixiv_language_desc">Pixiv 데이터 가져올 때 언어 설정</string>
-    <string name="settings_bookmark_behavior">북마크 동작 설정</string>
+
     <string name="settings_click_bookmark_action">클릭 시 동작</string>
     <string name="settings_click_bookmark_action_desc">북마크 버튼을 클릭할 때의 기본 동작을 설정합니다</string>
     <string name="settings_long_press_bookmark_action">길게 누르기 시 동작</string>

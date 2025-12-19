@@ -35,7 +35,11 @@ import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
 import projectu.composeapp.generated.resources.settings_title
 import projectu.composeapp.generated.resources.settings_general
+import projectu.composeapp.generated.resources.settings_interaction_preferences
+import projectu.composeapp.generated.resources.settings_browsing_experience
 import projectu.composeapp.generated.resources.settings_pixiv
+import projectu.composeapp.generated.resources.settings_content_management
+import projectu.composeapp.generated.resources.settings_developer_options
 import projectu.composeapp.generated.resources.settings_app_language
 import projectu.composeapp.generated.resources.settings_pixiv_language
 import projectu.composeapp.generated.resources.settings_pixiv_language_desc
@@ -61,14 +65,12 @@ import projectu.composeapp.generated.resources.settings_edit_phpsessid
 import projectu.composeapp.generated.resources.settings_phpsessid_input_hint
 import projectu.composeapp.generated.resources.settings_phpsessid_warning
 import projectu.composeapp.generated.resources.login_phpsessid_label
-import projectu.composeapp.generated.resources.settings_content_filter
 import projectu.composeapp.generated.resources.settings_r18_sanity_threshold
 import projectu.composeapp.generated.resources.settings_r18_sanity_threshold_desc
 import projectu.composeapp.generated.resources.settings_r18_sanity_level_safe
 import projectu.composeapp.generated.resources.settings_r18_sanity_level_normal
 import projectu.composeapp.generated.resources.settings_r18_sanity_level_suggestive
 import projectu.composeapp.generated.resources.settings_r18_sanity_level_r18
-import projectu.composeapp.generated.resources.settings_image_quality
 import projectu.composeapp.generated.resources.settings_preferred_image_quality
 import projectu.composeapp.generated.resources.settings_preferred_image_quality_desc
 import projectu.composeapp.generated.resources.settings_detail_image_quality
@@ -112,7 +114,6 @@ import projectu.composeapp.generated.resources.login_password_hide
 import projectu.composeapp.generated.resources.login_password_show
 import projectu.composeapp.generated.resources.settings_phpsessid_empty
 import projectu.composeapp.generated.resources.settings_phpsessid_invalid_format
-import projectu.composeapp.generated.resources.settings_bookmark_behavior
 import projectu.composeapp.generated.resources.settings_click_bookmark_action
 import projectu.composeapp.generated.resources.settings_click_bookmark_action_desc
 import projectu.composeapp.generated.resources.settings_long_press_bookmark_action
@@ -275,7 +276,7 @@ private fun SettingsScreenContent(
                 .padding(paddingValues),
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-            // 通用设置分组
+            // 📱 1. 通用设置 (General Settings)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_general))
             }
@@ -302,24 +303,9 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // Pixiv 设置分组
+            // 🎯 2. 交互偏好 (Interaction Preferences)
             item {
-                SettingsGroupHeader(title = stringResource(Res.string.settings_pixiv))
-            }
-            
-            // Pixiv 语言设置
-            item {
-                SettingsItem(
-                    title = stringResource(Res.string.settings_pixiv_language),
-                    subtitle = currentPixivLanguage.displayName,
-                    description = stringResource(Res.string.settings_pixiv_language_desc),
-                    onClick = { showPixivLanguageDialog = true }
-                )
-            }
-            
-            // 收藏行为设置分组
-            item {
-                SettingsGroupHeader(title = stringResource(Res.string.settings_bookmark_behavior))
+                SettingsGroupHeader(title = stringResource(Res.string.settings_interaction_preferences))
             }
             
             // 点击收藏按钮行为设置
@@ -356,29 +342,9 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 内容过滤设置分组
+            // 🖼️ 3. 浏览体验 (Browsing Experience)
             item {
-                SettingsGroupHeader(title = stringResource(Res.string.settings_content_filter))
-            }
-            
-            // R18 Sanity Level 阈值设置
-            item {
-                SettingsItem(
-                    title = stringResource(Res.string.settings_r18_sanity_threshold),
-                    subtitle = when (currentR18SanityThreshold) {
-                        in 0..1 -> stringResource(Res.string.settings_r18_sanity_level_safe)
-                        in 2..3 -> stringResource(Res.string.settings_r18_sanity_level_normal)
-                        in 4..5 -> stringResource(Res.string.settings_r18_sanity_level_suggestive)
-                        else -> stringResource(Res.string.settings_r18_sanity_level_r18)
-                    } + " ($currentR18SanityThreshold)",
-                    description = stringResource(Res.string.settings_r18_sanity_threshold_desc),
-                    onClick = { showR18ThresholdDialog = true }
-                )
-            }
-            
-            // 图片质量设置分组
-            item {
-                SettingsGroupHeader(title = stringResource(Res.string.settings_image_quality))
+                SettingsGroupHeader(title = stringResource(Res.string.settings_browsing_experience))
             }
             
             // 插画卡片首选图片质量设置
@@ -412,6 +378,87 @@ private fun SettingsScreenContent(
                 )
             }
             
+            // 🌐 4. Pixiv 设置 (Pixiv Settings)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_pixiv))
+            }
+            
+            // Pixiv 语言设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_pixiv_language),
+                    subtitle = currentPixivLanguage.displayName,
+                    description = stringResource(Res.string.settings_pixiv_language_desc),
+                    onClick = { showPixivLanguageDialog = true }
+                )
+            }
+            
+            // 🔒 5. 内容管理 (Content Management)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_content_management))
+            }
+            
+            // R18 Sanity Level 阈值设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_r18_sanity_threshold),
+                    subtitle = when (currentR18SanityThreshold) {
+                        in 0..1 -> stringResource(Res.string.settings_r18_sanity_level_safe)
+                        in 2..3 -> stringResource(Res.string.settings_r18_sanity_level_normal)
+                        in 4..5 -> stringResource(Res.string.settings_r18_sanity_level_suggestive)
+                        else -> stringResource(Res.string.settings_r18_sanity_level_r18)
+                    } + " ($currentR18SanityThreshold)",
+                    description = stringResource(Res.string.settings_r18_sanity_threshold_desc),
+                    onClick = { showR18ThresholdDialog = true }
+                )
+            }
+            
+            // 📥 6. 下载设置 (Download Settings)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_download))
+            }
+            
+            // 下载路径设置
+            item {
+                val selectDirTitle = stringResource(Res.string.select_download_directory)
+                SettingsItem(
+                    title = stringResource(Res.string.settings_download_path),
+                    subtitle = currentBaseDownloadPath.ifEmpty { stringResource(Res.string.settings_download_path_default) },
+                    description = stringResource(Res.string.settings_download_path_desc),
+                    onClick = {
+                        pathPicker.pickDirectory(
+                            title = selectDirTitle,
+                            initialPath = currentBaseDownloadPath.ifEmpty { null }
+                        ) { selectedPath ->
+                            selectedPath?.let { onBaseDownloadPathChange(it) }
+                        }
+                    }
+                )
+            }
+            
+            // 下载路径规则管理
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_download_rules_title),
+                    subtitle = stringResource(Res.string.settings_download_rules_subtitle),
+                    description = stringResource(Res.string.settings_download_rules_desc),
+                    onClick = { navigator.push(DownloadRulesScreen()) }
+                )
+            }
+            
+            // 文件命名规则管理
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_file_name_rules_title),
+                    subtitle = when (currentFileNameMode) {
+                        com.projectu.shared.data.local.FileNameMode.STANDARD -> stringResource(Res.string.settings_file_name_mode_standard)
+                        com.projectu.shared.data.local.FileNameMode.CUSTOM -> stringResource(Res.string.settings_file_name_mode_custom, currentCustomFileNameTemplate)
+                    },
+                    description = stringResource(Res.string.settings_file_name_rules_desc),
+                    onClick = { navigator.push(FileNameRulesScreen()) }
+                )
+            }
+            
             // 小说下载首选图片质量设置
             item {
                 SettingsItem(
@@ -427,7 +474,17 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 缓存管理设置分组
+            // 下载管理
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_download_management_title),
+                    subtitle = stringResource(Res.string.settings_download_management_subtitle),
+                    description = stringResource(Res.string.settings_download_management_desc),
+                    onClick = { navigator.push(com.projectu.ui.screens.download.DownloadScreen()) }
+                )
+            }
+            
+            // 💾 7. 缓存管理 (Cache Management)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_cache_management))
             }
@@ -459,7 +516,12 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // API 测试工具 (开发者选项)
+            // 🔧 8. 开发者选项 (Developer Options)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_developer_options))
+            }
+            
+            // API 测试工具
             item {
                 SettingsItem(
                     title = stringResource(Res.string.settings_api_test_tool),
@@ -469,63 +531,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 下载设置分组
-            item {
-                SettingsGroupHeader(title = stringResource(Res.string.settings_download))
-            }
-            
-            // 下载路径设置
-            item {
-                val selectDirTitle = stringResource(Res.string.select_download_directory)
-                SettingsItem(
-                    title = stringResource(Res.string.settings_download_path),
-                    subtitle = currentBaseDownloadPath.ifEmpty { stringResource(Res.string.settings_download_path_default) },
-                    description = stringResource(Res.string.settings_download_path_desc),
-                    onClick = {
-                        pathPicker.pickDirectory(
-                            title = selectDirTitle,
-                            initialPath = currentBaseDownloadPath.ifEmpty { null }
-                        ) { selectedPath ->
-                            selectedPath?.let { onBaseDownloadPathChange(it) }
-                        }
-                    }
-                )
-            }
-            
-            // 下载管理
-            item {
-                SettingsItem(
-                    title = stringResource(Res.string.settings_download_management_title),
-                    subtitle = stringResource(Res.string.settings_download_management_subtitle),
-                    description = stringResource(Res.string.settings_download_management_desc),
-                    onClick = { navigator.push(com.projectu.ui.screens.download.DownloadScreen()) }
-                )
-            }
-            
-            // 下载路径规则管理
-            item {
-                SettingsItem(
-                    title = stringResource(Res.string.settings_download_rules_title),
-                    subtitle = stringResource(Res.string.settings_download_rules_subtitle),
-                    description = stringResource(Res.string.settings_download_rules_desc),
-                    onClick = { navigator.push(DownloadRulesScreen()) }
-                )
-            }
-            
-            // 文件命名规则管理
-            item {
-                SettingsItem(
-                    title = stringResource(Res.string.settings_file_name_rules_title),
-                    subtitle = when (currentFileNameMode) {
-                        com.projectu.shared.data.local.FileNameMode.STANDARD -> stringResource(Res.string.settings_file_name_mode_standard)
-                        com.projectu.shared.data.local.FileNameMode.CUSTOM -> stringResource(Res.string.settings_file_name_mode_custom, currentCustomFileNameTemplate)
-                    },
-                    description = stringResource(Res.string.settings_file_name_rules_desc),
-                    onClick = { navigator.push(FileNameRulesScreen()) }
-                )
-            }
-            
-            // 账号管理分组
+            // 👤 9. 账号 (Account)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_account))
             }

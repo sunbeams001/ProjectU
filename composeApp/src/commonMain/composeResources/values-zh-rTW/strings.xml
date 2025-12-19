@@ -115,11 +115,15 @@
     <!-- Settings -->
     <string name="settings_title">設定</string>
     <string name="settings_general">通用設定</string>
+    <string name="settings_interaction_preferences">交互偏好</string>
+    <string name="settings_browsing_experience">瀏覽體驗</string>
     <string name="settings_pixiv">Pixiv 設定</string>
+    <string name="settings_content_management">內容管理</string>
+    <string name="settings_developer_options">開發者選項</string>
     <string name="settings_app_language">應用程式語言</string>
     <string name="settings_pixiv_language">Pixiv 語言偏好</string>
     <string name="settings_pixiv_language_desc">獲取 Pixiv 資料時的語言設定</string>
-    <string name="settings_bookmark_behavior">收藏行為設定</string>
+
     <string name="settings_click_bookmark_action">點擊收藏按鈕</string>
     <string name="settings_click_bookmark_action_desc">設定點擊收藏按鈕時的預設行為</string>
     <string name="settings_long_press_bookmark_action">長按收藏按鈕</string>

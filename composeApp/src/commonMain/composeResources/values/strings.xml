@@ -100,11 +100,15 @@
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_general">General Settings</string>
+    <string name="settings_interaction_preferences">Interaction Preferences</string>
+    <string name="settings_browsing_experience">Browsing Experience</string>
     <string name="settings_pixiv">Pixiv Settings</string>
+    <string name="settings_content_management">Content Management</string>
+    <string name="settings_developer_options">Developer Options</string>
     <string name="settings_app_language">App Language</string>
     <string name="settings_pixiv_language">Pixiv Language Preference</string>
     <string name="settings_pixiv_language_desc">Language setting when fetching Pixiv data</string>
-    <string name="settings_bookmark_behavior">Bookmark Behavior Settings</string>
+
     <string name="settings_click_bookmark_action">Click Bookmark Button</string>
     <string name="settings_click_bookmark_action_desc">Set default action when clicking bookmark button</string>
     <string name="settings_long_press_bookmark_action">Long Press Bookmark Button</string>
