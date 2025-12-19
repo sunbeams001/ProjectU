@@ -15,6 +15,8 @@ import com.projectu.ui.components.FileNameTemplateSection
 import com.projectu.ui.components.VariableHelpDialog
 import com.projectu.ui.screens.settings.SettingsViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 文件命名规则设置界面
@@ -54,10 +56,10 @@ private fun FileNameRulesContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("文件命名规则") },
+                title = { Text(stringResource(Res.string.filename_rules_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.nav_back))
                     }
                 }
             )
@@ -84,25 +86,25 @@ private fun FileNameRulesContent(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = "文件命名规则说明",
+                            text = stringResource(Res.string.filename_rules_title),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "设置下载文件的命名规则。标准模式使用默认格式，自定义模式可以使用变量自由组合。",
+                            text = stringResource(Res.string.filename_rules_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "• 单页资源（动图、小说）会自动忽略页码变量",
+                            text = stringResource(Res.string.filename_rules_single_page_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "• 多页资源（插画、漫画）保留页码以区分不同页",
+                            text = stringResource(Res.string.filename_rules_multi_page_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

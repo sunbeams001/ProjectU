@@ -6,21 +6,21 @@ package com.projectu.shared.data.remote.model
  */
 enum class UserSearchMode(
     val value: String,
-    val displayName: String,
-    val description: String
+    val displayNameKey: String,
+    val descriptionKey: String
 ) {
     /** 部分一致 */
     PARTIAL(
         value = "s_usr",
-        displayName = "部分一致",
-        description = "用户名称部分匹配"
+        displayNameKey = "search_mode_user_partial",
+        descriptionKey = "search_mode_user_partial_desc"
     ),
 
     /** 完全一致 */
     EXACT(
         value = "s_usr_full",
-        displayName = "完全一致",
-        description = "用户名称完全匹配"
+        displayNameKey = "search_mode_user_exact",
+        descriptionKey = "search_mode_user_exact_desc"
     );
 
     companion object {

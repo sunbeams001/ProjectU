@@ -14,6 +14,8 @@ import com.projectu.shared.domain.model.AuthorGrouping
 import com.projectu.shared.domain.model.DownloadRule
 import com.projectu.shared.domain.model.FilterType
 import com.projectu.shared.domain.model.ResourceType
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 规则卡片组件
@@ -50,7 +52,7 @@ fun RuleCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "规则 #${rule.order + 1}",
+                    text = stringResource(Res.string.download_rules_rule_number, rule.order + 1),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -64,17 +66,57 @@ fun RuleCard(
             
             // 规则条件
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                RuleConditionText("资源类型", getResourceTypesLabel(rule.resourceTypes))
-                RuleConditionText("R-18", getFilterTypeLabel(rule.r18Filter))
-                RuleConditionText("AI 生成", getFilterTypeLabel(rule.aiFilter))
-                RuleConditionText("作者分组", getAuthorGroupingLabel(rule.authorGrouping))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(Res.string.download_rules_resource_type),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    ResourceTypesLabel(rule.resourceTypes)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "R-18",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    FilterTypeLabel(rule.r18Filter)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(Res.string.download_rules_ai_generation),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    FilterTypeLabel(rule.aiFilter)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(Res.string.download_rules_author_grouping),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    AuthorGroupingLabel(rule.authorGrouping)
+                }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
             
             // 目标路径
             Text(
-                text = "保存路径",
+                text = stringResource(Res.string.download_rules_save_path),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -95,13 +137,13 @@ fun RuleCard(
                 TextButton(onClick = { showDeleteDialog = true }) {
                     Icon(Icons.Default.Delete, null)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("删除")
+                    Text(stringResource(Res.string.common_delete))
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 FilledTonalButton(onClick = onEdit) {
                     Icon(Icons.Default.Edit, null)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("编辑")
+                    Text(stringResource(Res.string.common_edit))
                 }
             }
         }
@@ -111,8 +153,8 @@ fun RuleCard(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("删除规则") },
-            text = { Text("确定要删除这条规则吗？") },
+            title = { Text(stringResource(Res.string.download_rules_delete_confirm_title)) },
+            text = { Text(stringResource(Res.string.download_rules_delete_confirm_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -120,12 +162,12 @@ fun RuleCard(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("删除")
+                    Text(stringResource(Res.string.common_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(Res.string.common_cancel))
                 }
             }
         )
@@ -155,40 +197,57 @@ private fun RuleConditionText(label: String, value: String) {
 }
 
 /**
- * 获取资源类型标签（多选）
+ * 资源类型标签组件（多选）
  */
-private fun getResourceTypesLabel(types: Set<ResourceType>): String {
-    if (types.isEmpty()) return "任意"
-    
-    return types.joinToString(", ") { type ->
-        when (type) {
-            ResourceType.ILLUSTRATION -> "插画"
-            ResourceType.MANGA -> "漫画"
-            ResourceType.UGOIRA -> "动图"
-            ResourceType.NOVEL -> "小说"
-            ResourceType.NOVEL_SERIES -> "小说系列"
-        }
+@Composable
+private fun ResourceTypesLabel(types: Set<ResourceType>) {
+    if (types.isEmpty()) {
+        Text(
+            text = stringResource(Res.string.resource_type_any),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    } else {
+        Text(
+            text = types.joinToString(", ") { type ->
+                when (type) {
+                    ResourceType.ILLUSTRATION -> "Illustration"
+                    ResourceType.MANGA -> "Manga"
+                    ResourceType.UGOIRA -> "Ugoira"
+                    ResourceType.NOVEL -> "Novel"
+                    ResourceType.NOVEL_SERIES -> "Novel Series"
+                }
+            },
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
 /**
- * 获取过滤器类型标签
+ * 过滤器类型标签组件
  */
-private fun getFilterTypeLabel(filter: FilterType): String {
-    return when (filter) {
-        FilterType.MUST_BE -> "必须是"
-        FilterType.MUST_NOT_BE -> "必须不是"
-        FilterType.ANY -> "任意"
-    }
+@Composable
+private fun FilterTypeLabel(filter: FilterType) {
+    Text(
+        text = when (filter) {
+            FilterType.MUST_BE -> stringResource(Res.string.rule_filter_must_be)
+            FilterType.MUST_NOT_BE -> stringResource(Res.string.rule_filter_must_not_be)
+            FilterType.ANY -> stringResource(Res.string.rule_filter_any)
+        },
+        style = MaterialTheme.typography.bodyMedium
+    )
 }
 
 /**
- * 获取作者分组标签
+ * 作者分组标签组件
  */
-private fun getAuthorGroupingLabel(grouping: AuthorGrouping): String {
-    return when (grouping) {
-        AuthorGrouping.BY_ID -> "按作者ID"
-        AuthorGrouping.BY_NAME -> "按作者名"
-        AuthorGrouping.NONE -> "不分组"
-    }
+@Composable
+private fun AuthorGroupingLabel(grouping: AuthorGrouping) {
+    Text(
+        text = when (grouping) {
+            AuthorGrouping.BY_ID -> stringResource(Res.string.rule_grouping_by_id)
+            AuthorGrouping.BY_NAME -> stringResource(Res.string.rule_grouping_by_name)
+            AuthorGrouping.NONE -> stringResource(Res.string.rule_grouping_none)
+        },
+        style = MaterialTheme.typography.bodyMedium
+    )
 }

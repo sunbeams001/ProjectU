@@ -27,9 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
-import projectu.composeapp.generated.resources.Res
-import projectu.composeapp.generated.resources.search_button
-import projectu.composeapp.generated.resources.search_clear
+import projectu.composeapp.generated.resources.*
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -315,14 +313,14 @@ fun SearchResultContent(
                                         }
                                     }
                                 },
-                                text = { Text(category.displayName, maxLines = 1) }
+                                text = { Text(category.getDisplayName(), maxLines = 1) }
                             )
                         }
                     }
                     
                     // 筛选按钮（固定在右侧）
                     IconButton(onClick = onToggleFilterDrawer) {
-                        Icon(Icons.Default.FilterList, contentDescription = "筛选")
+                        Icon(Icons.Default.FilterList, contentDescription = stringResource(Res.string.download_filter))
                     }
                 }
             }
@@ -416,7 +414,7 @@ fun SearchInputBar(
         ) {
             // 返回按钮
             IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(Res.string.nav_back))
             }
             
             // 搜索输入框（与搜索准备页面保持一致）
@@ -424,7 +422,7 @@ fun SearchInputBar(
                 value = searchKeyword,
                 onValueChange = onSearchKeywordChange,
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("搜索插画、小说或用户...") },
+                placeholder = { Text(stringResource(Res.string.search_placeholder)) },
                 trailingIcon = {
                     Row {
                         if (searchKeyword.text.isNotEmpty()) {
@@ -521,7 +519,7 @@ fun IllustResultGrid(
             // 空状态
             artworks.isEmpty() -> {
                 Text(
-                    text = "暂无搜索结果",
+                    text = stringResource(Res.string.search_no_results),
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -602,7 +600,7 @@ fun NovelResultList(
             // 空状态
             novels.isEmpty() -> {
                 Text(
-                    text = "暂无搜索结果",
+                    text = stringResource(Res.string.search_no_results),
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -681,7 +679,7 @@ fun UserResultList(
             // 空状态
             users.isEmpty() -> {
                 Text(
-                    text = "暂无搜索结果",
+                    text = stringResource(Res.string.search_no_results),
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -777,7 +775,7 @@ fun FilterDrawer(
                     style = MaterialTheme.typography.titleLarge
                 )
                 IconButton(onClick = onClose) {
-                    Icon(Icons.Default.Close, contentDescription = "关闭")
+                    Icon(Icons.Default.Close, contentDescription = stringResource(Res.string.search_close))
                 }
             }
             
@@ -818,19 +816,24 @@ fun IllustFilters(
     params: IllustSearchParams,
     onParamsChange: (IllustSearchParams) -> Unit
 ) {
+    // 获取所有模式的本地化名称
+    val modes = com.projectu.shared.data.remote.model.IllustSearchMode.entries
+    val modeNames = modes.map { it.getDisplayName() }
+    val currentModeName = params.searchMode.getDisplayName()
+    
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // 搜索模式
         SearchModeDropdown(
-            label = "搜索模式",
-            selectedMode = params.searchMode.displayName,
-            modes = com.projectu.shared.data.remote.model.IllustSearchMode.entries.map { it.displayName },
+            label = stringResource(Res.string.search_mode),
+            selectedMode = currentModeName,
+            modes = modeNames,
             onModeSelect = { displayName ->
-                val mode = com.projectu.shared.data.remote.model.IllustSearchMode.entries.find {
-                    it.displayName == displayName
-                } ?: com.projectu.shared.data.remote.model.IllustSearchMode.DEFAULT
-                onParamsChange(params.copy(searchMode = mode))
+                val index = modeNames.indexOf(displayName)
+                if (index >= 0) {
+                    onParamsChange(params.copy(searchMode = modes[index]))
+                }
             }
         )
         
@@ -862,19 +865,24 @@ fun NovelFilters(
     params: NovelSearchParams,
     onParamsChange: (NovelSearchParams) -> Unit
 ) {
+    // 获取所有模式的本地化名称
+    val modes = com.projectu.shared.data.remote.model.NovelSearchMode.entries
+    val modeNames = modes.map { it.getDisplayName() }
+    val currentModeName = params.searchMode.getDisplayName()
+    
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // 搜索模式
         SearchModeDropdown(
-            label = "搜索模式",
-            selectedMode = params.searchMode.displayName,
-            modes = com.projectu.shared.data.remote.model.NovelSearchMode.entries.map { it.displayName },
+            label = stringResource(Res.string.search_mode),
+            selectedMode = currentModeName,
+            modes = modeNames,
             onModeSelect = { displayName ->
-                val mode = com.projectu.shared.data.remote.model.NovelSearchMode.entries.find {
-                    it.displayName == displayName
-                } ?: com.projectu.shared.data.remote.model.NovelSearchMode.DEFAULT
-                onParamsChange(params.copy(searchMode = mode))
+                val index = modeNames.indexOf(displayName)
+                if (index >= 0) {
+                    onParamsChange(params.copy(searchMode = modes[index]))
+                }
             }
         )
         
@@ -906,19 +914,24 @@ fun UserFilters(
     params: UserSearchParams,
     onParamsChange: (UserSearchParams) -> Unit
 ) {
+    // 获取所有模式的本地化名称
+    val modes = com.projectu.shared.data.remote.model.UserSearchMode.entries
+    val modeNames = modes.map { it.getDisplayName() }
+    val currentModeName = params.searchMode.getDisplayName()
+    
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // 搜索模式
         SearchModeDropdown(
-            label = "搜索模式",
-            selectedMode = params.searchMode.displayName,
-            modes = com.projectu.shared.data.remote.model.UserSearchMode.entries.map { it.displayName },
+            label = stringResource(Res.string.search_mode),
+            selectedMode = currentModeName,
+            modes = modeNames,
             onModeSelect = { displayName ->
-                val mode = com.projectu.shared.data.remote.model.UserSearchMode.entries.find {
-                    it.displayName == displayName
-                } ?: com.projectu.shared.data.remote.model.UserSearchMode.DEFAULT
-                onParamsChange(params.copy(searchMode = mode))
+                val index = modeNames.indexOf(displayName)
+                if (index >= 0) {
+                    onParamsChange(params.copy(searchMode = modes[index]))
+                }
             }
         )
         
@@ -929,9 +942,9 @@ fun UserFilters(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("仅显示有作品的用户")
+                Text(stringResource(Res.string.search_only_users_with_works))
                 Text(
-                    text = "过滤掉没有投稿作品的用户",
+                    text = stringResource(Res.string.search_filter_no_works),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -999,7 +1012,7 @@ fun SortOrderSelector(
 ) {
     Column {
         Text(
-            text = "排序方式",
+            text = stringResource(Res.string.search_sort_order),
             style = MaterialTheme.typography.titleSmall
         )
         Spacer(Modifier.height(8.dp))
@@ -1016,7 +1029,7 @@ fun SortOrderSelector(
                     onClick = null
                 )
                 Spacer(Modifier.width(8.dp))
-                Text(order.displayName)
+                Text(order.getDisplayName())
             }
         }
     }
@@ -1032,7 +1045,7 @@ fun ContentModeSelector(
 ) {
     Column {
         Text(
-            text = "内容分级",
+            text = stringResource(Res.string.search_content_rating),
             style = MaterialTheme.typography.titleSmall
         )
         Spacer(Modifier.height(8.dp))
@@ -1049,7 +1062,7 @@ fun ContentModeSelector(
                     onClick = null
                 )
                 Spacer(Modifier.width(8.dp))
-                Text(mode.displayName)
+                Text(mode.getDisplayName())
             }
         }
     }
@@ -1069,9 +1082,9 @@ fun AiFilterSwitch(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text("隐藏 AI 生成作品")
+            Text(stringResource(Res.string.search_hide_ai_works))
             Text(
-                text = "过滤掉 AI 生成的插画和小说",
+                text = stringResource(Res.string.search_filter_ai_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -1081,4 +1094,85 @@ fun AiFilterSwitch(
             onCheckedChange = onCheckedChange
         )
     }
+}
+
+/**
+ * 获取SearchCategory的本地化显示名称
+ */
+@Composable
+fun SearchCategory.getDisplayName(): String {
+    return stringResource(
+        when (this) {
+            SearchCategory.ILLUST -> Res.string.search_tab_illust
+            SearchCategory.NOVEL -> Res.string.search_tab_novel
+            SearchCategory.USER -> Res.string.search_tab_user
+        }
+    )
+}
+
+/**
+ * 获取SortOrder的本地化显示名称
+ */
+@Composable
+fun SortOrder.getDisplayName(): String {
+    return stringResource(
+        when (this) {
+            SortOrder.DATE_DESC -> Res.string.search_sort_date_desc
+            SortOrder.DATE_ASC -> Res.string.search_sort_date_asc
+        }
+    )
+}
+
+/**
+ * 获取ContentMode的本地化显示名称
+ */
+@Composable
+fun ContentMode.getDisplayName(): String {
+    return when (this) {
+        ContentMode.R18 -> "R18"
+        ContentMode.ALL -> stringResource(Res.string.search_rating_all)
+        ContentMode.SAFE -> stringResource(Res.string.search_rating_safe)
+    }
+}
+
+/**
+ * 获取IllustSearchMode的本地化显示名称
+ */
+@Composable
+fun com.projectu.shared.data.remote.model.IllustSearchMode.getDisplayName(): String {
+    return stringResource(
+        when (this) {
+            com.projectu.shared.data.remote.model.IllustSearchMode.TAG -> Res.string.search_mode_tag_partial
+            com.projectu.shared.data.remote.model.IllustSearchMode.TAG_FULL -> Res.string.search_mode_tag_full
+            com.projectu.shared.data.remote.model.IllustSearchMode.TITLE_CAPTION -> Res.string.search_mode_title_caption
+        }
+    )
+}
+
+/**
+ * 获取NovelSearchMode的本地化显示名称
+ */
+@Composable
+fun com.projectu.shared.data.remote.model.NovelSearchMode.getDisplayName(): String {
+    return stringResource(
+        when (this) {
+            com.projectu.shared.data.remote.model.NovelSearchMode.TAG_ONLY -> Res.string.search_mode_tag_partial
+            com.projectu.shared.data.remote.model.NovelSearchMode.TAG_FULL -> Res.string.search_mode_tag_full
+            com.projectu.shared.data.remote.model.NovelSearchMode.TEXT_CONTENT -> Res.string.search_mode_text
+            com.projectu.shared.data.remote.model.NovelSearchMode.TAG_TITLE_CAPTION -> Res.string.search_mode_keyword
+        }
+    )
+}
+
+/**
+ * 获取UserSearchMode的本地化显示名称
+ */
+@Composable
+fun com.projectu.shared.data.remote.model.UserSearchMode.getDisplayName(): String {
+    return stringResource(
+        when (this) {
+            com.projectu.shared.data.remote.model.UserSearchMode.PARTIAL -> Res.string.search_mode_user_partial
+            com.projectu.shared.data.remote.model.UserSearchMode.EXACT -> Res.string.search_mode_user_exact
+        }
+    )
 }

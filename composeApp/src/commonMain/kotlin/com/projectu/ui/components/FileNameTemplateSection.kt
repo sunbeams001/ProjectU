@@ -19,6 +19,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import com.projectu.shared.data.local.FileNameMode
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 文件命名模板设置组件
@@ -51,13 +53,13 @@ fun FileNameTemplateSection(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "📁 文件命名规则",
+            text = stringResource(Res.string.filename_template_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
         
         Text(
-            text = "设置下载文件的命名方式",
+            text = stringResource(Res.string.filename_template_desc),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -65,8 +67,8 @@ fun FileNameTemplateSection(
         // 标准模式
         FileNameModeOption(
             mode = FileNameMode.STANDARD,
-            label = "标准模式（推荐）",
-            example = "123456789_0_风景.jpg",
+            label = stringResource(Res.string.filename_mode_standard),
+            example = "123456789_0_Landscape.jpg",
             selected = currentMode == FileNameMode.STANDARD,
             onSelect = { onModeChange(FileNameMode.STANDARD) },
             isRecommended = true
@@ -139,7 +141,7 @@ private fun FileNameModeOption(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ) {
-                            Text("推荐", style = MaterialTheme.typography.labelSmall)
+                            Text(stringResource(Res.string.recommended), style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
@@ -205,7 +207,7 @@ private fun CustomTemplateOption(
                 Spacer(modifier = Modifier.width(8.dp))
                 
                 Text(
-                    text = "自定义模板",
+                    text = stringResource(Res.string.filename_mode_custom),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
                 )
@@ -224,11 +226,11 @@ private fun CustomTemplateOption(
                             onTemplateChange(newValue.text)
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("模板") },
+                        label = { Text(stringResource(Res.string.filename_template_label)) },
                         placeholder = { Text("{id}_{p}_{title}") },
                         trailingIcon = {
                             IconButton(onClick = onShowVariableHelp) {
-                                Icon(Icons.Default.Info, "变量说明")
+                                Icon(Icons.Default.Info, stringResource(Res.string.filename_variable_help))
                             }
                         },
                         isError = validationError != null,
@@ -250,7 +252,7 @@ private fun CustomTemplateOption(
                     
                     // 快捷插入变量按钮
                     Text(
-                        text = "快捷插入：",
+                        text = stringResource(Res.string.filename_quick_insert),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -345,7 +347,7 @@ private fun PreviewSection(examples: List<FileNamePreviewExample>) {
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Text(
-                    text = "预览效果",
+                    text = stringResource(Res.string.filename_preview_title),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
@@ -360,7 +362,7 @@ private fun PreviewSection(examples: List<FileNamePreviewExample>) {
                         .padding(vertical = 4.dp)
                 ) {
                     Text(
-                        text = "${example.type}：",
+                        text = "${example.type}: ",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.width(80.dp)
@@ -394,46 +396,46 @@ fun VariableHelpDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("📝 文件命名变量") },
+        title = { Text(stringResource(Res.string.filename_variables_title)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "可用变量（点击下方快捷按钮插入）：",
+                    text = stringResource(Res.string.filename_variables_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold
                 )
                 
-                VariableHelpItem("{id}", "作品ID", "123456789")
-                VariableHelpItem("{p}", "页码（从0开始）", "0, 1, 2...")
-                VariableHelpItem("{title}", "作品标题", "风景")
-                VariableHelpItem("{author_id}", "作者ID", "987654321")
-                VariableHelpItem("{author_name}", "作者名", "画师名")
-                VariableHelpItem("{publish_date}", "发布日期", "2025-01-15")
-                VariableHelpItem("{download_date}", "下载日期", "2025-12-18")
-                VariableHelpItem("{ai}", "AI标识", "AI 或空")
-                VariableHelpItem("{r18}", "R-18标识", "R-18 或空")
-                VariableHelpItem("{tags}", "作品标签", "风景_自然")
+                VariableHelpItem("{id}", stringResource(Res.string.filename_var_id), "123456789")
+                VariableHelpItem("{p}", stringResource(Res.string.filename_var_page), "0, 1, 2...")
+                VariableHelpItem("{title}", stringResource(Res.string.filename_var_title), stringResource(Res.string.filename_var_title_example))
+                VariableHelpItem("{author_id}", stringResource(Res.string.filename_var_author_id), "987654321")
+                VariableHelpItem("{author_name}", stringResource(Res.string.filename_var_author_name), stringResource(Res.string.filename_var_author_name_example))
+                VariableHelpItem("{publish_date}", stringResource(Res.string.filename_var_publish_date), "2025-01-15")
+                VariableHelpItem("{download_date}", stringResource(Res.string.filename_var_download_date), "2025-12-18")
+                VariableHelpItem("{ai}", stringResource(Res.string.filename_var_ai), stringResource(Res.string.filename_var_ai_example))
+                VariableHelpItem("{r18}", stringResource(Res.string.filename_var_r18), stringResource(Res.string.filename_var_r18_example))
+                VariableHelpItem("{tags}", stringResource(Res.string.filename_var_tags), stringResource(Res.string.filename_var_tags_example))
                 
                 Divider()
                 
                 Text(
-                    text = "⚠️ 注意事项",
+                    text = stringResource(Res.string.filename_notes_title),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.error
                 )
                 
                 Text(
-                    text = "• 插画/漫画建议保留 {p}，否则多页会文件名冲突\n• 动图/小说会自动忽略 {p}\n• 特殊字符会自动替换为下划线",
+                    text = stringResource(Res.string.filename_notes_content),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("关闭")
+                Text(stringResource(Res.string.close))
             }
         }
     )
@@ -463,7 +465,7 @@ private fun VariableHelpItem(
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "示例: $example",
+                text = stringResource(Res.string.filename_example_prefix, example),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

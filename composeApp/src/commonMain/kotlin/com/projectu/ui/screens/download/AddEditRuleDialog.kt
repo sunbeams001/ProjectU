@@ -14,6 +14,8 @@ import com.projectu.shared.domain.model.DownloadRule
 import com.projectu.shared.domain.model.FilterType
 import com.projectu.shared.domain.model.ResourceType
 import com.projectu.ui.util.rememberPathPicker
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 
 /**
  * 添加/编辑规则对话框
@@ -51,7 +53,7 @@ fun AddEditRuleDialog(
     
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (existingRule == null) "添加规则" else "编辑规则") },
+        title = { Text(if (existingRule == null) stringResource(Res.string.add_rule_title) else stringResource(Res.string.edit_rule_title)) },
         text = {
             Column(
                 modifier = Modifier
@@ -61,7 +63,7 @@ fun AddEditRuleDialog(
             ) {
                 // 资源类型选择（多选）
                 Text(
-                    text = "资源类型（可多选，留空表示匹配所有类型）",
+                    text = stringResource(Res.string.rule_resource_types_hint),
                     style = MaterialTheme.typography.labelMedium
                 )
                 ResourceTypeSelector(
@@ -71,7 +73,7 @@ fun AddEditRuleDialog(
                 
                 // R-18 过滤
                 Text(
-                    text = "R-18 过滤",
+                    text = stringResource(Res.string.rule_r18_filter),
                     style = MaterialTheme.typography.labelMedium
                 )
                 FilterTypeSelector(
@@ -81,7 +83,7 @@ fun AddEditRuleDialog(
                 
                 // AI 生成过滤
                 Text(
-                    text = "AI 生成过滤",
+                    text = stringResource(Res.string.rule_ai_filter),
                     style = MaterialTheme.typography.labelMedium
                 )
                 FilterTypeSelector(
@@ -91,7 +93,7 @@ fun AddEditRuleDialog(
                 
                 // 作者分组
                 Text(
-                    text = "作者分组",
+                    text = stringResource(Res.string.rule_author_grouping),
                     style = MaterialTheme.typography.labelMedium
                 )
                 AuthorGroupingSelector(
@@ -101,12 +103,14 @@ fun AddEditRuleDialog(
                 
                 // 目标路径
                 Text(
-                    text = "保存路径",
+                    text = stringResource(Res.string.rule_save_path),
                     style = MaterialTheme.typography.labelMedium
                 )
+                val selectDirTitle = stringResource(Res.string.select_download_directory)
                 OutlinedButton(
                     onClick = {
                         pathPicker.pickDirectory(
+                            title = selectDirTitle,
                             initialPath = targetPath.ifEmpty { null }
                         ) { selectedPath ->
                             selectedPath?.let { targetPath = it }
@@ -121,7 +125,7 @@ fun AddEditRuleDialog(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = targetPath.ifEmpty { "点击选择路径" },
+                        text = targetPath.ifEmpty { stringResource(Res.string.rule_select_path) },
                         modifier = Modifier.weight(1f),
                         maxLines = 2
                     )
@@ -137,12 +141,12 @@ fun AddEditRuleDialog(
                 },
                 enabled = targetPath.isNotBlank()
             ) {
-                Text("确定")
+                Text(stringResource(Res.string.common_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(Res.string.common_cancel))
             }
         }
     )
@@ -175,11 +179,11 @@ private fun ResourceTypeSelector(
                 label = {
                     Text(
                         when (type) {
-                            ResourceType.ILLUSTRATION -> "插画"
-                            ResourceType.MANGA -> "漫画"
-                            ResourceType.UGOIRA -> "动图"
-                            ResourceType.NOVEL -> "小说"
-                            ResourceType.NOVEL_SERIES -> "小说系列"
+                            ResourceType.ILLUSTRATION -> stringResource(Res.string.resource_type_illustration)
+                            ResourceType.MANGA -> stringResource(Res.string.resource_type_manga)
+                            ResourceType.UGOIRA -> stringResource(Res.string.resource_type_ugoira)
+                            ResourceType.NOVEL -> stringResource(Res.string.resource_type_novel)
+                            ResourceType.NOVEL_SERIES -> stringResource(Res.string.resource_type_novel_series)
                         }
                     )
                 }
@@ -204,9 +208,9 @@ private fun FilterTypeSelector(
                 label = {
                     Text(
                         when (type) {
-                            FilterType.MUST_BE -> "必须是"
-                            FilterType.MUST_NOT_BE -> "必须不是"
-                            FilterType.ANY -> "任意"
+                            FilterType.MUST_BE -> stringResource(Res.string.rule_filter_must_be)
+                            FilterType.MUST_NOT_BE -> stringResource(Res.string.rule_filter_must_not_be)
+                            FilterType.ANY -> stringResource(Res.string.rule_filter_any)
                         }
                     )
                 }
@@ -235,9 +239,9 @@ private fun AuthorGroupingSelector(
                 label = {
                     Text(
                         when (grouping) {
-                            AuthorGrouping.BY_ID -> "按作者ID分组"
-                            AuthorGrouping.BY_NAME -> "按作者名分组"
-                            AuthorGrouping.NONE -> "不分组"
+                            AuthorGrouping.BY_ID -> stringResource(Res.string.rule_grouping_by_id)
+                            AuthorGrouping.BY_NAME -> stringResource(Res.string.rule_grouping_by_name)
+                            AuthorGrouping.NONE -> stringResource(Res.string.rule_grouping_none)
                         }
                     )
                 }

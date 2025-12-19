@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -513,7 +515,7 @@ private fun NovelSeriesHeaderCard(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "下载系列为 EPUB")
+                    Text(text = stringResource(Res.string.download_series_as_epub))
                 }
             }
         }

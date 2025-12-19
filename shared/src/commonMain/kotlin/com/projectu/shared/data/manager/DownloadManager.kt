@@ -58,6 +58,8 @@ interface CachedFileProvider {
  * - 在大量下载场景下（批量下载50+作品），每个任务都需要获取路径配置
  * - SettingsCache 提供内存缓存的同步访问，避免每次都查询数据库
  * - 使用 DownloadRulesCache 匹配下载规则，避免每次查询数据库
+ * 
+ * @param formatPageTitle 格式化页面标题的函数，用于小说分页时的本地化显示（例如：第1页 / Page 1）
  */
 class DownloadManager(
     private val pixivApi: PixivApi,
@@ -74,6 +76,7 @@ class DownloadManager(
     private val ugoiraGifConverter: UgoiraGifConverter,
     private val ugoiraMp4Converter: UgoiraMp4Converter,
     private val ageLimitDeterminer: com.projectu.shared.util.AgeLimitDeterminer,
+    private val formatPageTitle: (pageNumber: Int) -> String = { pageNumber -> "Page $pageNumber" },
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 ) {
     
@@ -85,7 +88,7 @@ class DownloadManager(
     
     // 小说内容转换器（懒加载）
     private val novelConverter by lazy {
-        NovelToEpubConverter(httpClient, settingsCache)
+        NovelToEpubConverter(httpClient, settingsCache, formatPageTitle)
     }
     
     /**

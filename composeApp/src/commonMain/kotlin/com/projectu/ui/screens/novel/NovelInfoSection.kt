@@ -23,6 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -158,7 +160,7 @@ fun NovelInfoSection(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Download,
-                                contentDescription = "下载小说",
+                                contentDescription = stringResource(Res.string.download_novel),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(24.dp)
                             )

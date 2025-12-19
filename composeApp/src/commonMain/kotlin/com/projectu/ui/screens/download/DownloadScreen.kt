@@ -56,10 +56,10 @@ private fun DownloadScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("下载管理") },
+                title = { Text(stringResource(Res.string.download_management)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.nav_back))
                     }
                 },
                 actions = {
@@ -67,7 +67,7 @@ private fun DownloadScreenContent(
                     var showMenu by remember { mutableStateOf(false) }
                     
                     IconButton(onClick = { showMenu = true }) {
-                        Icon(Icons.Default.FilterList, "筛选")
+                        Icon(Icons.Default.FilterList, stringResource(Res.string.download_filter))
                     }
                     
                     DropdownMenu(
@@ -75,7 +75,7 @@ private fun DownloadScreenContent(
                         onDismissRequest = { showMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("全部") },
+                            text = { Text(stringResource(Res.string.download_all)) },
                             onClick = {
                                 viewModel.filterByStatus(null)
                                 showMenu = false
@@ -85,7 +85,7 @@ private fun DownloadScreenContent(
                             } else null
                         )
                         DropdownMenuItem(
-                            text = { Text("下载中") },
+                            text = { Text(stringResource(Res.string.download_downloading)) },
                             onClick = {
                                 viewModel.filterByStatus(DownloadStatus.DOWNLOADING)
                                 showMenu = false
@@ -95,7 +95,7 @@ private fun DownloadScreenContent(
                             } else null
                         )
                         DropdownMenuItem(
-                            text = { Text("已暂停") },
+                            text = { Text(stringResource(Res.string.download_paused)) },
                             onClick = {
                                 viewModel.filterByStatus(DownloadStatus.PAUSED)
                                 showMenu = false
@@ -105,7 +105,7 @@ private fun DownloadScreenContent(
                             } else null
                         )
                         DropdownMenuItem(
-                            text = { Text("已完成") },
+                            text = { Text(stringResource(Res.string.download_completed)) },
                             onClick = {
                                 viewModel.filterByStatus(DownloadStatus.COMPLETED)
                                 showMenu = false
@@ -115,7 +115,7 @@ private fun DownloadScreenContent(
                             } else null
                         )
                         DropdownMenuItem(
-                            text = { Text("失败") },
+                            text = { Text(stringResource(Res.string.download_failed)) },
                             onClick = {
                                 viewModel.filterByStatus(DownloadStatus.FAILED)
                                 showMenu = false
@@ -147,7 +147,7 @@ private fun DownloadScreenContent(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = if (selectedStatus == null) "暂无下载任务" else "该状态下暂无任务",
+                        text = if (selectedStatus == null) stringResource(Res.string.download_no_tasks) else stringResource(Res.string.download_no_tasks_filter),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -311,9 +311,9 @@ private fun DownloadTaskItem(
                                 onClick = onStart,
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Icon(Icons.Default.PlayArrow, "开始", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.PlayArrow, stringResource(Res.string.download_start), modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(4.dp))
-                                Text("开始")
+                                Text(stringResource(Res.string.download_start))
                             }
                         }
                         DownloadStatus.DOWNLOADING -> {
@@ -321,9 +321,9 @@ private fun DownloadTaskItem(
                                 onClick = onPause,
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Icon(Icons.Default.Pause, "暂停", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Pause, stringResource(Res.string.download_pause), modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(4.dp))
-                                Text("暂停")
+                                Text(stringResource(Res.string.download_pause))
                             }
                         }
                         DownloadStatus.COMPLETED -> {
@@ -334,9 +334,9 @@ private fun DownloadTaskItem(
                                 onClick = onStart,
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Icon(Icons.Default.Refresh, "重试", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Refresh, stringResource(Res.string.download_retry), modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(4.dp))
-                                Text("重试")
+                                Text(stringResource(Res.string.download_retry))
                             }
                         }
                     }
@@ -345,9 +345,9 @@ private fun DownloadTaskItem(
                         onClick = onDelete,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Icon(Icons.Default.Delete, "删除", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Delete, stringResource(Res.string.download_delete), modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("删除")
+                        Text(stringResource(Res.string.download_delete))
                     }
                 }
             }
@@ -385,13 +385,14 @@ private fun getThumbnailUrl(task: DownloadTask): String? {
     return task.thumbnailUrl
 }
 
+@Composable
 private fun getResourceTypeText(type: ResourceType): String {
     return when (type) {
-        ResourceType.ILLUSTRATION -> "插画"
-        ResourceType.MANGA -> "漫画"
-        ResourceType.UGOIRA -> "动图"
-        ResourceType.NOVEL -> "小说"
-        ResourceType.NOVEL_SERIES -> "小说系列"
+        ResourceType.ILLUSTRATION -> stringResource(Res.string.resource_type_illustration)
+        ResourceType.MANGA -> stringResource(Res.string.resource_type_manga)
+        ResourceType.UGOIRA -> stringResource(Res.string.resource_type_ugoira)
+        ResourceType.NOVEL -> stringResource(Res.string.resource_type_novel)
+        ResourceType.NOVEL_SERIES -> stringResource(Res.string.resource_type_novel_series)
     }
 }
 

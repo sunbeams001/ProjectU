@@ -6,35 +6,35 @@ package com.projectu.shared.data.remote.model
  */
 enum class NovelSearchMode(
     val value: String,
-    val displayName: String,
-    val description: String
+    val displayNameKey: String,
+    val descriptionKey: String
 ) {
     /** 标签（部分一致） */
     TAG_ONLY(
         value = "s_tag_only",
-        displayName = "标签（部分一致）",
-        description = "在标签中进行部分匹配搜索"
+        displayNameKey = "search_mode_tag_partial",
+        descriptionKey = "search_mode_tag_partial_desc"
     ),
 
     /** 标签（完全一致） */
     TAG_FULL(
         value = "s_tag_full",
-        displayName = "标签（完全一致）",
-        description = "在标签中进行完全匹配搜索"
+        displayNameKey = "search_mode_tag_full",
+        descriptionKey = "search_mode_tag_full_desc"
     ),
 
     /** 正文 */
     TEXT_CONTENT(
         value = "s_tc",
-        displayName = "正文",
-        description = "在小说正文中搜索"
+        displayNameKey = "search_mode_text",
+        descriptionKey = "search_mode_text_desc"
     ),
 
     /** 标签、标题、说明文字 */
     TAG_TITLE_CAPTION(
         value = "s_tag",
-        displayName = "标签、标题、说明文字",
-        description = "在标签、标题和说明文字中搜索"
+        displayNameKey = "search_mode_keyword",
+        descriptionKey = "search_mode_keyword_desc"
     );
 
     companion object {

@@ -32,7 +32,7 @@ import com.projectu.ui.util.LocalImageCacheManager
 import com.projectu.ui.util.rememberPathPicker
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import projectu.composeapp.generated.resources.Res
+import projectu.composeapp.generated.resources.*
 import projectu.composeapp.generated.resources.settings_title
 import projectu.composeapp.generated.resources.settings_general
 import projectu.composeapp.generated.resources.settings_pixiv
@@ -471,17 +471,19 @@ private fun SettingsScreenContent(
             
             // 下载设置分组
             item {
-                SettingsGroupHeader(title = "下载设置")
+                SettingsGroupHeader(title = stringResource(Res.string.settings_download))
             }
             
             // 下载路径设置
             item {
+                val selectDirTitle = stringResource(Res.string.select_download_directory)
                 SettingsItem(
-                    title = "下载路径",
-                    subtitle = currentBaseDownloadPath.ifEmpty { "使用默认路径" },
-                    description = "设置作品下载保存的基础路径",
+                    title = stringResource(Res.string.settings_download_path),
+                    subtitle = currentBaseDownloadPath.ifEmpty { stringResource(Res.string.settings_download_path_default) },
+                    description = stringResource(Res.string.settings_download_path_desc),
                     onClick = {
                         pathPicker.pickDirectory(
+                            title = selectDirTitle,
                             initialPath = currentBaseDownloadPath.ifEmpty { null }
                         ) { selectedPath ->
                             selectedPath?.let { onBaseDownloadPathChange(it) }
@@ -493,9 +495,9 @@ private fun SettingsScreenContent(
             // 下载管理
             item {
                 SettingsItem(
-                    title = "下载管理",
-                    subtitle = "管理下载任务",
-                    description = "查看和管理所有下载任务",
+                    title = stringResource(Res.string.settings_download_management_title),
+                    subtitle = stringResource(Res.string.settings_download_management_subtitle),
+                    description = stringResource(Res.string.settings_download_management_desc),
                     onClick = { navigator.push(com.projectu.ui.screens.download.DownloadScreen()) }
                 )
             }
@@ -503,9 +505,9 @@ private fun SettingsScreenContent(
             // 下载路径规则管理
             item {
                 SettingsItem(
-                    title = "下载路径规则",
-                    subtitle = "自定义下载路径规则",
-                    description = "根据资源类型、R-18、AI 等条件自动分类保存",
+                    title = stringResource(Res.string.settings_download_rules_title),
+                    subtitle = stringResource(Res.string.settings_download_rules_subtitle),
+                    description = stringResource(Res.string.settings_download_rules_desc),
                     onClick = { navigator.push(DownloadRulesScreen()) }
                 )
             }
@@ -513,12 +515,12 @@ private fun SettingsScreenContent(
             // 文件命名规则管理
             item {
                 SettingsItem(
-                    title = "文件命名规则",
+                    title = stringResource(Res.string.settings_file_name_rules_title),
                     subtitle = when (currentFileNameMode) {
-                        com.projectu.shared.data.local.FileNameMode.STANDARD -> "标准模式"
-                        com.projectu.shared.data.local.FileNameMode.CUSTOM -> "自定义: $currentCustomFileNameTemplate"
+                        com.projectu.shared.data.local.FileNameMode.STANDARD -> stringResource(Res.string.settings_file_name_mode_standard)
+                        com.projectu.shared.data.local.FileNameMode.CUSTOM -> stringResource(Res.string.settings_file_name_mode_custom, currentCustomFileNameTemplate)
                     },
-                    description = "设置下载文件的命名格式",
+                    description = stringResource(Res.string.settings_file_name_rules_desc),
                     onClick = { navigator.push(FileNameRulesScreen()) }
                 )
             }

@@ -49,6 +49,7 @@ fun rememberAndroidPathPicker(): PathPicker {
     return remember {
         object : PathPicker {
             override fun pickDirectory(
+                title: String,
                 initialPath: String?,
                 onPathSelected: (String?) -> Unit
             ) {
@@ -67,6 +68,7 @@ fun rememberAndroidPathPicker(): PathPicker {
                     }
                 }
                 
+                // Android的目录选择器不支持自定义标题
                 directoryPickerLauncher.launch(initialUri)
             }
         }

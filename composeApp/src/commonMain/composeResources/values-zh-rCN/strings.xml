@@ -531,5 +531,206 @@
     <string name="emoji_button">表情</string>
     <string name="emoji_tab_emoji">颜文字</string>
     <string name="emoji_tab_stamp">贴图</string>
+    
+    <!-- Download Management -->
+    <string name="download_management">下载管理</string>
+    <string name="download_all">全部</string>
+    <string name="download_downloading">下载中</string>
+    <string name="download_paused">已暂停</string>
+    <string name="download_completed">已完成</string>
+    <string name="download_failed">失败</string>
+    <string name="download_no_tasks">暂无下载任务</string>
+    <string name="download_no_tasks_filter">该状态下暂无任务</string>
+    <string name="download_start">开始</string>
+    <string name="download_pause">暂停</string>
+    <string name="download_retry">重试</string>
+    <string name="download_delete">删除</string>
+    <string name="download_filter">筛选</string>
+    <string name="download_novel">下载小说</string>
+    <string name="download_series_as_epub">下载系列为 EPUB</string>
+    
+    <!-- Download Rules -->
+    <string name="download_rules_title">下载路径规则</string>
+    <string name="download_rules_add">添加规则</string>
+    <string name="download_rules_no_custom">暂无自定义规则</string>
+    <string name="download_rules_use_default">将使用默认规则（按资源类型分类）</string>
+    <string name="download_rules_rule_number">规则 #%1$d</string>
+    <string name="download_rules_resource_type">资源类型</string>
+    <string name="download_rules_ai_generation">AI 生成</string>
+    <string name="download_rules_author_grouping">作者分组</string>
+    <string name="download_rules_save_path">保存路径</string>
+    <string name="download_rules_delete_confirm_title">删除规则</string>
+    <string name="download_rules_delete_confirm_message">确定要删除这条规则吗？</string>
+    <string name="download_rules_add_failed">添加规则失败</string>
+    <string name="download_rules_update_failed">更新规则失败</string>
+    <string name="download_rules_delete_failed">删除规则失败</string>
+    <string name="download_rules_reorder_failed">更新顺序失败</string>
+    <string name="download_rules_toggle_failed">切换规则状态失败</string>
+    
+    <!-- Add/Edit Rule Dialog -->
+    <string name="add_rule_title">添加规则</string>
+    <string name="edit_rule_title">编辑规则</string>
+    <string name="rule_resource_types_hint">资源类型（可多选，留空表示匹配所有类型）</string>
+    <string name="rule_r18_filter">R-18 过滤</string>
+    <string name="rule_ai_filter">AI 生成过滤</string>
+    <string name="rule_author_grouping">作者分组</string>
+    <string name="rule_save_path">保存路径</string>
+    <string name="rule_select_path">点击选择路径</string>
+    <string name="rule_filter_must_be">必须是</string>
+    <string name="rule_filter_must_not_be">必须不是</string>
+    <string name="rule_filter_any">任意</string>
+    <string name="rule_grouping_by_id">按作者ID分组</string>
+    <string name="rule_grouping_by_name">按作者名分组</string>
+    <string name="rule_grouping_none">不分组</string>
+    
+    <!-- Resource Types -->
+    <string name="resource_type_illustration">插画</string>
+    <string name="resource_type_manga">漫画</string>
+    <string name="resource_type_ugoira">动图</string>
+    <string name="resource_type_novel">小说</string>
+    <string name="resource_type_novel_series">小说系列</string>
+    <string name="resource_type_any">任意</string>
+    
+    <!-- Settings - Download -->
+    <string name="settings_download">下载设置</string>
+    <string name="settings_download_path">下载路径</string>
+    <string name="settings_download_path_default">使用默认路径</string>
+    <string name="settings_download_path_desc">设置作品下载保存的基础路径</string>
+    <string name="settings_download_management_title">下载管理</string>
+    <string name="settings_download_management_subtitle">管理下载任务</string>
+    <string name="settings_download_management_desc">查看和管理所有下载任务</string>
+    <string name="settings_download_rules_title">下载路径规则</string>
+    <string name="settings_download_rules_subtitle">自定义下载路径规则</string>
+    <string name="settings_download_rules_desc">自定义下载路径规则</string>
+    <string name="settings_file_name_rules">文件名规则</string>
+    <string name="settings_file_name_mode_standard">标准模式</string>
+    <string name="settings_file_name_mode_custom">自定义: %1$s</string>
+    
+    <!-- File Name Template -->
+    <string name="filename_template_standard_mode">标准模式（推荐）</string>
+    <string name="filename_template_example_landscape">风景</string>
+    <string name="filename_template_recommended">推荐</string>
+    <string name="filename_template_custom">自定义模板</string>
+    <string name="filename_template_label">模板</string>
+    <string name="filename_template_variables_info">变量说明</string>
+    <string name="filename_template_quick_insert">快捷插入：</string>
+    <string name="filename_template_preview">预览效果</string>
+    <string name="filename_template_example_type_colon">%1$s：</string>
+    <string name="filename_template_available_variables">可用变量（点击下方快捷按钮插入）：</string>
+    <string name="filename_template_var_id">作品ID</string>
+    <string name="filename_template_var_p">页码（从0开始）</string>
+    <string name="filename_template_var_title">作品标题</string>
+    <string name="filename_template_var_author_id">作者ID</string>
+    <string name="filename_template_var_author_name">作者名</string>
+    <string name="filename_template_var_artist_name">画师名</string>
+    <string name="filename_template_var_publish_date">发布日期</string>
+    <string name="filename_template_var_download_date">下载日期</string>
+    <string name="filename_template_var_ai">AI标识</string>
+    <string name="filename_template_var_ai_example">AI 或空</string>
+    <string name="filename_template_var_r18">R-18标识</string>
+    <string name="filename_template_var_r18_example">R-18 或空</string>
+    <string name="filename_template_var_tags">作品标签</string>
+    <string name="filename_template_var_tags_example">风景_自然</string>
+    <string name="filename_template_notes">⚠️ 注意事项</string>
+    <string name="filename_template_close">关闭</string>
+    <string name="filename_template_example_prefix">示例: %1$s</string>
+    <string name="filename_rules_title">文件命名规则</string>
+    <string name="filename_rules_description">设置下载文件的命名规则。标准模式使用默认格式，自定义模式可以使用变量自由组合。</string>
+    <string name="filename_rules_single_page_hint">💡 单页资源（动图、小说）会自动忽略页码变量</string>
+    <string name="filename_rules_multi_page_hint">💡 多页资源（插画、漫画）保留页码以区分不同页</string>
+    <string name="filename_template_error_empty">模板不能为空</string>
+    <string name="filename_template_error_no_required">模板必须包含 {id} 或 {title} 变量</string>
+    <string name="filename_template_error_invalid_chars">模板不能包含特殊字符: \\ / : * ? \" &lt; &gt; |</string>
+    <string name="filename_template_type_illustration">插画</string>
+    <string name="filename_template_type_manga_p1">漫画P1</string>
+    <string name="filename_template_type_manga_p2">漫画P2</string>
+    <string name="filename_template_type_ugoira">动图</string>
+    <string name="filename_template_type_novel">小说</string>
+    <string name="filename_template_example_novel_title">小说标题</string>
+    <string name="filename_template_example_ugoira_title">动图标题</string>
+    <string name="filename_template_example_manga_title">漫画标题</string>
+    
+    <!-- Search -->
+    <string name="search_placeholder">搜索插画、小说或用户...</string>
+    <string name="search_no_results">暂无搜索结果</string>
+    <string name="search_close">关闭</string>
+    <string name="search_mode">搜索模式</string>
+    <string name="search_only_users_with_works">仅显示有作品的用户</string>
+    <string name="search_filter_no_works">过滤掉没有投稿作品的用户</string>
+    <string name="search_sort_order">排序方式</string>
+    <string name="search_content_rating">内容分级</string>
+    <string name="search_hide_ai_works">隐藏 AI 生成作品</string>
+    <string name="search_filter_ai_desc">过滤掉 AI 生成的插画和小说</string>
+    <string name="search_tab_illust">插画+漫画+动图</string>
+    <string name="search_tab_novel">小说</string>
+    <string name="search_tab_user">用户</string>
+    <string name="search_sort_date_desc">从新到旧</string>
+    <string name="search_sort_date_asc">从旧到新</string>
+    <string name="search_rating_all">全部</string>
+    <string name="search_rating_safe">全年龄</string>
+    <string name="search_failed">搜索失败</string>
+    
+    <!-- Search Mode -->
+    <string name="search_mode_tag_partial">标签（部分一致）</string>
+    <string name="search_mode_tag_partial_desc">在标签中进行部分匹配搜索</string>
+    <string name="search_mode_tag_full">标签（完全一致）</string>
+    <string name="search_mode_tag_full_desc">在标签中进行完全匹配搜索</string>
+    <string name="search_mode_title_caption">标题、说明文字</string>
+    <string name="search_mode_title_caption_desc">在标题和说明文字中搜索</string>
+    <string name="search_mode_text">正文</string>
+    <string name="search_mode_text_desc">在小说正文中搜索</string>
+    <string name="search_mode_keyword">标签、标题、说明文字</string>
+    <string name="search_mode_keyword_desc">在标签、标题和说明文字中搜索</string>
+    <string name="search_mode_user_partial">部分一致</string>
+    <string name="search_mode_user_partial_desc">用户名称部分匹配</string>
+    <string name="search_mode_user_exact">完全一致</string>
+    <string name="search_mode_user_exact_desc">用户名称完全匹配</string>
+    
+    <!-- Bookmark Dialog -->
+    <string name="bookmark_max_tags">最多只能添加10个标签</string>
+    
+    <!-- Novel to EPUB -->
+    <string name="novel_epub_page_title">%1$s - 第%2$d页</string>
+    <string name="novel_epub_illustration_id">插画 ID: %1$s</string>
+    <string name="novel_epub_image_download_failed">图片下载失败: %1$s</string>
+    <string name="novel_epub_image_id">图片 ID: %1$s</string>
+    
+    <!-- Desktop Path Picker -->
+    <string name="desktop_select_download_dir">选择下载目录</string>
+    
+    <!-- Additional File Naming Strings -->
+    <string name="filename_template_title">📝 文件命名规则</string>
+    <string name="filename_template_desc">设置下载文件的命名方式</string>
+    <string name="filename_mode_standard">标准模式</string>
+    <string name="filename_mode_custom">自定义模板</string>
+    <string name="filename_variable_help">变量说明</string>
+    <string name="filename_quick_insert">快捷插入：</string>
+    <string name="filename_preview_title">预览效果</string>
+    <string name="filename_variables_title">📋 文件命名变量</string>
+    <string name="filename_variables_desc">可用变量（点击下方快捷按钮插入）：</string>
+    <string name="filename_var_id">作品ID</string>
+    <string name="filename_var_page">页码（从0开始）</string>
+    <string name="filename_var_title">作品标题</string>
+    <string name="filename_var_title_example">风景画</string>
+    <string name="filename_var_author_id">作者ID</string>
+    <string name="filename_var_author_name">作者名</string>
+    <string name="filename_var_author_name_example">画师名</string>
+    <string name="filename_var_publish_date">发布日期</string>
+    <string name="filename_var_download_date">下载日期</string>
+    <string name="filename_var_ai">AI标识</string>
+    <string name="filename_var_ai_example">AI 或空</string>
+    <string name="filename_var_r18">R-18标识</string>
+    <string name="filename_var_r18_example">R-18 或空</string>
+    <string name="filename_var_tags">作品标签</string>
+    <string name="filename_var_tags_example">风景_自然</string>
+    <string name="filename_notes_title">⚠️ 注意事项</string>
+    <string name="filename_notes_content">• 插画/漫画应保留 {p}，否则多页作品会出现文件名冲突\n• 动图/小说会自动忽略 {p}\n• 特殊字符会自动替换为下划线</string>
+    <string name="filename_example_prefix">示例：%1$s</string>
+    <string name="close">关闭</string>
+    <string name="recommended">推荐</string>
+    <string name="settings_file_name_rules_title">文件命名规则</string>
+    <string name="settings_file_name_rules_desc">设置下载文件的命名格式</string>
+    <string name="select_download_directory">选择下载目录</string>
+    <string name="novel_page">第%1$d页</string>
 </resources>
 

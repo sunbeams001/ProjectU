@@ -100,7 +100,7 @@ fun BookmarkWithTagsDialog(
                     singleLine = true,
                     enabled = tags.size < 10,
                     supportingText = if (tags.size >= 10) {
-                        { Text("最多只能添加10个标签", color = MaterialTheme.colorScheme.error) }
+                        { Text(stringResource(Res.string.bookmark_max_tags), color = MaterialTheme.colorScheme.error) }
                     } else {
                         null
                     },

@@ -237,7 +237,7 @@ class SettingsViewModel(
         if (template.isBlank()) {
             return TemplateValidation(
                 isValid = false,
-                error = "模板不能为空"
+                error = "Template cannot be empty"
             )
         }
         
@@ -245,7 +245,7 @@ class SettingsViewModel(
         if (!template.contains("{id}") && !template.contains("{title}")) {
             return TemplateValidation(
                 isValid = false,
-                error = "模板必须包含 {id} 或 {title} 变量"
+                error = "Template must contain {id} or {title} variable"
             )
         }
         
@@ -254,7 +254,7 @@ class SettingsViewModel(
         if (illegalChars.containsMatchIn(template)) {
             return TemplateValidation(
                 isValid = false,
-                error = "模板不能包含特殊字符: \\ / : * ? \" < > |"
+                error = "Template cannot contain special characters: \\ / : * ? \" < > |"
             )
         }
         
@@ -262,7 +262,7 @@ class SettingsViewModel(
         if (!template.contains("{p}")) {
             return TemplateValidation(
                 isValid = true,
-                warning = "⚠️ 模板未包含 {p}，多页漫画可能会文件名冲突"
+                warning = "⚠️ Template does not contain {p}, multi-page manga may have filename conflicts"
             )
         }
         
@@ -275,23 +275,23 @@ class SettingsViewModel(
     private fun generatePreviewExamples(template: String): List<FileNamePreviewExample> {
         return listOf(
             FileNamePreviewExample(
-                type = "插画",
+                type = "Illustration",
                 fileName = simulateFileName(template, isMultiPage = false, pageIndex = 0) + ".jpg"
             ),
             FileNamePreviewExample(
-                type = "漫画P1",
+                type = "Manga P1",
                 fileName = simulateFileName(template, isMultiPage = true, pageIndex = 0) + ".jpg"
             ),
             FileNamePreviewExample(
-                type = "漫画P2",
+                type = "Manga P2",
                 fileName = simulateFileName(template, isMultiPage = true, pageIndex = 1) + ".jpg"
             ),
             FileNamePreviewExample(
-                type = "动图",
+                type = "Ugoira",
                 fileName = simulateFileName(template, isUgoira = true) + ".gif"
             ),
             FileNamePreviewExample(
-                type = "小说",
+                type = "Novel",
                 fileName = simulateFileName(template, isNovel = true) + ".epub"
             )
         )
@@ -321,9 +321,9 @@ class SettingsViewModel(
         var result = effectiveTemplate
             .replace("{id}", "123456789")
             .replace("{p}", pageIndex.toString())
-            .replace("{title}", if (isNovel) "小说标题" else if (isUgoira) "动图标题" else if (isMultiPage) "漫画标题" else "风景")
+            .replace("{title}", if (isNovel) "Novel Title" else if (isUgoira) "Ugoira Title" else if (isMultiPage) "Manga Title" else "Landscape")
             .replace("{author_id}", "987654321")
-            .replace("{author_name}", "画师名")
+            .replace("{author_name}", "Artist Name")
             .replace("{publish_date}", "2025-01-15")
             .replace("{download_date}", "2025-12-18")
             .replace("{ai}", "")

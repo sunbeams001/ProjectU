@@ -12,26 +12,26 @@ import com.projectu.shared.domain.model.User
 /**
  * 搜索分类
  */
-enum class SearchCategory(val displayName: String) {
-    ILLUST("插画+漫画+动图"),
-    NOVEL("小说"),
-    USER("用户")
+enum class SearchCategory(val displayNameKey: String) {
+    ILLUST("search_tab_illust"),
+    NOVEL("search_tab_novel"),
+    USER("search_tab_user")
 }
 
 /**
  * 排序方式
  */
-enum class SortOrder(val value: String, val displayName: String) {
-    DATE_DESC("date_d", "从新到旧"),
-    DATE_ASC("date", "从旧到新")
+enum class SortOrder(val value: String, val displayNameKey: String) {
+    DATE_DESC("date_d", "search_sort_date_desc"),
+    DATE_ASC("date", "search_sort_date_asc")
 }
 
 /**
  * 内容分级
  */
-enum class ContentMode(val value: String, val displayName: String) {
-    ALL("all", "全部"),
-    SAFE("safe", "全年龄"),
+enum class ContentMode(val value: String, val displayNameKey: String) {
+    ALL("all", "search_rating_all"),
+    SAFE("safe", "search_rating_safe"),
     R18("r18", "R18")
 }
 

@@ -16,11 +16,12 @@ class DesktopPathPicker(
 ) : PathPicker {
     
     override fun pickDirectory(
+        title: String,
         initialPath: String?,
         onPathSelected: (String?) -> Unit
     ) {
         // 在桌面平台，我们使用FileDialog选择目录
-        val dialog = FileDialog(parentFrame, "选择下载目录", FileDialog.LOAD)
+        val dialog = FileDialog(parentFrame, title, FileDialog.LOAD)
         
         // 设置为目录选择模式
         System.setProperty("apple.awt.fileDialogForDirectories", "true")

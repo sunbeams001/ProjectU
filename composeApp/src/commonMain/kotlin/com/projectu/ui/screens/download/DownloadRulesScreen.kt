@@ -15,7 +15,9 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.domain.model.DownloadRule
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import projectu.composeapp.generated.resources.*
 
 /**
  * 下载规则管理界面
@@ -48,15 +50,15 @@ private fun DownloadRulesContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("下载路径规则") },
+                title = { Text(stringResource(Res.string.download_rules_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.nav_back))
                     }
                 },
                 actions = {
                     IconButton(onClick = { showAddDialog = true }) {
-                        Icon(Icons.Default.Add, "添加规则")
+                        Icon(Icons.Default.Add, stringResource(Res.string.download_rules_add))
                     }
                 }
             )
@@ -67,7 +69,7 @@ private fun DownloadRulesContent(
                     modifier = Modifier.padding(16.dp),
                     action = {
                         TextButton(onClick = { viewModel.clearError() }) {
-                            Text("关闭")
+                            Text(stringResource(Res.string.common_cancel))
                         }
                     }
                 ) {
@@ -91,13 +93,13 @@ private fun DownloadRulesContent(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "暂无自定义规则",
+                        text = stringResource(Res.string.download_rules_no_custom),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "将使用默认规则（按资源类型分类）",
+                        text = stringResource(Res.string.download_rules_use_default),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -105,7 +107,7 @@ private fun DownloadRulesContent(
                     Button(onClick = { showAddDialog = true }) {
                         Icon(Icons.Default.Add, null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("添加规则")
+                        Text(stringResource(Res.string.download_rules_add))
                     }
                 }
             } else {

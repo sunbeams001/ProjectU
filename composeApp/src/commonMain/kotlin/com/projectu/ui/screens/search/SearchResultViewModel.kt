@@ -302,7 +302,7 @@ class SearchResultViewModel(
                 _state.update { 
                     it.copy(
                         isLoadingMore = false,
-                        error = e.message ?: "搜索失败"
+                        error = e.message ?: "Search failed"
                     )
                 }
             }
@@ -361,7 +361,7 @@ class SearchResultViewModel(
                 _state.update { 
                     it.copy(
                         isLoadingMore = false,
-                        error = e.message ?: "搜索失败"
+                        error = e.message ?: "Search failed"
                     )
                 }
             }
@@ -415,7 +415,7 @@ class SearchResultViewModel(
                 _state.update { 
                     it.copy(
                         isLoadingMore = false,
-                        error = e.message ?: "搜索失败"
+                        error = e.message ?: "Search failed"
                     )
                 }
             }

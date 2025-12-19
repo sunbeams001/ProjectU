@@ -1,3 +1,5 @@
+@file:Suppress("HardcodedChinese") // Chinese punctuation marks (《》「」) are used for functional text processing in parsePageContent
+
 package com.projectu.shared.data.util
 
 import com.projectu.shared.data.local.SettingsCache
@@ -23,10 +25,15 @@ import kotlinx.coroutines.withContext
  * - [uploadedimage:id] - 上传的内嵌图片（从embeddedImages获取URL并下载）
  * - [[jumpuri:显示文本>URL]] - 跳转链接（转换为 <a>）
  * - [[rb:文本>假名]] - Ruby注音（转换为 <ruby>）
+ * 
+ * @param httpClient HTTP客户端
+ * @param settingsCache 设置缓存
+ * @param formatPageTitle 格式化页面标题的函数，接收页码返回本地化的标题（例如：formatPageTitle(1) -> "第1页" 或 "Page 1"）
  */
 class NovelToEpubConverter(
     private val httpClient: HttpClient,
-    private val settingsCache: SettingsCache
+    private val settingsCache: SettingsCache,
+    private val formatPageTitle: (pageNumber: Int) -> String = { pageNumber -> "Page $pageNumber" }
 ) {
     /**
      * 解析后的章节
@@ -113,7 +120,7 @@ class NovelToEpubConverter(
             
             // 添加章节
             val chapterTitle = if (pageTexts.size > 1) {
-                "${novel.title} - 第${index + 1}页"
+                "${novel.title} - ${formatPageTitle(index + 1)}"
             } else {
                 novel.title
             }
@@ -235,7 +242,7 @@ class NovelToEpubConverter(
                     if (downloadImages) {
                         // TODO: 下载 Pixiv 插画需要实现插画 API 调用
                         // 暂时跳过 pixivimage 标签
-                        htmlBuilder.append("""<p class="image-placeholder">[插画 ID: $illustId${if (pageIndex > 0) "-$pageIndex" else ""}]</p>""").append("\n")
+                        htmlBuilder.append("""<p class="image-placeholder">[Illustration ID: $illustId${if (pageIndex > 0) "-$pageIndex" else ""}]</p>""").append("\n")
                     }
                 }
                 
@@ -264,12 +271,12 @@ class NovelToEpubConverter(
                                 htmlBuilder.append("""<div class="image"><img src="../Images/$fileName" alt="Image $imageId"/></div>""").append("\n")
                             } catch (e: Exception) {
                                 // 下载失败，跳过
-                                htmlBuilder.append("""<p class="image-placeholder">[图片下载失败: $imageId]</p>""").append("\n")
+                                htmlBuilder.append("""<p class="image-placeholder">[Image download failed: $imageId]</p>""").append("\n")
                             }
                         }
                     } else if (!downloadImages) {
                         // 不下载图片，添加占位符
-                        htmlBuilder.append("""<p class="image-placeholder">[图片 ID: $imageId]</p>""").append("\n")
+                        htmlBuilder.append("""<p class="image-placeholder">[Image ID: $imageId]</p>""").append("\n")
                     }
                 }
                 

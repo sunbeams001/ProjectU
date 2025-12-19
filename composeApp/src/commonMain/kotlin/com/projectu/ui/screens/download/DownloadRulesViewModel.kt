@@ -58,7 +58,7 @@ class DownloadRulesViewModel(
                 downloadRulesRepository.addRule(newRule)
                 _uiState.update { it.copy(error = null) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "添加规则失败") }
+                _uiState.update { it.copy(error = e.message ?: "Failed to add rule") }
             }
         }
     }
@@ -72,7 +72,7 @@ class DownloadRulesViewModel(
                 downloadRulesRepository.updateRule(rule)
                 _uiState.update { it.copy(error = null) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "更新规则失败") }
+                _uiState.update { it.copy(error = e.message ?: "Failed to update rule") }
             }
         }
     }
@@ -86,7 +86,7 @@ class DownloadRulesViewModel(
                 downloadRulesRepository.deleteRule(ruleId)
                 _uiState.update { it.copy(error = null) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "删除规则失败") }
+                _uiState.update { it.copy(error = e.message ?: "Failed to delete rule") }
             }
         }
     }
@@ -104,7 +104,7 @@ class DownloadRulesViewModel(
                 downloadRulesRepository.updateRulesOrder(reorderedRules)
                 _uiState.update { it.copy(error = null) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "更新顺序失败") }
+                _uiState.update { it.copy(error = e.message ?: "Failed to reorder rules") }
             }
         }
     }
@@ -118,7 +118,7 @@ class DownloadRulesViewModel(
                 downloadRulesRepository.setRuleEnabled(ruleId, enabled)
                 _uiState.update { it.copy(error = null) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "切换规则状态失败") }
+                _uiState.update { it.copy(error = e.message ?: "Failed to toggle rule") }
             }
         }
     }

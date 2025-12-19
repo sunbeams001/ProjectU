@@ -6,28 +6,28 @@ package com.projectu.shared.data.remote.model
  */
 enum class IllustSearchMode(
     val value: String,
-    val displayName: String,
-    val description: String
+    val displayNameKey: String,
+    val descriptionKey: String
 ) {
     /** 标签（部分一致） */
     TAG(
         value = "s_tag",
-        displayName = "标签（部分一致）",
-        description = "在标签中进行部分匹配搜索"
+        displayNameKey = "search_mode_tag_partial",
+        descriptionKey = "search_mode_tag_partial_desc"
     ),
 
     /** 标签（完全一致） */
     TAG_FULL(
         value = "s_tag_full",
-        displayName = "标签（完全一致）",
-        description = "在标签中进行完全匹配搜索"
+        displayNameKey = "search_mode_tag_full",
+        descriptionKey = "search_mode_tag_full_desc"
     ),
 
     /** 标题、说明文字 */
     TITLE_CAPTION(
         value = "s_tc",
-        displayName = "标题、说明文字",
-        description = "在标题和说明文字中搜索"
+        displayNameKey = "search_mode_title_caption",
+        descriptionKey = "search_mode_title_caption_desc"
     );
 
     companion object {

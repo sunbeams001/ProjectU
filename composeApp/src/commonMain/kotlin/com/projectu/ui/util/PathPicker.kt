@@ -7,10 +7,12 @@ package com.projectu.ui.util
 interface PathPicker {
     /**
      * 启动目录选择器
+     * @param title 对话框标题
      * @param initialPath 初始路径（可选）
      * @param onPathSelected 路径选择回调，返回选中的路径，null表示取消
      */
     fun pickDirectory(
+        title: String,
         initialPath: String? = null,
         onPathSelected: (String?) -> Unit
     )

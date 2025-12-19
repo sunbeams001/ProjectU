@@ -32,6 +32,13 @@ class SettingsCache(
     // ==================== 缓存字段 ====================
     
     /**
+     * 应用界面语言缓存
+     * 用于多语言格式化等场景快速获取当前界面语言
+     */
+    private val _appLanguage = MutableStateFlow(AppLanguage.SIMPLIFIED_CHINESE)
+    val appLanguage: StateFlow<AppLanguage> = _appLanguage.asStateFlow()
+    
+    /**
      * Pixiv API 语言偏好缓存
      * 用于 API 请求时快速获取语言代码
      */
@@ -96,6 +103,7 @@ class SettingsCache(
         CoroutineScope(Dispatchers.Default).launch {
             settingsStore.settings.collect { settings ->
                 // 更新所有缓存字段
+                _appLanguage.value = settings.appLanguage
                 _pixivLanguage.value = settings.pixivLanguage
                 _r18SanityLevelThreshold.value = settings.r18SanityLevelThreshold
                 _preferredImageQuality.value = settings.preferredImageQuality
@@ -112,6 +120,13 @@ class SettingsCache(
     }
     
     // ==================== 同步访问方法 ====================
+    
+    /**
+     * 获取当前应用界面语言（同步方法，使用内存缓存）
+     */
+    fun getAppLanguage(): AppLanguage {
+        return _appLanguage.value
+    }
     
     /**
      * 获取当前 Pixiv API 语言偏好（同步方法，使用内存缓存）

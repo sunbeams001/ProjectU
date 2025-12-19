@@ -217,6 +217,14 @@
     <string name="detail_image_quality_master_1200">Master (1200px)</string>
     <string name="detail_image_quality_original">Original</string>
     
+    <!-- Settings - Novel Download Image Quality -->
+    <string name="settings_novel_download_image_quality">Novel Download Preferred Image Quality</string>
+    <string name="settings_novel_download_image_quality_desc">Quality for embedded images when downloading novels as EPUB</string>
+    <string name="novel_download_image_quality_small">Small (240px)</string>
+    <string name="novel_download_image_quality_medium">Medium (480px)</string>
+    <string name="novel_download_image_quality_large">Large (1200px)</string>
+    <string name="novel_download_image_quality_original">Original</string>
+    
     <!-- Settings - Cache Management -->
     <string name="settings_cache_management">Cache Management</string>
     <string name="settings_image_cache_size">Image Cache Size</string>
@@ -525,5 +533,206 @@
     <string name="emoji_button">Emoji</string>
     <string name="emoji_tab_emoji">Emoji</string>
     <string name="emoji_tab_stamp">Stamp</string>
+    
+    <!-- Download Management -->
+    <string name="download_management">Download Management</string>
+    <string name="download_all">All</string>
+    <string name="download_downloading">Downloading</string>
+    <string name="download_paused">Paused</string>
+    <string name="download_completed">Completed</string>
+    <string name="download_failed">Failed</string>
+    <string name="download_no_tasks">No download tasks</string>
+    <string name="download_no_tasks_filter">No tasks in this status</string>
+    <string name="download_start">Start</string>
+    <string name="download_pause">Pause</string>
+    <string name="download_retry">Retry</string>
+    <string name="download_delete">Delete</string>
+    <string name="download_filter">Filter</string>
+    <string name="download_novel">Download novel</string>
+    <string name="download_series_as_epub">Download series as EPUB</string>
+    
+    <!-- Download Rules -->
+    <string name="download_rules_title">Download Path Rules</string>
+    <string name="download_rules_add">Add Rule</string>
+    <string name="download_rules_no_custom">No custom rules</string>
+    <string name="download_rules_use_default">Will use default rule (categorized by resource type)</string>
+    <string name="download_rules_rule_number">Rule #%1$d</string>
+    <string name="download_rules_resource_type">Resource Type</string>
+    <string name="download_rules_ai_generation">AI Generation</string>
+    <string name="download_rules_author_grouping">Author Grouping</string>
+    <string name="download_rules_save_path">Save Path</string>
+    <string name="download_rules_delete_confirm_title">Delete Rule</string>
+    <string name="download_rules_delete_confirm_message">Are you sure you want to delete this rule?</string>
+    <string name="download_rules_add_failed">Failed to add rule</string>
+    <string name="download_rules_update_failed">Failed to update rule</string>
+    <string name="download_rules_delete_failed">Failed to delete rule</string>
+    <string name="download_rules_reorder_failed">Failed to update order</string>
+    <string name="download_rules_toggle_failed">Failed to toggle rule status</string>
+    
+    <!-- Add/Edit Rule Dialog -->
+    <string name="add_rule_title">Add Rule</string>
+    <string name="edit_rule_title">Edit Rule</string>
+    <string name="rule_resource_types_hint">Resource types (multiple selection, leave empty to match all types)</string>
+    <string name="rule_r18_filter">R-18 Filter</string>
+    <string name="rule_ai_filter">AI Generation Filter</string>
+    <string name="rule_author_grouping">Author Grouping</string>
+    <string name="rule_save_path">Save Path</string>
+    <string name="rule_select_path">Click to select path</string>
+    <string name="rule_filter_must_be">Must be</string>
+    <string name="rule_filter_must_not_be">Must not be</string>
+    <string name="rule_filter_any">Any</string>
+    <string name="rule_grouping_by_id">By Author ID</string>
+    <string name="rule_grouping_by_name">By Author Name</string>
+    <string name="rule_grouping_none">No Grouping</string>
+    
+    <!-- Resource Types -->
+    <string name="resource_type_illustration">Illustration</string>
+    <string name="resource_type_manga">Manga</string>
+    <string name="resource_type_ugoira">Ugoira</string>
+    <string name="resource_type_novel">Novel</string>
+    <string name="resource_type_novel_series">Novel Series</string>
+    <string name="resource_type_any">Any</string>
+    
+    <!-- Settings - Download -->
+    <string name="settings_download">Download Settings</string>
+    <string name="settings_download_path">Download Path</string>
+    <string name="settings_download_path_default">Use default path</string>
+    <string name="settings_download_path_desc">Set the base path for artwork downloads</string>
+    <string name="settings_download_management_title">Download Management</string>
+    <string name="settings_download_management_subtitle">Manage download tasks</string>
+    <string name="settings_download_management_desc">View and manage all download tasks</string>
+    <string name="settings_download_rules_title">Download Path Rules</string>
+    <string name="settings_download_rules_subtitle">Customize download path rules</string>
+    <string name="settings_download_rules_desc">Customize download path rules</string>
+    <string name="settings_file_name_rules">File Name Rules</string>
+    <string name="settings_file_name_mode_standard">Standard mode</string>
+    <string name="settings_file_name_mode_custom">Custom: %1$s</string>
+    
+    <!-- File Name Template -->
+    <string name="filename_template_standard_mode">Standard Mode (Recommended)</string>
+    <string name="filename_template_example_landscape">landscape</string>
+    <string name="filename_template_recommended">Recommended</string>
+    <string name="filename_template_custom">Custom Template</string>
+    <string name="filename_template_label">Template</string>
+    <string name="filename_template_variables_info">Variable descriptions</string>
+    <string name="filename_template_quick_insert">Quick Insert:</string>
+    <string name="filename_template_preview">Preview</string>
+    <string name="filename_template_example_type_colon">%1$s:</string>
+    <string name="filename_template_available_variables">Available Variables (Click below to insert):</string>
+    <string name="filename_template_var_id">Artwork ID</string>
+    <string name="filename_template_var_p">Page number (starts from 0)</string>
+    <string name="filename_template_var_title">Artwork title</string>
+    <string name="filename_template_var_author_id">Author ID</string>
+    <string name="filename_template_var_author_name">Author name</string>
+    <string name="filename_template_var_artist_name">Artist name</string>
+    <string name="filename_template_var_publish_date">Publish date</string>
+    <string name="filename_template_var_download_date">Download date</string>
+    <string name="filename_template_var_ai">AI identifier</string>
+    <string name="filename_template_var_ai_example">AI or empty</string>
+    <string name="filename_template_var_r18">R-18 identifier</string>
+    <string name="filename_template_var_r18_example">R-18 or empty</string>
+    <string name="filename_template_var_tags">Artwork tags</string>
+    <string name="filename_template_var_tags_example">landscape_nature</string>
+    <string name="filename_template_notes">⚠️ Notes</string>
+    <string name="filename_template_close">Close</string>
+    <string name="filename_template_example_prefix">Example: %1$s</string>
+    <string name="filename_rules_title">File Naming Rules</string>
+    <string name="filename_rules_description">Set the naming rules for downloaded files. Standard mode uses the default format, custom mode allows you to freely combine variables.</string>
+    <string name="filename_rules_single_page_hint">💡 Single-page resources (Ugoira, Novel) will automatically ignore page number variable</string>
+    <string name="filename_rules_multi_page_hint">💡 Multi-page resources (Illustration, Manga) keep page number to distinguish different pages</string>
+    <string name="filename_template_error_empty">Template cannot be empty</string>
+    <string name="filename_template_error_no_required">Template must contain {id} or {title} variable</string>
+    <string name="filename_template_error_invalid_chars">Template cannot contain special characters: \\ / : * ? \" &lt; &gt; |</string>
+    <string name="filename_template_type_illustration">Illustration</string>
+    <string name="filename_template_type_manga_p1">Manga P1</string>
+    <string name="filename_template_type_manga_p2">Manga P2</string>
+    <string name="filename_template_type_ugoira">Ugoira</string>
+    <string name="filename_template_type_novel">Novel</string>
+    <string name="filename_template_example_novel_title">Novel Title</string>
+    <string name="filename_template_example_ugoira_title">Ugoira Title</string>
+    <string name="filename_template_example_manga_title">Manga Title</string>
+    
+    <!-- Search -->
+    <string name="search_placeholder">Search illusts, novels or users...</string>
+    <string name="search_no_results">No search results</string>
+    <string name="search_close">Close</string>
+    <string name="search_mode">Search Mode</string>
+    <string name="search_only_users_with_works">Only show users with works</string>
+    <string name="search_filter_no_works">Filter out users without works</string>
+    <string name="search_sort_order">Sort Order</string>
+    <string name="search_content_rating">Content Rating</string>
+    <string name="search_hide_ai_works">Hide AI-generated works</string>
+    <string name="search_filter_ai_desc">Filter out AI-generated illustrations and novels</string>
+    <string name="search_tab_illust">Illusts+Manga+Ugoira</string>
+    <string name="search_tab_novel">Novels</string>
+    <string name="search_tab_user">Users</string>
+    <string name="search_sort_date_desc">Newest first</string>
+    <string name="search_sort_date_asc">Oldest first</string>
+    <string name="search_rating_all">All</string>
+    <string name="search_rating_safe">All ages</string>
+    <string name="search_failed">Search failed</string>
+    
+    <!-- Search Mode -->
+    <string name="search_mode_tag_partial">Tag (Partial match)</string>
+    <string name="search_mode_tag_partial_desc">Partial match search in tags</string>
+    <string name="search_mode_tag_full">Tag (Exact match)</string>
+    <string name="search_mode_tag_full_desc">Exact match search in tags</string>
+    <string name="search_mode_title_caption">Title, Caption</string>
+    <string name="search_mode_title_caption_desc">Search in title and caption</string>
+    <string name="search_mode_text">Text</string>
+    <string name="search_mode_text_desc">Search in novel text</string>
+    <string name="search_mode_keyword">Tag, Title, Caption</string>
+    <string name="search_mode_keyword_desc">Search in tags, title and caption</string>
+    <string name="search_mode_user_partial">Partial match</string>
+    <string name="search_mode_user_partial_desc">Partial match for username</string>
+    <string name="search_mode_user_exact">Exact match</string>
+    <string name="search_mode_user_exact_desc">Exact match for username</string>
+    
+    <!-- Bookmark Dialog -->
+    <string name="bookmark_max_tags">Maximum of 10 tags allowed</string>
+    
+    <!-- Novel to EPUB -->
+    <string name="novel_epub_page_title">%1$s - Page %2$d</string>
+    <string name="novel_epub_illustration_id">Illustration ID: %1$s</string>
+    <string name="novel_epub_image_download_failed">Image download failed: %1$s</string>
+    <string name="novel_epub_image_id">Image ID: %1$s</string>
+    
+    <!-- Desktop Path Picker -->
+    <string name="desktop_select_download_dir">Select Download Directory</string>
+    
+    <!-- Additional File Naming Strings -->
+    <string name="filename_template_title">📝 File Naming Rules</string>
+    <string name="filename_template_desc">Set the naming format for downloaded files</string>
+    <string name="filename_mode_standard">Standard Mode</string>
+    <string name="filename_mode_custom">Custom Template</string>
+    <string name="filename_variable_help">Variable Guide</string>
+    <string name="filename_quick_insert">Quick Insert:</string>
+    <string name="filename_preview_title">Preview Effect</string>
+    <string name="filename_variables_title">📋 File Naming Variables</string>
+    <string name="filename_variables_desc">Available variables (tap buttons below to insert):</string>
+    <string name="filename_var_id">Artwork ID</string>
+    <string name="filename_var_page">Page number (from 0)</string>
+    <string name="filename_var_title">Artwork title</string>
+    <string name="filename_var_title_example">Landscape</string>
+    <string name="filename_var_author_id">Author ID</string>
+    <string name="filename_var_author_name">Author name</string>
+    <string name="filename_var_author_name_example">Artist Name</string>
+    <string name="filename_var_publish_date">Publish date</string>
+    <string name="filename_var_download_date">Download date</string>
+    <string name="filename_var_ai">AI identifier</string>
+    <string name="filename_var_ai_example">AI or empty</string>
+    <string name="filename_var_r18">R-18 identifier</string>
+    <string name="filename_var_r18_example">R-18 or empty</string>
+    <string name="filename_var_tags">Artwork tags</string>
+    <string name="filename_var_tags_example">landscape_nature</string>
+    <string name="filename_notes_title">⚠️ Notes</string>
+    <string name="filename_notes_content">• Illustrations/Manga should keep {p}, otherwise multi-page will have filename conflicts\n• Ugoira/Novel will automatically ignore {p}\n• Special characters will be automatically replaced with underscores</string>
+    <string name="filename_example_prefix">Example: %1$s</string>
+    <string name="close">Close</string>
+    <string name="recommended">Recommended</string>
+    <string name="settings_file_name_rules_title">File Naming Rules</string>
+    <string name="settings_file_name_rules_desc">Set the naming format for downloaded files</string>
+    <string name="select_download_directory">Select Download Directory</string>
+    <string name="novel_page">Page %1$d</string>
 </resources>
 

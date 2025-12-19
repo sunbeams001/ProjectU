@@ -4,6 +4,7 @@ import com.projectu.shared.data.cache.ArtworkCacheManager
 import com.projectu.shared.data.cache.DownloadRulesCache
 import com.projectu.shared.data.cache.NovelCacheManager
 import com.projectu.shared.data.cache.StateCacheManager
+import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.PixivConfigStore
 import com.projectu.shared.data.local.SearchHistoryStore
 import com.projectu.shared.data.local.SettingsCache
@@ -18,6 +19,7 @@ import com.projectu.shared.data.repository.ArtworkRepositoryImpl
 import com.projectu.shared.data.repository.AuthRepositoryImpl
 import com.projectu.shared.data.repository.CommentRepositoryImpl
 import com.projectu.shared.data.repository.DownloadRepositoryImpl
+import com.projectu.shared.util.LocalizedTextProvider
 import com.projectu.shared.data.repository.DownloadRulesRepository
 import com.projectu.shared.data.repository.DownloadRulesRepositoryImpl
 import com.projectu.shared.data.repository.MangaSeriesRepositoryImpl
@@ -328,10 +330,29 @@ val utilModule = module {
 /**
  * 下载管理模块
  * cachedFileProvider是可选的，用于从UI层的图片缓存复用文件
+ * useMultiLanguage是否启用多语言格式化，默认true，根据SettingsCache中的appLanguage返回对应语言的文本
  */
-fun downloadModule(cachedFileProvider: com.projectu.shared.data.manager.CachedFileProvider? = null) = module {
+fun downloadModule(
+    cachedFileProvider: com.projectu.shared.data.manager.CachedFileProvider? = null,
+    useMultiLanguage: Boolean = true
+) = module {
     // 下载管理器
     single {
+        val settingsCache = get<SettingsCache>()
+        
+        // 多语言格式化函数：根据用户设置的界面语言返回相应文本
+        // 使用 LocalizedTextProvider 统一管理多语言文本
+        val formatPageTitle: (Int) -> String = if (useMultiLanguage) {
+            { pageNumber ->
+                LocalizedTextProvider.formatPageNumber(
+                    pageNumber = pageNumber,
+                    language = settingsCache.getAppLanguage()
+                )
+            }
+        } else {
+            { pageNumber -> "Page $pageNumber" }
+        }
+        
         com.projectu.shared.data.manager.DownloadManager(
             pixivApi = get(),
             novelApi = get(),
@@ -342,11 +363,12 @@ fun downloadModule(cachedFileProvider: com.projectu.shared.data.manager.CachedFi
             platformFileWriter = get(),
             httpClient = get(),
             cachedFileProvider = cachedFileProvider,
-            settingsCache = get(),
+            settingsCache = settingsCache,
             downloadRulesCache = get(),
             ugoiraGifConverter = get(),
             ugoiraMp4Converter = get(),
-            ageLimitDeterminer = get()
+            ageLimitDeterminer = get(),
+            formatPageTitle = formatPageTitle
         )
     }
 }
