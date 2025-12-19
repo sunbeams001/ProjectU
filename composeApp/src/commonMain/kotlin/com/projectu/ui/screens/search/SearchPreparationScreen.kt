@@ -2,6 +2,7 @@ package com.projectu.ui.screens.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -80,7 +82,9 @@ class SearchPreparationScreen : Screen {
             onRecommendationTagClick = viewModel::onRecommendationTagClick,
             onClearHistory = viewModel::clearHistory,
             onRefreshRecommendations = viewModel::refreshRecommendations,
-            onThumbnailClick = thumbnailClickHandler
+            onThumbnailClick = thumbnailClickHandler,
+            onRemoveHistory = viewModel::removeHistory,
+            onTogglePin = viewModel::togglePinHistory
         )
     }
 }
@@ -96,6 +100,8 @@ fun SearchPreparationContent(
     onClearHistory: () -> Unit,
     onRefreshRecommendations: () -> Unit,
     onThumbnailClick: (ThumbnailInfo) -> Unit,
+    onRemoveHistory: (String) -> Unit = {},
+    onTogglePin: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val stableOnThumbnailClick = remember(onThumbnailClick) { onThumbnailClick }
@@ -137,6 +143,8 @@ fun SearchPreparationContent(
                 history = state.searchHistory,
                 onHistoryClick = onHistoryClick,
                 onClearHistory = onClearHistory,
+                onRemoveHistory = onRemoveHistory,
+                onTogglePin = onTogglePin,
                 modifier = Modifier.fillMaxWidth()
             )
             
@@ -258,9 +266,11 @@ fun FloatingAutocompleteSuggestions(
  */
 @Composable
 fun SearchHistorySection(
-    history: List<String>,
+    history: List<com.projectu.shared.data.local.SearchHistoryItem>,
     onHistoryClick: (String) -> Unit,
     onClearHistory: () -> Unit,
+    onRemoveHistory: (String) -> Unit = {},
+    onTogglePin: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -303,20 +313,133 @@ fun SearchHistorySection(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                history.forEach { keyword ->
-                    SuggestionChip(
-                        onClick = { onHistoryClick(keyword) },
-                        label = { Text(keyword) },
-                        icon = {
-                            Icon(
-                                Icons.Default.History,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                history.forEach { item ->
+                    EnhancedHistoryChip(
+                        item = item,
+                        onClick = { onHistoryClick(item.keyword) },
+                        onRemove = { onRemoveHistory(item.keyword) },
+                        onTogglePin = { onTogglePin(item.keyword) }
                     )
                 }
             }
+        }
+    }
+}
+
+/**
+ * 增强版搜索历史标签芯片
+ * 支持固定状态显示和长按操作
+ */
+@Composable
+fun EnhancedHistoryChip(
+    item: com.projectu.shared.data.local.SearchHistoryItem,
+    onClick: () -> Unit,
+    onRemove: () -> Unit,
+    onTogglePin: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+    
+    // 使用 Surface 代替 SuggestionChip，完全控制点击行为
+    // 注意：不能同时使用 Surface.onClick 和 combinedClickable，会冲突
+    Surface(
+        modifier = modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = { 
+                showMenu = true
+            }
+        ),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp), // SuggestionChip 的圆角
+        color = MaterialTheme.colorScheme.secondaryContainer, // SuggestionChip 的背景色
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f) // 淡边框
+        )
+    ) {
+        Row(
+            // 根据是否有图标调整内边距
+            modifier = Modifier.padding(
+                start = if (item.isPinned) 8.dp else 12.dp,  // 有左侧图标时减少左内边距
+                end = if (!item.isPinned) 8.dp else 12.dp,   // 有右侧图标时减少右内边距
+                top = 8.dp,
+                bottom = 8.dp
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            // 左侧图钉图标（固定时显示）
+            if (item.isPinned) {
+                Icon(
+                    Icons.Default.PushPin,
+                    contentDescription = "Pinned",
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+            }
+            
+            // 关键词文本
+            Text(
+                text = item.keyword,
+                style = MaterialTheme.typography.labelLarge
+            )
+            
+            // 右侧删除图标（非固定时显示）
+            if (!item.isPinned) {
+                Spacer(modifier = Modifier.width(2.dp))
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clickable(onClick = { onRemove() }),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "Remove",
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
+        
+        // 长按菜单
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.ContentCopy, contentDescription = null)
+                        Text("复制")
+                    }
+                },
+                onClick = {
+                    clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(item.keyword))
+                    showMenu = false
+                }
+            )
+            DropdownMenuItem(
+                text = { 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.PushPin, contentDescription = null)
+                        Text(if (item.isPinned) "解除固定" else "固定")
+                    }
+                },
+                onClick = {
+                    onTogglePin()
+                    showMenu = false
+                }
+            )
         }
     }
 }

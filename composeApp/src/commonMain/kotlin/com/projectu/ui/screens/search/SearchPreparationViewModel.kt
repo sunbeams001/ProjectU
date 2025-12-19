@@ -194,6 +194,30 @@ class SearchPreparationViewModel(
     }
     
     /**
+     * 删除单个搜索历史
+     */
+    fun removeHistory(keyword: String) {
+        screenModelScope.launch {
+            searchHistoryStore.removeHistory(keyword)
+            // 主动刷新历史列表
+            val latestHistory = searchHistoryStore.getHistoryList()
+            _state.update { it.copy(searchHistory = latestHistory) }
+        }
+    }
+    
+    /**
+     * 固定/取消固定搜索历史
+     */
+    fun togglePinHistory(keyword: String) {
+        screenModelScope.launch {
+            searchHistoryStore.togglePin(keyword)
+            // 主动刷新历史列表
+            val latestHistory = searchHistoryStore.getHistoryList()
+            _state.update { it.copy(searchHistory = latestHistory) }
+        }
+    }
+    
+    /**
      * 点击搜索建议标签
      */
     fun onRecommendationTagClick(tag: com.projectu.shared.domain.model.Tag) {
@@ -226,8 +250,13 @@ class SearchPreparationViewModel(
             return null
         }
         
-        // 保存到搜索历史
+        // 保存到搜索历史（等待完成）
         searchHistoryStore.addHistory(keyword)
+        
+        // 主动读取最新历史并更新 state（不依赖 Flow）
+        val latestHistory = searchHistoryStore.getHistoryList()
+        _state.update { it.copy(searchHistory = latestHistory) }
+        
         return keyword
     }
     

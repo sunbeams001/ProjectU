@@ -291,7 +291,9 @@ fun HomeTabContent(
                 3 -> parentNavigator?.push(NovelDetailScreen(novelId = thumbnail.id))
                 else -> parentNavigator?.push(ArtworkDetailScreen(artworkId = thumbnail.id))
             }
-        }
+        },
+        onRemoveHistory = viewModel::removeHistory,
+        onTogglePin = viewModel::togglePinHistory
     )
 }
 
