@@ -28,6 +28,8 @@ import com.projectu.ui.components.NovelSeriesCard
 import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
+import com.projectu.ui.util.TagClickHandler
+import com.projectu.shared.data.local.SearchHistoryStore
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -62,6 +64,12 @@ fun FollowLatestMoreContent(
     // 预先创建所有 ViewModel
     val watchListMangaViewModel: WatchListMangaViewModel = koinInject()
     val watchListNovelsViewModel: WatchListNovelsViewModel = koinInject()
+    val searchHistoryStore: SearchHistoryStore = koinInject()
+    
+    // 创建Tag点击处理器
+    val tagClickHandler = remember(navigator, searchHistoryStore, coroutineScope) {
+        TagClickHandler(navigator, searchHistoryStore, coroutineScope)
+    }
     
     // 收集所有状态
     val mangaState by watchListMangaViewModel.state.collectAsState()
@@ -133,7 +141,8 @@ fun FollowLatestMoreContent(
                             mangaViewModel = watchListMangaViewModel,
                             novelsViewModel = watchListNovelsViewModel,
                             mangaState = mangaState,
-                            novelsState = novelsState
+                            novelsState = novelsState,
+                            tagClickHandler = tagClickHandler
                         )
                     }
                     FollowLatestMoreContentType.GOOD_P_FRIENDS -> {
@@ -156,7 +165,8 @@ fun WatchListContent(
     mangaViewModel: WatchListMangaViewModel,
     novelsViewModel: WatchListNovelsViewModel,
     mangaState: WatchListMangaState,
-    novelsState: WatchListNovelsState
+    novelsState: WatchListNovelsState,
+    tagClickHandler: com.projectu.ui.util.TagClickHandler
 ) {
     val watchListTypes = remember { WatchListContentType.getAll() }
     val coroutineScope = rememberCoroutineScope()
@@ -215,7 +225,8 @@ fun WatchListContent(
                         onRefresh = novelsViewModel::refresh,
                         onSeriesClick = { series ->
                             navigator.push(NovelSeriesScreen(series.id))
-                        }
+                        },
+                        onTagClick = tagClickHandler::handleTagClick
                     )
                 }
             }
@@ -302,6 +313,7 @@ fun WatchListMangaPage(
                             MangaSeriesCard(
                                 series = series,
                                 onClick = { onSeriesClick(series) }
+                                // TODO: 添加 onTagClick 支持
                             )
                         }
                         
@@ -332,7 +344,8 @@ fun WatchListNovelsPage(
     state: WatchListNovelsState,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
-    onSeriesClick: (NovelSeries) -> Unit
+    onSeriesClick: (NovelSeries) -> Unit,
+    onTagClick: ((String) -> Unit)? = null
 ) {
     val listState = rememberLazyListState()
     
@@ -402,7 +415,8 @@ fun WatchListNovelsPage(
                         ) { series ->
                             NovelSeriesCard(
                                 series = series,
-                                onClick = { onSeriesClick(series) }
+                                onClick = { onSeriesClick(series) },
+                                onTagClick = onTagClick
                             )
                         }
                         

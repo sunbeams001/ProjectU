@@ -76,6 +76,7 @@ fun NovelInfoSection(
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
     onCommentClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -396,7 +397,8 @@ fun NovelInfoSection(
                                     if (!isR18Tag) { // 避免重复显示
                                         TagChip(
                                             text = tag.translatedName ?: tag.name,
-                                            isR18 = false
+                                            isR18 = false,
+                                            onClick = { onTagClick?.invoke(tag) }
                                         )
                                     }
                                 }
@@ -547,6 +549,7 @@ private fun StatItem(
 private fun TagChip(
     text: String,
     isR18: Boolean,
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -560,7 +563,10 @@ private fun TagChip(
         MaterialTheme.colorScheme.onSecondaryContainer
     
     Surface(
-        modifier = modifier,
+        modifier = modifier.then(
+            if (onClick != null) Modifier.clickable(onClick = onClick)
+            else Modifier
+        ),
         shape = RoundedCornerShape(16.dp),
         color = backgroundColor
     ) {

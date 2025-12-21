@@ -7,7 +7,7 @@ import com.projectu.shared.data.remote.dto.user.UserSearchBody
 import com.projectu.shared.data.remote.model.IllustSearchMode
 import com.projectu.shared.data.remote.model.NovelSearchMode
 import com.projectu.shared.data.remote.model.UserSearchMode
-import io.ktor.http.encodeURLPath
+import io.ktor.http.encodeURLPathPart
 
 /**
  * 搜索 API
@@ -39,8 +39,8 @@ class SearchApi(private val client: PixivApiClient) {
         scd: String? = null,
         ecd: String? = null
     ): PixivResponse<IllustSearchBody> {
-        // URL 编码关键词
-        val encodedKeyword = keyword.encodeURLPath()
+        // URL 编码关键词（使用encodeURLPathPart以确保/等特殊字符被正确编码）
+        val encodedKeyword = keyword.encodeURLPathPart()
         
         val params = mutableMapOf<String, Any?>(
             "word" to keyword,
@@ -81,8 +81,8 @@ class SearchApi(private val client: PixivApiClient) {
         scd: String? = null,
         ecd: String? = null
     ): PixivResponse<NovelSearchBody> {
-        // URL 编码关键词
-        val encodedKeyword = keyword.encodeURLPath()
+        // URL 编码关键词（使用encodeURLPathPart以确保/等特殊字符被正确编码）
+        val encodedKeyword = keyword.encodeURLPathPart()
         
         val params = mutableMapOf<String, Any?>(
             "word" to keyword,

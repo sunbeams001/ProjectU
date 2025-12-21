@@ -70,6 +70,9 @@ data class ArtworkDetailScreen(
         val downloadRepository: DownloadRepository = koinInject()
         val coroutineScope = rememberCoroutineScope()
         
+        // 创建Tag点击处理器
+        val tagClickHandler = com.projectu.ui.util.rememberTagClickHandler(navigator)
+        
         // 从 NavigationContextManager 获取上下文
         val context = remember(contextKey) {
             if (contextKey.isNotEmpty()) {
@@ -227,7 +230,8 @@ data class ArtworkDetailScreen(
                         )
                     }
                 }
-            }
+            },
+            onTagClick = { tag -> tagClickHandler(tag) }
         )
     }
 }

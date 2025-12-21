@@ -32,6 +32,7 @@ import com.projectu.ui.screens.followlatest.more.FollowLatestMoreScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
+import com.projectu.ui.util.TagClickHandler
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -268,6 +269,15 @@ fun FollowLatestContent(
                         }
                     }
                     
+                    // 创建Tag点击处理器
+                    val scope = rememberCoroutineScope()
+                    val searchHistoryStore: com.projectu.shared.data.local.SearchHistoryStore = koinInject()
+                    val tagClickHandler = remember(parentNavigator) {
+                        parentNavigator?.let { nav ->
+                            TagClickHandler(nav, searchHistoryStore, scope)
+                        }
+                    }
+                    
                     FollowLatestNovelsPage(
                         state = novelsState,
                         onModeChange = novelsViewModel::switchMode,
@@ -283,6 +293,9 @@ fun FollowLatestContent(
                         },
                         onUserClick = { userId ->
                             parentNavigator?.push(UserScreen(userId))
+                        },
+                        onTagClick = tagClickHandler?.let { handler ->
+                            { tag: com.projectu.shared.domain.model.Tag -> handler.handleTagClick(tag) }
                         },
                         listState = listState as LazyListState
                     )
@@ -380,6 +393,7 @@ fun FollowLatestNovelsPage(
     onNovelClick: (Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: (userId: String) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     listState: LazyListState
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -432,6 +446,7 @@ fun FollowLatestNovelsPage(
                         onNovelClick = onNovelClick,
                         onSeriesClick = onSeriesClick,
                         onUserClick = onUserClick,
+                        onTagClick = onTagClick,
                         onLoadMore = onLoadMore,
                         isLoadingMore = state.isLoadingMore,
                         listState = listState,
@@ -516,6 +531,7 @@ private fun FollowLatestNovelListLayout(
     onNovelClick: (Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: (userId: String) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: LazyListState,
@@ -554,7 +570,8 @@ private fun FollowLatestNovelListLayout(
                     novel = novel,
                     onClick = { onNovelClick(novel) },
                     onSeriesClick = onSeriesClick,
-                    onUserClick = onUserClick
+                    onUserClick = onUserClick,
+                    onTagClick = onTagClick
                 )
             }
             

@@ -58,6 +58,7 @@ fun NovelSeriesContent(
     onRefresh: () -> Unit,
     onNovelClick: (Novel) -> Unit,
     onUserClick: (String) -> Unit,
+    onTagClick: ((String) -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -146,6 +147,7 @@ fun NovelSeriesContent(
                                 isWatchLoading = state.isWatchLoading,
                                 onToggleWatch = onToggleWatch,
                                 onUserClick = onUserClick,
+                                onTagClick = onTagClick,
                                 onDownloadClick = onDownloadClick
                             )
                         }
@@ -227,6 +229,7 @@ private fun NovelSeriesHeaderCard(
     isWatchLoading: Boolean,
     onToggleWatch: () -> Unit,
     onUserClick: (String) -> Unit,
+    onTagClick: ((String) -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -433,7 +436,8 @@ private fun NovelSeriesHeaderCard(
                         TagChip(
                             text = tag,
                             textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+                            backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                            onClick = onTagClick?.let { { it(tag) } }
                         )
                     }
                 }
@@ -529,12 +533,21 @@ private fun NovelSeriesHeaderCard(
 private fun TagChip(
     text: String,
     textColor: Color,
-    backgroundColor: Color
+    backgroundColor: Color,
+    onClick: (() -> Unit)? = null
 ) {
     Surface(
         shape = RoundedCornerShape(4.dp),
         color = backgroundColor,
-        modifier = Modifier.height(20.dp)
+        modifier = Modifier
+            .height(20.dp)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
     ) {
         Box(
             modifier = Modifier

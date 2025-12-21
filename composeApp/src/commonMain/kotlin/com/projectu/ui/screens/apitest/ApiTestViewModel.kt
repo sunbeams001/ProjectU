@@ -45,7 +45,7 @@ import com.projectu.shared.data.remote.dto.user.UserSearchBody
 import com.projectu.shared.data.remote.model.RankingCategory
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.data.remote.model.RankingMode
-import io.ktor.http.encodeURLPath
+import io.ktor.http.encodeURLPathPart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -326,8 +326,8 @@ class ApiTestViewModel(
         val searchMode = getParam("sMode")
         val page = getParam("page").toIntOrNull() ?: 1
         
-        // URL编码关键词
-        val encodedKeyword = keyword.encodeURLPath()
+        // URL编码关键词（使用encodeURLPathPart以确保/等特殊字符被正确编码）
+        val encodedKeyword = keyword.encodeURLPathPart()
         
         val responseWithRaw = pixivApi.client.getWithRaw<IllustSearchBody>(
             "/ajax/search/artworks/$encodedKeyword",
@@ -1983,7 +1983,8 @@ class ApiTestViewModel(
         val mode = getParam("mode")
         val page = getParam("page").toIntOrNull() ?: 1
         
-        val encodedKeyword = keyword.encodeURLPath()
+        // URL编码关键词（使用encodeURLPathPart以确保/箉特殊字符被正确编码）
+        val encodedKeyword = keyword.encodeURLPathPart()
         
         val responseWithRaw = pixivApi.client.getWithRaw<NovelSearchBody>(
             "/ajax/search/novels/$encodedKeyword",

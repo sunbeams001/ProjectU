@@ -8,7 +8,10 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.screens.download.DownloadScreen
+import com.projectu.ui.screens.search.SearchResultScreen
 import com.projectu.shared.domain.repository.DownloadRepository
+import com.projectu.shared.data.local.SearchHistoryStore
+import com.projectu.ui.util.TagClickHandler
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -31,7 +34,13 @@ data class NovelSeriesScreen(
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         val downloadRepository: DownloadRepository = koinInject()
+        val searchHistoryStore: SearchHistoryStore = koinInject()
         val coroutineScope = rememberCoroutineScope()
+        
+        // 创建Tag点击处理器
+        val tagClickHandler = remember(navigator, searchHistoryStore, coroutineScope) {
+            TagClickHandler(navigator, searchHistoryStore, coroutineScope)
+        }
         
         // 加载系列数据
         LaunchedEffect(seriesId) {
@@ -53,6 +62,7 @@ data class NovelSeriesScreen(
             onUserClick = { userId ->
                 navigator.push(UserScreen(userId))
             },
+            onTagClick = tagClickHandler::handleTagClick,
             onDownloadClick = {
                 coroutineScope.launch {
                     val result = downloadRepository.addNovelSeriesDownload(seriesId = seriesId)

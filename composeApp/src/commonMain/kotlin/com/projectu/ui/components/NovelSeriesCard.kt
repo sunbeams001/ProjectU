@@ -43,6 +43,7 @@ import com.projectu.ui.util.formatReadingTime
 fun NovelSeriesCard(
     series: NovelSeries,
     onClick: () -> Unit,
+    onTagClick: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // R-18和R18G标签颜色
@@ -186,7 +187,8 @@ fun NovelSeriesCard(
                                     TagChip(
                                         text = tag,
                                         textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+                                        backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        onClick = onTagClick?.let { { it(tag) } }
                                     )
                                 }
                             }
@@ -264,12 +266,21 @@ fun NovelSeriesCard(
 private fun TagChip(
     text: String,
     textColor: Color,
-    backgroundColor: Color
+    backgroundColor: Color,
+    onClick: (() -> Unit)? = null
 ) {
     Surface(
         shape = RoundedCornerShape(4.dp),
         color = backgroundColor,
-        modifier = Modifier.height(20.dp)
+        modifier = Modifier
+            .height(20.dp)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
     ) {
         Box(
             modifier = Modifier

@@ -12,6 +12,7 @@ data class IllustSearchBody(
     val illustManga: IllustMangaData,
     val popular: PopularData? = null,
     val relatedTags: List<String>? = null,
+    @Serializable(with = com.projectu.shared.data.remote.serializers.NestedMapOrEmptyArraySerializer::class)
     val tagTranslation: Map<String, Map<String, String>>? = null,
     val zoneConfig: ZoneConfig? = null,
     val extraData: ExtraData? = null

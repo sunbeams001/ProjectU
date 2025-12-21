@@ -15,6 +15,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import org.koin.compose.koinInject
 import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Novel
 import com.projectu.ui.components.NovelCard
@@ -22,7 +23,9 @@ import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
+import com.projectu.ui.util.TagClickHandler
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
 
@@ -42,6 +45,13 @@ class DiscoveryNovelsScreen : Screen {
             viewModel.initLoadIfNeeded()
         }
         
+        // 创建Tag点击处理器
+        val scope = rememberCoroutineScope()
+        val searchHistoryStore: com.projectu.shared.data.local.SearchHistoryStore = koinInject()
+        val tagClickHandler = remember(navigator) {
+            TagClickHandler(navigator, searchHistoryStore, scope)
+        }
+        
         DiscoveryNovelsContent(
             state = state,
             onModeChange = viewModel::switchMode,
@@ -57,6 +67,7 @@ class DiscoveryNovelsScreen : Screen {
             onUserClick = { userId ->
                 navigator.push(UserScreen(userId))
             },
+            onTagClick = { tag -> tagClickHandler.handleTagClick(tag) },
             onBackClick = { navigator.pop() }
         )
     }
@@ -72,6 +83,7 @@ fun DiscoveryNovelsContent(
     onNovelClick: (Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: (userId: String) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -141,6 +153,7 @@ fun DiscoveryNovelsContent(
                             onNovelClick = onNovelClick,
                             onSeriesClick = onSeriesClick,
                             onUserClick = onUserClick,
+                            onTagClick = onTagClick,
                             onLoadMore = onLoadMore,
                             isLoadingMore = state.isLoadingMore,
                             currentMode = state.currentMode
@@ -161,6 +174,7 @@ fun NovelList(
     onNovelClick: (Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: (userId: String) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     currentMode: DiscoveryMode = DiscoveryMode.ALL
@@ -217,7 +231,8 @@ fun NovelList(
                 novel = novel,
                 onClick = { onNovelClick(novel) },
                 onSeriesClick = onSeriesClick,
-                onUserClick = onUserClick
+                onUserClick = onUserClick,
+                onTagClick = onTagClick
             )
         }
         

@@ -38,6 +38,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import projectu.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
+import com.projectu.ui.util.rememberTagClickHandler
 
 /**
  * 小说详情页面
@@ -153,6 +154,9 @@ data class NovelDetailScreen(
         // 拦截系统返回键
         PlatformBackHandler(enabled = true, onBack = handleSystemBack)
         
+        // 创建Tag点击处理器
+        val tagClickHandler = rememberTagClickHandler(navigator)
+        
         // 当小说有 marker 时，自动跳转到对应页面（仅首次）
         var hasJumpedToMarker by remember { mutableStateOf(false) }
         LaunchedEffect(state.novel?.id, state.novel?.marker) {
@@ -199,7 +203,8 @@ data class NovelDetailScreen(
                         }
                     }
                 }
-            }
+            },
+            onTagClick = tagClickHandler::handleTagClick
         )
     }
 }
@@ -222,6 +227,7 @@ private fun NovelDetailContent(
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
     onDownloadClick: () -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -259,6 +265,7 @@ private fun NovelDetailContent(
                     onSeriesClick = onSeriesClick,
                     onCommentClick = onCommentClick,
                     onDownloadClick = onDownloadClick,
+                    onTagClick = onTagClick,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -300,6 +307,7 @@ private fun NovelDetailLayout(
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
     onDownloadClick: () -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val novel = state.novel ?: return
@@ -383,6 +391,7 @@ private fun NovelDetailLayout(
             onSeriesClick = onSeriesClick,
             onCommentClick = onCommentClick,
             onDownloadClick = onDownloadClick,
+            onTagClick = onTagClick,
             modifier = Modifier.fillMaxWidth()
         )
     }

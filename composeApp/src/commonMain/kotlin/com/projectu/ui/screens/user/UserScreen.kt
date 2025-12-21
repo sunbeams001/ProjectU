@@ -74,9 +74,11 @@ import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.userrelations.UserRelationsScreen
 import com.projectu.ui.util.AppLogger
+import com.projectu.ui.util.TagClickHandler
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import cafe.adriel.voyager.koin.koinScreenModel
+import org.koin.compose.koinInject
 
 /**
  * 列表滚动状态的封装，用于统一管理不同类型列表的滚动
@@ -126,6 +128,13 @@ data class UserScreen(
         // 加载用户数据
         LaunchedEffect(userId) {
             viewModel.loadUser(userId)
+        }
+        
+        // 创建Tag点击处理器
+        val scope = rememberCoroutineScope()
+        val searchHistoryStore: com.projectu.shared.data.local.SearchHistoryStore = koinInject()
+        val tagClickHandler = remember(navigator) {
+            TagClickHandler(navigator, searchHistoryStore, scope)
         }
         
         UserScreenContent(
@@ -184,7 +193,8 @@ data class UserScreen(
             },
             onBackClick = { navigator.pop() },
             onToggleTagFilter = viewModel::toggleTagFilter,
-            onSelectTag = viewModel::selectTag
+            onSelectTag = viewModel::selectTag,
+            onTagClick = { tag -> tagClickHandler.handleTagClick(tag) }
         )
     }
 }
@@ -215,7 +225,9 @@ fun UserScreenContent(
     // 是否使用 Scaffold（嵌入到其他页面时设为 false）
     useScaffold: Boolean = true,
     // 用于外部控制置顶/刷新
-    onRegisterScrollToTopOrRefreshCallback: ((callback: () -> Unit) -> Unit)? = null
+    onRegisterScrollToTopOrRefreshCallback: ((callback: () -> Unit) -> Unit)? = null,
+    // Tag点击处理
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     
@@ -377,7 +389,8 @@ fun UserScreenContent(
                                     onRefresh = onRefresh,
                                     onRetry = { onRetryTab(tab) },
                                     onToggleTagFilter = { onToggleTagFilter(tab) },
-                                    onSelectTag = { selectedTag -> onSelectTag(tab, selectedTag) }
+                                    onSelectTag = { selectedTag -> onSelectTag(tab, selectedTag) },
+                                    onTagClick = onTagClick
                                 )
                             }
                         } else {
@@ -602,7 +615,8 @@ fun UserTabContent(
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
     onToggleTagFilter: () -> Unit = {},
-    onSelectTag: (String?) -> Unit = {}
+    onSelectTag: (String?) -> Unit = {},
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null
 ) {
     // 获取或创建当前Tab的Tag筛选行滚动状态
     val tagScrollState = tagFilterScrollStates.getOrPut(tab) { ScrollState(0) }
@@ -660,6 +674,7 @@ fun UserTabContent(
                                     tabListStates = tabListStates,
                                     onNovelClick = onNovelClick,
                                     onSeriesClick = onNovelSeriesClick,
+                                    onTagClick = onTagClick,
                                     onLoadMore = onLoadMore,
                                     isLoading = tabData.isLoading,
                                     isRefreshing = tabData.isRefreshing,
@@ -686,6 +701,9 @@ fun UserTabContent(
                                     tabListStates = tabListStates,
                                     onClick = { item -> 
                                         onNovelSeriesClick(item.id)
+                                    },
+                                    onTagClick = onTagClick?.let { handler ->
+                                        { tagName -> handler(com.projectu.shared.domain.model.Tag(tagName)) }
                                     }
                                 )
                             }
@@ -735,6 +753,7 @@ fun UserTabContent(
                                         onNovelClick = onNovelClick,
                                         onSeriesClick = onNovelSeriesClick,
                                         onUserClick = onUserClick,
+                                        onTagClick = onTagClick,
                                         onLoadMore = onLoadMore,
                                         isLoading = tabData.isLoading,
                                         isRefreshing = tabData.isRefreshing,
@@ -864,6 +883,7 @@ fun NovelList(
     onNovelClick: (Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: ((String) -> Unit)? = null,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoading: Boolean,
     isRefreshing: Boolean = false,
@@ -910,6 +930,7 @@ fun NovelList(
                     onClick = { onNovelClick(novel) },
                     onSeriesClick = onSeriesClick,
                     onUserClick = onUserClick,
+                    onTagClick = onTagClick,
                     showUserInfo = showUserInfo
                 )
             }
@@ -971,7 +992,8 @@ fun NovelSeriesList(
     series: List<NovelSeries>,
     tab: UserProfileTab,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
-    onClick: (NovelSeries) -> Unit
+    onClick: (NovelSeries) -> Unit,
+    onTagClick: ((String) -> Unit)? = null
 ) {
     val listState = rememberLazyListState()
     
@@ -989,7 +1011,8 @@ fun NovelSeriesList(
         items(series, key = { it.id }) { item ->
             NovelSeriesCard(
                 series = item,
-                onClick = { onClick(item) }
+                onClick = { onClick(item) },
+                onTagClick = onTagClick
             )
         }
     }

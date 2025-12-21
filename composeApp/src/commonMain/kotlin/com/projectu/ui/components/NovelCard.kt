@@ -63,6 +63,7 @@ fun NovelCard(
     onClick: () -> Unit,
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     showSeriesInfo: Boolean = true,
     showUserInfo: Boolean = true,
     modifier: Modifier = Modifier,
@@ -282,7 +283,7 @@ fun NovelCard(
                                     .height(20.dp)
                                     .combinedClickable(
                                         onClick = { 
-                                            println("NovelCard: 点击标签 - ${tag.translatedName ?: tag.name}") 
+                                            onTagClick?.invoke(tag)
                                         },
                                         onLongClick = { 
                                             println("NovelCard: 长按标签 - ${tag.translatedName ?: tag.name}") 

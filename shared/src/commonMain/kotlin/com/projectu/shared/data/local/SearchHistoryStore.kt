@@ -40,7 +40,10 @@ class SearchHistoryStore(
         private const val MAX_PINNED_SIZE = 10
     }
     
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json { 
+        ignoreUnknownKeys = true
+        encodeDefaults = true  // 强制序列化所有字段，包括默认值
+    }
     
     /**
      * 搜索历史流
@@ -111,11 +114,21 @@ class SearchHistoryStore(
     }
     
     /**
-     * 清空搜索历史
+     * 清空搜索历史（保留固定的历史）
      */
     suspend fun clearHistory() {
         dataStore.edit { preferences ->
-            preferences[KEY_SEARCH_HISTORY] = "[]"
+            val historyJson = preferences[KEY_SEARCH_HISTORY] ?: "[]"
+            val currentHistory = try {
+                json.decodeFromString<List<SearchHistoryItem>>(historyJson)
+            } catch (e: Exception) {
+                emptyList()
+            }
+            
+            // 只保留固定的历史
+            val pinnedHistory = currentHistory.filter { it.isPinned }
+            
+            preferences[KEY_SEARCH_HISTORY] = json.encodeToString(pinnedHistory)
         }
     }
     

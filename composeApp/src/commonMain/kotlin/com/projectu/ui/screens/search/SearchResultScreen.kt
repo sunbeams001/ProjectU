@@ -44,6 +44,7 @@ import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.navigation.NavigationContextManager
+import com.projectu.ui.util.rememberTagClickHandler
 import kotlinx.coroutines.launch
 import org.koin.core.parameter.parametersOf
 
@@ -65,6 +66,9 @@ data class SearchResultScreen(val initialKeyword: String) : Screen {
         }
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
+        
+        // 创建Tag点击处理器
+        val tagClickHandler = rememberTagClickHandler(navigator)
         
         // 为当前搜索关键词创建独立的 scrollIndices
         val scrollIndices = remember(initialKeyword) {
@@ -121,6 +125,7 @@ data class SearchResultScreen(val initialKeyword: String) : Screen {
             onUserClick = { user ->
                 navigator.push(UserScreen(userId = user.id))
             },
+            onTagClick = tagClickHandler::handleTagClick,
             onUpdateIllustParams = viewModel::updateIllustParams,
             onUpdateNovelParams = viewModel::updateNovelParams,
             onUpdateUserParams = viewModel::updateUserParams,
@@ -144,6 +149,7 @@ fun SearchResultContent(
     onArtworkClick: (Artwork, Int, SearchCategory) -> Unit,
     onNovelClick: (Novel) -> Unit,
     onUserClick: (User) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onUpdateIllustParams: (IllustSearchParams) -> Unit,
     onUpdateNovelParams: (NovelSearchParams) -> Unit,
     onUpdateUserParams: (UserSearchParams) -> Unit,
@@ -353,6 +359,7 @@ fun SearchResultContent(
                             hasMore = state.hasMoreNovel,
                             onLoadMore = onLoadMore,
                             onNovelClick = onNovelClick,
+                            onTagClick = onTagClick,
                             listState = novelListState,
                             error = state.error,
                             onRetry = onRefresh
@@ -575,6 +582,7 @@ fun NovelResultList(
     hasMore: Boolean,
     onLoadMore: () -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     listState: androidx.compose.foundation.lazy.LazyListState,
     error: String? = null,
     onRetry: (() -> Unit)? = null,
@@ -615,7 +623,8 @@ fun NovelResultList(
                     items(novels, key = { it.id }) { novel ->
                         NovelCard(
                             novel = novel,
-                            onClick = { onNovelClick(novel) }
+                            onClick = { onNovelClick(novel) },
+                            onTagClick = onTagClick
                         )
                     }
                     

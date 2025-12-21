@@ -238,6 +238,8 @@ class SearchPreparationViewModel(
     fun clearHistory() {
         screenModelScope.launch {
             searchHistoryStore.clearHistory()
+            // 清空后立即刷新UI
+            refreshHistory()
         }
     }
     
@@ -265,5 +267,16 @@ class SearchPreparationViewModel(
      */
     fun refreshRecommendations() {
         loadSearchRecommendations()
+    }
+    
+    /**
+     * 刷新搜索历史
+     * 用于页面重新显示时同步最新的历史记录
+     */
+    fun refreshHistory() {
+        screenModelScope.launch {
+            val latestHistory = searchHistoryStore.getHistoryList()
+            _state.update { it.copy(searchHistory = latestHistory) }
+        }
     }
 }

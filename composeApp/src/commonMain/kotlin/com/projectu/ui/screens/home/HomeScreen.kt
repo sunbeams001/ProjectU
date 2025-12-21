@@ -18,6 +18,7 @@ import cafe.adriel.voyager.navigator.tab.TabNavigator
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.projectu.ui.components.SimpleAdaptiveLayout
 import com.projectu.ui.screens.settings.SettingsScreen
+import com.projectu.ui.util.TagClickHandler
 import com.projectu.ui.util.WindowSize
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -246,6 +247,17 @@ object HomeTab : Tab {
         val scope = rememberCoroutineScope()
         val parentNavigator = LocalNavigator.current?.parent
         
+        // 监听Tab是否被覆盖（通过parentNavigator的栈大小判断）
+        val parentNavSize = parentNavigator?.size ?: 0
+        
+        // 使用LaunchedEffect监听栈大小变化
+        LaunchedEffect(parentNavSize) {
+            // 当栈大小为1时（即返回到HomeTab），刷新搜索历史
+            if (parentNavSize == 1) {
+                viewModel.refreshHistory()
+            }
+        }
+        
         HomeTabContent(
             state = state,
             onSearchKeywordChange = viewModel::onSearchKeywordChange,
@@ -449,6 +461,15 @@ object RankingTab : Tab {
             }
         }
         
+        // 创建Tag点击处理器
+        val scope = rememberCoroutineScope()
+        val searchHistoryStore: com.projectu.shared.data.local.SearchHistoryStore = koinInject()
+        val tagClickHandler = remember(parentNavigator) {
+            parentNavigator?.let { nav ->
+                TagClickHandler(nav, searchHistoryStore, scope)
+            }
+        }
+        
         RankingContent(
             state = state,
             scrollIndices = scrollIndices,
@@ -489,6 +510,9 @@ object RankingTab : Tab {
             },
             onUserClick = { userId ->
                 parentNavigator?.push(UserScreen(userId))
+            },
+            onTagClick = tagClickHandler?.let { handler ->
+                { tag: com.projectu.shared.domain.model.Tag -> handler.handleTagClick(tag) }
             },
             onRegisterScrollToTopOrRefreshCallback = { callback ->
                 scrollToTopOrRefreshCallback.value = callback

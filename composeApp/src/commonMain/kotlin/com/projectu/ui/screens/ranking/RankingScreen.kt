@@ -54,6 +54,7 @@ fun RankingContent(
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: (userId: String) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
     // 获取当前内容类型支持的所有模式
@@ -225,6 +226,7 @@ fun RankingContent(
                             onNovelClick = onNovelClick,
                             onSeriesClick = onSeriesClick,
                             onUserClick = onUserClick,
+                            onTagClick = onTagClick,
                             onLoadMore = onLoadMore,
                             isLoadingMore = modeData.isLoadingMore,
                             listState = listState as androidx.compose.foundation.lazy.LazyListState,
@@ -581,6 +583,7 @@ fun NovelListLayout(
     onNovelClick: (com.projectu.shared.domain.model.Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: (userId: String) -> Unit,
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onLoadMore: () -> Unit,
     isLoadingMore: Boolean,
     listState: androidx.compose.foundation.lazy.LazyListState = rememberLazyListState(),
@@ -623,7 +626,8 @@ fun NovelListLayout(
                     novel = novel,
                     onClick = { onNovelClick(novel) },
                     onSeriesClick = onSeriesClick,
-                    onUserClick = onUserClick
+                    onUserClick = onUserClick,
+                    onTagClick = onTagClick
                 )
             }
             
