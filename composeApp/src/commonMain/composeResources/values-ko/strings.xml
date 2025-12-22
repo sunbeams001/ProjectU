@@ -262,12 +262,19 @@
     <string name="nav_refresh">새로고침</string>
     
     <!-- Image Search -->
-    <string name="image_search_title">이미지 검색</string>
+    <string name="image_search_title">SauceNAO 이미지 검색</string>
     <string name="image_search_loading">검색 중...</string>
     <string name="image_search_failed">검색 실패</string>
     <string name="image_search_retry">재시도</string>
     <string name="image_search_cannot_read">이미지를 읽을 수 없습니다</string>
     <string name="image_search_unknown_error">알 수 없는 오류</string>
+    
+    <!-- Ascii2d Search -->
+    <string name="ascii2d_search_title">Ascii2d 이미지 검색</string>
+    <string name="ascii2d_search_uploading">이미지 업로드 중...</string>
+    <string name="ascii2d_search_verifying">확인 중...</string>
+    <string name="ascii2d_search_failed">검색 실패</string>
+    <string name="ascii2d_search_retry">재시도</string>
     
     <!-- Bookmark Status -->
     <string name="bookmark_not_bookmarked">북마크하지 않음</string>

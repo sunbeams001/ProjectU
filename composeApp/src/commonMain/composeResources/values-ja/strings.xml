@@ -334,12 +334,19 @@
     <string name="nav_refresh">更新</string>
     
     <!-- Image Search -->
-    <string name="image_search_title">画像で検索</string>
+    <string name="image_search_title">SauceNAO 画像検索</string>
     <string name="image_search_loading">検索中...</string>
     <string name="image_search_failed">検索失敗</string>
     <string name="image_search_retry">再試行</string>
     <string name="image_search_cannot_read">画像を読み込めません</string>
     <string name="image_search_unknown_error">不明なエラー</string>
+    
+    <!-- Ascii2d Search -->
+    <string name="ascii2d_search_title">Ascii2d 画像検索</string>
+    <string name="ascii2d_search_uploading">画像をアップロード中...</string>
+    <string name="ascii2d_search_verifying">確認中...</string>
+    <string name="ascii2d_search_failed">検索失敗</string>
+    <string name="ascii2d_search_retry">再試行</string>
     
     <!-- Novel -->
     <string name="novel_page_number">ページ %1$d</string>

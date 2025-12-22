@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- 分享功能标签 -->
-    <string name="share_image_search">以图搜图</string>
+    <string name="share_image_search">以图搜图 (SauceNAO)</string>
+    <string name="share_image_search_ascii2d">以图搜图 (Ascii2d)</string>
 </resources>

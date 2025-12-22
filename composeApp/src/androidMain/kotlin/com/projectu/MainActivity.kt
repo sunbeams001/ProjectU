@@ -16,10 +16,11 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 /**
- * 分享的图片数据
+ * 分享的图片数据（Android 平台）
  */
 data class SharedImageData(
-    val imageUri: String
+    val imageUri: String,
+    val searchEngine: ImageSearchEngine = ImageSearchEngine.SAUCENAO
 )
 
 class MainActivity : ComponentActivity() {
@@ -62,7 +63,12 @@ class MainActivity : ComponentActivity() {
             App(
                 deepLink = pendingDeepLink.value,
                 onDeepLinkConsumed = { pendingDeepLink.value = null },
-                sharedImage = pendingSharedImage.value?.let { SharedImage(it.imageUri) },
+                sharedImage = pendingSharedImage.value?.let { 
+                    SharedImage(
+                        imageUri = it.imageUri,
+                        searchEngine = it.searchEngine
+                    )
+                },
                 onSharedImageConsumed = { pendingSharedImage.value = null }
             )
         }
@@ -89,7 +95,13 @@ class MainActivity : ComponentActivity() {
             // 分享图片
             Intent.ACTION_SEND -> {
                 if (intent.type?.startsWith("image/") == true) {
-                    handleSharedImage(intent)
+                    // 根据 Activity 组件名判断使用哪个搜索引擎
+                    val searchEngine = if (intent.component?.className?.contains("Ascii2d") == true) {
+                        ImageSearchEngine.ASCII2D
+                    } else {
+                        ImageSearchEngine.SAUCENAO
+                    }
+                    handleSharedImage(intent, searchEngine)
                 }
             }
         }
@@ -99,14 +111,14 @@ class MainActivity : ComponentActivity() {
      * 处理分享的图片
      */
     @Suppress("DEPRECATION")
-    private fun handleSharedImage(intent: Intent) {
+    private fun handleSharedImage(intent: Intent, searchEngine: ImageSearchEngine) {
         val imageUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
         } else {
             intent.getParcelableExtra(Intent.EXTRA_STREAM)
         }
         if (imageUri != null) {
-            pendingSharedImage.value = SharedImageData(imageUri.toString())
+            pendingSharedImage.value = SharedImageData(imageUri.toString(), searchEngine)
         }
     }
 }

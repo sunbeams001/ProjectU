@@ -22,15 +22,32 @@ import com.projectu.ui.util.createImageLoader
 import org.koin.compose.koinInject
 
 /**
+ * 图片搜索引擎类型
+ */
+enum class ImageSearchEngine {
+    SAUCENAO,   // SauceNAO 搜索引擎
+    ASCII2D     // ascii2d 搜索引擎
+}
+
+/**
  * 分享图片数据（平台无关定义）
  */
-data class SharedImage(val imageUri: String)
+data class SharedImage(
+    val imageUri: String,
+    val searchEngine: ImageSearchEngine = ImageSearchEngine.SAUCENAO
+)
 
 /**
  * 平台特定的图片搜索 Screen 创建器
  * 由各平台提供实现
  */
 expect fun createImageSearchScreen(imageUri: String): Screen?
+
+/**
+ * 平台特定的 ascii2d 搜索 Screen 创建器
+ * 由各平台提供实现
+ */
+expect fun createAscii2dSearchScreen(imageUri: String): Screen?
 
 /**
  * 主应用入口
@@ -156,7 +173,10 @@ fun App(
                     // 处理分享的图片 - 打开图片搜索页面
                     LaunchedEffect(sharedImage) {
                         if (sharedImage != null) {
-                            val searchScreen = createImageSearchScreen(sharedImage.imageUri)
+                            val searchScreen = when (sharedImage.searchEngine) {
+                                ImageSearchEngine.SAUCENAO -> createImageSearchScreen(sharedImage.imageUri)
+                                ImageSearchEngine.ASCII2D -> createAscii2dSearchScreen(sharedImage.imageUri)
+                            }
                             if (searchScreen != null) {
                                 navigator.push(searchScreen)
                             }
