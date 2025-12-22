@@ -273,208 +273,229 @@ fun ArtworkDetailInfoSection(
         tonalElevation = 1.dp
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(nestedScrollConnection)
-                .verticalScroll(scrollState)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
-            // 1. 标签
-            if (artwork.tags.isNotEmpty()) {
+            // 可滚动区域（统计数据、标签、作品信息、简介）
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .nestedScroll(nestedScrollConnection)
+                    .verticalScroll(scrollState)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // 1. 统计信息行（浏览+点赞+收藏+评论）
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    StatItem(
+                        icon = Icons.Default.Visibility,
+                        label = stringResource(Res.string.artwork_stat_views),
+                        value = formatNumber(artwork.viewCount)
+                    )
+                    StatItem(
+                        icon = Icons.Default.SentimentSatisfied,
+                        label = stringResource(Res.string.artwork_stat_likes),
+                        value = formatNumber(artwork.likeCount)
+                    )
+                    StatItem(
+                        icon = Icons.Default.Favorite,
+                        label = stringResource(Res.string.artwork_stat_bookmarks),
+                        value = formatNumber(artwork.bookmarkCount)
+                    )
+                    StatItem(
+                        icon = Icons.AutoMirrored.Filled.Comment,
+                        label = stringResource(Res.string.artwork_stat_comments),
+                        value = formatNumber(artwork.commentCount),
+                        onClick = onCommentClick
+                    )
+                }
+                
+                HorizontalDivider()
+                
+                // 2. 标签
+                if (artwork.tags.isNotEmpty()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = stringResource(Res.string.artwork_tags),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            // 年龄限制标签
+                            if (artwork.ageLimit == AgeLimit.R18) {
+                                TagChip(text = "R-18", isR18 = true)
+                            } else if (artwork.ageLimit == AgeLimit.R18G) {
+                                TagChip(text = "R-18G", isR18 = true)
+                            }
+                            
+                            // 其他标签
+                            artwork.tags.forEach { tag ->
+                                val isR18Tag = tag.name.equals("R-18", ignoreCase = true) ||
+                                        tag.name.equals("R-18G", ignoreCase = true)
+                                if (!isR18Tag) { // 避免重复显示
+                                    TagChip(
+                                        text = tag.translatedName ?: tag.name,
+                                        isR18 = false,
+                                        onClick = onTagClick?.let { { it(tag) } }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    
+                    HorizontalDivider()
+                }
+                
+                // 3. 作品信息（分辨率、ID等）
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = stringResource(Res.string.artwork_tags),
+                        text = stringResource(Res.string.artwork_info),
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
                     
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        // 年龄限制标签
-                        if (artwork.ageLimit == AgeLimit.R18) {
-                            TagChip(text = "R-18", isR18 = true)
-                        } else if (artwork.ageLimit == AgeLimit.R18G) {
-                            TagChip(text = "R-18G", isR18 = true)
-                        }
-                        
-                        // 其他标签
-                        artwork.tags.forEach { tag ->
-                            val isR18Tag = tag.name.equals("R-18", ignoreCase = true) ||
-                                    tag.name.equals("R-18G", ignoreCase = true)
-                            if (!isR18Tag) { // 避免重复显示
-                                TagChip(
-                                    text = tag.translatedName ?: tag.name,
-                                    isR18 = false,
-                                    onClick = onTagClick?.let { { it(tag) } }
-                                )
-                            }
-                        }
-                    }
-                }
-                
-                HorizontalDivider()
-            }
-            
-            // 2. 作品信息（分辨率、ID等）
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = stringResource(Res.string.artwork_info),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                
-                // 分辨率
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.artwork_resolution),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "${artwork.width} × ${artwork.height}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                
-                // 页数（多页作品显示）
-                if (artwork.pageCount > 1) {
+                    // 分辨率
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = stringResource(Res.string.artwork_page_count),
+                            text = stringResource(Res.string.artwork_resolution),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = artwork.pageCount.toString(),
+                            text = "${artwork.width} × ${artwork.height}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    
+                    // 页数（多页作品显示）
+                    if (artwork.pageCount > 1) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.artwork_page_count),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = artwork.pageCount.toString(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                    
+                    // 作品ID
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.artwork_id),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = artwork.id,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    
+                    // 用户ID
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.artwork_user_id),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = artwork.userId,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
                 
-                // 作品ID
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.artwork_id),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = artwork.id,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                
-                // 用户ID
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.artwork_user_id),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = artwork.userId,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-            
-            HorizontalDivider()
-            
-            // 3. 简介
-            if (artwork.description.isNotBlank()) {
-                val uriHandler = LocalUriHandler.current
-                
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(Res.string.artwork_description),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    HtmlText(
-                        html = artwork.description,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurface
-                        ),
-                        onLinkClick = { url ->
-                            try {
-                                uriHandler.openUri(url)
-                            } catch (e: Exception) {
-                                // 忽略无法打开的链接
-                            }
-                        }
-                    )
-                }
-                
                 HorizontalDivider()
-            }
-            
-            // 4. 统计信息行（浏览+点赞+收藏+评论）
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                StatItem(
-                    icon = Icons.Default.Visibility,
-                    label = stringResource(Res.string.artwork_stat_views),
-                    value = formatNumber(artwork.viewCount)
-                )
-                StatItem(
-                    icon = Icons.Default.SentimentSatisfied,
-                    label = stringResource(Res.string.artwork_stat_likes),
-                    value = formatNumber(artwork.likeCount)
-                )
-                StatItem(
-                    icon = Icons.Default.Favorite,
-                    label = stringResource(Res.string.artwork_stat_bookmarks),
-                    value = formatNumber(artwork.bookmarkCount)
-                )
-                StatItem(
-                    icon = Icons.AutoMirrored.Filled.Comment,
-                    label = stringResource(Res.string.artwork_stat_comments),
-                    value = formatNumber(artwork.commentCount),
-                    onClick = onCommentClick
-                )
-            }
-            
-            HorizontalDivider()
-            
-            // 5. 操作按钮行（不含评论按钮，减小padding）
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                // 推荐相似作品按钮
-                ActionButton(
-                    icon = Icons.Default.Recommend,
-                    label = stringResource(Res.string.artwork_similar),
-                    onClick = { onSimilarClick?.invoke() },
-                    enabled = onSimilarClick != null
-                )
                 
-                // 下载按钮（点击下载GIF，长按下载MP4）
-                ActionButton(
-                    icon = Icons.Default.Download,
-                    label = stringResource(Res.string.artwork_download),
-                    onClick = { onDownloadClick?.invoke() },
-                    onLongClick = { onDownloadLongClick?.invoke() },
-                    enabled = onDownloadClick != null
-                )
+                // 4. 简介
+                if (artwork.description.isNotBlank()) {
+                    val uriHandler = LocalUriHandler.current
+                    
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = stringResource(Res.string.artwork_description),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        HtmlText(
+                            html = artwork.description,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                            onLinkClick = { url ->
+                                try {
+                                    uriHandler.openUri(url)
+                                } catch (e: Exception) {
+                                    // 忽略无法打开的链接
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+            
+            // 固定在底部的操作按钮区域
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                tonalElevation = 2.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    
+                    // 5. 操作按钮行
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        // 推荐相似作品按钮
+                        ActionButton(
+                            icon = Icons.Default.Recommend,
+                            label = stringResource(Res.string.artwork_similar),
+                            onClick = { onSimilarClick?.invoke() },
+                            enabled = onSimilarClick != null
+                        )
+                        
+                        // 下载按钮（点击下载GIF，长按下载MP4）
+                        ActionButton(
+                            icon = Icons.Default.Download,
+                            label = stringResource(Res.string.artwork_download),
+                            onClick = { onDownloadClick?.invoke() },
+                            onLongClick = { onDownloadLongClick?.invoke() },
+                            enabled = onDownloadClick != null
+                        )
+                    }
+                }
             }
         }
     }

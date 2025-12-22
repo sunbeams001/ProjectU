@@ -203,7 +203,7 @@ fun NovelInfoSection(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // 第一行：封面 + 基本信息
+                    // 1. 封面 + 基本信息
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -311,104 +311,9 @@ fun NovelInfoSection(
                         }
                     }
                     
-                    // 统计信息行
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        StatItem(
-                            icon = Icons.Default.Visibility,
-                            label = stringResource(Res.string.novel_stat_views),
-                            value = formatNumber(novel.viewCount)
-                        )
-                        StatItem(
-                            icon = Icons.Default.SentimentSatisfied,
-                            label = stringResource(Res.string.novel_stat_likes),
-                            value = formatNumber(novel.likeCount)
-                        )
-                        StatItem(
-                            icon = Icons.Default.Favorite,
-                            label = stringResource(Res.string.novel_stat_bookmarks),
-                            value = formatNumber(novel.bookmarkCount)
-                        )
-                        StatItem(
-                            icon = Icons.AutoMirrored.Filled.Comment,
-                            label = stringResource(Res.string.novel_stat_comments),
-                            value = formatNumber(novel.commentCount),
-                            onClick = onCommentClick
-                        )
-                    }
-                    
                     HorizontalDivider()
                     
-                    // 简介
-                    if (novel.description.isNotBlank()) {
-                        val uriHandler = LocalUriHandler.current
-                        
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(
-                                text = stringResource(Res.string.novel_description),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            HtmlText(
-                                html = novel.description,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSurface
-                                ),
-                                onLinkClick = { url ->
-                                    try {
-                                        uriHandler.openUri(url)
-                                    } catch (e: Exception) {
-                                        // 忽略无法打开的链接
-                                    }
-                                }
-                            )
-                        }
-                    }
-                    
-                    HorizontalDivider()
-                    
-                    // 标签
-                    if (novel.tags.isNotEmpty()) {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(
-                                text = stringResource(Res.string.novel_tags),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                // 年龄限制标签
-                                if (novel.ageLimit == AgeLimit.R18) {
-                                    TagChip(text = "R-18", isR18 = true)
-                                } else if (novel.ageLimit == AgeLimit.R18G) {
-                                    TagChip(text = "R-18G", isR18 = true)
-                                }
-                                
-                                // 其他标签（不省略）
-                                novel.tags.forEach { tag ->
-                                    val isR18Tag = tag.name.equals("R-18", ignoreCase = true) || 
-                                                   tag.name.equals("R-18G", ignoreCase = true)
-                                    if (!isR18Tag) { // 避免重复显示
-                                        TagChip(
-                                            text = tag.translatedName ?: tag.name,
-                                            isR18 = false,
-                                            onClick = { onTagClick?.invoke(tag) }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    HorizontalDivider()
-                    
-                    // 作者信息
+                    // 2. 作者信息 + 发布时间（整合在一起，参考作品详情页）
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -417,7 +322,7 @@ fun NovelInfoSection(
                         // 作者头像
                         Box(
                             modifier = Modifier
-                                .size(48.dp)
+                                .size(40.dp)
                                 .clip(CircleShape)
                                 .then(
                                     if (onUserClick != null) {
@@ -456,13 +361,8 @@ fun NovelInfoSection(
                             }
                         }
                         
-                        // 作者名
-                        Text(
-                            text = novel.userName,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                        // 作者名和发布时间（占据剩余空间）
+                        Column(
                             modifier = Modifier
                                 .weight(1f)
                                 .then(
@@ -471,8 +371,25 @@ fun NovelInfoSection(
                                             onUserClick(novel.userId)
                                         }
                                     } else Modifier
-                                )
-                        )
+                                ),
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            // 作者名
+                            Text(
+                                text = novel.userName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            // 发布时间
+                            Text(
+                                text = DateTimeFormatter.formatToLocalDateTime(novel.createdTime),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1
+                            )
+                        }
                         
                         // 关注按钮
                         FollowIndicator(
@@ -486,12 +403,102 @@ fun NovelInfoSection(
                         )
                     }
                     
-                    // 发布时间
-                    Text(
-                        text = stringResource(Res.string.novel_publish_time, DateTimeFormatter.formatToLocalDateTime(novel.createdTime)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    HorizontalDivider()
+                    
+                    // 3. 统计信息行
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        StatItem(
+                            icon = Icons.Default.Visibility,
+                            label = stringResource(Res.string.novel_stat_views),
+                            value = formatNumber(novel.viewCount)
+                        )
+                        StatItem(
+                            icon = Icons.Default.SentimentSatisfied,
+                            label = stringResource(Res.string.novel_stat_likes),
+                            value = formatNumber(novel.likeCount)
+                        )
+                        StatItem(
+                            icon = Icons.Default.Favorite,
+                            label = stringResource(Res.string.novel_stat_bookmarks),
+                            value = formatNumber(novel.bookmarkCount)
+                        )
+                        StatItem(
+                            icon = Icons.AutoMirrored.Filled.Comment,
+                            label = stringResource(Res.string.novel_stat_comments),
+                            value = formatNumber(novel.commentCount),
+                            onClick = onCommentClick
+                        )
+                    }
+                    
+                    HorizontalDivider()
+                    
+                    // 4. 标签
+                    if (novel.tags.isNotEmpty()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(Res.string.novel_tags),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                // 年龄限制标签
+                                if (novel.ageLimit == AgeLimit.R18) {
+                                    TagChip(text = "R-18", isR18 = true)
+                                } else if (novel.ageLimit == AgeLimit.R18G) {
+                                    TagChip(text = "R-18G", isR18 = true)
+                                }
+                                
+                                // 其他标签（不省略）
+                                novel.tags.forEach { tag ->
+                                    val isR18Tag = tag.name.equals("R-18", ignoreCase = true) || 
+                                                   tag.name.equals("R-18G", ignoreCase = true)
+                                    if (!isR18Tag) { // 避免重复显示
+                                        TagChip(
+                                            text = tag.translatedName ?: tag.name,
+                                            isR18 = false,
+                                            onClick = { onTagClick?.invoke(tag) }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    HorizontalDivider()
+                    
+                    // 5. 简介
+                    if (novel.description.isNotBlank()) {
+                        val uriHandler = LocalUriHandler.current
+                        
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(Res.string.novel_description),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            HtmlText(
+                                html = novel.description,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface
+                                ),
+                                onLinkClick = { url ->
+                                    try {
+                                        uriHandler.openUri(url)
+                                    } catch (e: Exception) {
+                                        // 忽略无法打开的链接
+                                    }
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
