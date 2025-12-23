@@ -4,7 +4,7 @@
     <string name="app_name">ProjectU</string>
     
     <!-- Bottom Navigation -->
-    <string name="nav_home">Home</string>
+    <string name="nav_home">Search</string>
     <string name="nav_discovery">Discovery</string>
     <string name="nav_ranking">Ranking</string>
     <string name="nav_profile">Profile</string>

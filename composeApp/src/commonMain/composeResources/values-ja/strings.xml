@@ -4,7 +4,7 @@
     <string name="app_name">ProjectU</string>
     
     <!-- Bottom Navigation -->
-    <string name="nav_home">ホーム</string>
+    <string name="nav_home">検索</string>
     <string name="nav_discovery">発見</string>
     <string name="nav_follow_latest">フォロー新着</string>
     <string name="nav_ranking">ランキング</string>

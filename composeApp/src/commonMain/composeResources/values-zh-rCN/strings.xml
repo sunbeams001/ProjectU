@@ -4,7 +4,7 @@
     <string name="app_name">ProjectU</string>
     
     <!-- Bottom Navigation -->
-    <string name="nav_home">首页</string>
+    <string name="nav_home">搜索</string>
     <string name="nav_discovery">发现</string>
     <string name="nav_ranking">排行榜</string>
     <string name="nav_profile">我的</string>

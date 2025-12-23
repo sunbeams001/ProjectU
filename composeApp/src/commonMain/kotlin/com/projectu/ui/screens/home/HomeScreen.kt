@@ -118,7 +118,7 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                 NavigationRailItem(
                     selected = it.current == HomeTab,
                     onClick = { it.current = HomeTab },
-                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                    icon = { Icon(Icons.Default.Search, contentDescription = null) },
                     label = { Text(stringResource(Res.string.nav_home)) }
                 )
                 NavigationRailItem(
@@ -130,7 +130,7 @@ private fun HomeScreenTablet(windowSize: WindowSize) {
                             it.current = DiscoveryTab
                         }
                     },
-                    icon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    icon = { Icon(Icons.Default.Explore, contentDescription = null) },
                     label = { Text(stringResource(Res.string.nav_discovery)) }
                 )
                 NavigationRailItem(
@@ -196,12 +196,12 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
         else -> ""
     }
     val icon = when (tab) {
-        HomeTab -> Icons.Default.Home
-        DiscoveryTab -> Icons.Default.Search
+        HomeTab -> Icons.Default.Search
+        DiscoveryTab -> Icons.Default.Explore
         FollowLatestTab -> Icons.Default.FavoriteBorder
         RankingTab -> Icons.Default.Star
         ProfileTab -> Icons.Default.Person
-        else -> Icons.Default.Home
+        else -> Icons.Default.Search
     }
     
     NavigationBarItem(
@@ -229,7 +229,7 @@ object HomeTab : Tab {
     override val options: TabOptions
         @Composable
         get() {
-            val icon = rememberVectorPainter(Icons.Default.Home)
+            val icon = rememberVectorPainter(Icons.Default.Search)
             val title = stringResource(Res.string.nav_home)
             return remember(title) {
                 TabOptions(
@@ -328,7 +328,7 @@ object DiscoveryTab : Tab {
     override val options: TabOptions
         @Composable
         get() {
-            val icon = rememberVectorPainter(Icons.Default.Search)
+            val icon = rememberVectorPainter(Icons.Default.Explore)
             val title = stringResource(Res.string.nav_discovery)
             return remember(title) {
                 TabOptions(
