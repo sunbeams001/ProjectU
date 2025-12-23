@@ -26,7 +26,7 @@ import org.koin.compose.koinInject
  */
 enum class ImageSearchEngine {
     SAUCENAO,   // SauceNAO 搜索引擎
-    ASCII2D     // ascii2d 搜索引擎
+    ASCII2D     // Ascii2d 搜索引擎
 }
 
 /**
@@ -44,7 +44,7 @@ data class SharedImage(
 expect fun createImageSearchScreen(imageUri: String): Screen?
 
 /**
- * 平台特定的 ascii2d 搜索 Screen 创建器
+ * 平台特定的 Ascii2d 搜索 Screen 创建器
  * 由各平台提供实现
  */
 expect fun createAscii2dSearchScreen(imageUri: String): Screen?

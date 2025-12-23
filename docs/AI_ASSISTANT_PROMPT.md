@@ -61,11 +61,12 @@ ProjectU/
 ├── docs/                    # 项目文档
 │   ├── project/
 │   │   └── 项目架构参考文档.md      # 完整架构文档 ⭐
-│   ├── pixiv/
-│   │   └── PIXIV_API_集成指南.md    # API 使用文档
 │   ├── settings/
 │   │   └── 设置系统架构.md
+│   ├── shared/
+│   │   └── TECH_STACK.md           # 技术栈文档
 │   └── guides/
+│       ├── API测试工具使用指南.md   # API 文档
 │       └── 自适应布局指南.md
 │
 ├── build.gradle.kts         # 根项目配置
@@ -244,10 +245,10 @@ class XxxScreen : Screen {
    - 包含所有技术细节和代码示例
    - 开发指南和注意事项
 
-2. **`docs/pixiv/PIXIV_API_集成指南.md`** ⭐⭐
+2. **`docs/guides/API测试工具使用指南.md`** ⭐⭐
    - Pixiv API 完整文档
    - 所有 API 端点说明
-   - 使用示例
+   - 使用示例和测试工具
 
 3. **`README.md`** ⭐
    - 项目概览

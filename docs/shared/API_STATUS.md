@@ -1,13 +1,12 @@
 # Pixiv API 集成状态
 
-> 📅 最后更新: 2025-11-20
+> 📅 最后更新: 2025-12-23  
+> 🎯 目的: 记录所有 Pixiv API 的实现状态、测试情况和详细信息
 
-## 📖 完整文档
+## 📖 相关文档
 
-- **API 测试计划**: [docs/guides/API_测试计划.md](../guides/API_测试计划.md)
-- **测试工具使用指南**: [docs/guides/API测试工具使用指南.md](../guides/API测试工具使用指南.md)
-- **API 集成指南**: [docs/pixiv/PIXIV_API_集成指南.md](../pixiv/PIXIV_API_集成指南.md)
-- **使用示例**: [shared/src/commonMain/kotlin/com/projectu/shared/examples/PixivApiUsageExample.kt](../../shared/src/commonMain/kotlin/com/projectu/shared/examples/PixivApiUsageExample.kt)
+- **测试工具使用指南**: [docs/guides/API测试工具使用指南.md](../guides/API测试工具使用指南.md) - 如何使用内置的 API 测试工具和代码集成指南
+- **使用示例**: [shared/src/commonMain/kotlin/com/projectu/shared/examples/PixivApiUsageExample.kt](../../shared/src/commonMain/kotlin/com/projectu/shared/examples/PixivApiUsageExample.kt) - 代码示例
 
 ---
 
@@ -15,61 +14,68 @@
 
 | 模块 | 总方法数 | 已实现 | 已测试 | 完成度 |
 |------|---------|-------|-------|--------|
-| IllustApi | 6 | 6 | 6 | ✅ 100% |
-| IllustSeriesApi | 3 | 3 | 0 | ⏳ 0% |
-| UserApi | 10 | 10 | 10 | ✅ 100% |
-| BookmarkApi | 8 | 8 | 8 | ✅ 100% |
+| IllustApi | 7 | 7 | 7 | ✅ 100% |
+| IllustSeriesApi | 3 | 3 | 3 | ✅ 100% |
+| UserApi | 12 | 12 | 12 | ✅ 100% |
+| BookmarkApi | 10 | 10 | 10 | ✅ 100% |
 | RankingApi | 2 | 2 | 2 | ✅ 100% |
 | CommentApi | 8 | 8 | 8 | ✅ 100% |
-| NovelApi | 4 | 4 | 4 | ✅ 100% |
+| NovelApi | 3 | 3 | 3 | ✅ 100% |
+| FollowApi | 4 | 4 | 4 | ✅ 100% |
 | NovelSeriesApi | 5 | 5 | 5 | ✅ 100% |
 | TagApi | 4 | 4 | 4 | ✅ 100% |
 | MarkerApi | 3 | 3 | 3 | ✅ 100% |
-| FollowApi | 4 | 4 | 4 | ✅ 100% |
-| **总计** | **57** | **57** | **54** | **✅ 95%** |
+| SearchApi | 3 | 3 | 3 | ✅ 100% |
+| **总计** | **64** | **64** | **64** | **✅ 100%** |
 
 ---
 
 ## ✅ 已集成 API 模块
 
-### IllustApi - 插画相关 API (6/6) ✅
+### IllustApi - 插画相关 API (7/7) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
 | 获取作品详情 | `/ajax/illust/{illustId}` | ✅ | ✅ | ✅ | 完整作品信息 |
+| 获取多页作品详情 | `/ajax/illust/{illustId}/pages` | ✅ | ✅ | ✅ | 多图作品每页详情 |
 | 搜索作品 | `/ajax/search/artworks/{keyword}` | ✅ | ✅ | ✅ | 支持排序和筛选 |
 | 推荐作品（初始化） | `/ajax/illust/recommend/init` | ✅ | ✅ | ✅ | 个性化推荐 |
 | 推荐作品（续） | `/ajax/illust/recommend/illusts` | ✅ | ✅ | ✅ | 更多推荐 |
 | 发现作品 | `/ajax/discovery/artworks` | ✅ | ✅ | ✅ | 编辑精选 |
 | Ugoira 元数据 | `/ajax/illust/{illustId}/ugoira_meta` | ✅ | ✅ | ✅ | 动图 ZIP 和帧信息 |
 
-### IllustSeriesApi - 漫画系列相关 API (3/3) ⏳
+### IllustSeriesApi - 漫画系列相关 API (3/3) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
-| 获取漫画系列详情 | `/ajax/series/{seriesId}` | ✅ | ⏳ | ✅ | 系列详情、作品列表 |
-| 追更漫画系列 | `POST /ajax/illust/series/{seriesId}/watch` | ✅ | ⏳ | ✅ | 发送空JSON `{}` |
-| 取消追更漫画系列 | `POST /ajax/illust/series/{seriesId}/unwatch` | ✅ | ⏳ | ✅ | 发送空JSON `{}` |
+| 获取漫画系列详情 | `/ajax/series/{seriesId}` | ✅ | ✅ | ✅ | 系列详情、作品列表 |
+| 追更漫画系列 | `POST /ajax/illust/series/{seriesId}/watch` | ✅ | ✅ | ✅ | 发送空JSON `{}` |
+| 取消追更漫画系列 | `POST /ajax/illust/series/{seriesId}/unwatch` | ✅ | ✅ | ✅ | 发送空JSON `{}` |
 
-### UserApi - 用户相关 API (10/10) ✅
+### UserApi - 用户相关 API (12/12) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
 | 获取用户信息 | `/ajax/user/{userId}` | ✅ | ✅ | ✅ | 用户基本信息 |
 | 获取用户全部信息 | `/ajax/user/{userId}/profile/all` | ✅ | ✅ | ✅ | 包含作品、收藏统计 |
 | 用户作品列表 | `/ajax/user/{userId}/profile/illusts` | ✅ | ✅ | ✅ | 支持分页 |
+| 用户小说列表 | `/ajax/user/{userId}/profile/novels` | ✅ | ✅ | ✅ | 用户的小说作品 |
 | 用户收藏列表 | `/ajax/user/{userId}/illusts/bookmarks` | ✅ | ✅ | ✅ | 支持公开/非公开 |
 | 关注列表 | `/ajax/user/{userId}/following` | ✅ | ✅ | ✅ | 正在关注的用户 |
 | 粉丝列表 | `/ajax/user/{userId}/followers` | ✅ | ✅ | ✅ | 粉丝用户列表 |
+| 好P友列表 | `/ajax/user/{userId}/mypixiv` | ✅ | ✅ | ✅ | 好P友关系 |
+| 用户关注详情 | `/ajax/user/{userId}/follow/detail` | ✅ | ✅ | ✅ | 关注状态详情 |
 | 推荐用户(针对用户) | `/ajax/user/{userId}/recommends` | ✅ | ✅ | ✅ | 基于特定用户推荐 |
 | 发现用户(总体推荐) | `/ajax/discovery/users` | ✅ | ✅ | ✅ | 推荐给当前账户 |
 | 关注用户 | `/bookmark_add.php` | ✅ | ✅ | ✅ | POST请求 |
 | 取消关注 | `/rpc_group_setting.php` | ✅ | ✅ | ✅ | POST请求 |
 
-### BookmarkApi - 收藏相关 API (8/8) ✅
+### BookmarkApi - 收藏相关 API (10/10) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
+| 查询用户收藏的插画 | `/ajax/user/{userId}/illusts/bookmarks` | ✅ | ✅ | ✅ | 支持公开/非公开+标签筛选 |
+| 查询用户收藏的小说 | `/ajax/user/{userId}/novels/bookmarks` | ✅ | ✅ | ✅ | 支持公开/非公开+标签筛选 |
 | 添加插画收藏 | `/ajax/illusts/bookmarks/add` | ✅ | ✅ | ✅ | 支持公开/非公开+标签 |
 | 删除插画收藏 | `/ajax/illusts/bookmarks/delete` | ✅ | ✅ | ✅ | 单个删除 |
 | 批量删除插画收藏 | `/ajax/illusts/bookmarks/delete` | ✅ | ✅ | ✅ | 批量删除 |
@@ -110,14 +116,21 @@
 | 发表小说评论 | `/rpc/post_comment.php` | ✅ | ✅ | ✅ | 文字+表情 |
 | 删除小说评论 | `/rpc_delete_comment.php` | ✅ | ✅ | ✅ | 删除自己的评论 |
 
-### NovelApi - 小说相关 API (4/4) ✅
+### NovelApi - 小说相关 API (3/3) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
 | 获取小说详情 | `/ajax/novel/{novelId}` | ✅ | ✅ | ✅ | 完整小说信息 |
 | 获取小说收藏状态 | `/ajax/novel/{novelId}/bookmarkData` | ✅ | ✅ | ✅ | 收藏状态 |
-| 搜索小说 | `/ajax/search/novels/{keyword}` | ✅ | ✅ | ✅ | 支持排序和筛选 |
 | 发现小说 | `/ajax/discovery/novels` | ✅ | ✅ | ✅ | 编辑精选 |
+
+### SearchApi - 搜索相关 API (3/3) ✅
+
+| 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
+|-----|------|------|------|---------|------|
+| 搜索作品 | `/ajax/search/artworks/{keyword}` | ✅ | ✅ | ✅ | 支持排序和筛选 |
+| 搜索小说 | `/ajax/search/novels/{keyword}` | ✅ | ✅ | ✅ | 支持排序和筛选 |
+| 搜索用户 | `/ajax/search/users/{keyword}` | ✅ | ✅ | ✅ | 根据昵称搜索用户 |
 
 ### FollowApi - 关注相关 API (4/4) ✅
 
@@ -178,6 +191,11 @@
 ---
 
 ## 📝 重大更新记录
+
+### 2025-12-23
+- 📄 **文档重组**: 整合 API 测试相关文档，保留 API测试工具使用指南 作为唯一的使用指南
+- ✅ **SearchApi 模块化**: 将搜索相关 API 独立为 SearchApi 模块（3个方法）
+- 📊 **测试完成**: 所有 64 个 API 方法已完成测试，测试覆盖率 100%
 
 ### 2025-11-20
 - ✅ NovelSeriesApi 所有 DTO 完全重构
@@ -332,6 +350,19 @@ suggestions.body.candidates.forEach { candidate ->
 
 ---
 
+## 🎯 测试工具说明
+
+本项目内置的 API 测试工具支持所有 64 个 API 方法的测试，测试工具位于应用的设置页面中。通过测试工具可以：
+
+1. **直接调用真实 API** - 实时验证 API 功能
+2. **查看格式化结果** - 摘要视图和 JSON 原始数据
+3. **调试 DTO 问题** - 完整的错误堆栈跟踪
+4. **验证参数配置** - 动态参数表单，支持下拉和文本输入
+
+详细使用方法请参考：[API测试工具使用指南](../guides/API测试工具使用指南.md)
+
+---
+
 ## ⚠️ 已知问题和限制
 
 1. **小说排行榜**: 返回 HTML 需要解析 `__NEXT_DATA__`，如果 Pixiv 改变 HTML 结构可能需要更新解析器
@@ -350,5 +381,5 @@ suggestions.body.candidates.forEach { candidate ->
 
 ---
 
-> 💡 **提示**: API 详细使用方法请参考 [PIXIV_API_集成指南.md](../pixiv/PIXIV_API_集成指南.md)
+> 💡 **提示**: API 详细使用方法和代码集成指南请参考 [API测试工具使用指南.md](../guides/API测试工具使用指南.md)
 

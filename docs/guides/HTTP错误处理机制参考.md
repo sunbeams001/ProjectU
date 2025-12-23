@@ -884,7 +884,7 @@ println("📝 响应内容: ${response.bodyAsText()}")
 
 | 文档 | 说明 |
 |------|------|
-| [PIXIV_API_集成指南.md](../pixiv/PIXIV_API_集成指南.md) | Pixiv API 使用指南 |
+| [API测试工具使用指南.md](./API测试工具使用指南.md) | API 使用和代码集成指南 |
 | [API_STATUS.md](../shared/API_STATUS.md) | API 状态和方法列表 |
 | [项目架构参考文档.md](../project/项目架构参考文档.md) | 项目整体架构 |
 

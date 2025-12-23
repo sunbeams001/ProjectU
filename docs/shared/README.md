@@ -12,7 +12,6 @@
 | 文档 | 文件名 | 内容 | 用途 |
 |------|--------|------|------|
 | 🔧 **技术栈** | `TECH_STACK.md` | 所有技术栈版本信息、依赖关系、平台要求 | 版本管理、技术选型参考 |
-| 📊 **开发状态** | `DEVELOPMENT_STATUS.md` | 功能模块完成度、待办事项、已知问题、路线图 | 进度跟踪、任务管理 |
 | 🌐 **API 状态** | `API_STATUS.md` | Pixiv API 集成状态、方法签名、使用示例 | API 开发参考 |
 
 ---
@@ -46,19 +45,16 @@ docs/
 ├── shared/ ⭐ 共享文档中心
 │   ├── README.md                   # 本文档
 │   ├── TECH_STACK.md               # 技术栈版本 (单一来源)
-│   ├── DEVELOPMENT_STATUS.md       # 开发状态 (单一来源)
 │   └── API_STATUS.md               # API 状态 (单一来源)
 │
 ├── project/
 │   └── 项目架构参考文档.md          # 架构说明 (引用共享文档)
 │
-├── pixiv/
-│   └── PIXIV_API_集成指南.md        # API 使用指南 (引用 API_STATUS.md)
-│
 ├── settings/
 │   └── 设置系统架构.md              # 设置实现细节 (引用共享文档)
 │
 └── guides/
+    ├── API测试工具使用指南.md       # API 文档和测试工具
     └── 自适应布局指南.md            # 布局开发指南 (引用共享文档)
 ```
 
@@ -90,11 +86,8 @@ git commit -m "chore: upgrade Kotlin to 2.2.21"
 **示例**: 完成 Pixiv 登录功能
 
 ```bash
-# 1. 更新开发状态
-vim docs/shared/DEVELOPMENT_STATUS.md
-# 修改: 
-# - [ ] Pixiv 登录 → [x] Pixiv 登录
-# 更新完成度百分比
+# 1. 实现功能代码
+vim composeApp/src/.../screens/login/LoginScreen.kt
 
 # 2. 提交
 git commit -m "feat: complete Pixiv login"
@@ -135,7 +128,7 @@ vim docs/settings/设置系统架构.md
 # 项目架构文档
 
 > 🔧 技术栈: [../shared/TECH_STACK.md](../shared/TECH_STACK.md)
-> 📊 开发状态: [../shared/DEVELOPMENT_STATUS.md](../shared/DEVELOPMENT_STATUS.md)
+> 🌐 API 状态: [../shared/API_STATUS.md](../shared/API_STATUS.md)
 
 ## 技术栈
 
@@ -148,7 +141,7 @@ vim docs/settings/设置系统架构.md
 |------------|---------|
 | `docs/README.md` | `./shared/TECH_STACK.md` |
 | `docs/project/项目架构参考文档.md` | `../shared/TECH_STACK.md` |
-| `docs/pixiv/PIXIV_API_集成指南.md` | `../shared/API_STATUS.md` |
+| `docs/guides/API测试工具使用指南.md` | `../shared/API_STATUS.md` |
 
 ---
 
@@ -156,7 +149,7 @@ vim docs/settings/设置系统架构.md
 
 ### ✅ 应该做
 
-1. **更新共享文档**: 技术栈、开发状态、API 变更优先更新共享文档
+1. **更新共享文档**: 技术栈、API 变更优先更新共享文档
 2. **使用相对路径**: 保证链接在不同环境下都能正常工作
 3. **添加元信息**: 为文档添加更新日期和相关文档链接
 4. **保持同步**: 更新代码后及时更新对应的共享文档

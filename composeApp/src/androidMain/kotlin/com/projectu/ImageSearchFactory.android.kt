@@ -12,7 +12,7 @@ actual fun createImageSearchScreen(imageUri: String): Screen? {
 }
 
 /**
- * Android 平台的 ascii2d 搜索 Screen 创建器
+ * Android 平台的 Ascii2d 搜索 Screen 创建器
  */
 actual fun createAscii2dSearchScreen(imageUri: String): Screen? {
     return Ascii2dSearchScreen(imageUri)

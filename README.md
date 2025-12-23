@@ -1,27 +1,29 @@
 # ProjectU - Pixiv Kotlin Multiplatform Client
 
-> 📅 最后更新: 2025-10-30  
-> 🚀 当前版本: v0.1.0-alpha  
+> 📅 最后更新: 2025-12-23  
+> 🚀 当前版本: v1.0.0  
 > 📱 支持平台: Android (API 24+) | Desktop (Windows/Mac/Linux)
 
-一个使用 Kotlin Compose Multiplatform 开发的现代化跨平台 Pixiv 客户端。
+一个功能完整的 Pixiv 客户端应用，使用 Kotlin Compose Multiplatform 开发，提供现代化的界面体验和丰富的功能。
 
 ---
 
 ## 🎯 项目简介
 
-ProjectU 是一个功能完整的 Pixiv 客户端应用，采用最新的跨平台技术栈和最佳架构实践。
+ProjectU 是一个开源的跨平台 Pixiv 客户端，采用最新的跨平台技术栈构建，提供完整的作品浏览、搜索、下载等功能。
 
 ### ✨ 核心特性
 
-- 🎨 **真正的跨平台** - 一套代码，支持 Android 和 Desktop
-- �️ **Clean Architecture** - MVI 模式 + 三层架构设计
-- 🎭 **Material Design 3** - 现代化 UI，深色/浅色主题
-- 🌍 **完整多语言** - 简中/繁中/英文/日文/韩文
-- � **Pixiv Web API** - 完整集成官方 Web API
-- 🎬 **Ugoira 支持** - Pixiv 动图下载和播放
-- 📱 **响应式设计** - 手机/平板/桌面自适应布局
-- 💾 **数据持久化** - Room 数据库 + DataStore 配置
+- 🎨 **真正的跨平台** - 一套代码，同时支持 Android 和 Desktop（Windows/Mac/Linux）
+- 🏛️ **Clean Architecture** - MVI 模式 + 三层架构设计，代码结构清晰
+- 🎭 **Material Design 3** - 现代化 UI，支持深色/浅色主题切换
+- 🌍 **完整多语言** - 支持简体中文/繁体中文/English/日本語/한국어
+- 🌐 **Pixiv Web API** - 完整集成 Pixiv Web API，支持95%以上的功能
+- 🎬 **Ugoira 支持** - 完整支持 Pixiv 动图（うごイラ）的播放，支持下载为 GIF 和 MP4 格式
+- 📱 **响应式设计** - 智能适配手机/平板/桌面不同屏幕尺寸
+- 💾 **智能缓存** - Room 数据库 + 文件缓存系统，流畅的离线体验
+- 📥 **下载管理** - 支持自定义下载路径规则和文件命名规则
+- 🔍 **图片搜索** - 支持 SauceNAO 和 Ascii2d 以图搜图（Android）
 
 ## 🛠️ 技术栈
 
@@ -31,8 +33,8 @@ ProjectU 是一个功能完整的 Pixiv 客户端应用，采用最新的跨平�
 
 | 技术 | 版本 | 用途 |
 |-----|------|------|
-| Kotlin | 2.2.20 | 编程语言 |
-| Compose Multiplatform | 1.9.1 | UI 框架 |
+| Kotlin | 2.2.21 | 编程语言 |
+| Compose Multiplatform | 1.9.2 | UI 框架 |
 | Koin | 4.1.1 | 依赖注入 |
 | Ktor | 3.3.1 | HTTP 客户端 |
 | Room | 2.8.3 | 本地数据库 |
@@ -85,7 +87,7 @@ ProjectU/
 │
 ├── docs/                        # 项目文档
 │   ├── project/                 # 架构文档
-│   ├── pixiv/                   # API 文档
+│   ├── settings/                # 设置系统文档
 │   ├── shared/                  # 共用文档片段
 │   └── guides/                  # 开发指南
 │
@@ -112,7 +114,7 @@ ProjectU/
 ### 克隆项目
 
 ```bash
-git clone https://github.com/yourusername/ProjectU.git
+git clone https://github.com/sunbeams001/ProjectU.git
 cd ProjectU
 ```
 
@@ -151,39 +153,31 @@ build-desktop.bat     # Windows
 ./gradlew :composeApp:createDistributable
 ```
 
-### 配置 Pixiv API
+### 配置 Pixiv 登录
+
+首次运行应用后，需要登录 Pixiv 账号：
+
+**方式 1: 使用内置 Webview 登录（推荐）**
+
+1. 进入应用的 **登录** 页面
+2. 点击 **使用浏览器登录** 按钮
+3. 在弹出的 Webview 中输入 Pixiv 账号和密码
+4. 登录成功后自动获取凭据，无需手动操作
+
+**方式 2: 手动配置 PHPSESSID**
+
+如果 Webview 登录遇到问题，可以手动配置：
 
 1. 在浏览器中登录 [Pixiv](https://www.pixiv.net/)
-2. 打开开发者工具 → Application/Storage → Cookies
+2. 打开开发者工具（F12） → Application/Storage → Cookies
 3. 复制 `PHPSESSID` 的值
-4. 在应用设置中填入 PHPSESSID
+4. 在应用的设置页面中填入 PHPSESSID
 
-> 📖 详细配置: [docs/pixiv/PIXIV_API_集成指南.md](docs/pixiv/PIXIV_API_集成指南.md)
+配置完成后即可使用所有功能。
 
-### 配置 Release 签名（可选）
+> 📖 详细配置说明: [docs/guides/API测试工具使用指南.md](docs/guides/API测试工具使用指南.md)
 
-项目默认使用 debug 签名，如需发布正式版本，请配置 release 签名：
-
-```bash
-# 1. 复制签名配置模板
-cp keystore.properties.example keystore.properties
-
-# 2. 生成 keystore（如果还没有）
-keytool -genkey -v -keystore release.keystore -alias projectu \
-  -keyalg RSA -keysize 2048 -validity 10000
-
-# 3. 编辑 keystore.properties，填入你的签名信息
-
-# 4. 构建 Release APK
-./gradlew assembleRelease
-```
-
-**GitHub Actions 自动化构建**：
-- Debug 版本会在 PR 和推送时自动构建
-- Release 版本会在推送 tag（如 `v1.0.0`）时自动构建并发布
-- 签名信息通过 GitHub Secrets 安全存储，不会泄露
-
-> 📖 详细签名配置: [docs/guides/签名配置指南.md](docs/guides/签名配置指南.md)
+---
 
 ## 🏗️ 架构设计
 
@@ -237,58 +231,67 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 
 > 📖 详细架构文档: [docs/project/项目架构参考文档.md](docs/project/项目架构参考文档.md)
 
-## 🎬 核心功能
+##  主要功能
 
-### Ugoira 动图支持
+### 作品浏览
 
-Pixiv 的 Ugoira (うごイラ) 是一种特殊的动图格式，本项目提供完整支持：
+- **作品详情** - 查看作品完整信息、标签、相关作品
+- **图片查看器** - 支持缩放、全屏浏览
+- **Ugoira 动图** - 流畅播放 Pixiv 动图，支持暂停、播放控制
+- **推荐作品** - 基于个人喜好的智能推荐
+- **发现** - 探索新作品、新小说、新创作者
 
-1. **获取元数据** - 从 API 获取 ZIP URL 和帧延迟时间
-2. **下载和解压** - 下载 ZIP 文件并解压所有帧图片
-3. **缓存管理** - 智能缓存，避免重复下载
-4. **流畅播放** - 使用 `UgoiraPlayer` 组件按时序播放
+### 搜索功能
 
-### 多语言系统
+- **关键词搜索** - 搜索插画、漫画、Ugoira、小说
+- **高级筛选** - 支持多种排序方式，支持复杂筛选条件
+- **标签搜索** - 快速按标签查找作品
+- **以图搜图** - 使用 SauceNAO 和 Ascii2d 反向搜索图片来源（Android）
 
-使用 Compose Resources 官方多语言方案：
+### 排行榜
 
-| 语言 | 代码 | 状态 |
-|-----|------|------|
-| 简体中文 | zh-rCN | ✅ |
-| 繁体中文 | zh-rTW | ✅ |
-| English | en | ✅ |
-| 日本語 | ja | ✅ |
-| 한국어 | ko | ✅ |
+- **插画排行榜** - 日榜、周榜、月榜、新人榜
+- **小说排行榜** - 各类小说排行
+- **R-18 排行榜** - 支持成人内容排行（需配置）
+- **多维度筛选** - 按内容类型（插画/漫画/动图）筛选
 
-- **应用界面语言** 和 **Pixiv API 语言** 独立配置
-- 支持运行时动态切换，无需重启应用
-- 所有字符串统一管理，便于维护
+### 用户系统
 
-## 📊 开发进度
+- **用户主页** - 查看用户信息、作品列表、收藏
+- **关注系统** - 关注/取消关注创作者
+- **用户关系** - 查看关注列表、粉丝列表
+- **关注动态** - 查看关注用户的最新作品
 
-> 完整开发状态: [docs/shared/DEVELOPMENT_STATUS.md](docs/shared/DEVELOPMENT_STATUS.md)
+### 收藏管理
 
-### 已完成 ✅
+- **作品收藏** - 收藏插画、漫画、Ugoira
+- **小说收藏** - 收藏喜欢的小说
+- **收藏标签** - 为收藏添加自定义标签
+- **批量操作** - 批量管理收藏
 
-- ✅ 基础架构 (Clean Architecture + MVI)
-- ✅ UI 框架 (Material 3 + 响应式布局)
-- ✅ Pixiv Web API 完整集成
-- ✅ 数据持久化 (Room + DataStore)
-- ✅ 多语言系统 (5 种语言)
-- ✅ Ugoira 动图播放器
+### 系列作品
 
-### 开发中 🚧
+- **漫画系列** - 查看完整漫画系列，支持追更
+- **小说系列** - 阅读连载小说，追踪更新
 
-- 🚧 登录认证系统 (高优先级)
-- 🚧 作品列表页面 (高优先级)
-- 🚧 作品详情页面 (高优先级)
+### 下载功能
 
-### 计划中 📋
+- **下载路径规则** - 支持自定义下载路径，可按作品类型、作者等组织文件夹结构
+- **文件命名规则** - 灵活配置文件命名规则（作品ID、标题、作者等变量）
+- **下载队列** - 智能管理下载任务
+- **权限管理** - Android 存储权限自动处理
 
-- 📋 搜索功能
-- 📋 用户主页
-- 📋 排行榜页面
-- 📋 离线缓存优化
+### 评论互动
+
+- **查看评论** - 浏览作品评论
+- **评论管理** - 完整的评论功能支持
+
+### 设置与配置
+
+- **多语言切换** - 应用界面和 API 语言独立设置
+- **主题切换** - 浅色/深色/跟随系统
+- **Pixiv 配置** - PHPSESSID 登录凭据管理
+- **文件命名规则** - 自定义下载文件命名格式
 
 ---
 
@@ -296,16 +299,31 @@ Pixiv 的 Ugoira (うごイラ) 是一种特殊的动图格式，本项目提供
 
 > API 详细状态: [docs/shared/API_STATUS.md](docs/shared/API_STATUS.md)
 
-### 已集成 API ✅
+本项目完整集成了 Pixiv Web API，实现了 **64 个 API 方法**，测试覆盖率达 **100%**。
 
-| API 模块 | 功能 | 完成度 |
-|---------|------|--------|
-| **IllustApi** | 作品详情、搜索、推荐、发现、Ugoira | 100% |
-| **UserApi** | 用户信息、关注、作品列表、收藏列表 | 100% |
-| **BookmarkApi** | 添加/删除收藏、批量操作 | 100% |
-| **RankingApi** | 各类排行榜 (日/周/月/新人/R18) | 100% |
-| **CommentApi** | 评论功能 | 0% |
-| **NovelApi** | 小说功能 | 0% |
+### 已集成 API 模块
+
+| API 模块 | 功能 | 方法数 | 测试状态 |
+|---------|------|--------|---------|
+| **IllustApi** | 作品详情、推荐、发现、Ugoira | 7 | ✅ 100% |
+| **IllustSeriesApi** | 漫画系列详情、追更 | 3 | ✅ 100% |
+| **UserApi** | 用户信息、关注、作品列表、收藏、好P友 | 12 | ✅ 100% |
+| **BookmarkApi** | 添加/删除收藏、批量操作、标签管理 | 10 | ✅ 100% |
+| **RankingApi** | 插画排行榜、小说排行榜 | 2 | ✅ 100% |
+| **CommentApi** | 查看/发表/删除评论（插画+小说） | 8 | ✅ 100% |
+| **NovelApi** | 小说详情、收藏状态、发现 | 3 | ✅ 100% |
+| **FollowApi** | 关注用户最新作品、追更列表 | 4 | ✅ 100% |
+| **NovelSeriesApi** | 小说系列详情、内容列表、追更 | 5 | ✅ 100% |
+| **TagApi** | 标签搜索、标签建议、标签信息 | 4 | ✅ 100% |
+| **MarkerApi** | 小说阅读标记（稍后再读） | 3 | ✅ 100% |
+| **SearchApi** | 搜索作品、小说、用户 | 3 | ✅ 100% |
+
+**支持的排行榜类型**：
+- 一般排行：日榜、周榜、月榜、新人榜、原创、AI 作品
+- R-18 排行：R-18 日榜、周榜、AI 作品
+- R-18G 排行（重口向）
+
+**支持的内容类型**：插画、漫画、Ugoira 动图、小说
 
 ### 使用方法
 
@@ -322,48 +340,62 @@ val search = pixivApi.illustApi.searchArtworks("初音ミク")
 val ranking = pixivApi.rankingApi.getRanking(mode = "daily")
 ```
 
-> 📖 完整 API 文档: [docs/pixiv/PIXIV_API_集成指南.md](docs/pixiv/PIXIV_API_集成指南.md)
+> 📖 完整 API 文档: [docs/guides/API测试工具使用指南.md](docs/guides/API测试工具使用指南.md)
 
 ## 📚 项目文档
 
+完整的技术文档帮助您了解项目架构和实现细节：
+
 | 文档 | 说明 |
 |-----|------|
-| [项目架构参考文档](docs/project/项目架构参考文档.md) | 完整的架构设计和技术细节 ⭐⭐⭐ |
-| [签名配置指南](docs/guides/签名配置指南.md) | Release 签名配置和 GitHub Actions 集成 ⭐⭐ |
-| [AI 助手协作提示词](docs/AI_ASSISTANT_PROMPT.md) | 用于新 AI 对话的完整上下文 ⭐⭐ |
-| [Pixiv API 集成指南](docs/pixiv/PIXIV_API_集成指南.md) | API 使用文档和示例 ⭐⭐ |
-| [开发进度](docs/shared/DEVELOPMENT_STATUS.md) | 功能完成状态和待办事项 |
+| [项目架构参考文档](docs/project/项目架构参考文档.md) | 完整的架构设计和技术细节 |
 | [技术栈](docs/shared/TECH_STACK.md) | 依赖版本和技术选型 |
+| [API 测试工具使用指南](docs/guides/API测试工具使用指南.md) | API 使用文档和代码集成指南 |
 | [API 状态](docs/shared/API_STATUS.md) | Pixiv API 集成状态 |
 | [设置系统架构](docs/settings/设置系统架构.md) | 设置功能设计文档 |
 | [自适应布局指南](docs/guides/自适应布局指南.md) | 响应式布局实现 |
+| [下载系统设计文档](docs/guides/下载系统完整设计文档.md) | 下载功能架构说明 |
+
+---
+
+## 📸 截图
+
+_敬请期待，我们将在后续版本中添加应用截图_
 
 ---
 
 ## 🤝 参与贡献
 
-欢迎提交 Issue 和 Pull Request！
+欢迎为项目贡献代码、报告问题或提出建议！
 
-### 开发流程
+### 贡献方式
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+1. **报告问题** - 在 [Issues](https://github.com/sunbeams001/ProjectU/issues) 中报告 Bug 或提出功能建议
+2. **提交代码** - Fork 项目并提交 Pull Request
+3. **完善文档** - 帮助改进文档和使用指南
+4. **分享反馈** - 分享您的使用体验和建议
+
+### 提交 Pull Request
+
+1. Fork 本仓库到您的账号
+2. 创建特性分支：`git checkout -b feature/AmazingFeature`
+3. 提交更改：`git commit -m 'Add some AmazingFeature'`
+4. 推送到分支：`git push origin feature/AmazingFeature`
+5. 开启 Pull Request，描述您的更改
 
 ### 代码规范
 
-- 遵循 Kotlin 官方代码风格
-- 使用 MVI 架构模式
-- 所有功能必须支持 Android 和 Desktop 双平台
-- 添加新功能时更新相关文档
+- 遵循 Kotlin 官方代码风格指南
+- 使用 MVI 架构模式组织代码
+- 确保新功能同时支持 Android 和 Desktop 平台
+- 添加必要的注释和文档
+- 提交前运行测试确保代码质量
 
 ---
 
-## 📄 许可证
+## ⚠️ 免责声明
 
-本项目仅供学习和研究使用。请遵守 Pixiv 的使用条款。
+本项目仅供学习和研究使用，请遵守 Pixiv 的服务条款和使用规则。作者不对使用本软件产生的任何问题负责。
 
 ---
 
