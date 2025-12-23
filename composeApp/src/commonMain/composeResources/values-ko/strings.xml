@@ -188,7 +188,7 @@
     <string name="login_help">PHPSESSID 얻는 방법</string>
     <string name="login_help_step1">1. 브라우저에서 https://www.pixiv.net/ 을 열고 로그인</string>
     <string name="login_help_step2">2. 개발자 도구 열기 (F12)</string>
-    <string name="login_help_step3">3. Application/Storage → Cookies → https://www.pixiv.net 이동</string>
+    <string name="login_help_step3">3. 쿠키 목록에서 PHPSESSID를 찾아 값을 복사</string>
     <string name="login_help_step4">4. \'PHPSESSID\' 값을 복사 (형식: 12345678_xxxx)</string>
     <string name="login_help_warning">⚠️ 경고: PHPSESSID를 다른 사람과 공유하지 마세요!</string>
     <string name="login_error_invalid_format">잘못된 PHPSESSID 형식입니다. 예상 형식: userid_xxxxx</string>
@@ -200,7 +200,7 @@
     <string name="settings_account">계정</string>
     <string name="settings_user_id">사용자 ID</string>
     <string name="settings_phpsessid">PHPSESSID</string>
-    <string name="settings_phpsessid_desc">Pixiv API 로그인 자격 증명</string>
+    <string name="settings_phpsessid_desc">Pixiv 로그인 자격 증명（쿠키에서 가져오기）</string>
     <string name="settings_not_logged_in">로그인하지 않음</string>
     <string name="settings_unknown">알 수 없음</string>
     <string name="settings_edit_phpsessid">PHPSESSID 편집</string>
@@ -538,5 +538,274 @@
     <string name="emoji_button">이모지</string>
     <string name="emoji_tab_emoji">이모지</string>
     <string name="emoji_tab_stamp">스탬프</string>
+
+    <!-- Add (Missing entries - needs translation) -->
+    <!-- Add/Edit Rule Dialog -->
+    <string name="add_rule_title">규칙 추가</string>
+
+    <!-- Bookmark (Missing entries - needs translation) -->
+    <string name="bookmark_count_1000">북마크 1000+</string>
+    <string name="bookmark_count_10000">북마크 10000+</string>
+    <string name="bookmark_count_100000">북마크 100000+</string>
+    <string name="bookmark_count_2000">북마크 2000+</string>
+    <string name="bookmark_count_20000">북마크 20000+</string>
+    <string name="bookmark_count_500">북마크 500+</string>
+    <string name="bookmark_count_5000">북마크 5000+</string>
+    <string name="bookmark_count_50000">북마크 50000+</string>
+    <string name="bookmark_count_7500">북마크 7500+</string>
+    <string name="bookmark_count_none">제한 없음</string>
+    <!-- Bookmark Dialog -->
+    <string name="bookmark_max_tags">태그는 최대 10개까지 추가할 수 있습니다</string>
+
+    <!-- Common (Missing entries - needs translation) -->
+    <string name="common_back">뒤로</string>
+    <string name="common_close">닫기</string>
+
+    <!-- Date (Missing entries - needs translation) -->
+    <string name="date_cancel">취소</string>
+    <string name="date_clear">지우기</string>
+    <string name="date_confirm">확인</string>
+    <string name="date_empty_means_unlimited">비워두면 제한 없음</string>
+    <string name="date_end">종료 날짜</string>
+    <string name="date_format_example">예: 2024-01-01</string>
+    <string name="date_format_hint">yyyy-MM-dd</string>
+    <string name="date_select">날짜 선택</string>
+    <string name="date_select_title">날짜 선택</string>
+    <string name="date_start">시작 날짜</string>
+    <string name="date_unlimited">제한 없음</string>
+
+    <!-- Desktop (Missing entries - needs translation) -->
+    <!-- Desktop Path Picker -->
+    <string name="desktop_select_download_dir">다운로드 디렉토리 선택</string>
+
+    <!-- Download (Missing entries - needs translation) -->
+    <string name="download_all">전체</string>
+    <string name="download_completed">완료됨</string>
+    <string name="download_delete">삭제</string>
+    <string name="download_downloading">다운로드 중</string>
+    <string name="download_failed">실패</string>
+    <string name="download_filter">필터</string>
+    <!-- Download Management -->
+    <string name="download_management">다운로드 관리</string>
+    <string name="download_no_tasks">다운로드 작업 없음</string>
+    <string name="download_no_tasks_filter">이 상태의 작업 없음</string>
+    <string name="download_novel">소설 다운로드</string>
+    <string name="download_pause">일시 중지</string>
+    <string name="download_paused">일시 중지됨</string>
+    <string name="download_retry">재시도</string>
+    <string name="download_rules_add">규칙 추가</string>
+    <string name="download_rules_add_failed">규칙 추가 실패</string>
+    <string name="download_rules_ai_generation">AI 생성</string>
+    <string name="download_rules_author_grouping">작가 그룹화</string>
+    <string name="download_rules_delete_confirm_message">이 규칙을 삭제하시겠습니까?</string>
+    <string name="download_rules_delete_confirm_title">규칙 삭제</string>
+    <string name="download_rules_delete_failed">규칙 삭제 실패</string>
+    <string name="download_rules_no_custom">사용자 정의 규칙 없음</string>
+    <string name="download_rules_reorder_failed">순서 변경 실패</string>
+    <string name="download_rules_resource_type">리소스 유형</string>
+    <string name="download_rules_rule_number">규칙 #%1$d</string>
+    <string name="download_rules_save_path">저장 경로</string>
+    <!-- Download Rules -->
+    <string name="download_rules_title">다운로드 경로 규칙</string>
+    <string name="download_rules_toggle_failed">규칙 전환 실패</string>
+    <string name="download_rules_update_failed">규칙 업데이트 실패</string>
+    <string name="download_rules_use_default">기본 규칙 사용（리소스 유형별）</string>
+    <string name="download_series_as_epub">시리즈를 EPUB로 다운로드</string>
+    <string name="download_start">시작</string>
+
+    <!-- Edit (Missing entries - needs translation) -->
+    <string name="edit_rule_title">규칙 편집</string>
+
+    <!-- Filename (Missing entries - needs translation) -->
+    <string name="filename_example_prefix">예：%1$s</string>
+    <string name="filename_mode_custom">사용자 정의 템플릿</string>
+    <string name="filename_mode_standard">표준 모드</string>
+    <string name="filename_notes_content">• 일러스트/만화는 {p}를 유지해야 합니다. 그렇지 않으면 다중 페이지 작품에서 파일 이름 충돌이 발생합니다\n• 우고이라/소설은 {p}를 자동으로 무시합니다\n• 특수 문자는 자동으로 밑줄로 대체됩니다</string>
+    <string name="filename_notes_title">⚠️ 주의사항</string>
+    <string name="filename_preview_title">미리보기 효과</string>
+    <string name="filename_quick_insert">빠른 삽입：</string>
+    <string name="filename_rules_description">다운로드 파일의 이름 규칙을 설정합니다. 표준 모드는 기본 형식을 사용하고, 사용자 정의 모드는 변수를 자유롭게 조합할 수 있습니다.</string>
+    <string name="filename_rules_multi_page_hint">💡 다중 페이지 리소스（일러스트, 만화）는 페이지 번호를 유지하여 다른 페이지를 구분합니다</string>
+    <string name="filename_rules_single_page_hint">💡 단일 페이지 리소스（우고이라, 소설）는 페이지 번호 변수를 자동으로 무시합니다</string>
+    <string name="filename_rules_title">파일 이름 규칙</string>
+    <string name="filename_template_available_variables">사용 가능한 변수（아래 버튼을 클릭하여 삽입）：</string>
+    <string name="filename_template_close">닫기</string>
+    <string name="filename_template_custom">사용자 정의 템플릿</string>
+    <string name="filename_template_desc">다운로드 파일의 이름 지정 방법 설정</string>
+    <string name="filename_template_error_empty">템플릿은 비워둘 수 없습니다</string>
+    <string name="filename_template_error_invalid_chars">템플릿에는 특수 문자를 포함할 수 없습니다: \ / : * ? " &lt; &gt; |</string>
+    <string name="filename_template_error_no_required">템플릿에는 {id} 또는 {title} 변수가 포함되어야 합니다</string>
+    <string name="filename_template_example_landscape">풍경</string>
+    <string name="filename_template_example_manga_title">만화 제목</string>
+    <string name="filename_template_example_novel_title">소설 제목</string>
+    <string name="filename_template_example_prefix">예: %1$s</string>
+    <string name="filename_template_example_type_colon">%1$s：</string>
+    <string name="filename_template_example_ugoira_title">우고이라 제목</string>
+    <string name="filename_template_label">템플릿</string>
+    <string name="filename_template_notes">⚠️ Notes</string>
+    <string name="filename_template_preview">미리보기</string>
+    <string name="filename_template_quick_insert">빠른 삽입：</string>
+    <string name="filename_template_recommended">권장</string>
+    <!-- File Name Template -->
+    <string name="filename_template_standard_mode">표준 모드（권장）</string>
+    <!-- Additional File Naming Strings -->
+    <string name="filename_template_title">📝 파일 이름 규칙</string>
+    <string name="filename_template_type_illustration">일러스트</string>
+    <string name="filename_template_type_manga_p1">만화P1</string>
+    <string name="filename_template_type_manga_p2">만화P2</string>
+    <string name="filename_template_type_novel">소설</string>
+    <string name="filename_template_type_ugoira">우고이라</string>
+    <string name="filename_template_var_ai">AI 식별자</string>
+    <string name="filename_template_var_ai_example">AI 또는 공백</string>
+    <string name="filename_template_var_artist_name">아티스트 이름</string>
+    <string name="filename_template_var_author_id">작가 ID</string>
+    <string name="filename_template_var_author_name">작가 이름</string>
+    <string name="filename_template_var_download_date">다운로드 날짜</string>
+    <string name="filename_template_var_id">작품 ID</string>
+    <string name="filename_template_var_p">페이지 번호（0부터 시작）</string>
+    <string name="filename_template_var_publish_date">게시 날짜</string>
+    <string name="filename_template_var_r18">R-18 식별자</string>
+    <string name="filename_template_var_r18_example">R-18 또는 공백</string>
+    <string name="filename_template_var_tags">작품 태그</string>
+    <string name="filename_template_var_tags_example">풍경_자연</string>
+    <string name="filename_template_var_title">작품 제목</string>
+    <string name="filename_template_variables_info">변수 설명</string>
+    <string name="filename_var_ai">AI 식별자</string>
+    <string name="filename_var_ai_example">AI 또는 공백</string>
+    <string name="filename_var_author_id">작가 ID</string>
+    <string name="filename_var_author_name">작가 이름</string>
+    <string name="filename_var_author_name_example">아티스트 이름</string>
+    <string name="filename_var_download_date">다운로드 날짜</string>
+    <string name="filename_var_id">작품 ID</string>
+    <string name="filename_var_page">페이지 번호（0부터）</string>
+    <string name="filename_var_publish_date">게시 날짜</string>
+    <string name="filename_var_r18">R-18 식별자</string>
+    <string name="filename_var_r18_example">R-18 또는 공백</string>
+    <string name="filename_var_tags">작품 태그</string>
+    <string name="filename_var_tags_example">풍경_자연</string>
+    <string name="filename_var_title">작품 제목</string>
+    <string name="filename_var_title_example">풍경화</string>
+    <string name="filename_variable_help">변수 가이드</string>
+    <string name="filename_variables_desc">사용 가능한 변수（아래 버튼을 클릭하여 삽입）：</string>
+    <string name="filename_variables_title">📋 파일 이름 변수</string>
+
+    <!-- Login (Missing entries - needs translation) -->
+    <string name="login_or_divider">또는</string>
+    <string name="login_webview_button">브라우저로 로그인</string>
+    <string name="login_webview_error_cookie">쿠키 추출 실패</string>
+    <string name="login_webview_error_credentials">로그인 자격 증명을 가져올 수 없습니다. 다시 시도하세요</string>
+    <string name="login_webview_extracting">로그인 자격 증명 추출 중...</string>
+    <string name="login_webview_hint">✨ 팁: 브라우저에서 로그인하면 자동으로 로그인 자격 증명을 추출합니다</string>
+    <string name="login_webview_title">Pixiv 로그인</string>
+
+    <!-- Novel (Missing entries - needs translation) -->
+    <string name="novel_download_image_quality_large">Large (1200px)</string>
+    <string name="novel_download_image_quality_medium">Medium (480px)</string>
+    <string name="novel_download_image_quality_original">Original</string>
+    <string name="novel_download_image_quality_small">Small (240px)</string>
+    <string name="novel_epub_illustration_id">일러스트 ID: %1$s</string>
+    <string name="novel_epub_image_download_failed">이미지 다운로드 실패: %1$s</string>
+    <string name="novel_epub_image_id">이미지 ID: %1$s</string>
+    <!-- Novel to EPUB -->
+    <string name="novel_epub_page_title">%1$s - %2$d페이지</string>
+    <string name="novel_page">%1$d페이지</string>
+
+    <!-- Other (Missing entries - needs translation) -->
+    <string name="close">닫기</string>
+    <string name="recommended">추천</string>
+
+    <!-- Resource (Missing entries - needs translation) -->
+    <string name="resource_type_any">모두</string>
+    <!-- Resource Types -->
+    <string name="resource_type_illustration">일러스트</string>
+    <string name="resource_type_manga">만화</string>
+    <string name="resource_type_novel">소설</string>
+    <string name="resource_type_novel_series">소설 시리즈</string>
+    <string name="resource_type_ugoira">우고이라</string>
+
+    <!-- Rule (Missing entries - needs translation) -->
+    <string name="rule_ai_filter">AI 생성 필터</string>
+    <string name="rule_author_grouping">작가 그룹화</string>
+    <string name="rule_filter_any">모두</string>
+    <string name="rule_filter_must_be">필수</string>
+    <string name="rule_filter_must_not_be">제외</string>
+    <string name="rule_grouping_by_id">작가 ID별 그룹화</string>
+    <string name="rule_grouping_by_name">작가 이름별 그룹화</string>
+    <string name="rule_grouping_none">그룹화 안 함</string>
+    <string name="rule_r18_filter">R-18 필터</string>
+    <string name="rule_resource_types_hint">리소스 유형（다중 선택 가능, 비워두면 모든 유형 일치）</string>
+    <string name="rule_save_path">저장 경로</string>
+    <string name="rule_select_path">경로 선택</string>
+
+    <!-- Search (Missing entries - needs translation) -->
+    <!-- Search Filters: Bookmark Count -->
+    <string name="search_bookmark_count">북마크 수</string>
+    <string name="search_close">닫기</string>
+    <string name="search_content_rating">콘텐츠 등급</string>
+    <!-- Search Filters: Date Range -->
+    <string name="search_date_range">날짜 범위</string>
+    <string name="search_failed">검색 실패</string>
+    <string name="search_filter_ai_desc">AI 생성 일러스트 및 소설 필터링</string>
+    <string name="search_filter_no_works">작품이 없는 사용자 필터링</string>
+    <string name="search_hide_ai_works">AI 생성 작품 숨기기</string>
+    <string name="search_history_copy">복사</string>
+    <string name="search_history_pin">고정</string>
+    <string name="search_history_unpin">고정 해제</string>
+    <string name="search_mode">검색 모드</string>
+    <string name="search_mode_keyword">태그, 제목, 설명</string>
+    <string name="search_mode_keyword_desc">태그, 제목, 설명에서 검색</string>
+    <string name="search_mode_tag_full">태그（완전 일치）</string>
+    <string name="search_mode_tag_full_desc">태그에서 완전 일치 검색</string>
+    <!-- Search Mode -->
+    <string name="search_mode_tag_partial">태그（부분 일치）</string>
+    <string name="search_mode_tag_partial_desc">태그에서 부분 일치 검색</string>
+    <string name="search_mode_text">본문</string>
+    <string name="search_mode_text_desc">소설 본문에서 검색</string>
+    <string name="search_mode_title_caption">제목, 설명</string>
+    <string name="search_mode_title_caption_desc">제목과 설명에서 검색</string>
+    <string name="search_mode_user_exact">완전 일치</string>
+    <string name="search_mode_user_exact_desc">사용자 이름 완전 일치</string>
+    <string name="search_mode_user_partial">부분 일치</string>
+    <string name="search_mode_user_partial_desc">사용자 이름 부분 일치</string>
+    <string name="search_no_results">검색 결과 없음</string>
+    <string name="search_only_users_with_works">작품이 있는 사용자만 표시</string>
+    <!-- Search -->
+    <string name="search_placeholder">일러스트, 소설 또는 사용자 검색...</string>
+    <string name="search_rating_all">전체</string>
+    <string name="search_rating_safe">전체 연령</string>
+    <string name="search_sort_date_asc">오래된순</string>
+    <string name="search_sort_date_desc">최신순</string>
+    <string name="search_sort_order">정렬 순서</string>
+    <string name="search_sort_popular_desc">인기순</string>
+    <string name="search_sort_popular_female_desc">여성에게 인기</string>
+    <string name="search_sort_popular_male_desc">남성에게 인기</string>
+    <string name="search_sort_premium_required">프리미엄 회원 필요</string>
+    <string name="search_tab_illust">일러스트+만화+우고이라</string>
+    <string name="search_tab_novel">소설</string>
+    <string name="search_tab_user">사용자</string>
+
+    <!-- Select (Missing entries - needs translation) -->
+    <string name="select_download_directory">다운로드 디렉토리 선택</string>
+
+    <!-- Settings (Missing entries - needs translation) -->
+    <!-- Settings - Download -->
+    <string name="settings_download">다운로드 설정</string>
+    <string name="settings_download_management_desc">모든 다운로드 작업 보기 및 관리</string>
+    <string name="settings_download_management_subtitle">다운로드 작업 관리</string>
+    <string name="settings_download_management_title">다운로드 관리</string>
+    <string name="settings_download_path">다운로드 경로</string>
+    <string name="settings_download_path_default">기본 경로 사용</string>
+    <string name="settings_download_path_desc">작품 다운로드 저장 기본 경로 설정</string>
+    <string name="settings_download_rules_desc">다운로드 경로 규칙 사용자 정의</string>
+    <string name="settings_download_rules_subtitle">다운로드 경로 규칙 사용자 정의</string>
+    <string name="settings_download_rules_title">다운로드 경로 규칙</string>
+    <string name="settings_file_name_mode_custom">사용자 정의: %1$s</string>
+    <string name="settings_file_name_mode_standard">표준 모드</string>
+    <string name="settings_file_name_rules">파일 이름 규칙</string>
+    <string name="settings_file_name_rules_desc">다운로드 파일의 이름 형식 설정</string>
+    <string name="settings_file_name_rules_title">파일 이름 규칙</string>
+    <!-- Settings - Novel Download Image Quality -->
+    <string name="settings_novel_download_image_quality">소설 다운로드 이미지 품질 설정</string>
+    <string name="settings_novel_download_image_quality_desc">소설을 EPUB로 다운로드할 때 포함된 이미지의 품질</string>
 </resources>
 

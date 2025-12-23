@@ -540,5 +540,274 @@
     <string name="emoji_button">絵文字</string>
     <string name="emoji_tab_emoji">絵文字</string>
     <string name="emoji_tab_stamp">スタンプ</string>
+
+    <!-- Add (Missing entries - needs translation) -->
+    <!-- Add/Edit Rule Dialog -->
+    <string name="add_rule_title">ルールを追加</string>
+
+    <!-- Bookmark (Missing entries - needs translation) -->
+    <string name="bookmark_count_1000">1000+ ブックマーク</string>
+    <string name="bookmark_count_10000">10000+ ブックマーク</string>
+    <string name="bookmark_count_100000">100000+ ブックマーク</string>
+    <string name="bookmark_count_2000">2000+ ブックマーク</string>
+    <string name="bookmark_count_20000">20000+ ブックマーク</string>
+    <string name="bookmark_count_500">500+ ブックマーク</string>
+    <string name="bookmark_count_5000">5000+ ブックマーク</string>
+    <string name="bookmark_count_50000">50000+ ブックマーク</string>
+    <string name="bookmark_count_7500">7500+ ブックマーク</string>
+    <string name="bookmark_count_none">制限なし</string>
+    <!-- Bookmark Dialog -->
+    <string name="bookmark_max_tags">タグは最大10個まで追加できます</string>
+
+    <!-- Common (Missing entries - needs translation) -->
+    <string name="common_back">戻る</string>
+    <string name="common_close">閉じる</string>
+
+    <!-- Date (Missing entries - needs translation) -->
+    <string name="date_cancel">キャンセル</string>
+    <string name="date_clear">クリア</string>
+    <string name="date_confirm">確認</string>
+    <string name="date_empty_means_unlimited">空白の場合制限なし</string>
+    <string name="date_end">終了日</string>
+    <string name="date_format_example">例: 2024-01-01</string>
+    <string name="date_format_hint">yyyy-MM-dd</string>
+    <string name="date_select">日付を選択</string>
+    <string name="date_select_title">日付を選択</string>
+    <string name="date_start">開始日</string>
+    <string name="date_unlimited">制限なし</string>
+
+    <!-- Desktop (Missing entries - needs translation) -->
+    <!-- Desktop Path Picker -->
+    <string name="desktop_select_download_dir">ダウンロードディレクトリを選択</string>
+
+    <!-- Download (Missing entries - needs translation) -->
+    <string name="download_all">すべて</string>
+    <string name="download_completed">完了</string>
+    <string name="download_delete">削除</string>
+    <string name="download_downloading">ダウンロード中</string>
+    <string name="download_failed">失敗</string>
+    <string name="download_filter">フィルター</string>
+    <!-- Download Management -->
+    <string name="download_management">ダウンロード管理</string>
+    <string name="download_no_tasks">ダウンロードタスクがありません</string>
+    <string name="download_no_tasks_filter">この状態のタスクはありません</string>
+    <string name="download_novel">小説をダウンロード</string>
+    <string name="download_pause">一時停止</string>
+    <string name="download_paused">一時停止中</string>
+    <string name="download_retry">再試行</string>
+    <string name="download_rules_add">ルールを追加</string>
+    <string name="download_rules_add_failed">ルールの追加に失敗しました</string>
+    <string name="download_rules_ai_generation">AI生成</string>
+    <string name="download_rules_author_grouping">作者グループ化</string>
+    <string name="download_rules_delete_confirm_message">このルールを削除してもよろしいですか？</string>
+    <string name="download_rules_delete_confirm_title">ルールを削除</string>
+    <string name="download_rules_delete_failed">ルールの削除に失敗しました</string>
+    <string name="download_rules_no_custom">カスタムルールがありません</string>
+    <string name="download_rules_reorder_failed">順序の更新に失敗しました</string>
+    <string name="download_rules_resource_type">リソースタイプ</string>
+    <string name="download_rules_rule_number">ルール #%1$d</string>
+    <string name="download_rules_save_path">保存パス</string>
+    <!-- Download Rules -->
+    <string name="download_rules_title">ダウンロードパスルール</string>
+    <string name="download_rules_toggle_failed">ルールの切り替えに失敗しました</string>
+    <string name="download_rules_update_failed">ルールの更新に失敗しました</string>
+    <string name="download_rules_use_default">デフォルトルールを使用します（リソースタイプ別）</string>
+    <string name="download_series_as_epub">シリーズをEPUBとしてダウンロード</string>
+    <string name="download_start">開始</string>
+
+    <!-- Edit (Missing entries - needs translation) -->
+    <string name="edit_rule_title">ルールを編集</string>
+
+    <!-- Filename (Missing entries - needs translation) -->
+    <string name="filename_example_prefix">例：%1$s</string>
+    <string name="filename_mode_custom">カスタムテンプレート</string>
+    <string name="filename_mode_standard">標準モード</string>
+    <string name="filename_notes_content">• イラスト/マンガは {p} を保持する必要があります。そうしないと、複数ページの作品でファイル名の競合が発生します\n• うごイラ/小説は {p} を自動的に無視します\n• 特殊文字は自動的にアンダースコアに置き換えられます</string>
+    <string name="filename_notes_title">⚠️ 注意事項</string>
+    <string name="filename_preview_title">プレビュー効果</string>
+    <string name="filename_quick_insert">クイック挿入：</string>
+    <string name="filename_rules_description">ダウンロードファイルの命名規則を設定します。標準モードはデフォルト形式を使用し、カスタムモードでは変数を自由に組み合わせることができます。</string>
+    <string name="filename_rules_multi_page_hint">💡 複数ページリソース（イラスト、マンガ）はページ番号を保持して異なるページを区別します</string>
+    <string name="filename_rules_single_page_hint">💡 単ページリソース（うごイラ、小説）はページ番号変数を自動的に無視します</string>
+    <string name="filename_rules_title">ファイル命名規則</string>
+    <string name="filename_template_available_variables">使用可能な変数（下のボタンをクリックして挿入）：</string>
+    <string name="filename_template_close">閉じる</string>
+    <string name="filename_template_custom">カスタムテンプレート</string>
+    <string name="filename_template_desc">ダウンロードファイルの命名方法を設定</string>
+    <string name="filename_template_error_empty">テンプレートを空にすることはできません</string>
+    <string name="filename_template_error_invalid_chars">テンプレートには特殊文字を含めることができません: \ / : * ? " &lt; &gt; |</string>
+    <string name="filename_template_error_no_required">テンプレートには {id} または {title} 変数を含める必要があります</string>
+    <string name="filename_template_example_landscape">風景</string>
+    <string name="filename_template_example_manga_title">マンガタイトル</string>
+    <string name="filename_template_example_novel_title">小説タイトル</string>
+    <string name="filename_template_example_prefix">例: %1$s</string>
+    <string name="filename_template_example_type_colon">%1$s：</string>
+    <string name="filename_template_example_ugoira_title">うごイラタイトル</string>
+    <string name="filename_template_label">テンプレート</string>
+    <string name="filename_template_notes">⚠️ Notes</string>
+    <string name="filename_template_preview">プレビュー</string>
+    <string name="filename_template_quick_insert">クイック挿入：</string>
+    <string name="filename_template_recommended">推奨</string>
+    <!-- File Name Template -->
+    <string name="filename_template_standard_mode">標準モード（推奨）</string>
+    <!-- Additional File Naming Strings -->
+    <string name="filename_template_title">📝 ファイル命名規則</string>
+    <string name="filename_template_type_illustration">イラスト</string>
+    <string name="filename_template_type_manga_p1">マンガP1</string>
+    <string name="filename_template_type_manga_p2">マンガP2</string>
+    <string name="filename_template_type_novel">小説</string>
+    <string name="filename_template_type_ugoira">うごイラ</string>
+    <string name="filename_template_var_ai">AI識別子</string>
+    <string name="filename_template_var_ai_example">AIまたは空</string>
+    <string name="filename_template_var_artist_name">作者名</string>
+    <string name="filename_template_var_author_id">作者ID</string>
+    <string name="filename_template_var_author_name">作者名</string>
+    <string name="filename_template_var_download_date">ダウンロード日</string>
+    <string name="filename_template_var_id">作品ID</string>
+    <string name="filename_template_var_p">ページ番号（0から開始）</string>
+    <string name="filename_template_var_publish_date">公開日</string>
+    <string name="filename_template_var_r18">R-18識別子</string>
+    <string name="filename_template_var_r18_example">R-18または空</string>
+    <string name="filename_template_var_tags">作品タグ</string>
+    <string name="filename_template_var_tags_example">風景_自然</string>
+    <string name="filename_template_var_title">作品タイトル</string>
+    <string name="filename_template_variables_info">変数の説明</string>
+    <string name="filename_var_ai">AI識別子</string>
+    <string name="filename_var_ai_example">AIまたは空</string>
+    <string name="filename_var_author_id">作者ID</string>
+    <string name="filename_var_author_name">作者名</string>
+    <string name="filename_var_author_name_example">作者名</string>
+    <string name="filename_var_download_date">ダウンロード日</string>
+    <string name="filename_var_id">作品ID</string>
+    <string name="filename_var_page">ページ番号（0から）</string>
+    <string name="filename_var_publish_date">公開日</string>
+    <string name="filename_var_r18">R-18識別子</string>
+    <string name="filename_var_r18_example">R-18または空</string>
+    <string name="filename_var_tags">作品タグ</string>
+    <string name="filename_var_tags_example">風景_自然</string>
+    <string name="filename_var_title">作品タイトル</string>
+    <string name="filename_var_title_example">風景画</string>
+    <string name="filename_variable_help">変数ガイド</string>
+    <string name="filename_variables_desc">使用可能な変数（下のボタンをクリックして挿入）：</string>
+    <string name="filename_variables_title">📋 ファイル命名変数</string>
+
+    <!-- Login (Missing entries - needs translation) -->
+    <string name="login_or_divider">または</string>
+    <string name="login_webview_button">ブラウザでログイン</string>
+    <string name="login_webview_error_cookie">Cookieの抽出に失敗しました</string>
+    <string name="login_webview_error_credentials">ログイン認証情報を取得できません。再試行してください</string>
+    <string name="login_webview_extracting">ログイン認証情報を抽出中...</string>
+    <string name="login_webview_hint">✨ ヒント：ブラウザでログインすると、ログイン認証情報を自動的に抽出します</string>
+    <string name="login_webview_title">Pixivログイン</string>
+
+    <!-- Novel (Missing entries - needs translation) -->
+    <string name="novel_download_image_quality_large">Large (1200px)</string>
+    <string name="novel_download_image_quality_medium">Medium (480px)</string>
+    <string name="novel_download_image_quality_original">Original</string>
+    <string name="novel_download_image_quality_small">Small (240px)</string>
+    <string name="novel_epub_illustration_id">イラスト ID: %1$s</string>
+    <string name="novel_epub_image_download_failed">画像のダウンロードに失敗: %1$s</string>
+    <string name="novel_epub_image_id">画像 ID: %1$s</string>
+    <!-- Novel to EPUB -->
+    <string name="novel_epub_page_title">%1$s - %2$dページ</string>
+    <string name="novel_page">%1$dページ</string>
+
+    <!-- Other (Missing entries - needs translation) -->
+    <string name="close">閉じる</string>
+    <string name="recommended">おすすめ</string>
+
+    <!-- Resource (Missing entries - needs translation) -->
+    <string name="resource_type_any">任意</string>
+    <!-- Resource Types -->
+    <string name="resource_type_illustration">イラスト</string>
+    <string name="resource_type_manga">マンガ</string>
+    <string name="resource_type_novel">小説</string>
+    <string name="resource_type_novel_series">小説シリーズ</string>
+    <string name="resource_type_ugoira">うごイラ</string>
+
+    <!-- Rule (Missing entries - needs translation) -->
+    <string name="rule_ai_filter">AI生成フィルター</string>
+    <string name="rule_author_grouping">作者グループ化</string>
+    <string name="rule_filter_any">任意</string>
+    <string name="rule_filter_must_be">必須</string>
+    <string name="rule_filter_must_not_be">除外</string>
+    <string name="rule_grouping_by_id">作者IDでグループ化</string>
+    <string name="rule_grouping_by_name">作者名でグループ化</string>
+    <string name="rule_grouping_none">グループ化しない</string>
+    <string name="rule_r18_filter">R-18フィルター</string>
+    <string name="rule_resource_types_hint">リソースタイプ（複数選択可、空白はすべてのタイプに一致）</string>
+    <string name="rule_save_path">保存パス</string>
+    <string name="rule_select_path">パスを選択</string>
+
+    <!-- Search (Missing entries - needs translation) -->
+    <!-- Search Filters: Bookmark Count -->
+    <string name="search_bookmark_count">ブックマーク数</string>
+    <string name="search_close">閉じる</string>
+    <string name="search_content_rating">コンテンツレーティング</string>
+    <!-- Search Filters: Date Range -->
+    <string name="search_date_range">日付範囲</string>
+    <string name="search_failed">検索に失敗しました</string>
+    <string name="search_filter_ai_desc">AI生成されたイラストと小説をフィルター</string>
+    <string name="search_filter_no_works">作品を投稿していないユーザーをフィルター</string>
+    <string name="search_hide_ai_works">AI生成作品を非表示</string>
+    <string name="search_history_copy">コピー</string>
+    <string name="search_history_pin">ピン留め</string>
+    <string name="search_history_unpin">ピン留め解除</string>
+    <string name="search_mode">検索モード</string>
+    <string name="search_mode_keyword">タグ・タイトル・キャプション</string>
+    <string name="search_mode_keyword_desc">タグ・タイトル・キャプションで検索</string>
+    <string name="search_mode_tag_full">タグ（完全一致）</string>
+    <string name="search_mode_tag_full_desc">タグで完全一致検索</string>
+    <!-- Search Mode -->
+    <string name="search_mode_tag_partial">タグ（部分一致）</string>
+    <string name="search_mode_tag_partial_desc">タグで部分一致検索</string>
+    <string name="search_mode_text">本文</string>
+    <string name="search_mode_text_desc">小説本文で検索</string>
+    <string name="search_mode_title_caption">タイトル・キャプション</string>
+    <string name="search_mode_title_caption_desc">タイトルとキャプションで検索</string>
+    <string name="search_mode_user_exact">完全一致</string>
+    <string name="search_mode_user_exact_desc">ユーザー名の完全一致</string>
+    <string name="search_mode_user_partial">部分一致</string>
+    <string name="search_mode_user_partial_desc">ユーザー名の部分一致</string>
+    <string name="search_no_results">検索結果がありません</string>
+    <string name="search_only_users_with_works">作品があるユーザーのみ表示</string>
+    <!-- Search -->
+    <string name="search_placeholder">イラスト、小説、ユーザーを検索...</string>
+    <string name="search_rating_all">すべて</string>
+    <string name="search_rating_safe">全年齢</string>
+    <string name="search_sort_date_asc">古い順</string>
+    <string name="search_sort_date_desc">新しい順</string>
+    <string name="search_sort_order">並び順</string>
+    <string name="search_sort_popular_desc">人気順</string>
+    <string name="search_sort_popular_female_desc">女性に人気</string>
+    <string name="search_sort_popular_male_desc">男性に人気</string>
+    <string name="search_sort_premium_required">プレミアム会員が必要</string>
+    <string name="search_tab_illust">イラスト+マンガ+うごイラ</string>
+    <string name="search_tab_novel">小説</string>
+    <string name="search_tab_user">ユーザー</string>
+
+    <!-- Select (Missing entries - needs translation) -->
+    <string name="select_download_directory">ダウンロードディレクトリを選択</string>
+
+    <!-- Settings (Missing entries - needs translation) -->
+    <!-- Settings - Download -->
+    <string name="settings_download">ダウンロード設定</string>
+    <string name="settings_download_management_desc">すべてのダウンロードタスクを表示・管理</string>
+    <string name="settings_download_management_subtitle">ダウンロードタスクを管理</string>
+    <string name="settings_download_management_title">ダウンロード管理</string>
+    <string name="settings_download_path">ダウンロードパス</string>
+    <string name="settings_download_path_default">デフォルトパスを使用</string>
+    <string name="settings_download_path_desc">作品ダウンロードの保存パスを設定</string>
+    <string name="settings_download_rules_desc">ダウンロードパスルールをカスタマイズ</string>
+    <string name="settings_download_rules_subtitle">ダウンロードパスルールをカスタマイズ</string>
+    <string name="settings_download_rules_title">ダウンロードパスルール</string>
+    <string name="settings_file_name_mode_custom">カスタム: %1$s</string>
+    <string name="settings_file_name_mode_standard">標準モード</string>
+    <string name="settings_file_name_rules">ファイル名ルール</string>
+    <string name="settings_file_name_rules_desc">ダウンロードファイルの命名形式を設定</string>
+    <string name="settings_file_name_rules_title">ファイル命名規則</string>
+    <!-- Settings - Novel Download Image Quality -->
+    <string name="settings_novel_download_image_quality">小説ダウンロードの画像品質設定</string>
+    <string name="settings_novel_download_image_quality_desc">小説をEPUBとしてダウンロードする際の埋め込み画像の品質</string>
 </resources>
 
