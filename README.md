@@ -126,8 +126,12 @@ cd ProjectU
 build-android.bat     # Windows
 
 # 方式 2: 使用 Gradle
+# Debug 版本（开发测试）
 ./gradlew :composeApp:assembleDebug
 ./gradlew :composeApp:installDebug
+
+# Release 版本（正式发布）
+./gradlew :composeApp:assembleRelease
 
 # 方式 3: Android Studio
 # 打开项目后，点击 Run 按钮
@@ -155,6 +159,31 @@ build-desktop.bat     # Windows
 4. 在应用设置中填入 PHPSESSID
 
 > 📖 详细配置: [docs/pixiv/PIXIV_API_集成指南.md](docs/pixiv/PIXIV_API_集成指南.md)
+
+### 配置 Release 签名（可选）
+
+项目默认使用 debug 签名，如需发布正式版本，请配置 release 签名：
+
+```bash
+# 1. 复制签名配置模板
+cp keystore.properties.example keystore.properties
+
+# 2. 生成 keystore（如果还没有）
+keytool -genkey -v -keystore release.keystore -alias projectu \
+  -keyalg RSA -keysize 2048 -validity 10000
+
+# 3. 编辑 keystore.properties，填入你的签名信息
+
+# 4. 构建 Release APK
+./gradlew assembleRelease
+```
+
+**GitHub Actions 自动化构建**：
+- Debug 版本会在 PR 和推送时自动构建
+- Release 版本会在推送 tag（如 `v1.0.0`）时自动构建并发布
+- 签名信息通过 GitHub Secrets 安全存储，不会泄露
+
+> 📖 详细签名配置: [docs/guides/签名配置指南.md](docs/guides/签名配置指南.md)
 
 ## 🏗️ 架构设计
 
@@ -300,6 +329,7 @@ val ranking = pixivApi.rankingApi.getRanking(mode = "daily")
 | 文档 | 说明 |
 |-----|------|
 | [项目架构参考文档](docs/project/项目架构参考文档.md) | 完整的架构设计和技术细节 ⭐⭐⭐ |
+| [签名配置指南](docs/guides/签名配置指南.md) | Release 签名配置和 GitHub Actions 集成 ⭐⭐ |
 | [AI 助手协作提示词](docs/AI_ASSISTANT_PROMPT.md) | 用于新 AI 对话的完整上下文 ⭐⭐ |
 | [Pixiv API 集成指南](docs/pixiv/PIXIV_API_集成指南.md) | API 使用文档和示例 ⭐⭐ |
 | [开发进度](docs/shared/DEVELOPMENT_STATUS.md) | 功能完成状态和待办事项 |

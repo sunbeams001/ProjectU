@@ -1,0 +1,119 @@
+name: Build Release APK
+
+# 触发条件：推送版本标签（如 v1.0.0）
+on:
+  push:
+    tags:
+      - 'v*'
+
+# 权限配置：允许创建 Release
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      # 从 GitHub Secrets 解码 keystore
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+            echo "✓ Keystore decoded successfully"
+          else
+            echo "⚠ Warning: RELEASE_KEYSTORE_BASE64 secret not found"
+            echo "Release build will use debug signing"
+          fi
+      
+      # 构建 Release APK
+      - name: Build release APK
+        env:
+          RELEASE_KEYSTORE_FILE: ${{ github.workspace }}/release.keystore
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          ./gradlew assembleRelease --stacktrace
+      
+      # 清理临时 keystore 文件
+      - name: Cleanup keystore
+        if: always()
+        run: |
+          if [ -f release.keystore ]; then
+            rm -f release.keystore
+            echo "✓ Temporary keystore cleaned up"
+          fi
+      
+      # 获取版本信息
+      - name: Get version name
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+      
+      # 重命名 APK
+      - name: Rename APK
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          mv composeApp/build/outputs/apk/release/composeApp-release.apk \
+             composeApp/build/outputs/apk/release/ProjectU-${VERSION}.apk
+          echo "✓ APK renamed to ProjectU-${VERSION}.apk"
+      
+      # 上传到 Artifacts
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-${{ steps.version.outputs.version }}
+          path: composeApp/build/outputs/apk/release/ProjectU-${{ steps.version.outputs.version }}.apk
+          retention-days: 90
+      
+      # 创建 GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: composeApp/build/outputs/apk/release/ProjectU-${{ steps.version.outputs.version }}.apk
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## 📦 ProjectU ${{ steps.version.outputs.version }}
+            
+            ### 新增
+            1. ABC
+            2. DEF
+
+            ### 更新
+            1. ABC
+            2. DEF
+
+            ### 修复
+            1. ABC
+            2. DEF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build info
+        run: |
+          echo "✓ Release APK built successfully"
+          echo "📦 Artifact: ProjectU-${{ steps.version.outputs.version }}.apk"
+          echo "🔐 Signing: Release keystore"
+          echo "🚀 GitHub Release created"
+          ls -lh composeApp/build/outputs/apk/release/

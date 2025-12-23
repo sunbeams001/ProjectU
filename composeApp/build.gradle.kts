@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -103,6 +105,53 @@ android {
         versionName = "1.0.0"
     }
     
+    // 读取签名配置
+    // 优先级：1. 本地 keystore.properties 文件  2. 环境变量（用于 CI/CD）  3. 回退到 debug 签名
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val hasKeystoreProperties = keystorePropertiesFile.exists()
+    val hasEnvironmentConfig = System.getenv("RELEASE_KEYSTORE_FILE") != null
+    
+    // 总是创建 release 签名配置
+    signingConfigs {
+        create("release") {
+            if (hasKeystoreProperties) {
+                // 从本地 keystore.properties 文件读取
+                val keystoreProperties = Properties()
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                
+                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                
+                // 启用 V1 和 V2 签名
+                enableV1Signing = true
+                enableV2Signing = true
+                
+                println("✓ Using release signing config from keystore.properties")
+            } else if (hasEnvironmentConfig) {
+                // 从环境变量读取（用于 GitHub Actions）
+                storeFile = file(System.getenv("RELEASE_KEYSTORE_FILE") ?: "")
+                storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD") ?: ""
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: ""
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: ""
+                
+                // 启用 V1 和 V2 签名
+                enableV1Signing = true
+                enableV2Signing = true
+                
+                println("✓ Using release signing config from environment variables")
+            } else {
+                // 没有自定义签名配置时，不设置任何属性，将使用 debug 签名
+                println("⚠ No signing config found, release build will use debug signing")
+                println("  To configure release signing:")
+                println("  1. Copy keystore.properties.example to keystore.properties")
+                println("  2. Update with your keystore information")
+                println("  3. See docs/guides/签名配置指南.md for details")
+            }
+        }
+    }
+    
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -115,8 +164,13 @@ android {
         }
         
         getByName("release") {
-            // 使用默认的 debug 签名（用于测试）
-            // 如需正式发布，请配置 signingConfigs
+            // 根据是否有签名配置，选择使用 release 或 debug 签名
+            signingConfig = if (hasKeystoreProperties || hasEnvironmentConfig) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+            
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = false

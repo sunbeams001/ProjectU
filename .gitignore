@@ -55,6 +55,7 @@ ehthumbs.db
 # Keystore
 *.jks
 *.keystore
+keystore.properties
 
 # User-specific files
 *.suo
