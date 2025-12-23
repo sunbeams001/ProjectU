@@ -33,7 +33,8 @@ class SearchResultViewModel(
     private val tagApi: TagApi,
     private val searchHistoryStore: SearchHistoryStore,
     private val tagTranslationUtil: TagTranslationUtil,
-    private val ageLimitDeterminer: AgeLimitDeterminer
+    private val ageLimitDeterminer: AgeLimitDeterminer,
+    private val userStateManager: com.projectu.shared.domain.manager.UserStateManager
 ) : ScreenModel {
     
     private val _state = MutableStateFlow(
@@ -49,6 +50,25 @@ class SearchResultViewModel(
     private var autocompleteJob: Job? = null
     
     init {
+        // 从全局UserStateManager获取用户会员状态（无需查询网络）
+        screenModelScope.launch {
+            userStateManager.currentUser.collect { user ->
+                val isPremium = user?.isPremium == true
+                _state.update { currentState ->
+                    // 首次设置会员状态时，同时更新默认排序
+                    if (currentState.isPremiumUser != isPremium) {
+                        currentState.copy(
+                            isPremiumUser = isPremium,
+                            illustParams = IllustSearchParams.createDefault(isPremium),
+                            novelParams = NovelSearchParams.createDefault(isPremium)
+                        )
+                    } else {
+                        currentState.copy(isPremiumUser = isPremium)
+                    }
+                }
+            }
+        }
+        
         // 执行初始搜索
         searchCurrentCategory()
     }
@@ -204,6 +224,7 @@ class SearchResultViewModel(
                 hasMoreIllust = true,
                 hasMoreNovel = true,
                 hasMoreUser = true,
+                autocompleteSuggestions = emptyList(),  // 清空自动补全列表
                 error = null
             )
         }
@@ -263,8 +284,18 @@ class SearchResultViewModel(
             _state.update { it.copy(isLoadingMore = true, error = null) }
             
             try {
+                // 构建完整的搜索关键词，附加收藏人数Tag
+                val fullKeyword = buildString {
+                    append(keyword)
+                    // 如果有收藏人数筛选，附加到关键词后
+                    if (state.illustParams.bookmarkCount.tag.isNotEmpty()) {
+                        append(" ")
+                        append(state.illustParams.bookmarkCount.tag)
+                    }
+                }
+                
                 val result = searchApi.searchIllust(
-                    keyword = keyword,
+                    keyword = fullKeyword,
                     searchMode = state.illustParams.searchMode.value,
                     order = state.illustParams.order.value,
                     mode = state.illustParams.contentMode.value,
@@ -323,8 +354,18 @@ class SearchResultViewModel(
             _state.update { it.copy(isLoadingMore = true, error = null) }
             
             try {
+                // 构建完整的搜索关键词，附加收藏人数Tag
+                val fullKeyword = buildString {
+                    append(keyword)
+                    // 如果有收藏人数筛选，附加到关键词后
+                    if (state.novelParams.bookmarkCount.tag.isNotEmpty()) {
+                        append(" ")
+                        append(state.novelParams.bookmarkCount.tag)
+                    }
+                }
+                
                 val result = searchApi.searchNovel(
-                    keyword = keyword,
+                    keyword = fullKeyword,
                     searchMode = state.novelParams.searchMode.value,
                     order = state.novelParams.order.value,
                     mode = state.novelParams.contentMode.value,

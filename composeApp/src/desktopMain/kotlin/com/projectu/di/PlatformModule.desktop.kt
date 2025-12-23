@@ -128,6 +128,6 @@ actual val viewModelModule: Module = module {
     single { com.projectu.ui.screens.search.SearchPreparationViewModel(get(), get(), get()) }
     
     // 搜索结果页面 ScreenModel
-    factory { (keyword: String) -> com.projectu.ui.screens.search.SearchResultViewModel(keyword, get(), get(), get(), get(), get()) }
+    factory { (keyword: String) -> com.projectu.ui.screens.search.SearchResultViewModel(keyword, get(), get(), get(), get(), get(), get()) }
 }
 

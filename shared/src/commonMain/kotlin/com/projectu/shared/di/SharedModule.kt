@@ -325,6 +325,14 @@ val utilModule = module {
             ugoiraCache = get()
         )
     }
+    
+    // 用户状态管理器（全局单例）
+    single { 
+        com.projectu.shared.domain.manager.UserStateManager(
+            userRepository = get(),
+            coroutineScope = kotlinx.coroutines.MainScope()
+        )
+    }
 }
 
 /**

@@ -3,6 +3,7 @@ package com.projectu.shared.data.remote.dto.user
 import com.projectu.shared.data.remote.dto.common.ZoneConfig
 import com.projectu.shared.data.remote.dto.illust.IllustSimple
 import com.projectu.shared.data.remote.dto.novel.NovelSimple
+import com.projectu.shared.data.remote.serializers.StringToListUserWorkInfoSerializer
 import kotlinx.serialization.Serializable
 
 /**
@@ -24,6 +25,7 @@ data class UserSearchBody(
 @Serializable
 data class UserSearchPage(
     val userIds: List<Long>,
+    @Serializable(with = StringToListUserWorkInfoSerializer::class)
     val workIds: Map<String, List<UserWorkInfo>> = emptyMap(),
     val total: Int
 )

@@ -257,7 +257,12 @@ class SearchPreparationViewModel(
         
         // 主动读取最新历史并更新 state（不依赖 Flow）
         val latestHistory = searchHistoryStore.getHistoryList()
-        _state.update { it.copy(searchHistory = latestHistory) }
+        _state.update { 
+            it.copy(
+                searchHistory = latestHistory,
+                autocompleteSuggestions = emptyList()  // 清空自动补全列表
+            )
+        }
         
         return keyword
     }

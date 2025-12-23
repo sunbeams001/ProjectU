@@ -42,6 +42,10 @@ fun WebViewLoginDialog(
     var isCheckingCookie by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     
+    // 预加载错误消息字符串
+    val errorCredentials = stringResource(Res.string.login_webview_error_credentials)
+    val errorCookie = stringResource(Res.string.login_webview_error_cookie)
+    
     // 监听URL变化，检测登录成功
     LaunchedEffect(webViewState.lastLoadedUrl) {
         val url = webViewState.lastLoadedUrl ?: return@LaunchedEffect
@@ -70,12 +74,12 @@ fun WebViewLoginDialog(
                     if (phpsessid != null) {
                         onSuccess(phpsessid)
                     } else {
-                        errorMessage = "无法获取登录凭据，请重试"
+                        errorMessage = errorCredentials
                         isCheckingCookie = false
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    errorMessage = "Cookie提取失败: ${e.message}"
+                    errorMessage = "$errorCookie: ${e.message}"
                     isCheckingCookie = false
                 }
             }

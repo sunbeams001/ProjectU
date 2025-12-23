@@ -417,7 +417,7 @@ fun EnhancedHistoryChip(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(Icons.Default.ContentCopy, contentDescription = null)
-                        Text("复制")
+                        Text(stringResource(Res.string.search_history_copy))
                     }
                 },
                 onClick = {
@@ -432,7 +432,7 @@ fun EnhancedHistoryChip(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(Icons.Default.PushPin, contentDescription = null)
-                        Text(if (item.isPinned) "解除固定" else "固定")
+                        Text(if (item.isPinned) stringResource(Res.string.search_history_unpin) else stringResource(Res.string.search_history_pin))
                     }
                 },
                 onClick = {

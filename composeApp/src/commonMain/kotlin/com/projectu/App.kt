@@ -67,6 +67,7 @@ fun App(
     val localeManager: LocaleManager = koinInject()
     val settingsRepository: SettingsRepository = koinInject()
     val authRepository: com.projectu.shared.domain.repository.AuthRepository = koinInject()
+    val userStateManager: com.projectu.shared.domain.manager.UserStateManager = koinInject()
     
     // 先获取初始设置来确定缓存大小
     var initialSettings by remember { mutableStateOf<com.projectu.shared.data.local.AppSettings?>(null) }
@@ -108,9 +109,20 @@ fun App(
         isLoggedIn = authRepository.isLoggedIn()
         isLoadingLoginState = false
         
+        // 初始化用户状态管理器（仅在App启动时查询一次）
+        if (isLoggedIn) {
+            userStateManager.initialize()
+        }
+        
         // 然后持续监听状态变化
         authRepository.observeLoginState().collect { loggedIn ->
             isLoggedIn = loggedIn
+            // 当登录状态变化时，更新用户状态
+            if (loggedIn) {
+                userStateManager.refresh()
+            } else {
+                userStateManager.clear()
+            }
         }
     }
 

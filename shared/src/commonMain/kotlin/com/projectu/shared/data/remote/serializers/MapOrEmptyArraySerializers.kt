@@ -247,3 +247,61 @@ data class PlanTitleTranslationItem(
     val planTitle: String? = null,
     val planTitleLang: String? = null
 )
+
+/**
+ * 处理用户搜索中的 workIds 字段：Map<String, List<UserWorkInfo>>
+ * - 有数据时返回对象: {"userId": [{"id": "...", "type": "illust"}]}
+ * - 无数据时返回空数组: []
+ */
+object StringToListUserWorkInfoSerializer : KSerializer<Map<String, List<com.projectu.shared.data.remote.dto.user.UserWorkInfo>>> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("StringToListUserWorkInfo")
+
+    override fun deserialize(decoder: Decoder): Map<String, List<com.projectu.shared.data.remote.dto.user.UserWorkInfo>> {
+        val jsonDecoder = decoder as? JsonDecoder ?: return emptyMap()
+        val element = jsonDecoder.decodeJsonElement()
+        
+        return when {
+            element is JsonObject -> {
+                element.mapValues { (_, value) -> 
+                    when (value) {
+                        is JsonArray -> value.mapNotNull { item ->
+                            if (item is JsonObject) {
+                                try {
+                                    AppJson.decodeFromJsonElement(
+                                        com.projectu.shared.data.remote.dto.user.UserWorkInfo.serializer(),
+                                        item
+                                    )
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            } else null
+                        }
+                        else -> emptyList()
+                    }
+                }
+            }
+            element is JsonArray && element.isEmpty() -> {
+                // 空数组返回空Map
+                emptyMap()
+            }
+            else -> emptyMap()
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: Map<String, List<com.projectu.shared.data.remote.dto.user.UserWorkInfo>>) {
+        val jsonEncoder = encoder as JsonEncoder
+        val jsonObject = buildJsonObject {
+            value.forEach { (key, list) ->
+                put(key, buildJsonArray {
+                    list.forEach { workInfo ->
+                        add(AppJson.encodeToJsonElement(
+                            com.projectu.shared.data.remote.dto.user.UserWorkInfo.serializer(),
+                            workInfo
+                        ))
+                    }
+                })
+            }
+        }
+        jsonEncoder.encodeJsonElement(jsonObject)
+    }
+}

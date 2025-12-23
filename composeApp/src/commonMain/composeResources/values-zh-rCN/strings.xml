@@ -688,6 +688,10 @@
     <string name="search_tab_user">用户</string>
     <string name="search_sort_date_desc">从新到旧</string>
     <string name="search_sort_date_asc">从旧到新</string>
+    <string name="search_sort_popular_desc">受全站欢迎</string>
+    <string name="search_sort_popular_male_desc">受男性欢迎</string>
+    <string name="search_sort_popular_female_desc">受女性欢迎</string>
+    <string name="search_sort_premium_required">需要高级会员</string>
     <string name="search_rating_all">全部</string>
     <string name="search_rating_safe">全年龄</string>
     <string name="search_failed">搜索失败</string>

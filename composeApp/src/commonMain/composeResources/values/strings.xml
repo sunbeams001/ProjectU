@@ -36,6 +36,9 @@
     <string name="search_recommendations_bookmark">📚 Bookmarked Tags</string>
     <string name="search_recommendations_my_favorite">⭐ My Favorite Tags</string>
     <string name="search_recommendations_thumbnails">🖼️ Artwork Previews</string>
+    <string name="search_history_copy">Copy</string>
+    <string name="search_history_pin">Pin</string>
+    <string name="search_history_unpin">Unpin</string>
     <string name="discovery_recommended_users">Recommended Users</string>
     <string name="discovery_recommended_illusts">Recommended Illusts &amp; Manga</string>
     <string name="discovery_recommended_novels">Recommended Novels</string>
@@ -96,6 +99,8 @@
     <string name="login_button">Sign In</string>
     <string name="login_forgot_password">Forgot Password?</string>
     <string name="login_register">Create Account</string>
+    <string name="login_webview_error_credentials">Unable to obtain login credentials, please try again</string>
+    <string name="login_webview_error_cookie">Cookie extraction failed</string>
     
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -690,9 +695,40 @@
     <string name="search_tab_user">Users</string>
     <string name="search_sort_date_desc">Newest first</string>
     <string name="search_sort_date_asc">Oldest first</string>
+    <string name="search_sort_popular_desc">Popular (All users)</string>
+    <string name="search_sort_popular_male_desc">Popular (Male users)</string>
+    <string name="search_sort_popular_female_desc">Popular (Female users)</string>
+    <string name="search_sort_premium_required">Premium membership required</string>
     <string name="search_rating_all">All</string>
     <string name="search_rating_safe">All ages</string>
     <string name="search_failed">Search failed</string>
+    
+    <!-- Search Filters: Bookmark Count -->
+    <string name="search_bookmark_count">Bookmark Count</string>
+    <string name="bookmark_count_none">No limit</string>
+    <string name="bookmark_count_500">500+ bookmarks</string>
+    <string name="bookmark_count_1000">1000+ bookmarks</string>
+    <string name="bookmark_count_2000">2000+ bookmarks</string>
+    <string name="bookmark_count_5000">5000+ bookmarks</string>
+    <string name="bookmark_count_7500">7500+ bookmarks</string>
+    <string name="bookmark_count_10000">10000+ bookmarks</string>
+    <string name="bookmark_count_20000">20000+ bookmarks</string>
+    <string name="bookmark_count_50000">50000+ bookmarks</string>
+    <string name="bookmark_count_100000">100000+ bookmarks</string>
+    
+    <!-- Search Filters: Date Range -->
+    <string name="search_date_range">Date Range</string>
+    <string name="date_start">Start Date</string>
+    <string name="date_end">End Date</string>
+    <string name="date_unlimited">No limit</string>
+    <string name="date_clear">Clear</string>
+    <string name="date_select">Select date</string>
+    <string name="date_select_title">Select Date</string>
+    <string name="date_format_hint">yyyy-MM-dd</string>
+    <string name="date_format_example">For example: 2024-01-01</string>
+    <string name="date_empty_means_unlimited">Leave empty to not restrict</string>
+    <string name="date_confirm">Confirm</string>
+    <string name="date_cancel">Cancel</string>
     
     <!-- Search Mode -->
     <string name="search_mode_tag_partial">Tag (Partial match)</string>
