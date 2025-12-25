@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 背景层 - 使用纯色背景 -->
+    <background android:drawable="@color/ic_launcher_background"/>
+    <!-- 前景层 - 使用缩放后的应用图标 -->
+    <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+</adaptive-icon>

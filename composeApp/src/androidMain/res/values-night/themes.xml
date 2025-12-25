@@ -5,10 +5,10 @@
         <!-- 启动画面背景色 - 深色 -->
         <item name="android:windowSplashScreenBackground">#1A1C1E</item>
         
-        <!-- 启动画面图标（可选，如果有logo的话） -->
-        <!-- <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher</item> -->
+        <!-- 启动画面图标 - 使用自适应图标 -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         
-        <!-- 图标背景色（可选） -->
+        <!-- 图标背景色（可选，自适应图标已包含背景层） -->
         <!-- <item name="windowSplashScreenIconBackgroundColor">@color/primary</item> -->
         
         <!-- 状态栏和导航栏颜色 -->
