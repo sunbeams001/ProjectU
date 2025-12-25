@@ -23,7 +23,9 @@ import com.projectu.ui.screens.followlatest.more.WatchListNovelsViewModel
 import com.projectu.ui.screens.userrelations.UserRelationsViewModel
 import com.projectu.ui.screens.comment.CommentsViewModel
 import com.projectu.ui.screens.download.DownloadRulesViewModel
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.okhttp.*
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import org.koin.android.ext.koin.androidContext
@@ -32,7 +34,14 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 actual val networkModule: Module = module {
-    single { NetworkClient.create(CIO.create()) }
+    // 使用 OkHttp 引擎以获得更好的 Android 平台性能和连接池优化
+    // 配置优先使用 HTTP/2 协议以提升性能和降低延迟
+    single {
+        val okHttpClient = OkHttpClient.Builder()
+            .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+            .build()
+        NetworkClient.create(OkHttp.create { preconfigured = okHttpClient })
+    }
 }
 
 actual val databaseModule: Module = module {

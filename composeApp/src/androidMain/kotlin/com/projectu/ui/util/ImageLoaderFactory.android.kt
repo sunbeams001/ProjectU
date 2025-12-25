@@ -7,9 +7,11 @@ import coil3.disk.directory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.projectu.shared.domain.model.CacheSize
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okio.Path.Companion.toOkioPath
 
 /**
@@ -23,10 +25,20 @@ private val DEFAULT_CACHE_SIZE = CacheSize.DEFAULT.sizeInBytes
  */
 actual fun createImageLoader(context: PlatformContext, maxCacheSizeBytes: Long): ImageLoader {
     // 创建带 Referer 拦截器的 Ktor HttpClient
-    val httpClient = HttpClient(CIO) {
+    // 使用 OkHttp 引擎以获得更好的 Android 平台性能优化
+    // 配置优先使用 HTTP/2 协议
+    val okHttpClient = OkHttpClient.Builder()
+        .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+        .build()
+    
+    val httpClient = HttpClient(OkHttp) {
+        engine {
+            preconfigured = okHttpClient
+        }
+        
         install(HttpTimeout) {
-            requestTimeoutMillis = 30000
-            connectTimeoutMillis = 30000
+            requestTimeoutMillis = 15000
+            connectTimeoutMillis = 10000
         }
         
         // 添加默认请求拦截器

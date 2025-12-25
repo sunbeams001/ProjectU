@@ -76,7 +76,7 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
             implementation(libs.koin.android)
             implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.okhttp)
             
             // Room数据库依赖 - Android平台需要
             implementation(libs.room.runtime)
