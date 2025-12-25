@@ -93,7 +93,7 @@ data class IllustSeriesInfo(
     @SerialName("content_order")
     val contentOrder: String? = null,
     val url: String? = null,
-    val coverImageSl: Int = 2,
+    val coverImageSl: Int? = null,
     val firstIllustId: String? = null,
     val latestIllustId: String? = null,
     val createDate: String,
