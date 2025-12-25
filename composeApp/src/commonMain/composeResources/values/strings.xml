@@ -141,6 +141,15 @@
     <string name="settings_select_app_language">Select App Language</string>
     <string name="settings_select_pixiv_language">Select Pixiv Language</string>
     <string name="settings_select_theme">Select Theme</string>
+    <string name="settings_default_startup_tab">Default Startup Tab</string>
+    <string name="settings_default_startup_tab_desc">Choose which tab to open when the app starts</string>
+    <string name="settings_select_startup_tab">Select Startup Tab</string>
+    <string name="startup_tab_last_used">Last Used Tab</string>
+    <string name="startup_tab_home">Search</string>
+    <string name="startup_tab_discovery">Discovery</string>
+    <string name="startup_tab_follow_latest">Follow Latest</string>
+    <string name="startup_tab_ranking">Ranking</string>
+    <string name="startup_tab_profile">Profile</string>
     <string name="settings_language">Language</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_cache">Cache</string>

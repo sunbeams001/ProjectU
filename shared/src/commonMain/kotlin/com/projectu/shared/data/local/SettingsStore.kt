@@ -4,11 +4,18 @@ import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.entity.SettingsEntity
 import com.projectu.shared.data.local.entity.toAppSettings
 import com.projectu.shared.data.local.entity.toEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.launch
 
 /**
  * 应用设置存储
@@ -18,15 +25,14 @@ import kotlinx.coroutines.flow.onStart
 class SettingsStore(
     private val settingsDao: SettingsDao
 ) {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     
     /**
      * 获取设置流
      * 从数据库读取设置并转换为AppSettings
+     * 使用 shareIn 共享 Flow，避免重复订阅
      */
     val settings: Flow<AppSettings> = settingsDao.getSettings()
-        .map { entity ->
-            entity?.toAppSettings() ?: AppSettings.DEFAULT
-        }
         .onStart {
             // 如果数据库中没有设置，则初始化默认设置
             val currentSettings = settingsDao.getCurrentSettings()
@@ -34,6 +40,11 @@ class SettingsStore(
                 settingsDao.upsertSettings(AppSettings.DEFAULT.toEntity())
             }
         }
+        .map { entity ->
+            entity?.toAppSettings() ?: AppSettings.DEFAULT
+        }
+        .distinctUntilChanged()  // 避免重复发射相同的值
+        .shareIn(scope, SharingStarted.WhileSubscribed(5000), replay = 1)  // 共享Flow，5秒无订阅者时停止
     
     /**
      * 获取当前设置
@@ -154,6 +165,20 @@ class SettingsStore(
      */
     suspend fun setCustomFileNameTemplate(template: String) {
         settingsDao.updateCustomFileNameTemplate(template)
+    }
+    
+    /**
+     * 设置默认启动Tab
+     */
+    suspend fun setDefaultStartupTab(tab: StartupTab) {
+        settingsDao.updateDefaultStartupTab(tab.name)
+    }
+    
+    /**
+     * 设置最后使用的Tab
+     */
+    suspend fun setLastUsedTab(tab: String) {
+        settingsDao.updateLastUsedTab(tab)
     }
     
     /**

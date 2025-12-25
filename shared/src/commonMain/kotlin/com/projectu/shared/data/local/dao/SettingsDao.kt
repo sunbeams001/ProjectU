@@ -124,6 +124,18 @@ interface SettingsDao {
     suspend fun updateCustomFileNameTemplate(template: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新默认启动Tab
+     */
+    @Query("UPDATE app_settings SET defaultStartupTab = :tab, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateDefaultStartupTab(tab: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
+     * 更新最后使用的Tab
+     */
+    @Query("UPDATE app_settings SET lastUsedTab = :tab, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateLastUsedTab(tab: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

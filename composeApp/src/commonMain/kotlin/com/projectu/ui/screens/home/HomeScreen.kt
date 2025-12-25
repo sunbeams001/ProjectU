@@ -68,9 +68,51 @@ class HomeScreen : Screen {
     
     @Composable
     override fun Content() {
+        // 从设置中获取启动Tab配置
+        val settingsRepository: com.projectu.shared.domain.repository.SettingsRepository = koinInject()
+        
+        // 使用 produceState 等待设置加载完成
+        val settingsState by produceState<com.projectu.shared.data.local.AppSettings?>(initialValue = null) {
+            settingsRepository.getSettings().collect { settings ->
+                value = settings
+            }
+        }
+        
+        // 等待设置加载完成
+        val settings = settingsState
+        if (settings == null) {
+            // 显示加载指示器
+            Box(modifier = androidx.compose.ui.Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return
+        }
+        
+        // 根据设置决定初始Tab
+        val initialTab = remember(settings.defaultStartupTab, settings.lastUsedTab) {
+            when (settings.defaultStartupTab) {
+                com.projectu.shared.data.local.StartupTab.LAST_USED -> {
+                    // 使用上次的Tab
+                    when (settings.lastUsedTab) {
+                        "HOME" -> HomeTab
+                        "DISCOVERY" -> DiscoveryTab
+                        "FOLLOW_LATEST" -> FollowLatestTab
+                        "RANKING" -> RankingTab
+                        "PROFILE" -> ProfileTab
+                        else -> HomeTab
+                    }
+                }
+                com.projectu.shared.data.local.StartupTab.HOME -> HomeTab
+                com.projectu.shared.data.local.StartupTab.DISCOVERY -> DiscoveryTab
+                com.projectu.shared.data.local.StartupTab.FOLLOW_LATEST -> FollowLatestTab
+                com.projectu.shared.data.local.StartupTab.RANKING -> RankingTab
+                com.projectu.shared.data.local.StartupTab.PROFILE -> ProfileTab
+            }
+        }
+        
         SimpleAdaptiveLayout(
-            phoneContent = { windowSize -> HomeScreenPhone(windowSize) },
-            tabletContent = { windowSize -> HomeScreenTablet(windowSize) }
+            phoneContent = { windowSize -> HomeScreenPhone(windowSize, initialTab, settingsRepository, settings) },
+            tabletContent = { windowSize -> HomeScreenTablet(windowSize, initialTab, settingsRepository, settings) }
         )
     }
 }
@@ -79,8 +121,39 @@ class HomeScreen : Screen {
  * 手机布局 - 底部导航栏
  */
 @Composable
-private fun HomeScreenPhone(windowSize: WindowSize) {
-    TabNavigator(HomeTab) {
+private fun HomeScreenPhone(
+    windowSize: WindowSize,
+    initialTab: Tab,
+    settingsRepository: com.projectu.shared.domain.repository.SettingsRepository,
+    settings: com.projectu.shared.data.local.AppSettings
+) {
+    val scope = rememberCoroutineScope()
+    var isInitialized by remember { mutableStateOf(false) }
+    
+    TabNavigator(initialTab) {
+        // 监听Tab切换，只在LAST_USED模式下保存
+        LaunchedEffect(it.current, settings.defaultStartupTab) {
+            if (!isInitialized) {
+                isInitialized = true
+                return@LaunchedEffect
+            }
+            
+            // 只有在LAST_USED模式下才保存Tab
+            if (settings.defaultStartupTab != com.projectu.shared.data.local.StartupTab.LAST_USED) {
+                return@LaunchedEffect
+            }
+            
+            val tabName = when (it.current) {
+                HomeTab -> "HOME"
+                DiscoveryTab -> "DISCOVERY"
+                FollowLatestTab -> "FOLLOW_LATEST"
+                RankingTab -> "RANKING"
+                ProfileTab -> "PROFILE"
+                else -> "HOME"
+            }
+            settingsRepository.updateLastUsedTab(tabName)
+        }
+        
         Scaffold(
             bottomBar = {
                 NavigationBar {
@@ -107,8 +180,39 @@ private fun HomeScreenPhone(windowSize: WindowSize) {
  * 平板/桌面布局 - 侧边导航栏
  */
 @Composable
-private fun HomeScreenTablet(windowSize: WindowSize) {
-    TabNavigator(HomeTab) {
+private fun HomeScreenTablet(
+    windowSize: WindowSize,
+    initialTab: Tab,
+    settingsRepository: com.projectu.shared.domain.repository.SettingsRepository,
+    settings: com.projectu.shared.data.local.AppSettings
+) {
+    val scope = rememberCoroutineScope()
+    var isInitialized by remember { mutableStateOf(false) }
+    
+    TabNavigator(initialTab) {
+        // 监听Tab切换，只在LAST_USED模式下保存
+        LaunchedEffect(it.current, settings.defaultStartupTab) {
+            if (!isInitialized) {
+                isInitialized = true
+                return@LaunchedEffect
+            }
+            
+            // 只有在LAST_USED模式下才保存Tab
+            if (settings.defaultStartupTab != com.projectu.shared.data.local.StartupTab.LAST_USED) {
+                return@LaunchedEffect
+            }
+            
+            val tabName = when (it.current) {
+                HomeTab -> "HOME"
+                DiscoveryTab -> "DISCOVERY"
+                FollowLatestTab -> "FOLLOW_LATEST"
+                RankingTab -> "RANKING"
+                ProfileTab -> "PROFILE"
+                else -> "HOME"
+            }
+            settingsRepository.updateLastUsedTab(tabName)
+        }
+        
         Row(modifier = Modifier.fillMaxSize()) {
             // 侧边导航栏
             NavigationRail(

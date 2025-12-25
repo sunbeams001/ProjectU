@@ -87,6 +87,14 @@ class SettingsRepositoryImpl(
         settingsStore.setCustomFileNameTemplate(template)
     }
     
+    override suspend fun updateDefaultStartupTab(tab: com.projectu.shared.data.local.StartupTab) {
+        settingsStore.setDefaultStartupTab(tab)
+    }
+    
+    override suspend fun updateLastUsedTab(tab: String) {
+        settingsStore.setLastUsedTab(tab)
+    }
+    
     override suspend fun updateSettings(settings: AppSettings) {
         settingsStore.updateSettings(settings)
     }

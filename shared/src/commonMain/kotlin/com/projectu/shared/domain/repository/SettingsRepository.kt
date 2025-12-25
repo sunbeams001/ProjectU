@@ -110,11 +110,25 @@ interface SettingsRepository {
      * @param template 自定义模板
      */
     suspend fun updateCustomFileNameTemplate(template: String)
+    
+    /**
+     * 更新默认启动Tab
+     * @param tab 启动Tab设置
+     */
+    suspend fun updateDefaultStartupTab(tab: com.projectu.shared.data.local.StartupTab)
+    
+    /**
+     * 更新最后使用的Tab
+     * @param tab Tab标识字符串
+     */
+    suspend fun updateLastUsedTab(tab: String)
 
     /**
      * 更新完整设置
      */
-    suspend fun updateSettings(settings: AppSettings)    /**
+    suspend fun updateSettings(settings: AppSettings)
+    
+    /**
      * 重置为默认设置
      */
     suspend fun resetSettings()

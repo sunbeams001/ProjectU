@@ -21,6 +21,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import com.projectu.shared.data.local.StartupTab
 import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
@@ -50,6 +51,15 @@ import projectu.composeapp.generated.resources.settings_select_theme
 import projectu.composeapp.generated.resources.theme_light
 import projectu.composeapp.generated.resources.theme_dark
 import projectu.composeapp.generated.resources.theme_system
+import projectu.composeapp.generated.resources.settings_default_startup_tab
+import projectu.composeapp.generated.resources.settings_default_startup_tab_desc
+import projectu.composeapp.generated.resources.settings_select_startup_tab
+import projectu.composeapp.generated.resources.startup_tab_last_used
+import projectu.composeapp.generated.resources.startup_tab_home
+import projectu.composeapp.generated.resources.startup_tab_discovery
+import projectu.composeapp.generated.resources.startup_tab_follow_latest
+import projectu.composeapp.generated.resources.startup_tab_ranking
+import projectu.composeapp.generated.resources.startup_tab_profile
 import projectu.composeapp.generated.resources.common_cancel
 import projectu.composeapp.generated.resources.common_save
 import projectu.composeapp.generated.resources.settings_account
@@ -166,6 +176,7 @@ class SettingsScreen : Screen {
             currentAppLanguage = settings.appLanguage,
             currentPixivLanguage = settings.pixivLanguage,
             currentThemeMode = settings.themeMode,
+            currentDefaultStartupTab = settings.defaultStartupTab,
             isLoggedIn = isLoggedIn,
             currentPhpSessionId = pixivConfig.phpSessionId,
             currentUserId = pixivConfig.getUserId(),
@@ -188,6 +199,7 @@ class SettingsScreen : Screen {
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
             onThemeModeChange = { viewModel.updateThemeMode(it) },
+            onDefaultStartupTabChange = { viewModel.updateDefaultStartupTab(it) },
             onR18SanityThresholdChange = { viewModel.updateR18SanityLevelThreshold(it) },
             onPreferredImageQualityChange = { viewModel.updatePreferredImageQuality(it) },
             onDetailImageQualityChange = { viewModel.updateDetailImageQuality(it) },
@@ -215,6 +227,7 @@ private fun SettingsScreenContent(
     currentAppLanguage: AppLanguage,
     currentPixivLanguage: PixivLanguage,
     currentThemeMode: ThemeMode,
+    currentDefaultStartupTab: StartupTab,
     isLoggedIn: Boolean,
     currentPhpSessionId: String,
     currentUserId: Long?,
@@ -237,6 +250,7 @@ private fun SettingsScreenContent(
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
+    onDefaultStartupTabChange: (StartupTab) -> Unit,
     onR18SanityThresholdChange: (Int) -> Unit,
     onPreferredImageQualityChange: (ImageQuality) -> Unit,
     onDetailImageQualityChange: (DetailImageQuality) -> Unit,
@@ -258,6 +272,7 @@ private fun SettingsScreenContent(
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showStartupTabDialog by remember { mutableStateOf(false) }
     var showClickBookmarkActionDialog by remember { mutableStateOf(false) }
     var showLongPressBookmarkActionDialog by remember { mutableStateOf(false) }
     var showR18ThresholdDialog by remember { mutableStateOf(false) }
@@ -323,6 +338,25 @@ private fun SettingsScreenContent(
                         ThemeMode.SYSTEM -> stringResource(Res.string.theme_system)
                     },
                     onClick = { showThemeDialog = true }
+                )
+            }
+            
+            // 默认启动Tab设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_default_startup_tab),
+                    subtitle = stringResource(
+                        when (currentDefaultStartupTab) {
+                            StartupTab.LAST_USED -> Res.string.startup_tab_last_used
+                            StartupTab.HOME -> Res.string.startup_tab_home
+                            StartupTab.DISCOVERY -> Res.string.startup_tab_discovery
+                            StartupTab.FOLLOW_LATEST -> Res.string.startup_tab_follow_latest
+                            StartupTab.RANKING -> Res.string.startup_tab_ranking
+                            StartupTab.PROFILE -> Res.string.startup_tab_profile
+                        }
+                    ),
+                    description = stringResource(Res.string.settings_default_startup_tab_desc),
+                    onClick = { showStartupTabDialog = true }
                 )
             }
             
@@ -677,6 +711,18 @@ private fun SettingsScreenContent(
                 showThemeDialog = false
             },
             onDismiss = { showThemeDialog = false }
+        )
+    }
+    
+    // 启动Tab选择对话框
+    if (showStartupTabDialog) {
+        StartupTabSelectionDialog(
+            currentTab = currentDefaultStartupTab,
+            onSelect = { tab ->
+                onDefaultStartupTabChange(tab)
+                showStartupTabDialog = false
+            },
+            onDismiss = { showStartupTabDialog = false }
         )
     }
     
@@ -1109,6 +1155,63 @@ private fun ThemeSelectionDialog(
                             RadioButton(
                                 selected = mode == currentTheme,
                                 onClick = { onSelect(mode) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 启动Tab选择对话框
+ */
+@Composable
+private fun StartupTabSelectionDialog(
+    currentTab: StartupTab,
+    onSelect: (StartupTab) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val tabs = listOf(
+        StartupTab.LAST_USED to stringResource(Res.string.startup_tab_last_used),
+        StartupTab.HOME to stringResource(Res.string.startup_tab_home),
+        StartupTab.DISCOVERY to stringResource(Res.string.startup_tab_discovery),
+        StartupTab.FOLLOW_LATEST to stringResource(Res.string.startup_tab_follow_latest),
+        StartupTab.RANKING to stringResource(Res.string.startup_tab_ranking),
+        StartupTab.PROFILE to stringResource(Res.string.startup_tab_profile)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_select_startup_tab)) },
+        text = {
+            Column {
+                tabs.forEach { (tab, name) ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(tab) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = tab == currentTab,
+                                onClick = { onSelect(tab) }
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(

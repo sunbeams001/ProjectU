@@ -93,6 +93,16 @@ data class SettingsEntity(
     val customFileNameTemplate: String = "{id}_{p}_{title}",
     
     /**
+     * 默认启动Tab页面
+     */
+    val defaultStartupTab: String = "LAST_USED",
+    
+    /**
+     * 最后使用的Tab页面
+     */
+    val lastUsedTab: String = "HOME",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -117,7 +127,9 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         staggeredGridColumns = this.staggeredGridColumns,
         baseDownloadPath = this.downloadSettings.baseDownloadPath,
         fileNameMode = this.downloadSettings.fileNameMode.name,
-        customFileNameTemplate = this.downloadSettings.customFileNameTemplate
+        customFileNameTemplate = this.downloadSettings.customFileNameTemplate,
+        defaultStartupTab = this.defaultStartupTab.name,
+        lastUsedTab = this.lastUsedTab
     )
 }
 
@@ -146,6 +158,12 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
                 com.projectu.shared.data.local.FileNameMode.STANDARD
             },
             customFileNameTemplate = this.customFileNameTemplate.ifEmpty { "{id}_{p}_{title}" }
-        )
+        ),
+        defaultStartupTab = try {
+            com.projectu.shared.data.local.StartupTab.valueOf(this.defaultStartupTab)
+        } catch (e: Exception) {
+            com.projectu.shared.data.local.StartupTab.LAST_USED
+        },
+        lastUsedTab = this.lastUsedTab.ifEmpty { "HOME" }
     )
 }

@@ -101,7 +101,21 @@ data class AppSettings(
      * 下载设置
      * 包含下载路径、文件命名等配置
      */
-    val downloadSettings: DownloadSettings = DownloadSettings.DEFAULT
+    val downloadSettings: DownloadSettings = DownloadSettings.DEFAULT,
+    
+    /**
+     * 默认启动Tab页面
+     * 用于控制App启动后默认打开的Tab页面
+     * 默认：LAST_USED (上次退出的页面)
+     */
+    val defaultStartupTab: StartupTab = StartupTab.LAST_USED,
+    
+    /**
+     * 最后使用的Tab页面
+     * 用于记录上次退出App时所在的Tab
+     * 默认：HOME (搜索页面)
+     */
+    val lastUsedTab: String = "HOME"
 ) {
     companion object {
         /**
@@ -161,5 +175,17 @@ enum class ThemeMode {
     LIGHT,      // 浅色主题
     DARK,       // 深色主题
     SYSTEM      // 跟随系统
+}
+
+/**
+ * 启动Tab页面枚举
+ */
+enum class StartupTab(val displayNameKey: String) {
+    LAST_USED("startup_tab_last_used"),      // 上次退出的页面
+    HOME("startup_tab_home"),                // 搜索页面
+    DISCOVERY("startup_tab_discovery"),      // 发现页面
+    FOLLOW_LATEST("startup_tab_follow_latest"), // 追更页面
+    RANKING("startup_tab_ranking"),          // 排行榜页面
+    PROFILE("startup_tab_profile");          // 个人页面
 }
 

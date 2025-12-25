@@ -149,6 +149,15 @@
     <string name="settings_select_app_language">앱 언어 선택</string>
     <string name="settings_select_pixiv_language">Pixiv 언어 선택</string>
     <string name="settings_select_theme">테마 선택</string>
+    <string name="settings_default_startup_tab">기본 시작 페이지</string>
+    <string name="settings_default_startup_tab_desc">앱 시작 시 열릴 탭 선택</string>
+    <string name="settings_select_startup_tab">시작 페이지 선택</string>
+    <string name="startup_tab_last_used">마지막 종료 페이지</string>
+    <string name="startup_tab_home">검색</string>
+    <string name="startup_tab_discovery">발견</string>
+    <string name="startup_tab_follow_latest">팔로우 최신</string>
+    <string name="startup_tab_ranking">랭킹</string>
+    <string name="startup_tab_profile">프로필</string>
     <string name="settings_language">언어</string>
     <string name="settings_theme">테마</string>
     <string name="settings_cache">캐시</string>

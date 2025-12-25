@@ -189,6 +189,24 @@ class SettingsViewModel(
         }
     }
     
+    /**
+     * 更新默认启动Tab
+     */
+    fun updateDefaultStartupTab(tab: com.projectu.shared.data.local.StartupTab) {
+        viewModelScope.launch {
+            settingsRepository.updateDefaultStartupTab(tab)
+        }
+    }
+    
+    /**
+     * 更新最后使用的Tab
+     */
+    fun updateLastUsedTab(tab: String) {
+        viewModelScope.launch {
+            settingsRepository.updateLastUsedTab(tab)
+        }
+    }
+    
     // ==================== 文件命名模板相关 ====================
     
     /**

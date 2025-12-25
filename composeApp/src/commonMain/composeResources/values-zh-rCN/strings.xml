@@ -136,6 +136,15 @@
     <string name="settings_select_app_language">选择应用语言</string>
     <string name="settings_select_pixiv_language">选择 Pixiv 语言</string>
     <string name="settings_select_theme">选择主题</string>
+    <string name="settings_default_startup_tab">默认启动页面</string>
+    <string name="settings_default_startup_tab_desc">选择应用启动时打开的标签页</string>
+    <string name="settings_select_startup_tab">选择启动页面</string>
+    <string name="startup_tab_last_used">上次退出的页面</string>
+    <string name="startup_tab_home">搜索</string>
+    <string name="startup_tab_discovery">发现</string>
+    <string name="startup_tab_follow_latest">追更</string>
+    <string name="startup_tab_ranking">排行榜</string>
+    <string name="startup_tab_profile">我的</string>
     <string name="settings_language">语言</string>
     <string name="settings_theme">主题</string>
     <string name="settings_cache">缓存</string>
