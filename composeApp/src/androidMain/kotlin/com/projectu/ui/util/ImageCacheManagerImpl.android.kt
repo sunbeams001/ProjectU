@@ -64,6 +64,16 @@ class ImageCacheManagerImpl(
         refreshCacheSize()
     }
     
+    override suspend fun clearImageCache() = withContext(Dispatchers.IO) {
+        diskCache?.clear()
+        refreshCacheSize()
+    }
+    
+    override suspend fun clearUgoiraCache() = withContext(Dispatchers.IO) {
+        ugoiraCache.clearAllCache()
+        refreshCacheSize()
+    }
+    
     override fun updateCacheSize(size: CacheSize) {
         _maxCacheSize = size.sizeInBytes
         // 注意：Coil 的 ImageLoader 创建后无法修改缓存大小

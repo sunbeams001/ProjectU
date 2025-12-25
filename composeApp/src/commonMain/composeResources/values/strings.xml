@@ -252,8 +252,15 @@
     <string name="settings_current_cache_size">Current Cache Size</string>
     <string name="settings_clear_image_cache">Clear Image Cache</string>
     <string name="settings_clear_cache_confirm_title">Clear Cache</string>
-    <string name="settings_clear_cache_confirm_message">Are you sure you want to clear all cached images? This cannot be undone.</string>
+    <string name="settings_clear_cache_confirm_message">Choose which cache to clear. This operation cannot be undone.</string>
     <string name="settings_cache_cleared">Cache cleared</string>
+    <string name="settings_image_cache_cleared">Image cache cleared</string>
+    <string name="settings_ugoira_cache_cleared">Ugoira cache cleared</string>
+    <string name="settings_cache_info_image">Image cache: %1$s</string>
+    <string name="settings_cache_info_ugoira">Ugoira cache: %1$s</string>
+    <string name="settings_clear_image_button">Clear Images</string>
+    <string name="settings_clear_ugoira_button">Clear Ugoira</string>
+    <string name="settings_clear_all_button">Clear All</string>
     <string name="settings_cache_size_change_note">Note: Cache size changes will take effect after restarting the app</string>
     <string name="cache_size_small">Small (256 MB)</string>
     <string name="cache_size_medium">Medium (512 MB)</string>

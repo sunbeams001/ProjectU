@@ -245,8 +245,15 @@
     <string name="settings_current_cache_size">현재 캐시 크기</string>
     <string name="settings_clear_image_cache">이미지 캐시 삭제</string>
     <string name="settings_clear_cache_confirm_title">캐시 삭제</string>
-    <string name="settings_clear_cache_confirm_message">캐시된 모든 이미지를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.</string>
+    <string name="settings_clear_cache_confirm_message">삭제할 캐시 유형을 선택하세요. 이 작업은 취소할 수 없습니다.</string>
     <string name="settings_cache_cleared">캐시가 삭제되었습니다</string>
+    <string name="settings_image_cache_cleared">이미지 캐시가 삭제되었습니다</string>
+    <string name="settings_ugoira_cache_cleared">우고이라 캐시가 삭제되었습니다</string>
+    <string name="settings_cache_info_image">이미지 캐시: %1$s</string>
+    <string name="settings_cache_info_ugoira">우고이라 캐시: %1$s</string>
+    <string name="settings_clear_image_button">이미지 삭제</string>
+    <string name="settings_clear_ugoira_button">우고이라 삭제</string>
+    <string name="settings_clear_all_button">모두 삭제</string>
     <string name="settings_cache_size_change_note">참고: 캐시 크기 변경은 앱을 다시 시작한 후에 적용됩니다</string>
     <string name="cache_size_small">작음 (256 MB)</string>
     <string name="cache_size_medium">중간 (512 MB)</string>

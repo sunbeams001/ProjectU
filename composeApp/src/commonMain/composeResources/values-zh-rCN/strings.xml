@@ -245,8 +245,15 @@
     <string name="settings_current_cache_size">当前缓存大小</string>
     <string name="settings_clear_image_cache">清空图片缓存</string>
     <string name="settings_clear_cache_confirm_title">清空缓存</string>
-    <string name="settings_clear_cache_confirm_message">确定要清空所有缓存的图片吗？此操作无法撤销。</string>
+    <string name="settings_clear_cache_confirm_message">选择要清空的缓存类型。此操作无法撤销。</string>
     <string name="settings_cache_cleared">缓存已清空</string>
+    <string name="settings_image_cache_cleared">图片缓存已清空</string>
+    <string name="settings_ugoira_cache_cleared">动图缓存已清空</string>
+    <string name="settings_cache_info_image">图片缓存：%1$s</string>
+    <string name="settings_cache_info_ugoira">动图缓存：%1$s</string>
+    <string name="settings_clear_image_button">清空图片</string>
+    <string name="settings_clear_ugoira_button">清空动图</string>
+    <string name="settings_clear_all_button">清空全部</string>
     <string name="settings_cache_size_change_note">注意：缓存大小变更将在重启应用后生效</string>
     <string name="cache_size_small">小 (256 MB)</string>
     <string name="cache_size_medium">中 (512 MB)</string>

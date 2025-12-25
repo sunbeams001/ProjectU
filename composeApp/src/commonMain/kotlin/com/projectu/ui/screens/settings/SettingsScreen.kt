@@ -98,6 +98,13 @@ import projectu.composeapp.generated.resources.settings_clear_image_cache
 import projectu.composeapp.generated.resources.settings_clear_cache_confirm_title
 import projectu.composeapp.generated.resources.settings_clear_cache_confirm_message
 import projectu.composeapp.generated.resources.settings_cache_cleared
+import projectu.composeapp.generated.resources.settings_image_cache_cleared
+import projectu.composeapp.generated.resources.settings_ugoira_cache_cleared
+import projectu.composeapp.generated.resources.settings_cache_info_image
+import projectu.composeapp.generated.resources.settings_cache_info_ugoira
+import projectu.composeapp.generated.resources.settings_clear_image_button
+import projectu.composeapp.generated.resources.settings_clear_ugoira_button
+import projectu.composeapp.generated.resources.settings_clear_all_button
 import projectu.composeapp.generated.resources.settings_cache_size_change_note
 import projectu.composeapp.generated.resources.cache_size_small
 import projectu.composeapp.generated.resources.cache_size_medium
@@ -187,6 +194,8 @@ class SettingsScreen : Screen {
             onNovelDownloadImageQualityChange = { viewModel.updateNovelDownloadImageQuality(it) },
             onImageCacheSizeChange = { viewModel.updateImageCacheSize(it) },
             onClearCache = { cacheManager.clearCache() },
+            onClearImageCache = { cacheManager.clearImageCache() },
+            onClearUgoiraCache = { cacheManager.clearUgoiraCache() },
             onEditPhpSessionId = { viewModel.editPhpSessionId(it) },
             onLogout = { viewModel.logout(navigator) },
             onClickBookmarkActionChange = { viewModel.updateClickBookmarkAction(it) },
@@ -232,6 +241,8 @@ private fun SettingsScreenContent(
     onNovelDownloadImageQualityChange: (NovelDownloadImageQuality) -> Unit,
     onImageCacheSizeChange: (CacheSize) -> Unit,
     onClearCache: suspend () -> Unit,
+    onClearImageCache: suspend () -> Unit,
+    onClearUgoiraCache: suspend () -> Unit,
     onEditPhpSessionId: (String) -> Unit,
     onLogout: () -> Unit,
     onClickBookmarkActionChange: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
@@ -261,6 +272,8 @@ private fun SettingsScreenContent(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val cacheClearedMessage = stringResource(Res.string.settings_cache_cleared)
+    val imageCacheClearedMessage = stringResource(Res.string.settings_image_cache_cleared)
+    val ugoiraCacheClearedMessage = stringResource(Res.string.settings_ugoira_cache_cleared)
     
     Scaffold(
         topBar = {
@@ -788,21 +801,68 @@ private fun SettingsScreenContent(
         AlertDialog(
             onDismissRequest = { showClearCacheConfirmDialog = false },
             title = { Text(stringResource(Res.string.settings_clear_cache_confirm_title)) },
-            text = { Text(stringResource(Res.string.settings_clear_cache_confirm_message)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            onClearCache()
-                            snackbarHostState.showSnackbar(cacheClearedMessage)
-                        }
-                        showClearCacheConfirmDialog = false
-                    }
-                ) {
+            text = { 
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(stringResource(Res.string.settings_clear_cache_confirm_message))
                     Text(
-                        text = stringResource(Res.string.settings_clear_image_cache),
-                        color = MaterialTheme.colorScheme.error
+                        text = stringResource(Res.string.settings_cache_info_image, formatCacheSize(cacheDetails.imageCacheSize)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Text(
+                        text = stringResource(Res.string.settings_cache_info_ugoira, formatCacheSize(cacheDetails.ugoiraCacheSize)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            confirmButton = {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // 清空图片缓存
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                onClearImageCache()
+                                snackbarHostState.showSnackbar(imageCacheClearedMessage)
+                            }
+                            showClearCacheConfirmDialog = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.settings_clear_image_button),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    // 清空动图缓存
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                onClearUgoiraCache()
+                                snackbarHostState.showSnackbar(ugoiraCacheClearedMessage)
+                            }
+                            showClearCacheConfirmDialog = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.settings_clear_ugoira_button),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    // 清空全部缓存
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                onClearCache()
+                                snackbarHostState.showSnackbar(cacheClearedMessage)
+                            }
+                            showClearCacheConfirmDialog = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.settings_clear_all_button),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             },
             dismissButton = {
@@ -1491,7 +1551,7 @@ private fun CacheInfoItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = stringResource(Res.string.settings_current_cache_size),
+                    text = stringResource(Res.string.settings_clear_cache),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 // 总缓存大小

@@ -70,9 +70,19 @@ interface ImageCacheManager {
     suspend fun getCacheDetails(): CacheDetails
     
     /**
-     * 清空磁盘缓存
+     * 清空所有磁盘缓存（图片+动图）
      */
     suspend fun clearCache()
+    
+    /**
+     * 仅清空图片缓存
+     */
+    suspend fun clearImageCache()
+    
+    /**
+     * 仅清空动图缓存
+     */
+    suspend fun clearUgoiraCache()
     
     /**
      * 更新缓存配置
