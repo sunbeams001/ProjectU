@@ -107,6 +107,13 @@
     <string name="settings_general">General Settings</string>
     <string name="settings_interaction_preferences">Interaction Preferences</string>
     <string name="settings_browsing_experience">Browsing Experience</string>
+    <string name="settings_staggered_grid_columns">Staggered Grid Columns</string>
+    <string name="settings_staggered_grid_columns_desc">Number of columns in artwork grids</string>
+    <string name="settings_select_grid_columns">Select Grid Columns</string>
+    <string name="settings_grid_columns_2">2 Columns</string>
+    <string name="settings_grid_columns_3">3 Columns (Default)</string>
+    <string name="settings_grid_columns_4">4 Columns</string>
+    <string name="settings_grid_columns_5">5 Columns</string>
     <string name="settings_pixiv">Pixiv Settings</string>
     <string name="settings_content_management">Content Management</string>
     <string name="settings_developer_options">Developer Options</string>

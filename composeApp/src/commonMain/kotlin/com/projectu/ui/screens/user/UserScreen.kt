@@ -792,6 +792,8 @@ fun ArtworkStaggeredGrid(
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val coroutineScope = rememberCoroutineScope()
+    val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+    val columns by settingsCache.staggeredGridColumns.collectAsState()
     
     // 注册滚动状态
     LaunchedEffect(gridState) {
@@ -838,7 +840,7 @@ fun ArtworkStaggeredGrid(
         modifier = Modifier.fillMaxSize()
     ) {
         LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(3),
+            columns = StaggeredGridCells.Fixed(columns),
             state = gridState,
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

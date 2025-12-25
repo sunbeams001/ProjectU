@@ -30,6 +30,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import org.koin.compose.koinInject
 import coil3.compose.AsyncImage
 import com.projectu.shared.data.remote.dto.tag.PopularTag
 import com.projectu.shared.data.remote.dto.tag.SearchSuggestionBody
@@ -702,9 +703,13 @@ private fun TagWithArtworkSection(
             } else null
         }
         
-        // 3列网格布局 - 完全贴边
+        // 使用设置中的列数配置
+        val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+        val columns by settingsCache.staggeredGridColumns.collectAsState()
+        
+        // 网格布局 - 完全贴边
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+            columns = GridCells.Fixed(columns),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 5000.dp), // 使用 heightIn 而不是固定 height，允许内容自适应
@@ -856,8 +861,10 @@ private fun TagWithArtworkWaterfallGrid(
         val artworkToThumbnailMap = thumbnails.associateBy { it.id }
         val artworks = thumbnails.map { it.toArtwork() }
         
-        // 3列瀑布流布局
-        val columns = 3
+        // 使用设置中的列数配置
+        val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+        val columns by settingsCache.staggeredGridColumns.collectAsState()
+        
         val itemsPerColumn = artworks.chunked((artworks.size + columns - 1) / columns)
         
         Row(

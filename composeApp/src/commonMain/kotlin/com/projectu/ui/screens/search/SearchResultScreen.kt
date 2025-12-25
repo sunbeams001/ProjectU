@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import projectu.composeapp.generated.resources.*
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -545,8 +546,11 @@ fun IllustResultGrid(
                         }
                 }
                 
+                val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+                val columns by settingsCache.staggeredGridColumns.collectAsState()
+                
                 LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(3),
+                    columns = StaggeredGridCells.Fixed(columns),
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(8.dp),

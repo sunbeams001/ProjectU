@@ -116,8 +116,13 @@
     <string name="settings_title">設定</string>
     <string name="settings_general">一般設定</string>
     <string name="settings_interaction_preferences">インタラクション設定</string>
-    <string name="settings_browsing_experience">閲覧体験</string>
-    <string name="settings_pixiv">Pixiv 設定</string>
+    <string name="settings_browsing_experience">閲覧体験</string>    <string name="settings_staggered_grid_columns">グリッド列数</string>
+    <string name="settings_staggered_grid_columns_desc">イラストグリッドの列数</string>
+    <string name="settings_select_grid_columns">グリッド列数を選択</string>
+    <string name="settings_grid_columns_2">2列</string>
+    <string name="settings_grid_columns_3">3列（デフォルト）</string>
+    <string name="settings_grid_columns_4">4列</string>
+    <string name="settings_grid_columns_5">5列</string>    <string name="settings_pixiv">Pixiv 設定</string>
     <string name="settings_content_management">コンテンツ管理</string>
     <string name="settings_developer_options">開発者オプション</string>
     <string name="settings_app_language">アプリの言語</string>

@@ -117,6 +117,13 @@
     <string name="settings_general">일반 설정</string>
     <string name="settings_interaction_preferences">상호작용 기본 설정</string>
     <string name="settings_browsing_experience">탐색 경험</string>
+    <string name="settings_staggered_grid_columns">그리드 열 수</string>
+    <string name="settings_staggered_grid_columns_desc">작품 그리드 레이아웃의 열 수</string>
+    <string name="settings_select_grid_columns">그리드 열 수 선택</string>
+    <string name="settings_grid_columns_2">2열</string>
+    <string name="settings_grid_columns_3">3열 (기본값)</string>
+    <string name="settings_grid_columns_4">4열</string>
+    <string name="settings_grid_columns_5">5열</string>
     <string name="settings_pixiv">Pixiv 설정</string>
     <string name="settings_content_management">콘텐츠 관리</string>
     <string name="settings_developer_options">개발자 옵션</string>

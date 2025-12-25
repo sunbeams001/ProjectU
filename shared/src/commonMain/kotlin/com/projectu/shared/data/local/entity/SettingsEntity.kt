@@ -73,6 +73,11 @@ data class SettingsEntity(
     val longPressBookmarkAction: String = "PRIVATE",
     
     /**
+     * 瀑布流列数
+     */
+    val staggeredGridColumns: Int = 3,
+    
+    /**
      * 下载基础路径
      */
     val baseDownloadPath: String = "",
@@ -109,6 +114,7 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         imageCacheSize = this.imageCacheSize.name,
         clickBookmarkAction = this.clickBookmarkAction.name,
         longPressBookmarkAction = this.longPressBookmarkAction.name,
+        staggeredGridColumns = this.staggeredGridColumns,
         baseDownloadPath = this.downloadSettings.baseDownloadPath,
         fileNameMode = this.downloadSettings.fileNameMode.name,
         customFileNameTemplate = this.downloadSettings.customFileNameTemplate
@@ -131,6 +137,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         imageCacheSize = com.projectu.shared.domain.model.CacheSize.fromName(this.imageCacheSize),
         clickBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.clickBookmarkAction),
         longPressBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.longPressBookmarkAction),
+        staggeredGridColumns = this.staggeredGridColumns,
         downloadSettings = com.projectu.shared.data.local.DownloadSettings(
             baseDownloadPath = this.baseDownloadPath.ifEmpty { com.projectu.shared.data.local.getDefaultDownloadPath() },
             fileNameMode = try {

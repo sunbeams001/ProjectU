@@ -180,6 +180,7 @@ class SettingsScreen : Screen {
             currentCacheSizeBytes = currentCacheSize,
             cacheDetails = cacheDetails,
             maxCacheSizeBytes = cacheManager.maxCacheSize,
+            currentStaggeredGridColumns = settings.staggeredGridColumns,
             currentBaseDownloadPath = downloadSettings.baseDownloadPath,
             currentFileNameMode = downloadSettings.fileNameMode,
             currentCustomFileNameTemplate = downloadSettings.customFileNameTemplate,
@@ -200,6 +201,7 @@ class SettingsScreen : Screen {
             onLogout = { viewModel.logout(navigator) },
             onClickBookmarkActionChange = { viewModel.updateClickBookmarkAction(it) },
             onLongPressBookmarkActionChange = { viewModel.updateLongPressBookmarkAction(it) },
+            onStaggeredGridColumnsChange = { viewModel.updateStaggeredGridColumns(it) },
             onNavigateBack = { navigator.pop() },
             onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) },
             onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) }
@@ -227,6 +229,7 @@ private fun SettingsScreenContent(
     currentCacheSizeBytes: Long,
     cacheDetails: CacheDetails,
     maxCacheSizeBytes: Long,
+    currentStaggeredGridColumns: Int,
     currentBaseDownloadPath: String,
     currentFileNameMode: FileNameMode,
     currentCustomFileNameTemplate: String,
@@ -247,6 +250,7 @@ private fun SettingsScreenContent(
     onLogout: () -> Unit,
     onClickBookmarkActionChange: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
     onLongPressBookmarkActionChange: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
+    onStaggeredGridColumnsChange: (Int) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToApiTest: () -> Unit = {},
     onBaseDownloadPathChange: (String) -> Unit
@@ -261,6 +265,7 @@ private fun SettingsScreenContent(
     var showDetailImageQualityDialog by remember { mutableStateOf(false) }
     var showViewerImageQualityDialog by remember { mutableStateOf(false) }
     var showNovelDownloadImageQualityDialog by remember { mutableStateOf(false) }
+    var showStaggeredGridColumnsDialog by remember { mutableStateOf(false) }
     var showEditPhpSessionIdDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showCacheSizeDialog by remember { mutableStateOf(false) }
@@ -406,6 +411,22 @@ private fun SettingsScreenContent(
                     },
                     description = stringResource(Res.string.settings_viewer_image_quality_desc),
                     onClick = { showViewerImageQualityDialog = true }
+                )
+            }
+            
+            // 瀑布流列数设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_staggered_grid_columns),
+                    subtitle = when (currentStaggeredGridColumns) {
+                        2 -> stringResource(Res.string.settings_grid_columns_2)
+                        3 -> stringResource(Res.string.settings_grid_columns_3)
+                        4 -> stringResource(Res.string.settings_grid_columns_4)
+                        5 -> stringResource(Res.string.settings_grid_columns_5)
+                        else -> "$currentStaggeredGridColumns 列"
+                    },
+                    description = stringResource(Res.string.settings_staggered_grid_columns_desc),
+                    onClick = { showStaggeredGridColumnsDialog = true }
                 )
             }
             
@@ -793,6 +814,60 @@ private fun SettingsScreenContent(
                 showCacheSizeDialog = false
             },
             onDismiss = { showCacheSizeDialog = false }
+        )
+    }
+    
+    // 瀑布流列数选择对话框
+    if (showStaggeredGridColumnsDialog) {
+        AlertDialog(
+            onDismissRequest = { showStaggeredGridColumnsDialog = false },
+            title = { Text(stringResource(Res.string.settings_select_grid_columns)) },
+            text = {
+                LazyColumn {
+                    items(listOf(2, 3, 4, 5)) { columns ->
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onStaggeredGridColumnsChange(columns)
+                                    showStaggeredGridColumnsDialog = false
+                                }
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp, horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = currentStaggeredGridColumns == columns,
+                                    onClick = {
+                                        onStaggeredGridColumnsChange(columns)
+                                        showStaggeredGridColumnsDialog = false
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Text(
+                                    text = when (columns) {
+                                        2 -> stringResource(Res.string.settings_grid_columns_2)
+                                        3 -> stringResource(Res.string.settings_grid_columns_3)
+                                        4 -> stringResource(Res.string.settings_grid_columns_4)
+                                        5 -> stringResource(Res.string.settings_grid_columns_5)
+                                        else -> "$columns 列"
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showStaggeredGridColumnsDialog = false }) {
+                    Text(stringResource(Res.string.common_cancel))
+                }
+            }
         )
     }
     

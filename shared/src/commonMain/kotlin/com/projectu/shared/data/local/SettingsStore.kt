@@ -129,6 +129,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置瀑布流列数
+     */
+    suspend fun setStaggeredGridColumns(columns: Int) {
+        settingsDao.updateStaggeredGridColumns(columns.coerceIn(2, 5))
+    }
+    
+    /**
      * 设置下载基础路径
      */
     suspend fun setBaseDownloadPath(path: String) {

@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.projectu.shared.domain.model.Artwork
+import org.koin.compose.koinInject
 import com.projectu.shared.domain.model.MangaSeries
 import com.projectu.shared.util.DateTimeFormatter
 import com.projectu.ui.components.ArtworkCard
@@ -132,8 +133,11 @@ fun MangaSeriesContent(
                 
                 // 正常显示 - 使用瀑布流
                 state.series != null -> {
+                    val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+                    val columns by settingsCache.staggeredGridColumns.collectAsState()
+                    
                     LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(3),
+                        columns = StaggeredGridCells.Fixed(columns),
                         state = gridState,
                         contentPadding = PaddingValues(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),

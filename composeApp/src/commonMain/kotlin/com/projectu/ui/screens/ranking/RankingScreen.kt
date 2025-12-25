@@ -28,6 +28,7 @@ import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.components.NovelCard
+import org.koin.compose.koinInject
 import com.projectu.ui.components.NavigationBar
 import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
@@ -522,6 +523,9 @@ fun ArtworkStaggeredGridLayout(
     onRefresh: () -> Unit = {}
 ) {
     
+    val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+    val columns by settingsCache.staggeredGridColumns.collectAsState()
+    
     // 监听滚动，触发加载更多
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
@@ -538,7 +542,7 @@ fun ArtworkStaggeredGridLayout(
         modifier = Modifier.fillMaxSize()
     ) {
         LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(3),
+            columns = StaggeredGridCells.Fixed(columns),
             state = listState,
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -28,7 +28,7 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         DownloadTaskEntity::class,
         DownloadRuleEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)

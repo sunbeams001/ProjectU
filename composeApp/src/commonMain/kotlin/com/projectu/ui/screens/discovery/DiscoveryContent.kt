@@ -699,13 +699,16 @@ fun ArtworkStaggeredGridLayout(
             }
     }
     
+    val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+    val columns by settingsCache.staggeredGridColumns.collectAsState()
+    
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
         LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(3),
+            columns = StaggeredGridCells.Fixed(columns),
             state = listState,
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

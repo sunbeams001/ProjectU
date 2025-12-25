@@ -100,6 +100,12 @@ interface SettingsDao {
     suspend fun updateLongPressBookmarkAction(action: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新瀑布流列数
+     */
+    @Query("UPDATE app_settings SET staggeredGridColumns = :columns, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateStaggeredGridColumns(columns: Int, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 更新下载基础路径
      */
     @Query("UPDATE app_settings SET baseDownloadPath = :path, updatedAt = :timestamp WHERE id = 1")

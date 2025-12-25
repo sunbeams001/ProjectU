@@ -25,6 +25,7 @@ import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import projectu.composeapp.generated.resources.*
 
 /**
@@ -230,8 +231,11 @@ fun ArtworkStaggeredGrid(
             }
     }
     
+    val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+    val columns by settingsCache.staggeredGridColumns.collectAsState()
+    
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(3),
+        columns = StaggeredGridCells.Fixed(columns),
         state = listState,
         contentPadding = PaddingValues(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

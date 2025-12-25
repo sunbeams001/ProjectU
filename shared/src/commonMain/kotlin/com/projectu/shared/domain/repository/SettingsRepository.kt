@@ -88,6 +88,12 @@ interface SettingsRepository {
     suspend fun updateLongPressBookmarkAction(action: com.projectu.shared.domain.model.BookmarkAction)
     
     /**
+     * 更新瀑布流列数
+     * @param columns 列数，范围 2-5
+     */
+    suspend fun updateStaggeredGridColumns(columns: Int)
+    
+    /**
      * 更新下载基础路径
      * @param path 下载基础路径
      */

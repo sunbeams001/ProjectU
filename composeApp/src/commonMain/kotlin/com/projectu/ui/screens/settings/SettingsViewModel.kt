@@ -180,6 +180,15 @@ class SettingsViewModel(
         }
     }
     
+    /**
+     * 更新瀑布流列数
+     */
+    fun updateStaggeredGridColumns(columns: Int) {
+        viewModelScope.launch {
+            settingsRepository.updateStaggeredGridColumns(columns)
+        }
+    }
+    
     // ==================== 文件命名模板相关 ====================
     
     /**

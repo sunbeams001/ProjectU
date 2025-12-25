@@ -94,6 +94,13 @@ class SettingsCache(
     private val _customFileNameTemplate = MutableStateFlow("{id}_{p}_{title}")
     val customFileNameTemplate: StateFlow<String> = _customFileNameTemplate.asStateFlow()
     
+    /**
+     * 瀑布流列数缓存
+     * 用于各种作品列表页面中快速获取列数设置（高频访问 - 每个瀑布流页面都需要）
+     */
+    private val _staggeredGridColumns = MutableStateFlow(3)
+    val staggeredGridColumns: StateFlow<Int> = _staggeredGridColumns.asStateFlow()
+    
     // TODO: 后续添加更多配置项缓存
     // private val _someOtherConfig = MutableStateFlow(defaultValue)
     // val someOtherConfig: StateFlow<Type> = _someOtherConfig.asStateFlow()
@@ -112,6 +119,7 @@ class SettingsCache(
                 _baseDownloadPath.value = settings.downloadSettings.baseDownloadPath
                 _fileNameMode.value = settings.downloadSettings.fileNameMode
                 _customFileNameTemplate.value = settings.downloadSettings.customFileNameTemplate
+                _staggeredGridColumns.value = settings.staggeredGridColumns
                 
                 // TODO: 后续添加更多字段的同步
                 // _someOtherConfig.value = settings.someOtherConfig
@@ -211,6 +219,18 @@ class SettingsCache(
      */
     fun getCustomFileNameTemplate(): String {
         return _customFileNameTemplate.value
+    }
+    
+    /**
+     * 获取当前瀑布流列数（同步方法，使用内存缓存）
+     * 用于各种作品列表页面中快速获取列数设置
+     * 
+     * 性能说明：
+     * - 每个瀑布流页面都需要读取这个配置
+     * - 使用内存缓存避免每次都查询数据库
+     */
+    fun getStaggeredGridColumns(): Int {
+        return _staggeredGridColumns.value
     }
     
     // TODO: 后续添加更多配置项的 getter

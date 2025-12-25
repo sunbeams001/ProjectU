@@ -102,6 +102,13 @@
     <string name="settings_general">通用设置</string>
     <string name="settings_interaction_preferences">交互偏好</string>
     <string name="settings_browsing_experience">浏览体验</string>
+    <string name="settings_staggered_grid_columns">瀑布流列数</string>
+    <string name="settings_staggered_grid_columns_desc">作品网格布局的列数</string>
+    <string name="settings_select_grid_columns">选择网格列数</string>
+    <string name="settings_grid_columns_2">2 列</string>
+    <string name="settings_grid_columns_3">3 列（默认）</string>
+    <string name="settings_grid_columns_4">4 列</string>
+    <string name="settings_grid_columns_5">5 列</string>
     <string name="settings_pixiv">Pixiv 设置</string>
     <string name="settings_content_management">内容管理</string>
     <string name="settings_developer_options">开发者选项</string>

@@ -71,6 +71,10 @@ class SettingsRepositoryImpl(
         settingsStore.setLongPressBookmarkAction(action)
     }
     
+    override suspend fun updateStaggeredGridColumns(columns: Int) {
+        settingsStore.setStaggeredGridColumns(columns)
+    }
+    
     override suspend fun updateBaseDownloadPath(path: String) {
         settingsStore.setBaseDownloadPath(path)
     }

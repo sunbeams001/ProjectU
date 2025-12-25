@@ -91,6 +91,13 @@ data class AppSettings(
     val longPressBookmarkAction: BookmarkAction = BookmarkAction.PRIVATE,
     
     /**
+     * 瀑布流列数
+     * 用于作品列表、排行榜、搜索等瀑布流布局的列数
+     * 范围：2-5，默认：3
+     */
+    val staggeredGridColumns: Int = 3,
+    
+    /**
      * 下载设置
      * 包含下载路径、文件命名等配置
      */
