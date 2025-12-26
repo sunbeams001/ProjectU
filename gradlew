@@ -117,6 +117,15 @@ esac
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
+# Try to read JAVA_HOME from local.properties if it exists and JAVA_HOME is not already set
+if [ -z "$JAVA_HOME" ] && [ -f "$APP_HOME/local.properties" ] ; then
+    # Extract org.gradle.java.home from local.properties
+    JAVA_HOME_FROM_PROPS=$(grep "^org.gradle.java.home" "$APP_HOME/local.properties" | cut -d'=' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/\\:/:/g')
+    if [ -n "$JAVA_HOME_FROM_PROPS" ] ; then
+        JAVA_HOME="$JAVA_HOME_FROM_PROPS"
+    fi
+fi
+
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then

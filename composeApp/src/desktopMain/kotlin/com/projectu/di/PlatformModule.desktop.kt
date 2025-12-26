@@ -2,6 +2,7 @@ package com.projectu.di
 
 import com.projectu.shared.data.cache.UgoiraCache
 import com.projectu.shared.data.local.SettingsStore
+import com.projectu.shared.data.local.dao.DownloadDao
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.database.AppDatabase
 import com.projectu.shared.data.local.database.getDatabaseBuilder
@@ -21,6 +22,7 @@ import com.projectu.ui.screens.followlatest.more.WatchListMangaViewModel
 import com.projectu.ui.screens.followlatest.more.WatchListNovelsViewModel
 import com.projectu.ui.screens.userrelations.UserRelationsViewModel
 import com.projectu.ui.screens.comment.CommentsViewModel
+import com.projectu.ui.screens.download.DownloadRulesViewModel
 import io.ktor.client.engine.cio.*
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -40,6 +42,8 @@ actual val databaseModule: Module = module {
     
     // DAO
     single<SettingsDao> { get<AppDatabase>().settingsDao() }
+    single<DownloadDao> { get<AppDatabase>().downloadDao() }
+    single { get<AppDatabase>().downloadRulesDao() }
     
     // 设置存储
     single { SettingsStore(get()) }
@@ -78,6 +82,12 @@ actual val viewModelModule: Module = module {
     
     // API 测试 ViewModel
     single { ApiTestViewModel(get(), get()) }
+    
+    // 下载 ViewModel
+    single { com.projectu.ui.screens.download.DownloadViewModel(get()) }
+    
+    // 下载规则管理 ViewModel
+    single { DownloadRulesViewModel(get()) }
     
     // 发现插画 ScreenModel
     single { DiscoveryIllustsViewModel(get(), get(), get()) }

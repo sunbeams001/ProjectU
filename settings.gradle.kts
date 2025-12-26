@@ -25,6 +25,8 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        // JOGAMP Maven仓库 - 用于WebView依赖的JCEF库
+        maven("https://jogamp.org/deployment/maven")
     }
 }
 

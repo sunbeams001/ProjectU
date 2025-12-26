@@ -1,4 +1,4 @@
-name: Build Release APK
+name: Build Release
 
 # 触发条件：推送版本标签（如 v1.0.0）
 on:
@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build Release APK
+  build-android:
+    name: Build Android Release APK
     runs-on: ubuntu-latest
     
     steps:
@@ -81,20 +81,167 @@ jobs:
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-${{ steps.version.outputs.version }}
+          name: android-release-${{ steps.version.outputs.version }}
           path: composeApp/build/outputs/apk/release/ProjectU-${{ steps.version.outputs.version }}.apk
           retention-days: 90
+      
+      - name: Build info
+        run: |
+          echo "✓ Android Release APK built successfully"
+          echo "📦 Artifact: ProjectU-${{ steps.version.outputs.version }}.apk"
+          echo "🔐 Signing: Release keystore"
+          ls -lh composeApp/build/outputs/apk/release/
+
+  build-desktop:
+    name: Build Desktop Release (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact-name: linux
+          - os: windows-latest
+            artifact-name: windows
+          - os: macos-latest
+            artifact-name: macos
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+      
+      - name: Grant execute permission for gradlew (Unix)
+        if: matrix.os != 'windows-latest'
+        run: chmod +x gradlew
+      
+      # 获取版本信息
+      - name: Get version name
+        id: version
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+      
+      - name: Create distributable package (Unix)
+        run: ./gradlew :composeApp:createDistributable --stacktrace
+        if: matrix.os != 'windows-latest'
+      
+      - name: Create distributable package (Windows)
+        run: .\gradlew.bat :composeApp:createDistributable --stacktrace
+        if: matrix.os == 'windows-latest'
+      
+      # 停止 Gradle daemon 以避免文件锁定问题
+      - name: Stop Gradle daemon (Unix)
+        if: matrix.os != 'windows-latest' && always()
+        run: ./gradlew --stop
+      
+      - name: Stop Gradle daemon (Windows)
+        if: matrix.os == 'windows-latest' && always()
+        run: .\gradlew.bat --stop
+      
+      # 打包分发文件
+      - name: Package distributable (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd composeApp/build/compose/binaries/main
+          tar -czf ../../../../../ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.tar.gz *
+          cd ../../../../../
+          ls -lh ProjectU-*.tar.gz
+      
+      - name: Package distributable (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "composeApp\build\compose\binaries\main\*" -DestinationPath "ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.zip"
+          Get-Item "ProjectU-*.zip" | Select-Object Name, Length
+      
+      # 上传打包的分发文件
+      - name: Upload Desktop package (Unix)
+        if: matrix.os != 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-release-${{ matrix.artifact-name }}-${{ steps.version.outputs.version }}
+          path: ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.tar.gz
+          retention-days: 90
+      
+      - name: Upload Desktop package (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-release-${{ matrix.artifact-name }}-${{ steps.version.outputs.version }}
+          path: ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.zip
+          retention-days: 90
+      
+      - name: Build info (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          echo "✓ Desktop Release build successful for ${{ matrix.os }}"
+          echo "📦 Package:"
+          ls -lh ProjectU-*.tar.gz
+      
+      - name: Build info (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Write-Output "✓ Desktop Release build successful for ${{ matrix.os }}"
+          Write-Output "📦 Package:"
+          Get-ChildItem ProjectU-*.zip
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build-android, build-desktop]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # 获取版本信息
+      - name: Get version name
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+      
+      # 下载所有构建产物
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+      
+      # 列出所有文件
+      - name: List artifacts
+        run: |
+          echo "📦 All artifacts:"
+          ls -lhR artifacts/
       
       # 创建 GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: composeApp/build/outputs/apk/release/ProjectU-${{ steps.version.outputs.version }}.apk
+          files: |
+            artifacts/android-release-${{ steps.version.outputs.version }}/*.apk
+            artifacts/desktop-release-*/*.tar.gz
+            artifacts/desktop-release-*/*.zip
           draft: true
           prerelease: false
           generate_release_notes: true
           body: |
             ## 📦 ProjectU ${{ steps.version.outputs.version }}
+            
+            ### 平台支持
+            - 🤖 **Android**: APK (支持 Android 7.0+)
+            - 🐧 **Linux**: tar.gz 包
+            - 🪟 **Windows**: zip 包
+            - 🍎 **macOS**: tar.gz 包
             
             ### 新增
             1. ABC
@@ -107,13 +254,24 @@ jobs:
             ### 修复
             1. ABC
             2. DEF
+            
+            ### 安装说明
+            
+            **Android:**
+            1. 下载 `ProjectU-${{ steps.version.outputs.version }}.apk`
+            2. 安装 APK（可能需要允许未知来源）
+            
+            **Desktop (Windows/Linux/macOS):**
+            1. 下载对应平台的压缩包
+            2. 解压到任意目录
+            3. 运行可执行文件
+               - Windows: `ProjectU.exe`
+               - Linux/macOS: `ProjectU` (可能需要 `chmod +x ProjectU`)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Build info
+      - name: Release info
         run: |
-          echo "✓ Release APK built successfully"
-          echo "📦 Artifact: ProjectU-${{ steps.version.outputs.version }}.apk"
-          echo "🔐 Signing: Release keystore"
-          echo "🚀 GitHub Release created"
-          ls -lh composeApp/build/outputs/apk/release/
+          echo "✓ GitHub Release created successfully"
+          echo "🚀 Release: ${{ steps.version.outputs.version }}"
+          echo "📦 Includes: Android APK + Desktop packages (Linux, Windows, macOS)"

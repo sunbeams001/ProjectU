@@ -105,11 +105,42 @@ ProjectU/
 
 ### 环境要求
 
-| 工具 | 版本要求 |
-|-----|---------|
-| JDK | 11+ |
-| Android Studio | Ladybug 2024.2.1+ |
-| Gradle | 8.x (自动下载) |
+| 工具 | 版本要求 | 说明 |
+|-----|---------|------|
+| JDK | 17+ | Gradle 9.x 要求 JDK 17 或更高版本 |
+| Android SDK | API 24+ | 仅 Android 构建需要 |
+| Android Studio | Ladybug 2024.2.1+ | 推荐 IDE |
+| Gradle | 9.2.1 | 自动下载，无需手动安装 |
+
+### 配置开发环境
+
+1. **配置 JDK**（推荐使用 JDK 17 或 21）
+
+   创建或编辑 `local.properties` 文件，添加 JDK 路径：
+   
+   ```properties
+   # Android SDK 路径
+   sdk.dir=D\:\\Dev\\Android-Sdk
+   
+   # JDK 路径（推荐方式）
+   org.gradle.java.home=C\:\\Program Files\\Eclipse Adoptium\\jdk-21.0.3.9-hotspot
+   ```
+   
+   > 💡 **提示**：
+   > - `local.properties` 文件不会被提交到 Git，适合配置本地环境
+   > - 路径中的反斜杠需要转义（使用 `\\`）
+   > - 也可以设置系统环境变量 `JAVA_HOME`，gradlew 会自动使用
+
+2. **配置签名密钥**（仅 Android Release 构建需要）
+
+   创建 `keystore.properties` 文件：
+   
+   ```properties
+   storeFile=path/to/your/keystore.jks
+   storePassword=your-store-password
+   keyAlias=your-key-alias
+   keyPassword=your-key-password
+   ```
 
 ### 克隆项目
 

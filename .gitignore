@@ -27,6 +27,8 @@ google-services.json
 # Windows
 Thumbs.db
 ehthumbs.db
+composeApp/cache/
+composeApp/kcef-bundle/
 
 # Kotlin
 *.kotlin_module

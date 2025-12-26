@@ -24,7 +24,7 @@
 @rem ##########################################################################
 
 @rem Set local scope for the variables with windows NT shell
-if "%OS%"=="Windows_NT" setlocal
+if "%OS%"=="Windows_NT" setlocal enabledelayedexpansion
 
 set DIRNAME=%~dp0
 if "%DIRNAME%"=="" set DIRNAME=.
@@ -37,6 +37,19 @@ for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+
+@rem Try to read JAVA_HOME from local.properties if it exists
+if exist "%APP_HOME%\local.properties" (
+    for /f "usebackq tokens=1* delims==" %%a in ("%APP_HOME%\local.properties") do (
+        if "%%a"=="org.gradle.java.home" (
+            set "JAVA_HOME=%%b"
+            @rem Remove leading/trailing spaces
+            for /f "tokens=* delims= " %%c in ("!JAVA_HOME!") do set "JAVA_HOME=%%c"
+            @rem Replace escaped backslashes with normal backslashes
+            set "JAVA_HOME=!JAVA_HOME:\:=:!"
+        )
+    )
+)
 
 @rem Find java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
