@@ -387,6 +387,17 @@ class NovelDetailViewModel(
     }
     
     /**
+     * 保存当前页面的滚动位置
+     */
+    fun saveScrollPosition(page: Int, firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) {
+        _state.update { 
+            it.copy(
+                pageScrollPositions = it.pageScrollPositions + (page to (firstVisibleItemIndex to firstVisibleItemScrollOffset))
+            )
+        }
+    }
+    
+    /**
      * 重试加载当前小说
      */
     fun retry() {

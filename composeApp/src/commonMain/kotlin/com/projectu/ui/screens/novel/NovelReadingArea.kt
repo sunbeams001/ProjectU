@@ -50,6 +50,8 @@ import projectu.composeapp.generated.resources.*
  * @param onPreviousPage 上一页回调
  * @param onNextPage 下一页回调
  * @param onToggleInfo 切换信息区域回调
+ * @param savedScrollPosition 保存的滚动位置（firstVisibleItemIndex, firstVisibleItemScrollOffset）
+ * @param onScrollPositionChanged 滚动位置变化回调
  * @param modifier 修饰符
  */
 @Composable
@@ -60,6 +62,8 @@ fun NovelReadingArea(
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
     onToggleInfo: () -> Unit,
+    savedScrollPosition: Pair<Int, Int>? = null,
+    onScrollPositionChanged: ((Int, Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val totalPages = pages.size.coerceAtLeast(1)
@@ -69,12 +73,29 @@ fun NovelReadingArea(
     
     val currentPageContent = pages.getOrNull(currentPage - 1)
     
-    // 将 listState 提升到这里，以便计算滚动进度
-    val listState = rememberLazyListState()
+    // 使用保存的滚动位置或默认位置
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = savedScrollPosition?.first ?: 0,
+        initialFirstVisibleItemScrollOffset = savedScrollPosition?.second ?: 0
+    )
     
-    // 页面变化时滚动到顶部
+    // 页面变化时恢复该页面的滚动位置
     LaunchedEffect(currentPage) {
-        listState.scrollToItem(0)
+        val position = savedScrollPosition
+        if (position != null) {
+            listState.scrollToItem(position.first, position.second)
+        } else {
+            listState.scrollToItem(0)
+        }
+    }
+    
+    // 监听滚动位置变化并保存
+    LaunchedEffect(listState) {
+        snapshotFlow { 
+            listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset 
+        }.collect { (index, offset) ->
+            onScrollPositionChanged?.invoke(index, offset)
+        }
     }
     
     // 计算当前页面的滚动进度（0~1）

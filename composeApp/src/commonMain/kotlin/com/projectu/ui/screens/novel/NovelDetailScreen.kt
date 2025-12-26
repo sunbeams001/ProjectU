@@ -169,6 +169,7 @@ data class NovelDetailScreen(
         
         NovelDetailContent(
             state = state,
+            viewModel = viewModel,
             onBackClick = handleExit,  // 左上角返回按钮直接退出
             onListIndexChange = { index -> viewModel.onListIndexChanged(index) },
             onPreviousPage = { viewModel.previousPage() },
@@ -215,6 +216,7 @@ data class NovelDetailScreen(
 @Composable
 private fun NovelDetailContent(
     state: NovelDetailState,
+    viewModel: NovelDetailViewModel,
     onBackClick: () -> Unit,
     onListIndexChange: (Int) -> Unit,
     onPreviousPage: () -> Unit,
@@ -256,6 +258,7 @@ private fun NovelDetailContent(
                 // 小说详情布局
                 NovelDetailLayout(
                     state = state,
+                    viewModel = viewModel,
                     onPreviousPage = onPreviousPage,
                     onNextPage = onNextPage,
                     onToggleInfo = onToggleInfo,
@@ -298,6 +301,7 @@ private fun NovelDetailContent(
 @Composable
 private fun NovelDetailLayout(
     state: NovelDetailState,
+    viewModel: NovelDetailViewModel,
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
     onToggleInfo: () -> Unit,
@@ -372,6 +376,10 @@ private fun NovelDetailLayout(
             onPreviousPage = onPreviousPage,
             onNextPage = onNextPage,
             onToggleInfo = onToggleInfo,
+            savedScrollPosition = state.pageScrollPositions[state.currentPage],
+            onScrollPositionChanged = { index, offset ->
+                viewModel.saveScrollPosition(state.currentPage, index, offset)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)

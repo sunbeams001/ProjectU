@@ -33,6 +33,7 @@ enum class MarkerStatus {
  * @param novelCache 已加载的小说缓存（novelId -> Novel）
  * @param currentNovelId 当前正在加载/展示的小说ID（用于重试）
  * @param isMarkerLoading 书签操作是否正在加载
+ * @param pageScrollPositions 每个页面的滚动位置（页码 -> (firstVisibleItemIndex, firstVisibleItemScrollOffset)）
  */
 data class NovelDetailState(
     val novel: Novel? = null,
@@ -46,7 +47,8 @@ data class NovelDetailState(
     val currentIndex: Int = 0,
     val novelCache: Map<String, Novel> = emptyMap(),
     val currentNovelId: String? = null,
-    val isMarkerLoading: Boolean = false
+    val isMarkerLoading: Boolean = false,
+    val pageScrollPositions: Map<Int, Pair<Int, Int>> = emptyMap()
 ) {
     /**
      * 总页数

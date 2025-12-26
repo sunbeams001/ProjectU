@@ -32,6 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import projectu.composeapp.generated.resources.*
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -50,11 +51,20 @@ import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.util.rememberTagClickHandler
 import kotlinx.coroutines.launch
 import org.koin.core.parameter.parametersOf
+import java.util.UUID
 
 /**
  * 搜索结果页面
+ * @param initialKeyword 初始搜索关键词
+ * @param uniqueId 页面唯一标识，默认生成UUID确保每次都是新实例
  */
-data class SearchResultScreen(val initialKeyword: String) : Screen {
+data class SearchResultScreen(
+    val initialKeyword: String,
+    private val uniqueId: String = UUID.randomUUID().toString()
+) : Screen {
+    
+    // 覆盖 key 属性，确保每个实例都是唯一的
+    override val key: ScreenKey = uniqueId
     
     companion object {
         // 滚动位置记录，用于从详情页返回时恢复位置

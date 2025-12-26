@@ -271,7 +271,7 @@ data class RequestPlan(
     val planAcceptUgoiraFlg: Boolean = false,
     val planAcceptMangaFlg: Boolean = false,
     val planAcceptNovelFlg: Boolean = false,
-    val planCoverImage: String? = null,
+    val planCoverImage: PlanCoverImage? = null,
     val planAiType: Int = 0
 )
 
@@ -305,6 +305,23 @@ data class PlanTranslationItem(
     val planDescription: String? = null,
     val planDescriptionHtml: String? = null,
     val planLang: String? = null
+)
+
+/**
+ * 计划封面图片
+ */
+@Serializable
+data class PlanCoverImage(
+    val urls: PlanCoverImageUrls? = null
+)
+
+/**
+ * 计划封面图片URL
+ */
+@Serializable
+data class PlanCoverImageUrls(
+    val cover: String? = null,
+    val card: String? = null
 )
 
 /**
