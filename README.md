@@ -173,16 +173,45 @@ build-android.bat     # Windows
 #### Desktop
 
 ```bash
-# 方式 1: 使用脚本
-./build-desktop.sh    # Linux/Mac
-build-desktop.bat     # Windows
+# 方式 1: 使用脚本（推荐）
+
+# Windows - 仅构建 Windows 版本（体积小）
+build-desktop-windows.bat
+
+# Windows - 生成 MSI 安装包
+build-desktop-release.bat
+
+# Windows - 通用构建（包含所有平台，体积大）
+build-desktop.bat
+
+# Linux/Mac
+./build-desktop.sh
 
 # 方式 2: 使用 Gradle
+
+# 运行桌面端应用
 ./gradlew :composeApp:run
 
-# 打包为可分发应用
+# 仅打包当前操作系统（推荐，体积小）
+./gradlew :composeApp:packageDistributionForCurrentOS
+
+# 打包为可分发应用（包含所有平台，体积大）
 ./gradlew :composeApp:createDistributable
+
+# 生成 Windows MSI 安装包
+./gradlew :composeApp:packageMsi
+
+# 生成 macOS DMG 镜像
+./gradlew :composeApp:packageDmg
+
+# 生成 Linux DEB 包
+./gradlew :composeApp:packageDeb
 ```
+
+> 💡 **提示**：
+> - 开发测试推荐使用 `build-desktop-windows.bat` 或 `packageDistributionForCurrentOS`（体积小，仅包含当前平台）
+> - 正式发布推荐使用 `build-desktop-release.bat` 或 `packageMsi/Dmg/Deb`（生成安装包）
+> - 详细构建说明: [docs/guides/Desktop构建指南.md](docs/guides/Desktop构建指南.md)
 
 ### 配置 Pixiv 登录
 

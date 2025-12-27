@@ -100,10 +100,16 @@ jobs:
         include:
           - os: ubuntu-latest
             artifact-name: linux
+            package-task: packageDeb
+            package-ext: deb
           - os: windows-latest
             artifact-name: windows
+            package-task: packageMsi
+            package-ext: msi
           - os: macos-latest
             artifact-name: macos
+            package-task: packageDmg
+            package-ext: dmg
     
     steps:
       - name: Checkout code
@@ -129,12 +135,13 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
       
-      - name: Create distributable package (Unix)
-        run: ./gradlew :composeApp:createDistributable --stacktrace
+      # 构建平台特定安装包（MSI/DMG/DEB）
+      - name: Build platform-specific package (Unix)
+        run: ./gradlew :composeApp:${{ matrix.package-task }} --stacktrace
         if: matrix.os != 'windows-latest'
       
-      - name: Create distributable package (Windows)
-        run: .\gradlew.bat :composeApp:createDistributable --stacktrace
+      - name: Build platform-specific package (Windows)
+        run: .\gradlew.bat :composeApp:${{ matrix.package-task }} --stacktrace
         if: matrix.os == 'windows-latest'
       
       # 停止 Gradle daemon 以避免文件锁定问题
@@ -146,29 +153,57 @@ jobs:
         if: matrix.os == 'windows-latest' && always()
         run: .\gradlew.bat --stop
       
-      # 打包分发文件
-      - name: Package distributable (Unix)
-        if: matrix.os != 'windows-latest'
+      # 查找并重命名安装包
+      - name: Rename package (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          cd composeApp/build/compose/binaries/main
-          tar -czf ../../../../../ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.tar.gz *
-          cd ../../../../../
-          ls -lh ProjectU-*.tar.gz
+          VERSION=${{ steps.version.outputs.version }}
+          PACKAGE=$(find composeApp/build/compose/binaries/main/${{ matrix.package-ext }}/ -name "*.deb" | head -n 1)
+          if [ -f "$PACKAGE" ]; then
+            mv "$PACKAGE" "ProjectU-${VERSION}-linux.deb"
+            echo "✓ Package renamed to ProjectU-${VERSION}-linux.deb"
+            ls -lh ProjectU-*.deb
+          else
+            echo "❌ DEB package not found"
+            exit 1
+          fi
       
-      - name: Package distributable (Windows)
+      - name: Rename package (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          Compress-Archive -Path "composeApp\build\compose\binaries\main\*" -DestinationPath "ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.zip"
-          Get-Item "ProjectU-*.zip" | Select-Object Name, Length
+          $VERSION = "${{ steps.version.outputs.version }}"
+          $PACKAGE = Get-ChildItem "composeApp\build\compose\binaries\main\${{ matrix.package-ext }}\*.msi" | Select-Object -First 1
+          if ($PACKAGE) {
+            Move-Item $PACKAGE.FullName "ProjectU-${VERSION}-windows.msi"
+            Write-Output "✓ Package renamed to ProjectU-${VERSION}-windows.msi"
+            Get-Item ProjectU-*.msi | Format-List Name, Length
+          } else {
+            Write-Error "❌ MSI package not found"
+            exit 1
+          }
       
-      # 上传打包的分发文件
-      - name: Upload Desktop package (Unix)
-        if: matrix.os != 'windows-latest'
+      - name: Rename package (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          PACKAGE=$(find composeApp/build/compose/binaries/main/${{ matrix.package-ext }}/ -name "*.dmg" | head -n 1)
+          if [ -f "$PACKAGE" ]; then
+            mv "$PACKAGE" "ProjectU-${VERSION}-macos.dmg"
+            echo "✓ Package renamed to ProjectU-${VERSION}-macos.dmg"
+            ls -lh ProjectU-*.dmg
+          else
+            echo "❌ DMG package not found"
+            exit 1
+          fi
+      
+      # 上传安装包
+      - name: Upload Desktop package (Linux)
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
           name: desktop-release-${{ matrix.artifact-name }}-${{ steps.version.outputs.version }}
-          path: ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.tar.gz
+          path: ProjectU-${{ steps.version.outputs.version }}-linux.deb
           retention-days: 90
       
       - name: Upload Desktop package (Windows)
@@ -176,23 +211,31 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-release-${{ matrix.artifact-name }}-${{ steps.version.outputs.version }}
-          path: ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.zip
+          path: ProjectU-${{ steps.version.outputs.version }}-windows.msi
+          retention-days: 90
+      
+      - name: Upload Desktop package (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-release-${{ matrix.artifact-name }}-${{ steps.version.outputs.version }}
+          path: ProjectU-${{ steps.version.outputs.version }}-macos.dmg
           retention-days: 90
       
       - name: Build info (Unix)
         if: matrix.os != 'windows-latest'
         run: |
           echo "✓ Desktop Release build successful for ${{ matrix.os }}"
-          echo "📦 Package:"
-          ls -lh ProjectU-*.tar.gz
+          echo "📦 Package: ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.${{ matrix.package-ext }}"
+          ls -lh ProjectU-*.${{ matrix.package-ext }}
       
       - name: Build info (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           Write-Output "✓ Desktop Release build successful for ${{ matrix.os }}"
-          Write-Output "📦 Package:"
-          Get-ChildItem ProjectU-*.zip
+          Write-Output "📦 Package: ProjectU-${{ steps.version.outputs.version }}-${{ matrix.artifact-name }}.${{ matrix.package-ext }}"
+          Get-ChildItem ProjectU-*.${{ matrix.package-ext }}
 
   create-release:
     name: Create GitHub Release
@@ -229,8 +272,9 @@ jobs:
         with:
           files: |
             artifacts/android-release-${{ steps.version.outputs.version }}/*.apk
-            artifacts/desktop-release-*/*.tar.gz
-            artifacts/desktop-release-*/*.zip
+            artifacts/desktop-release-*/*.deb
+            artifacts/desktop-release-*/*.msi
+            artifacts/desktop-release-*/*.dmg
           draft: true
           prerelease: false
           generate_release_notes: true
@@ -239,9 +283,9 @@ jobs:
             
             ### 平台支持
             - 🤖 **Android**: APK (支持 Android 7.0+)
-            - 🐧 **Linux**: tar.gz 包
-            - 🪟 **Windows**: zip 包
-            - 🍎 **macOS**: tar.gz 包
+            - 🐧 **Linux**: DEB 安装包
+            - 🪟 **Windows**: MSI 安装包
+            - 🍎 **macOS**: DMG 镜像
             
             ### 新增
             1. ABC
@@ -261,12 +305,10 @@ jobs:
             1. 下载 `ProjectU-${{ steps.version.outputs.version }}.apk`
             2. 安装 APK（可能需要允许未知来源）
             
-            **Desktop (Windows/Linux/macOS):**
-            1. 下载对应平台的压缩包
-            2. 解压到任意目录
-            3. 运行可执行文件
-               - Windows: `ProjectU.exe`
-               - Linux/macOS: `ProjectU` (可能需要 `chmod +x ProjectU`)
+            **Desktop:**
+            - **Windows**: 下载 MSI 文件，双击安装
+            - **macOS**: 下载 DMG 文件，拖动到应用程序文件夹
+            - **Linux**: 下载 DEB 文件，使用 `sudo dpkg -i ProjectU-*.deb` 安装
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
@@ -274,4 +316,8 @@ jobs:
         run: |
           echo "✓ GitHub Release created successfully"
           echo "🚀 Release: ${{ steps.version.outputs.version }}"
-          echo "📦 Includes: Android APK + Desktop packages (Linux, Windows, macOS)"
+          echo "📦 Includes:"
+          echo "  - Android APK"
+          echo "  - Windows MSI"
+          echo "  - macOS DMG"
+          echo "  - Linux DEB"

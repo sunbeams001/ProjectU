@@ -65,12 +65,13 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: chmod +x gradlew
       
-      - name: Create distributable package (Unix)
-        run: ./gradlew :composeApp:createDistributable --stacktrace
+      # 使用 packageDistributionForCurrentOS 只打包当前平台
+      - name: Build platform-specific package (Unix)
+        run: ./gradlew :composeApp:packageDistributionForCurrentOS --stacktrace
         if: matrix.os != 'windows-latest'
       
-      - name: Create distributable package (Windows)
-        run: .\gradlew.bat :composeApp:createDistributable --stacktrace
+      - name: Build platform-specific package (Windows)
+        run: .\gradlew.bat :composeApp:packageDistributionForCurrentOS --stacktrace
         if: matrix.os == 'windows-latest'
       
       # 停止 Gradle daemon 以避免文件锁定问题

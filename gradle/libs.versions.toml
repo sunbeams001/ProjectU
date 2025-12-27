@@ -74,6 +74,9 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 gifkt = { module = "com.shakster:gifkt", version.ref = "gifkt" }
 
 # JavaCV - FFmpeg封装 (Desktop MP4编码)
+# 注意：不要使用 javacv-platform，它包含所有平台的本地库（~500MB）
+# 应该在 build.gradle.kts 中根据目标平台动态选择特定的依赖
+javacv = { module = "org.bytedeco:javacv", version.ref = "javacv" }
 javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
 
 # AndroidX
