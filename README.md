@@ -459,7 +459,50 @@ _敬请期待，我们将在后续版本中添加应用截图_
 
 ---
 
-## 🙏 致谢
+## � 开源协议
+
+本项目采用 [Apache License 2.0](LICENSE) 开源协议。
+
+```
+Copyright 2025 ProjectU Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
+### 第三方依赖协议
+
+本项目使用了以下开源库，均为商业友好的宽松协议：
+
+| 依赖 | 协议 | 说明 |
+|-----|------|------|
+| Kotlin | Apache 2.0 | 编程语言 |
+| Compose Multiplatform | Apache 2.0 | UI 框架 |
+| Koin | Apache 2.0 | 依赖注入 |
+| Ktor | Apache 2.0 | HTTP 客户端 |
+| Room | Apache 2.0 | 数据库 ORM |
+| Coil | Apache 2.0 | 图片加载 |
+| Voyager | MIT | 导航框架 |
+| kotlinx-* 系列 | Apache 2.0 | 协程、序列化等 |
+| AndroidX 系列 | Apache 2.0 | Android 组件 |
+| GIF.kt | MIT | GIF 编解码 |
+| JavaCV | Apache 2.0 | FFmpeg 封装 |
+| FFmpeg | LGPL 2.1+ | 视频编解码（动态链接） |
+
+所有依赖均与 Apache 2.0 兼容，可以安全地用于商业和个人项目。
+
+---
+
+## �🙏 致谢
 
 - [Pixiv](https://www.pixiv.net/) - 提供优秀的创作平台
 - [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) - 强大的跨平台技术
