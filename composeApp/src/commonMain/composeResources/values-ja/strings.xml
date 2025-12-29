@@ -832,5 +832,35 @@
     <!-- Settings - Novel Download Image Quality -->
     <string name="settings_novel_download_image_quality">小説ダウンロードの画像品質設定</string>
     <string name="settings_novel_download_image_quality_desc">小説をEPUBとしてダウンロードする際の埋め込み画像の品質</string>
+    
+    <!-- Browse History -->
+    <string name="history_title">閲覧履歴</string>
+    <string name="history_browse_history">閲覧履歴</string>
+    <string name="history_view_history">閲覧履歴を表示</string>
+    <string name="history_desc">訪問した作品、小説、シリーズを表示</string>
+    <string name="history_filter_all">すべて</string>
+    <string name="history_filter_illustrations">イラスト</string>
+    <string name="history_filter_manga">マンガ</string>
+    <string name="history_filter_ugoira">うごイラ</string>
+    <string name="history_filter_novels">小説</string>
+    <string name="history_filter_novel_series">小説シリーズ</string>
+    <string name="history_filter_manga_series">マンガシリーズ</string>
+    <string name="history_type_illust">イラスト</string>
+    <string name="history_type_manga">マンガ</string>
+    <string name="history_type_ugoira">うごイラ</string>
+    <string name="history_type_novel">小説</string>
+    <string name="history_type_series">シリーズ</string>
+    <string name="history_no_history">閲覧履歴がありません</string>
+    <string name="history_clear">履歴を削除</string>
+    <string name="history_delete">削除</string>
+    <string name="history_delete_item_title">履歴を削除</string>
+    <string name="history_delete_item_confirm">この閲覧履歴を削除してもよろしいですか？</string>
+    <string name="history_clear_all_confirm">すべての閲覧履歴を削除してもよろしいですか？</string>
+    <string name="history_clear_type_confirm">%1$s の履歴を削除してもよろしいですか？</string>
+    <string name="history_time_just_now">たった今</string>
+    <string name="history_time_minutes_ago">%1$s 分前</string>
+    <string name="history_time_hours_ago">%1$s 時間前</string>
+    <string name="history_time_days_ago">%1$s 日前</string>
+    <string name="history_cancel">キャンセル</string>
 </resources>
 

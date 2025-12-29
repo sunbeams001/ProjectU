@@ -821,5 +821,35 @@
     <string name="search_history_copy">复制</string>
     <string name="search_history_pin">置顶</string>
     <string name="search_history_unpin">取消置顶</string>
+    
+    <!-- Browse History -->
+    <string name="history_title">浏览历史</string>
+    <string name="history_browse_history">浏览历史</string>
+    <string name="history_view_history">查看浏览历史</string>
+    <string name="history_desc">查看你访问过的作品、小说和系列</string>
+    <string name="history_filter_all">全部</string>
+    <string name="history_filter_illustrations">插画</string>
+    <string name="history_filter_manga">漫画</string>
+    <string name="history_filter_ugoira">动图</string>
+    <string name="history_filter_novels">小说</string>
+    <string name="history_filter_novel_series">小说系列</string>
+    <string name="history_filter_manga_series">漫画系列</string>
+    <string name="history_type_illust">插画</string>
+    <string name="history_type_manga">漫画</string>
+    <string name="history_type_ugoira">动图</string>
+    <string name="history_type_novel">小说</string>
+    <string name="history_type_series">系列</string>
+    <string name="history_no_history">暂无浏览历史</string>
+    <string name="history_clear">清空历史</string>
+    <string name="history_delete">删除</string>
+    <string name="history_delete_item_title">删除历史记录</string>
+    <string name="history_delete_item_confirm">确定要删除这条历史记录吗？</string>
+    <string name="history_clear_all_confirm">确定要清空所有浏览历史吗？</string>
+    <string name="history_clear_type_confirm">确定要清空 %1$s 历史记录吗？</string>
+    <string name="history_time_just_now">刚刚</string>
+    <string name="history_time_minutes_ago">%1$s 分钟前</string>
+    <string name="history_time_hours_ago">%1$s 小时前</string>
+    <string name="history_time_days_ago">%1$s 天前</string>
+    <string name="history_cancel">取消</string>
 </resources>
 

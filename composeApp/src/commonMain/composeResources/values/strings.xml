@@ -817,5 +817,37 @@
     <string name="settings_file_name_rules_desc">Set the naming format for downloaded files</string>
     <string name="select_download_directory">Select Download Directory</string>
     <string name="novel_page">Page %1$d</string>
+    
+    <!-- Browse History -->
+    <string name="history_title">Browse History</string>
+    <string name="history_browse_history">Browse History</string>
+    <string name="history_view_history">View your browsing history</string>
+    <string name="history_desc">View history of artworks, novels, and series you\'ve visited</string>
+    <string name="history_filter_all">All</string>
+    <string name="history_filter_illustrations">Illustrations</string>
+    <string name="history_filter_manga">Manga</string>
+    <string name="history_filter_ugoira">Ugoira</string>
+    <string name="history_filter_novels">Novels</string>
+    <string name="history_filter_novel_series">Novel Series</string>
+    <string name="history_filter_manga_series">Manga Series</string>
+    <string name="history_type_illust">Illust</string>
+    <string name="history_type_manga">Manga</string>
+    <string name="history_type_ugoira">Ugoira</string>
+    <string name="history_type_novel">Novel</string>
+    <string name="history_type_series">Series</string>
+    <string name="history_no_history">No history</string>
+    <string name="history_clear">Clear History</string>
+    <string name="history_clear_all_confirm">Are you sure you want to clear all browsing history?</string>
+    <string name="history_clear_type_confirm">Are you sure you want to clear %1$s history?</string>
+    <string name="history_delete_item_title">Delete History Item</string>
+    <string name="history_delete_item_confirm">Are you sure you want to delete this history item?</string>
+    <string name="history_by_author">by %1$s</string>
+    <string name="history_time_just_now">Just now</string>
+    <string name="history_time_minutes_ago">%1$d minutes ago</string>
+    <string name="history_time_hours_ago">%1$d hours ago</string>
+    <string name="history_time_days_ago">%1$d days ago</string>
+    <string name="history_delete">Delete</string>
+    <string name="history_cancel">Cancel</string>
 </resources>
+
 

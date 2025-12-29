@@ -832,5 +832,35 @@
     <!-- Settings - Novel Download Image Quality -->
     <string name="settings_novel_download_image_quality">소설 다운로드 이미지 품질 설정</string>
     <string name="settings_novel_download_image_quality_desc">소설을 EPUB로 다운로드할 때 포함된 이미지의 품질</string>
+    
+    <!-- Browse History -->
+    <string name="history_title">검색 기록</string>
+    <string name="history_browse_history">검색 기록</string>
+    <string name="history_view_history">검색 기록 보기</string>
+    <string name="history_desc">방문한 작품, 소설, 시리즈 보기</string>
+    <string name="history_filter_all">전체</string>
+    <string name="history_filter_illustrations">일러스트</string>
+    <string name="history_filter_manga">만화</string>
+    <string name="history_filter_ugoira">움직이는 일러스트</string>
+    <string name="history_filter_novels">소설</string>
+    <string name="history_filter_novel_series">소설 시리즈</string>
+    <string name="history_filter_manga_series">만화 시리즈</string>
+    <string name="history_type_illust">일러스트</string>
+    <string name="history_type_manga">만화</string>
+    <string name="history_type_ugoira">움직이는 일러스트</string>
+    <string name="history_type_novel">소설</string>
+    <string name="history_type_series">시리즈</string>
+    <string name="history_no_history">검색 기록이 없습니다</string>
+    <string name="history_clear">기록 삭제</string>
+    <string name="history_delete">삭제</string>
+    <string name="history_delete_item_title">기록 삭제</string>
+    <string name="history_delete_item_confirm">이 검색 기록을 삭제하시겠습니까?</string>
+    <string name="history_clear_all_confirm">모든 검색 기록을 삭제하시겠습니까?</string>
+    <string name="history_clear_type_confirm">%1$s 기록을 삭제하시겠습니까?</string>
+    <string name="history_time_just_now">방금</string>
+    <string name="history_time_minutes_ago">%1$s분 전</string>
+    <string name="history_time_hours_ago">%1$s시간 전</string>
+    <string name="history_time_days_ago">%1$s일 전</string>
+    <string name="history_cancel">취소</string>
 </resources>
 

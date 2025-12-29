@@ -47,6 +47,9 @@ data class NovelSeriesScreen(
         val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
         val downloadActionViewLabel = stringResource(Res.string.download_action_view)
         
+        // 保存浏览历史
+        com.projectu.ui.util.SaveNovelSeriesHistory(state.series)
+        
         // 创建Tag点击处理器
         val tagClickHandler = remember(navigator, searchHistoryStore, coroutineScope) {
             TagClickHandler(navigator, searchHistoryStore, coroutineScope)

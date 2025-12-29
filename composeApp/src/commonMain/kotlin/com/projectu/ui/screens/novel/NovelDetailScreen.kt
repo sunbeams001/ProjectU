@@ -90,6 +90,11 @@ data class NovelDetailScreen(
         }
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
+        
+        // 保存小说浏览历史
+        state.novel?.let { novel ->
+            com.projectu.ui.util.SaveNovelHistory(novel)
+        }
         val downloadRepository: DownloadRepository = koinInject()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }

@@ -30,6 +30,9 @@ data class MangaSeriesScreen(
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
+        // 保存浏览历史
+        com.projectu.ui.util.SaveMangaSeriesHistory(state.series)
+        
         // 记录滚动位置，用于从详情页返回时滚动到对应位置
         var lastScrollIndex by remember { mutableIntStateOf(0) }
         

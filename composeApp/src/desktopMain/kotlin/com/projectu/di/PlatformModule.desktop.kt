@@ -44,6 +44,7 @@ actual val databaseModule: Module = module {
     single<SettingsDao> { get<AppDatabase>().settingsDao() }
     single<DownloadDao> { get<AppDatabase>().downloadDao() }
     single { get<AppDatabase>().downloadRulesDao() }
+    single { get<AppDatabase>().browseHistoryDao() }
     
     // 设置存储
     single { SettingsStore(get()) }
@@ -88,6 +89,9 @@ actual val viewModelModule: Module = module {
     
     // 下载规则管理 ViewModel
     single { DownloadRulesViewModel(get()) }
+    
+    // 浏览历史 ViewModel
+    single { com.projectu.ui.screens.history.BrowseHistoryViewModel(get()) }
     
     // 发现插画 ScreenModel
     single { DiscoveryIllustsViewModel(get(), get(), get()) }

@@ -835,5 +835,35 @@
     <string name="settings_file_name_rules">檔案名稱規則</string>
     <string name="settings_file_name_rules_desc">設定下載檔案的命名格式</string>
     <string name="settings_file_name_rules_title">檔案命名規則</string>
+    
+    <!-- Browse History -->
+    <string name="history_title">瀏覽歷史</string>
+    <string name="history_browse_history">瀏覽歷史</string>
+    <string name="history_view_history">查看瀏覽歷史</string>
+    <string name="history_desc">查看你訪問過的作品、小說和系列</string>
+    <string name="history_filter_all">全部</string>
+    <string name="history_filter_illustrations">插畫</string>
+    <string name="history_filter_manga">漫畫</string>
+    <string name="history_filter_ugoira">動圖</string>
+    <string name="history_filter_novels">小說</string>
+    <string name="history_filter_novel_series">小說系列</string>
+    <string name="history_filter_manga_series">漫畫系列</string>
+    <string name="history_type_illust">插畫</string>
+    <string name="history_type_manga">漫畫</string>
+    <string name="history_type_ugoira">動圖</string>
+    <string name="history_type_novel">小說</string>
+    <string name="history_type_series">系列</string>
+    <string name="history_no_history">暫無瀏覽歷史</string>
+    <string name="history_clear">清空歷史</string>
+    <string name="history_delete">刪除</string>
+    <string name="history_delete_item_title">刪除歷史記錄</string>
+    <string name="history_delete_item_confirm">確定要刪除這條歷史記錄嗎？</string>
+    <string name="history_clear_all_confirm">確定要清空所有瀏覽歷史嗎？</string>
+    <string name="history_clear_type_confirm">確定要清空 %1$s 歷史記錄嗎？</string>
+    <string name="history_time_just_now">剛剛</string>
+    <string name="history_time_minutes_ago">%1$s 分鐘前</string>
+    <string name="history_time_hours_ago">%1$s 小時前</string>
+    <string name="history_time_days_ago">%1$s 天前</string>
+    <string name="history_cancel">取消</string>
 </resources>
 

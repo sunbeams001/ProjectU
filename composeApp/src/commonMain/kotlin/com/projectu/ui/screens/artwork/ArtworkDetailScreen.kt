@@ -80,6 +80,9 @@ data class ArtworkDetailScreen(
         val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
         val downloadActionViewLabel = stringResource(Res.string.download_action_view)
         
+        // 保存浏览历史
+        com.projectu.ui.util.SaveArtworkHistory(state.artwork)
+        
         // 创建Tag点击处理器
         val tagClickHandler = com.projectu.ui.util.rememberTagClickHandler(navigator)
         

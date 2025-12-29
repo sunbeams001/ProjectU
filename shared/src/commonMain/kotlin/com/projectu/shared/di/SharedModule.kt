@@ -239,6 +239,11 @@ val repositoryModule = module {
     single<DownloadRulesRepository> {
         DownloadRulesRepositoryImpl(get())
     }
+    
+    // 浏览历史仓储
+    single<com.projectu.shared.domain.repository.BrowseHistoryRepository> {
+        com.projectu.shared.data.repository.BrowseHistoryRepositoryImpl(get())
+    }
 }
 
 /**
@@ -293,6 +298,9 @@ val useCaseModule = module {
     factory { UnfollowUserUseCase(get(), get()) }
     factory { SyncUserStatesUseCase(get()) }
     factory { SyncUserFollowDetailsUseCase(get(), get()) }
+    
+    // 浏览历史相关
+    factory { com.projectu.shared.domain.usecase.SaveBrowseHistoryUseCase(get()) }
 }
 
 /**

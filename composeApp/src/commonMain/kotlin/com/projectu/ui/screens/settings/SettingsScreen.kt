@@ -499,6 +499,16 @@ private fun SettingsScreenContent(
                 )
             }
             
+            // 浏览历史
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.history_browse_history),
+                    subtitle = stringResource(Res.string.history_view_history),
+                    description = stringResource(Res.string.history_desc),
+                    onClick = { navigator.push(com.projectu.ui.screens.history.BrowseHistoryScreen()) }
+                )
+            }
+            
             // 📥 6. 下载设置 (Download Settings)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_download))
