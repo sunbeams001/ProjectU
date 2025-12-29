@@ -591,6 +591,8 @@
     <string name="download_retry">重试</string>
     <string name="download_delete">删除</string>
     <string name="download_filter">筛选</string>
+    <string name="download_task_added">已添加到下载列表</string>
+    <string name="download_action_view">查看</string>
     <string name="download_novel">下载小说</string>
     <string name="download_series_as_epub">下载系列为 EPUB</string>
     

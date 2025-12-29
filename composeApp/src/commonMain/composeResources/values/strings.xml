@@ -598,6 +598,8 @@
     <string name="download_retry">Retry</string>
     <string name="download_delete">Delete</string>
     <string name="download_filter">Filter</string>
+    <string name="download_task_added">Download task added</string>
+    <string name="download_action_view">View</string>
     <string name="download_novel">Download novel</string>
     <string name="download_series_as_epub">Download series as EPUB</string>
     

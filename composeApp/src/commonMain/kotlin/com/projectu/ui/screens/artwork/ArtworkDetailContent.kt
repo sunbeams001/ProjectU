@@ -64,6 +64,7 @@ fun ArtworkDetailContent(
     onDownloadLongClick: (() -> Unit)? = null,
     onImageClick: ((pageIndex: Int) -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    snackbarHostState: SnackbarHostState? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -143,6 +144,16 @@ fun ArtworkDetailContent(
                 Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(Res.string.nav_back),
                 tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        // Snackbar显示
+        snackbarHostState?.let {
+            SnackbarHost(
+                hostState = it,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
             )
         }
     }

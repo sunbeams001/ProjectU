@@ -1,5 +1,8 @@
 package com.projectu.ui.screens.artwork
 
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
@@ -17,7 +20,11 @@ import com.projectu.shared.domain.model.CommentContentType
 import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.ui.util.PlatformBackHandler
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import projectu.composeapp.generated.resources.Res
+import projectu.composeapp.generated.resources.download_action_view
+import projectu.composeapp.generated.resources.download_task_added
 
 /**
  * 作品详情页面
@@ -69,6 +76,9 @@ data class ArtworkDetailScreen(
         val navigator = LocalNavigator.currentOrThrow
         val downloadRepository: DownloadRepository = koinInject()
         val coroutineScope = rememberCoroutineScope()
+        val snackbarHostState = remember { SnackbarHostState() }
+        val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
+        val downloadActionViewLabel = stringResource(Res.string.download_action_view)
         
         // 创建Tag点击处理器
         val tagClickHandler = com.projectu.ui.util.rememberTagClickHandler(navigator)
@@ -193,9 +203,15 @@ data class ArtworkDetailScreen(
                             }
                         }
                         if (result.isSuccess) {
-                            // 可以显示一个提示：已添加到下载列表
-                            // 跳转到下载页面
-                            navigator.push(DownloadScreen())
+                            // 显示提示：已添加到下载列表，带跳转按钮
+                            val snackbarResult = snackbarHostState.showSnackbar(
+                                message = downloadTaskAddedMessage,
+                                actionLabel = downloadActionViewLabel,
+                                duration = SnackbarDuration.Short
+                            )
+                            if (snackbarResult == SnackbarResult.ActionPerformed) {
+                                navigator.push(DownloadScreen())
+                            }
                         }
                     }
                 }
@@ -207,9 +223,15 @@ data class ArtworkDetailScreen(
                         if (artwork.type == ArtworkType.UGOIRA) {
                             val result = downloadRepository.addUgoiraDownload(artwork, UgoiraFormat.MP4)
                             if (result.isSuccess) {
-                                // 可以显示一个提示：已添加到下载列表（MP4格式）
-                                // 跳转到下载页面
-                                navigator.push(DownloadScreen())
+                                // 显示提示：已添加到下载列表（MP4格式），带跳转按钮
+                                val snackbarResult = snackbarHostState.showSnackbar(
+                                    message = downloadTaskAddedMessage,
+                                    actionLabel = downloadActionViewLabel,
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (snackbarResult == SnackbarResult.ActionPerformed) {
+                                    navigator.push(DownloadScreen())
+                                }
                             }
                         }
                     }
@@ -231,7 +253,8 @@ data class ArtworkDetailScreen(
                     }
                 }
             },
-            onTagClick = { tag -> tagClickHandler(tag) }
+            onTagClick = { tag -> tagClickHandler(tag) },
+            snackbarHostState = snackbarHostState
         )
     }
 }

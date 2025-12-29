@@ -47,7 +47,11 @@ fun ArtworkImageViewerContent(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     downloadRepository: DownloadRepository = koinInject(),
-    settingsRepository: SettingsRepository = koinInject()
+    settingsRepository: SettingsRepository = koinInject(),
+    snackbarHostState: SnackbarHostState? = null,
+    downloadTaskAddedMessage: String = "",
+    downloadActionViewLabel: String = "",
+    onNavigateToDownloads: (() -> Unit)? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     
@@ -178,12 +182,32 @@ fun ArtworkImageViewerContent(
                             illustId = artworkId.toLong(),
                             pageIndex = pagerState.currentPage
                         ).onSuccess {
-                            // 下载任务已添加，可以显示提示
+                            // 下载任务已添加，显示提示，带跳转按钮
+                            snackbarHostState?.let { hostState ->
+                                val snackbarResult = hostState.showSnackbar(
+                                    message = downloadTaskAddedMessage,
+                                    actionLabel = downloadActionViewLabel,
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (snackbarResult == SnackbarResult.ActionPerformed) {
+                                    onNavigateToDownloads?.invoke()
+                                }
+                            }
                         }.onFailure { error ->
                             // 处理错误
                         }
                     }
                 }
+            )
+        }
+        
+        // Snackbar显示
+        snackbarHostState?.let { 
+            SnackbarHost(
+                hostState = it,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
             )
         }
     }

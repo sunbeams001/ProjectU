@@ -92,6 +92,9 @@ data class NovelDetailScreen(
         val navigator = LocalNavigator.currentOrThrow
         val downloadRepository: DownloadRepository = koinInject()
         val coroutineScope = rememberCoroutineScope()
+        val snackbarHostState = remember { SnackbarHostState() }
+        val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
+        val downloadActionViewLabel = stringResource(Res.string.download_action_view)
         
         // 从 NavigationContextManager 获取上下文
         val context = remember(contextKey) {
@@ -200,12 +203,20 @@ data class NovelDetailScreen(
                     coroutineScope.launch {
                         val result = downloadRepository.addNovelDownload(novelId = novel.id)
                         if (result.isSuccess) {
-                            navigator.push(DownloadScreen())
+                            val snackbarResult = snackbarHostState.showSnackbar(
+                                message = downloadTaskAddedMessage,
+                                actionLabel = downloadActionViewLabel,
+                                duration = SnackbarDuration.Short
+                            )
+                            if (snackbarResult == SnackbarResult.ActionPerformed) {
+                                navigator.push(DownloadScreen())
+                            }
                         }
                     }
                 }
             },
-            onTagClick = tagClickHandler::handleTagClick
+            onTagClick = tagClickHandler::handleTagClick,
+            snackbarHostState = snackbarHostState
         )
     }
 }
@@ -230,6 +241,7 @@ private fun NovelDetailContent(
     onCommentClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    snackbarHostState: SnackbarHostState? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -288,6 +300,16 @@ private fun NovelDetailContent(
                 Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(Res.string.nav_back),
                 tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        
+        // Snackbar显示
+        snackbarHostState?.let { 
+            SnackbarHost(
+                hostState = it,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
             )
         }
     }

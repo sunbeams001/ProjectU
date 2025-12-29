@@ -60,6 +60,7 @@ fun NovelSeriesContent(
     onUserClick: (String) -> Unit,
     onTagClick: ((String) -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
+    snackbarHostState: SnackbarHostState? = null,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -108,6 +109,9 @@ fun NovelSeriesContent(
                     }
                 }
             )
+        },
+        snackbarHost = {
+            snackbarHostState?.let { SnackbarHost(it) }
         },
         modifier = modifier
     ) { paddingValues ->

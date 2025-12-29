@@ -1,11 +1,17 @@
 package com.projectu.ui.screens.artwork
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.domain.model.PageImageUrls
+import com.projectu.ui.screens.download.DownloadScreen
 import com.projectu.ui.util.PlatformBackHandler
+import org.jetbrains.compose.resources.stringResource
+import projectu.composeapp.generated.resources.Res
+import projectu.composeapp.generated.resources.download_action_view
+import projectu.composeapp.generated.resources.download_task_added
 
 /**
  * 作品大图浏览页面
@@ -34,6 +40,9 @@ data class ArtworkImageViewerScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val snackbarHostState = remember { SnackbarHostState() }
+        val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
+        val downloadActionViewLabel = stringResource(Res.string.download_action_view)
         
         // 系统返回键处理
         PlatformBackHandler(enabled = true) {
@@ -45,7 +54,11 @@ data class ArtworkImageViewerScreen(
             artworkTitle = artworkTitle,
             pages = pages,
             initialPage = initialPage,
-            onBackClick = { navigator.pop() }
+            onBackClick = { navigator.pop() },
+            snackbarHostState = snackbarHostState,
+            downloadTaskAddedMessage = downloadTaskAddedMessage,
+            downloadActionViewLabel = downloadActionViewLabel,
+            onNavigateToDownloads = { navigator.push(DownloadScreen()) }
         )
     }
 }
