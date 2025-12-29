@@ -78,7 +78,42 @@ fun ArtworkImageViewerContent(
         // 图片查看器 - HorizontalPager
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                // 添加鼠标拖动支持（桌面平台）
+                .pointerInput(isZoomed) {
+                    if (!isZoomed) {
+                        awaitEachGesture {
+                            val down = awaitFirstDown(requireUnconsumed = false)
+                            var totalDrag = 0f
+                            
+                            drag(down.id) { change ->
+                                val dragAmount = change.positionChange().x
+                                val horizontalDrag = abs(dragAmount)
+                                val verticalDrag = abs(change.positionChange().y)
+                                
+                                // 主要是水平拖动
+                                if (horizontalDrag > verticalDrag * 1.5f) {
+                                    change.consume()
+                                    totalDrag += dragAmount
+                                }
+                            }
+                            
+                            // 拖动结束，判断是否需要翻页
+                            if (abs(totalDrag) > 50) { // 50px 阈值
+                                coroutineScope.launch {
+                                    if (totalDrag < 0 && pagerState.currentPage < pages.size - 1) {
+                                        // 左滑 - 下一页
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    } else if (totalDrag > 0 && pagerState.currentPage > 0) {
+                                        // 右滑 - 上一页
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
             userScrollEnabled = !isZoomed  // 放大时禁用Pager滑动
         ) { pageIndex ->
             val page = pages.getOrNull(pageIndex) ?: return@HorizontalPager

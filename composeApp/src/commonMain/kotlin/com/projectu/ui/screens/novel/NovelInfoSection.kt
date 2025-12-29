@@ -6,6 +6,9 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -21,8 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import kotlin.math.abs
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
 import androidx.compose.ui.text.font.FontWeight
@@ -190,6 +196,36 @@ fun NovelInfoSection(
             enter = expandVertically(),
             exit = shrinkVertically()
         ) {
+            val scrollState = rememberScrollState()
+            
+            // 添加鼠标拖动支持（用于桌面平台）
+            val dragModifier = Modifier.pointerInput(Unit) {
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    var totalDrag = 0f
+                    
+                    drag(down.id) { change ->
+                        // 只有在滚动到顶部时才处理下拉手势
+                        if (scrollState.value == 0) {
+                            val dragAmount = change.positionChange().y
+                            val horizontalDrag = abs(change.positionChange().x)
+                            val verticalDrag = abs(dragAmount)
+                            
+                            // 向下拖动且主要是垂直方向
+                            if (dragAmount > 0 && verticalDrag > horizontalDrag * 0.5f) {
+                                change.consume()
+                                totalDrag += dragAmount
+                            }
+                        }
+                    }
+                    
+                    // 拖动结束，判断是否超过阈值
+                    if (totalDrag > 150f) { // 150px 阈值，与 NestedScrollConnection 一致
+                        onCollapse()
+                    }
+                }
+            }
+            
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surface,
@@ -199,7 +235,8 @@ fun NovelInfoSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding()
-                        .verticalScroll(rememberScrollState())
+                        .then(dragModifier)
+                        .verticalScroll(scrollState)
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {

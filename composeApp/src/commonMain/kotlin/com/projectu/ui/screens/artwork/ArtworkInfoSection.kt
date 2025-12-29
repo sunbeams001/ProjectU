@@ -3,6 +3,9 @@ package com.projectu.ui.screens.artwork
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +25,8 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
+import kotlin.math.abs
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
@@ -267,6 +272,28 @@ fun ArtworkDetailInfoSection(
         }
     }
     
+    // 添加手动拖动支持（用于桌面平台鼠标拖动）
+    val dragModifier = Modifier.pointerInput(Unit) {
+        awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false)
+            
+            drag(down.id) { change ->
+                // 只有在滚动到顶部时才处理下拉手势
+                if (scrollState.value == 0) {
+                    val dragAmount = change.positionChange().y
+                    val horizontalDrag = abs(change.positionChange().x)
+                    val verticalDrag = abs(dragAmount)
+                    
+                    // 向下拖动且主要是垂直方向
+                    if (dragAmount > 0 && verticalDrag > horizontalDrag * 0.5f) {
+                        change.consume()
+                        onScrollAtTop?.invoke(dragAmount)
+                    }
+                }
+            }
+        }
+    }
+    
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -280,6 +307,7 @@ fun ArtworkDetailInfoSection(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .then(dragModifier)
                     .nestedScroll(nestedScrollConnection)
                     .verticalScroll(scrollState)
                     .padding(16.dp),
