@@ -415,6 +415,8 @@
     <string name="artwork_tags">Tags</string>
     <string name="artwork_publish_time">Publish time: %1$s</string>
     <string name="artwork_similar">Similar</string>
+    <string name="artwork_recommend_title">Recommended Artworks</string>
+    <string name="artwork_recommend_empty">No recommendations for this artwork yet</string>
     
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d hours %2$d minutes</string>

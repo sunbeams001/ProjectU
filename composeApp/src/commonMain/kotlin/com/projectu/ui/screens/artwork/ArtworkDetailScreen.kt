@@ -187,7 +187,12 @@ data class ArtworkDetailScreen(
                     )
                 }
             },
-            onSimilarClick = null,  // 暂未实现
+            onSimilarClick = {
+                // 推荐作品按钮点击
+                state.artwork?.let { artwork ->
+                    navigator.push(ArtworkRecommendScreen(artworkId = artwork.id))
+                }
+            },
             onDownloadClick = {
                 state.artwork?.let { artwork ->
                     coroutineScope.launch {

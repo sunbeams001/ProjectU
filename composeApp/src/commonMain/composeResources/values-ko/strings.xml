@@ -408,6 +408,8 @@
     <string name="artwork_tags">태그</string>
     <string name="artwork_publish_time">게시 시간: %1$s</string>
     <string name="artwork_similar">유사한 작품</string>
+    <string name="artwork_recommend_title">추천 작품</string>
+    <string name="artwork_recommend_empty">이 작품에 대한 추천이 아직 없습니다</string>
     
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d시간 %2$d분</string>

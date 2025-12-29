@@ -506,10 +506,10 @@ fun ArtworkDetailInfoSection(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        // 推荐相似作品按钮
+                        // 推荐作品按钮
                         ActionButton(
                             icon = Icons.Default.Recommend,
-                            label = stringResource(Res.string.artwork_similar),
+                            label = stringResource(Res.string.artwork_recommend_title),
                             onClick = { onSimilarClick?.invoke() },
                             enabled = onSimilarClick != null
                         )

@@ -319,3 +319,36 @@ fun Artwork.updatePages(pageInfos: List<PageInfo>): Artwork {
         )
     )
 }
+
+/**
+ * 将 IllustRecommendBody 转换为 Artwork 列表
+ * 用于推荐作品接口 (getRecommendIllusts)
+ * 
+ * @param tagTranslationUtil 标签翻译工具
+ * @param tagTranslation 全局标签翻译映射表
+ * @param ageLimitDeterminer 年龄限制判定工具
+ */
+fun com.projectu.shared.data.remote.dto.illust.IllustRecommendBody.toArtworkList(
+    tagTranslationUtil: TagTranslationUtil,
+    tagTranslation: Map<String, Map<String, String>>? = null,
+    ageLimitDeterminer: AgeLimitDeterminer
+): List<Artwork> {
+    return this.illusts.toArtworkList(tagTranslationUtil, tagTranslation, ageLimitDeterminer)
+}
+
+/**
+ * 将 IllustRecommendInitBody 转换为 Artwork 列表
+ * 用于推荐作品初始化接口 (getRecommendInit)
+ * 
+ * @param tagTranslationUtil 标签翻译工具
+ * @param tagTranslation 全局标签翻译映射表
+ * @param ageLimitDeterminer 年龄限制判定工具
+ */
+fun com.projectu.shared.data.remote.dto.illust.IllustRecommendInitBody.toArtworkList(
+    tagTranslationUtil: TagTranslationUtil,
+    tagTranslation: Map<String, Map<String, String>>? = null,
+    ageLimitDeterminer: AgeLimitDeterminer
+): List<Artwork> {
+    return this.illusts.toArtworkList(tagTranslationUtil, tagTranslation, ageLimitDeterminer)
+}
+

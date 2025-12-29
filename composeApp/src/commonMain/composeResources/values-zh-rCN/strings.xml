@@ -408,6 +408,8 @@
     <string name="artwork_tags">标签</string>
     <string name="artwork_publish_time">发布时间: %1$s</string>
     <string name="artwork_similar">相似作品</string>
+    <string name="artwork_recommend_title">推荐作品</string>
+    <string name="artwork_recommend_empty">该作品暂无推荐内容</string>
     
         <!-- Time Format -->
     <string name="time_hours_minutes">%1$d小时%2$d分钟</string>

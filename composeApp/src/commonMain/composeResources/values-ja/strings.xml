@@ -408,6 +408,8 @@
     <string name="artwork_tags">タグ</string>
     <string name="artwork_publish_time">投稿日時：%1$s</string>
     <string name="artwork_similar">似ている作品</string>
+    <string name="artwork_recommend_title">おすすめ作品</string>
+    <string name="artwork_recommend_empty">この作品のおすすめがまだありません</string>
     
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d 時間 %2$d 分</string>
