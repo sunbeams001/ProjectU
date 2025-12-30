@@ -12,6 +12,7 @@ import okio.Path.Companion.toPath
 import okio.Sink
 import okio.sink
 import java.io.File
+import java.io.FileOutputStream
 
 /**
  * Android 平台的文件写入器
@@ -54,15 +55,40 @@ class AndroidFileWriter(
         // 创建子目录结构
         val targetDir = ensureDocumentDirectoryExists(baseDocumentFile, relativePath)
         
-        // 删除可能存在的同名文件
-        targetDir.findFile(fileName)?.delete()
+        // 删除可能存在的同名文件（多次尝试以确保删除成功）
+        var existingFile = targetDir.findFile(fileName)
+        if (existingFile != null) {
+            existingFile.delete()
+            // 等待一小段时间确保文件系统同步
+            kotlinx.coroutines.delay(100)
+            // 再次检查是否还存在
+            existingFile = targetDir.findFile(fileName)
+            if (existingFile != null) {
+                existingFile.delete()
+            }
+        }
         
         // 确定 MIME 类型
         val mimeType = getMimeType(fileName)
         
-        // 创建文件
-        val file = targetDir.createFile(mimeType, fileName)
-            ?: throw IllegalStateException("Failed to create file: $fileName in $relativePath")
+        // 创建文件，如果失败则尝试强制删除后重新创建
+        var file = try {
+            targetDir.createFile(mimeType, fileName)
+        } catch (e: Exception) {
+            // 创建失败，可能是因为文件残留，强制刷新目录并重试
+            e.printStackTrace()
+            
+            // 最后一次尝试：遍历目录查找并删除
+            targetDir.listFiles().find { it.name == fileName }?.delete()
+            kotlinx.coroutines.delay(100)
+            
+            // 重试创建
+            targetDir.createFile(mimeType, fileName)
+        }
+        
+        if (file == null) {
+            throw IllegalStateException("Failed to create file: $fileName in $relativePath (file may already exist)")
+        }
         
         val outputStream = context.contentResolver.openOutputStream(file.uri)
             ?: throw IllegalStateException("Failed to open output stream for ${file.uri}")
@@ -116,6 +142,14 @@ class AndroidFileWriter(
     /**
      * Android 7-9: 传统文件系统访问
      * 需要 WRITE_EXTERNAL_STORAGE 权限
+     * 
+     * 注意：即使是 legacy 路径，也可能遇到 Scoped Storage 的孤儿文件问题：
+     * - 用户从相册删除文件后，MediaStore 记录被删除，但文件系统可能残留
+     * - File.exists() 依赖 MediaStore 返回 false，但 open() 能看到文件报 EEXIST
+     * 
+     * 解决方案：
+     * 1. 先通过 MediaStore 删除孤儿记录
+     * 2. 使用 FileOutputStream 覆盖模式（O_TRUNC）而不是 Okio.sink()（O_EXCL）
      */
     private fun createLegacySink(path: Path): Sink {
         val file = File(path.toString())
@@ -127,7 +161,48 @@ class AndroidFileWriter(
             }
         }
         
-        return file.sink()
+        // 如果文件可见，先删除
+        if (file.exists()) {
+            try {
+                file.delete()
+            } catch (e: Exception) {
+                // 忽略删除失败，后续覆盖模式会处理
+            }
+        }
+        
+        // 通过 MediaStore 删除可能的孤儿记录（从相册删除后的残留）
+        try {
+            val fileName = file.name
+            val relativePath = file.parentFile?.let { parent ->
+                parent.absolutePath.removePrefix("/storage/emulated/0/")
+            } ?: ""
+            
+            val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
+            val selectionArgs = arrayOf(fileName, "$relativePath/")
+            
+            context.contentResolver.delete(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                selection,
+                selectionArgs
+            )
+        } catch (e: Exception) {
+            // MediaStore 删除失败不影响后续流程
+        }
+        
+        try {
+            // 使用 FileOutputStream 覆盖模式，避免 EEXIST 错误
+            // append=false 使用 O_CREAT|O_TRUNC 标志，允许覆盖现有文件
+            return FileOutputStream(file, false).sink()
+        } catch (e: Exception) {
+            // 最后尝试：强制删除后重试
+            try {
+                Runtime.getRuntime().exec("rm -f ${file.absolutePath}").waitFor()
+                Thread.sleep(100)
+                return FileOutputStream(file, false).sink()
+            } catch (e2: Exception) {
+                throw e // 抛出原始异常
+            }
+        }
     }
     
     /**
