@@ -296,16 +296,17 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 ### 作品浏览
 
 - **作品详情** - 查看作品完整信息、标签、相关作品
-- **图片查看器** - 支持缩放、全屏浏览
+- **图片查看器** - 支持缩放、全屏浏览，可自定义图片质量
 - **Ugoira 动图** - 流畅播放 Pixiv 动图，支持暂停、播放控制
-- **推荐作品** - 基于个人喜好的智能推荐
+- **推荐作品** - 基于作品的智能推荐，支持分页加载
+- **浏览历史** - 自动记录浏览的作品、小说、系列，支持按类型筛选
 - **发现** - 探索新作品、新小说、新创作者
 
 ### 搜索功能
 
 - **关键词搜索** - 搜索插画、漫画、Ugoira、小说
 - **高级筛选** - 支持多种排序方式，支持复杂筛选条件
-- **标签搜索** - 快速按标签查找作品
+- **标签搜索** - 快速按标签查找作品，支持搜索历史
 - **以图搜图** - 使用 SauceNAO 和 Ascii2d 反向搜索图片来源（Android）
 
 ### 排行榜
@@ -329,6 +330,14 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 - **收藏标签** - 为收藏添加自定义标签
 - **批量操作** - 批量管理收藏
 
+### 内容过滤（屏蔽机制）
+
+- **R-18 过滤** - 可选择屏蔽成人内容
+- **AI 作品过滤** - 屏蔽 AI 生成的作品
+- **作者屏蔽** - 屏蔽指定作者的所有作品
+- **标签屏蔽** - 屏蔽包含特定标签的作品
+- **快捷入口** - 在作品详情页快速添加屏蔽规则
+
 ### 系列作品
 
 - **漫画系列** - 查看完整漫画系列，支持追更
@@ -338,6 +347,7 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 
 - **下载路径规则** - 支持自定义下载路径，可按作品类型、作者等组织文件夹结构
 - **文件命名规则** - 灵活配置文件命名规则（作品ID、标题、作者等变量）
+- **Ugoira 下载** - 支持下载为 GIF 或 MP4 格式
 - **下载队列** - 智能管理下载任务
 - **权限管理** - Android 存储权限自动处理
 
@@ -350,7 +360,9 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 
 - **多语言切换** - 应用界面和 API 语言独立设置
 - **主题切换** - 浅色/深色/跟随系统
+- **默认启动页** - 可自定义应用启动时显示的页面
 - **Pixiv 配置** - PHPSESSID 登录凭据管理
+- **显示设置** - 瀑布流列数、图片质量等可自定义
 - **文件命名规则** - 自定义下载文件命名格式
 
 ---
@@ -508,6 +520,12 @@ limitations under the License.
 - [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) - 强大的跨平台技术
 - [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) - 现代化的 UI 框架
 - [Koin](https://insert-koin.io/) - 简洁的依赖注入框架
+
+---
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=sunbeams001/ProjectU&type=date&legend=top-left)](https://www.star-history.com/#sunbeams001/ProjectU&type=date&legend=top-left)
 
 ---
 
