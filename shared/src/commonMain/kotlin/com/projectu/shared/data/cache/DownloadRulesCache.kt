@@ -61,48 +61,30 @@ class DownloadRulesCache(
     fun findMatchingRule(task: DownloadTask): DownloadRule {
         val enabledRules = _rules.value.filter { it.enabled }
         
-        println("[DownloadRulesCache] Finding rule for task: ${task.resourceType}, resourceId: ${task.resourceId}")
-        println("[DownloadRulesCache] Custom rules count: ${enabledRules.size}")
-        
         // 1. 如果有自定义规则，尝试匹配
         if (enabledRules.isNotEmpty()) {
-            println("[DownloadRulesCache] Checking ${enabledRules.size} custom rules...")
             for (rule in enabledRules) {
-                println("[DownloadRulesCache] - Rule #${rule.order}: ${rule.resourceTypes}, path: ${rule.targetPath}")
                 if (rule.matches(task)) {
-                    println("[DownloadRulesCache] ✓ Matched custom rule #${rule.order}, path: ${rule.targetPath}")
                     return rule
                 }
             }
-            println("[DownloadRulesCache] No custom rule matched, falling back to built-in rules")
-        } else {
-            println("[DownloadRulesCache] No custom rules, using built-in rules")
         }
         
         // 2. 没有自定义规则，或者所有自定义规则都不匹配
         // 使用内置默认规则组（动态获取当前的基础路径）
         val currentBasePath = baseDownloadPathProvider().ifEmpty { 
-            println("[DownloadRulesCache] WARNING: baseDownloadPath is empty, using default: ${DownloadRuleDefaults.DEFAULT_BASE_PATH_ANDROID}")
             DownloadRuleDefaults.DEFAULT_BASE_PATH_ANDROID 
         }
-        println("[DownloadRulesCache] Using base path: $currentBasePath")
         
         val builtInRules = DownloadRuleDefaults.getBuiltInRules(currentBasePath)
-        println("[DownloadRulesCache] Built-in rules count: ${builtInRules.size}")
         
         for (rule in builtInRules) {
-            println("[DownloadRulesCache] - Built-in rule: ${rule.resourceTypes}, basePath: ${rule.targetPath}, subDir: ${rule.subDirectory}")
             if (rule.matches(task)) {
-                val relativePath = rule.buildRelativePath(task)
-                println("[DownloadRulesCache] ✓ Matched built-in rule: ${rule.resourceTypes}")
-                println("[DownloadRulesCache]   - Base path: ${rule.targetPath}")
-                println("[DownloadRulesCache]   - Relative path: $relativePath")
                 return rule
             }
         }
         
         // 3. 理论上不应该到这里（内置规则应该覆盖所有类型）
-        println("[DownloadRulesCache] ERROR: No matching rule found!")
         throw IllegalStateException("No matching rule found for task: ${task.resourceType}")
     }
     

@@ -912,5 +912,14 @@
     <string name="history_time_hours_ago">%1$s시간 전</string>
     <string name="history_time_days_ago">%1$s일 전</string>
     <string name="history_cancel">취소</string>
+    <string name="history_by_author">%1$s 작가</string>
+    
+    <!-- Novel Info -->
+    <string name="novel_id">소설 ID</string>
+    <string name="novel_user_id">사용자 ID</string>
+    <string name="novel_info">작품 정보</string>
+    
+    <!-- Actions -->
+    <string name="id_copied">복사됨: %1$s</string>
 </resources>
 

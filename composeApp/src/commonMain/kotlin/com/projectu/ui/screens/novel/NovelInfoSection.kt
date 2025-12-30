@@ -91,8 +91,10 @@ fun NovelInfoSection(
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
+    val snackbarHostState = remember { SnackbarHostState() }
     
-    Column(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
         // 收缩状态的提示条 - 始终显示
         Surface(
             modifier = Modifier
@@ -164,21 +166,6 @@ fun NovelInfoSection(
                         }
                     }
                     
-                    // 下载按钮
-                    if (onDownloadClick != null) {
-                        IconButton(
-                            onClick = onDownloadClick,
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Download,
-                                contentDescription = stringResource(Res.string.download_novel),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                    
                     // 收藏按钮
                     NovelBookmarkIndicator(
                         novel = novel,
@@ -237,14 +224,18 @@ fun NovelInfoSection(
                 tonalElevation = 2.dp
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .then(dragModifier)
-                        .verticalScroll(scrollState)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
+                    // 可滚动区域（统计数据、标签、作品信息、简介）
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .then(dragModifier)
+                            .verticalScroll(scrollState)
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
                     // 1. 封面 + 基本信息
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -501,7 +492,6 @@ fun NovelInfoSection(
                                 // 其他标签（不省略）
                                 val clipboardManager = LocalClipboardManager.current
                                 val scope = rememberCoroutineScope()
-                                val snackbarHostState = remember { SnackbarHostState() }
                                 
                                 novel.tags.forEach { tag ->
                                     val isR18Tag = tag.name.equals("R-18", ignoreCase = true) || 
@@ -565,7 +555,86 @@ fun NovelInfoSection(
                     
                     HorizontalDivider()
                     
-                    // 5. 简介
+                    // 5. 作品信息（ID等）
+                    val clipboardManager = LocalClipboardManager.current
+                    val coroutineScope = rememberCoroutineScope()
+                    
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        val novelIdCopiedMessage = stringResource(Res.string.id_copied, novel.id)
+                        val userIdCopiedMessage = stringResource(Res.string.id_copied, novel.userId)
+                        
+                        Text(
+                            text = stringResource(Res.string.novel_info),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        
+                        // 小说ID（可点击复制）
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.clickable {
+                                clipboardManager.setText(AnnotatedString(novel.id))
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = novelIdCopiedMessage,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.novel_id),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = novel.id,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = stringResource(Res.string.action_copy),
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        
+                        // 用户ID（可点击复制）
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.clickable {
+                                clipboardManager.setText(AnnotatedString(novel.userId))
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = userIdCopiedMessage,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.novel_user_id),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = novel.userId,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = stringResource(Res.string.action_copy),
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    HorizontalDivider()
+                    
+                    // 6. 简介
                     if (novel.description.isNotBlank()) {
                         val uriHandler = LocalUriHandler.current
                         
@@ -590,9 +659,53 @@ fun NovelInfoSection(
                             )
                         }
                     }
-                }
+                    }
+                    
+                    // 固定在底部的操作按钮区域（不在滚动区域内）
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        // 操作按钮行
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            // 推荐作品按钮（暂时禁用）
+                            NovelActionButton(
+                                icon = Icons.Default.Recommend,
+                                label = stringResource(Res.string.artwork_recommend_title),
+                                onClick = { /* TODO: 接口未接入 */ },
+                                enabled = false
+                            )
+                            
+                            // 下载按钮
+                            NovelActionButton(
+                                icon = Icons.Default.Download,
+                                label = stringResource(Res.string.download_novel),
+                                onClick = { onDownloadClick?.invoke() },
+                                enabled = onDownloadClick != null
+                            )
+                        }
+                    }
             }
         }
+    }
+        }
+        
+        // Snackbar Host
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+        )
     }
 }
 
@@ -680,6 +793,45 @@ private fun TagChip(
             style = MaterialTheme.typography.labelMedium,
             color = textColor,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        )
+    }
+}
+
+/**
+ * 操作按钮组件（小说专用）
+ */
+@Composable
+private fun NovelActionButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .then(
+                if (enabled) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            modifier = Modifier.size(20.dp),
+            tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
         )
     }
 }

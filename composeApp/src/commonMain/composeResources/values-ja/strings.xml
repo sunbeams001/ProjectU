@@ -912,5 +912,14 @@
     <string name="history_time_hours_ago">%1$s 時間前</string>
     <string name="history_time_days_ago">%1$s 日前</string>
     <string name="history_cancel">キャンセル</string>
+    <string name="history_by_author">%1$s 作</string>
+    
+    <!-- Novel Info -->
+    <string name="novel_id">小説ID</string>
+    <string name="novel_user_id">ユーザーID</string>
+    <string name="novel_info">作品情報</string>
+    
+    <!-- Actions -->
+    <string name="id_copied">コピーしました: %1$s</string>
 </resources>
 

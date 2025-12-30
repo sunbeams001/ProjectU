@@ -280,7 +280,7 @@
     <string name="action_block_author">Block Author</string>
     <string name="action_unblock_author">Unblock Author</string>
     <string name="tag_copied">Tag copied</string>
-    
+    <string name="id_copied">Copied: %1$s</string>
     <!-- Settings - Image Quality -->
     <string name="settings_image_quality">Image Quality</string>
     <string name="settings_preferred_image_quality">Preferred Card Image Quality</string>
@@ -464,8 +464,10 @@
     <string name="artwork_publish_time">Publish time: %1$s</string>
     <string name="artwork_similar">Similar</string>
     <string name="artwork_recommend_title">Recommended Artworks</string>
-    <string name="artwork_recommend_empty">No recommendations for this artwork yet</string>
-    
+    <string name="artwork_recommend_empty">No recommendations for this artwork yet</string>    
+    <string name="novel_id">Novel ID</string>
+    <string name="novel_user_id">User ID</string>
+    <string name="novel_info">Novel Info</string>    
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d hours %2$d minutes</string>
     <string name="time_hours">%1$d hours</string>

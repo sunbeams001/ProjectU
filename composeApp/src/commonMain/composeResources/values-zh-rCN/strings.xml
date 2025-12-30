@@ -274,6 +274,7 @@
     <string name="action_block_author">屏蔽作者</string>
     <string name="action_unblock_author">解除屏蔽</string>
     <string name="tag_copied">标签已复制</string>
+    <string name="id_copied">已复制: %1$s</string>
         <!-- 设置 - 图片质量 -->
     <string name="settings_image_quality">图片质量</string>
     <string name="settings_preferred_image_quality">插画卡片首选图片质量</string>
@@ -456,6 +457,10 @@
     <string name="artwork_similar">相似作品</string>
     <string name="artwork_recommend_title">推荐作品</string>
     <string name="artwork_recommend_empty">该作品暂无推荐内容</string>
+    
+    <string name="novel_id">小说ID</string>
+    <string name="novel_user_id">用户ID</string>
+    <string name="novel_info">作品信息</string>
     
         <!-- Time Format -->
     <string name="time_hours_minutes">%1$d小时%2$d分钟</string>
@@ -899,5 +904,6 @@
     <string name="history_time_hours_ago">%1$s 小时前</string>
     <string name="history_time_days_ago">%1$s 天前</string>
     <string name="history_cancel">取消</string>
+    <string name="history_by_author">由 %1$s 创作</string>
 </resources>
 

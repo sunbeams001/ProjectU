@@ -915,5 +915,14 @@
     <string name="history_time_hours_ago">%1$s 小時前</string>
     <string name="history_time_days_ago">%1$s 天前</string>
     <string name="history_cancel">取消</string>
+    <string name="history_by_author">由 %1$s 創作</string>
+    
+    <!-- Novel Info -->
+    <string name="novel_id">小說ID</string>
+    <string name="novel_user_id">用戶ID</string>
+    <string name="novel_info">作品資訊</string>
+    
+    <!-- Actions -->
+    <string name="id_copied">已複製: %1$s</string>
 </resources>
 

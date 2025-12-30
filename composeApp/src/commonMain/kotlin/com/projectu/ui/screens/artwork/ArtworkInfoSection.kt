@@ -258,6 +258,7 @@ fun ArtworkDetailInfoSection(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val snackbarHostState = remember { SnackbarHostState() }
     
     // 嵌套滚动连接，用于处理滚动到顶部时的下滑手势
     val nestedScrollConnection = remember {
@@ -297,8 +298,9 @@ fun ArtworkDetailInfoSection(
         }
     }
     
+    Box(modifier = modifier) {
     Surface(
-        modifier = modifier,
+        modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         tonalElevation = 1.dp
     ) {
@@ -360,7 +362,6 @@ fun ArtworkDetailInfoSection(
                         var selectedTag by remember { mutableStateOf<com.projectu.shared.domain.model.Tag?>(null) }
                         val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
                         val scope = rememberCoroutineScope()
-                        val snackbarHostState = remember { SnackbarHostState() }
                         val tagCopiedMessage = stringResource(Res.string.tag_copied)
                         
                         FlowRow(
@@ -425,7 +426,13 @@ fun ArtworkDetailInfoSection(
                 }
                 
                 // 3. 作品信息（分辨率、ID等）
+                val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+                val coroutineScope = rememberCoroutineScope()
+                
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val artworkIdCopiedMessage = stringResource(Res.string.id_copied, artwork.id)
+                    val userIdCopiedMessage = stringResource(Res.string.id_copied, artwork.userId)
+                    
                     Text(
                         text = stringResource(Res.string.artwork_info),
                         style = MaterialTheme.typography.titleSmall,
@@ -466,9 +473,18 @@ fun ArtworkDetailInfoSection(
                         }
                     }
                     
-                    // 作品ID
+                    // 作品ID（可点击复制）
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.clickable {
+                            clipboardManager.setText(AnnotatedString(artwork.id))
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = artworkIdCopiedMessage,
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
                     ) {
                         Text(
                             text = stringResource(Res.string.artwork_id),
@@ -478,13 +494,28 @@ fun ArtworkDetailInfoSection(
                         Text(
                             text = artwork.id,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = stringResource(Res.string.action_copy),
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     
-                    // 用户ID
+                    // 用户ID（可点击复制）
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.clickable {
+                            clipboardManager.setText(AnnotatedString(artwork.userId))
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = userIdCopiedMessage,
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
                     ) {
                         Text(
                             text = stringResource(Res.string.artwork_user_id),
@@ -494,7 +525,13 @@ fun ArtworkDetailInfoSection(
                         Text(
                             text = artwork.userId,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = stringResource(Res.string.action_copy),
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -568,6 +605,13 @@ fun ArtworkDetailInfoSection(
                 }
             }
         }
+    }
+    
+    // Snackbar Host
+    SnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier.align(Alignment.BottomCenter)
+    )
     }
 }
 
