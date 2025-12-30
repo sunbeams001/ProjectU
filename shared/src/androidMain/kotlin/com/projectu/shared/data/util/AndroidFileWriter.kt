@@ -25,6 +25,65 @@ class AndroidFileWriter(
     private val context: Context
 ) : PlatformFileWriter {
     
+    companion object {
+        // 文件系统通常限制文件名（包括扩展名）不超过 255 字节
+        // 留一些余量，设置为 200 字节（约 66 个中文字符）
+        private const val MAX_FILENAME_BYTES = 200
+    }
+    
+    /**
+     * 截断过长的文件名以符合文件系统限制
+     * 保留扩展名和作品 ID（如果存在）
+     */
+    private fun truncateFileName(fileName: String): String {
+        val extension = fileName.substringAfterLast('.', "")
+        val nameWithoutExt = if (extension.isNotEmpty()) {
+            fileName.substringBeforeLast('.')
+        } else {
+            fileName
+        }
+        
+        // 计算完整文件名的字节长度（UTF-8）
+        val fullBytes = fileName.toByteArray(Charsets.UTF_8).size
+        if (fullBytes <= MAX_FILENAME_BYTES) {
+            return fileName
+        }
+        
+        // 需要截断
+        // 保留扩展名的字节数 + 点号
+        val extensionBytes = if (extension.isNotEmpty()) {
+            extension.toByteArray(Charsets.UTF_8).size + 1 // +1 for '.'
+        } else {
+            0
+        }
+        
+        // 可用于文件名主体的字节数，预留 3 字节用于省略号
+        val availableBytes = MAX_FILENAME_BYTES - extensionBytes - 3
+        
+        // 尝试保留作品 ID（格式：数字_标题）
+        val idMatch = Regex("^(\\d+)_").find(nameWithoutExt)
+        val prefixToKeep = idMatch?.value ?: ""
+        val prefixBytes = prefixToKeep.toByteArray(Charsets.UTF_8).size
+        
+        // 截断主体部分
+        var truncated = nameWithoutExt
+        var currentBytes = nameWithoutExt.toByteArray(Charsets.UTF_8).size
+        
+        while (currentBytes > availableBytes && truncated.isNotEmpty()) {
+            truncated = truncated.dropLast(1)
+            currentBytes = truncated.toByteArray(Charsets.UTF_8).size
+        }
+        
+        // 组装最终文件名
+        val result = if (extension.isNotEmpty()) {
+            "$truncated...$extension"
+        } else {
+            "$truncated..."
+        }
+        
+        return result
+    }
+    
     override suspend fun createSink(path: Path, displayName: String): Sink {
         return when {
             // Android 10+ (API 29+): 强制分区存储，使用 MediaStore API
@@ -44,9 +103,18 @@ class AndroidFileWriter(
      */
     override suspend fun createSinkFromUri(baseUri: String, relativePath: String, fileName: String): Sink {
         if (!baseUri.startsWith("content://")) {
-            // 如果不是 content:// URI，回退到传统路径处理
-            val fullPath = "$baseUri/$relativePath/$fileName"
-            return createLegacySink(fullPath.toPath())
+            // 非 SAF URI (传统路径)
+            // Android 10+ 不允许直接访问共享存储，需要使用 MediaStore
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // 构建完整路径用于 MediaStore
+                val fullPath = "$baseUri/$relativePath/$fileName"
+                return createMediaStoreSink(fullPath.toPath(), fileName)
+            } else {
+                // Android 7-9: 可以使用传统路径（需要截断文件名）
+                val sanitizedFileName = truncateFileName(fileName)
+                val fullPath = "$baseUri/$relativePath/$sanitizedFileName"
+                return createLegacySink(fullPath.toPath())
+            }
         }
         
         val baseDocumentFile = DocumentFile.fromTreeUri(context, Uri.parse(baseUri))
@@ -210,8 +278,15 @@ class AndroidFileWriter(
      * 自动处理分区存储，无需 WRITE_EXTERNAL_STORAGE 权限
      */
     private fun createMediaStoreSink(path: Path, displayName: String): Sink {
-        val relativePath = extractRelativePath(path)
+        val originalRelativePath = extractRelativePath(path)
         val mimeType = getMimeType(displayName)
+        
+        // 根据文件类型和路径调整 RELATIVE_PATH
+        // MediaStore 集合对路径有严格限制：
+        // - Images: 只能 Pictures/*
+        // - Video: 只能 Movies/*, DCIM/*
+        // - Files: 只能 Download/* 或 Documents/*
+        val relativePath = adjustRelativePathForMediaStore(originalRelativePath, mimeType)
         
         // 先尝试删除可能存在的同名文件（避免重复记录）
         deleteMediaStoreFileByName(displayName, relativePath)
@@ -234,9 +309,10 @@ class AndroidFileWriter(
                 MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
             }
             else -> {
-                // 其他文件类型使用 Downloads 集合
+                // 其他文件类型（如 epub）使用 Files 集合
+                // Files 集合允许任意 RELATIVE_PATH，不像 Downloads 只能用 Download 目录
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                    MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
                 } else {
                     MediaStore.Files.getContentUri("external")
                 }
@@ -250,6 +326,36 @@ class AndroidFileWriter(
             ?: throw IllegalStateException("Failed to open output stream for $uri")
         
         return MediaStoreSink(outputStream.sink(), uri, context)
+    }
+    
+    /**
+     * 根据 MediaStore 集合限制调整相对路径
+     * - Images/Video: 可以用 Pictures/Movies 等标准媒体目录
+     * - Files: 只能用 Download 或 Documents
+     */
+    private fun adjustRelativePathForMediaStore(relativePath: String, mimeType: String): String {
+        // 图片和视频可以使用原始路径（通常在 Pictures/Movies）
+        if (mimeType.startsWith("image/") || mimeType.startsWith("video/")) {
+            return relativePath
+        }
+        
+        // 其他文件类型（如 epub）必须在 Download 或 Documents 下
+        // 如果原路径不符合要求，重映射到 Documents
+        val topLevelDir = relativePath.substringBefore('/', relativePath)
+        
+        return when (topLevelDir) {
+            "Download", "Documents" -> relativePath // 已经符合要求
+            else -> {
+                // 将路径重映射到 Documents，保留子目录结构
+                // 例如: Pictures/ProjectU/Novels -> Documents/ProjectU/Novels
+                val subPath = if (relativePath.contains('/')) {
+                    relativePath.substringAfter('/')
+                } else {
+                    "ProjectU" // 默认子目录
+                }
+                "Documents/$subPath"
+            }
+        }
     }
     
     /**
