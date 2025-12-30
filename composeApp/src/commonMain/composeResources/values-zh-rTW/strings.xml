@@ -236,6 +236,54 @@
     <string name="settings_r18_sanity_level_suggestive">暗示性 (4–5)</string>
     <string name="settings_r18_sanity_level_r18">成人 (6–9)</string>
     
+    <!-- 設定 - 屏蔽列表 -->
+    <string name="settings_block_list">屏蔽列表</string>
+    <string name="settings_block_list_desc">管理屏蔽的作者、標籤和內容過濾規則</string>
+    <string name="block_list_title">屏蔽列表</string>
+    <string name="block_list_empty">暫無屏蔽項目</string>
+    <string name="block_list_empty_hint">添加作者或標籤來屏蔽不想看到的內容</string>
+    <string name="block_list_fixed_rules">快速過濾</string>
+    <string name="block_list_custom_rules">自定義屏蔽</string>
+    <string name="block_rule_r18_content">R-18 內容</string>
+    <string name="block_rule_ai_generated">AI 生成作品</string>
+    <string name="block_rule_author_id">作者：%1$s</string>
+    <string name="block_rule_tag">標籤：%1$s</string>
+    <string name="block_rule_add">添加屏蔽規則</string>
+    <string name="block_rule_select_type">選擇屏蔽類型</string>
+    <string name="block_rule_type_author">屏蔽作者</string>
+    <string name="block_rule_type_tag">屏蔽標籤</string>
+    <string name="block_rule_add_author">屏蔽作者</string>
+    <string name="block_rule_add_tag">屏蔽標籤</string>
+    <string name="block_rule_author_id_label">作者 ID</string>
+    <string name="block_rule_author_id_hint">輸入 Pixiv 作者 ID</string>
+    <string name="block_rule_tag_label">標籤名稱</string>
+    <string name="block_rule_tag_hint">輸入要屏蔽的標籤</string>
+    <string name="block_rule_delete_confirm_title">刪除屏蔽規則</string>
+    <string name="block_rule_delete_confirm_message">確定要移除此屏蔽規則嗎？</string>
+    <string name="block_rule_input_empty_error">請輸入內容</string>
+    <string name="block_rule_already_exists_error">該規則已存在</string>
+    <string name="block_rule_scope_label">適用範圍</string>
+    <string name="block_rule_scope_illust">插畫</string>
+    <string name="block_rule_scope_manga">漫畫</string>
+    <string name="block_rule_scope_ugoira">動圖</string>
+    <string name="block_rule_scope_novel">小說</string>
+    <string name="block_rule_scope_novel_series">小說系列</string>
+    <string name="block_rule_scope_manga_series">漫畫系列</string>
+    <string name="block_rule_scope_all">全部類型</string>
+    <string name="block_rule_scope_hint">請至少選擇一種內容類型</string>
+    <string name="block_rule_match_mode_label">匹配模式</string>
+    <string name="block_rule_match_mode_exact">精確匹配</string>
+    <string name="block_rule_match_mode_regex">正則表達式</string>
+    <string name="block_rule_match_mode_exact_hint">僅匹配完全相同的標籤名</string>
+    <string name="block_rule_match_mode_regex_hint">匹配符合模式的標籤（例如：「初音.*」可匹配所有以「初音」開頭的標籤）。注意：正則模式性能略低。</string>
+    
+    <!-- 快捷屏蔽操作 -->
+    <string name="action_copy">複製</string>
+    <string name="action_block_tag">屏蔽此標籤</string>
+    <string name="action_block_author">屏蔽作者</string>
+    <string name="action_unblock_author">解除屏蔽</string>
+    <string name="tag_copied">標籤已複製</string>
+    
     <!-- 設定 - 圖片質量 -->
     <string name="settings_image_quality">圖片質量</string>
     <string name="settings_preferred_image_quality">插畫卡片首選圖片質量</string>

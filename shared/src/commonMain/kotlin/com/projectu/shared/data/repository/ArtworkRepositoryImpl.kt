@@ -11,6 +11,7 @@ import com.projectu.shared.data.remote.model.DiscoveryMode
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.UgoiraMetadata
 import com.projectu.shared.domain.repository.ArtworkRepository
+import com.projectu.shared.domain.usecase.FilterArtworksUseCase
 import com.projectu.shared.util.AgeLimitDeterminer
 import com.projectu.shared.util.TagTranslationUtil
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,8 @@ import kotlinx.coroutines.flow.flow
 class ArtworkRepositoryImpl(
     private val pixivApi: PixivApi,
     private val tagTranslationUtil: TagTranslationUtil,
-    private val ageLimitDeterminer: AgeLimitDeterminer
+    private val ageLimitDeterminer: AgeLimitDeterminer,
+    private val filterArtworksUseCase: FilterArtworksUseCase
 ) : ArtworkRepository {
 
     override suspend fun getArtworkDetail(artworkId: Long): Result<Artwork> = runCatching {
@@ -45,11 +47,14 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.thumbnails?.illust?.toArtworkList(
+        val artworks = response.body?.thumbnails?.illust?.toArtworkList(
             tagTranslationUtil = tagTranslationUtil,
             tagTranslation = response.body.tagTranslation,
             ageLimitDeterminer = ageLimitDeterminer
         ) ?: emptyList()
+        
+        // 应用屏蔽规则过滤
+        filterArtworksUseCase(artworks)
     }
 
     override suspend fun getDiscoveryIllusts(
@@ -63,11 +68,14 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.thumbnails?.illust?.toArtworkList(
+        val artworks = response.body?.thumbnails?.illust?.toArtworkList(
             tagTranslationUtil = tagTranslationUtil,
             tagTranslation = response.body.tagTranslation,
             ageLimitDeterminer = ageLimitDeterminer
         ) ?: emptyList()
+        
+        // 应用屏蔽规则过滤
+        filterArtworksUseCase(artworks)
     }
 
     override suspend fun getFollowingArtworks(
@@ -80,11 +88,14 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.thumbnails?.illust?.toArtworkList(
+        val artworks = response.body?.thumbnails?.illust?.toArtworkList(
             tagTranslationUtil = tagTranslationUtil,
             tagTranslation = response.body.tagTranslation,
             ageLimitDeterminer = ageLimitDeterminer
         ) ?: emptyList()
+        
+        // 应用屏蔽规则过滤
+        filterArtworksUseCase(artworks)
     }
     
     override suspend fun getFollowLatestIllusts(
@@ -104,7 +115,10 @@ class ArtworkRepositoryImpl(
             ageLimitDeterminer = ageLimitDeterminer
         ) ?: emptyList()
         val isLastPage = response.body?.page?.isLastPage ?: true
-        Pair(artworks, isLastPage)
+        
+        // 应用屏蔽规则过滤
+        val filteredArtworks = filterArtworksUseCase(artworks)
+        Pair(filteredArtworks, isLastPage)
     }
 
     override suspend fun searchArtworks(
@@ -124,11 +138,14 @@ class ArtworkRepositoryImpl(
         if (response.error) {
             throw IllegalStateException(response.message)
         }
-        response.body?.illustManga?.data?.toArtworkList(
+        val artworks = response.body?.illustManga?.data?.toArtworkList(
             tagTranslationUtil = tagTranslationUtil,
             tagTranslation = response.body.tagTranslation,
             ageLimitDeterminer = ageLimitDeterminer
         ) ?: emptyList()
+        
+        // 应用屏蔽规则过滤
+        filterArtworksUseCase(artworks)
     }
 
     override suspend fun getRankingArtworks(
@@ -143,7 +160,10 @@ class ArtworkRepositoryImpl(
             page = page,
             date = date
         )
-        response.contents.toArtworkList(ageLimitDeterminer)
+        val artworks = response.contents.toArtworkList(ageLimitDeterminer)
+        
+        // 应用屏蔽规则过滤
+        filterArtworksUseCase(artworks)
     }
     
     override suspend fun getRankingWithDateInfo(
@@ -160,7 +180,10 @@ class ArtworkRepositoryImpl(
         )
         val artworks = response.contents.toArtworkList(ageLimitDeterminer)
         val dateInfo = Triple(response.date, response.prev_date, response.next_date)
-        Pair(artworks, dateInfo)
+        
+        // 应用屏蔽规则过滤
+        val filteredArtworks = filterArtworksUseCase(artworks)
+        Pair(filteredArtworks, dateInfo)
     }
 
     override suspend fun addBookmark(

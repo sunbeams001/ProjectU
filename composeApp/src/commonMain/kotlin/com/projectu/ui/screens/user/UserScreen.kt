@@ -69,6 +69,7 @@ import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NovelSeriesCard
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
+import com.projectu.ui.screens.blocklist.BlockListScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
@@ -137,6 +138,22 @@ data class UserScreen(
             TagClickHandler(navigator, searchHistoryStore, scope)
         }
         
+        // 获取BlockRuleCache以检查用户是否被屏蔽
+        val blockRuleCache: com.projectu.shared.domain.cache.BlockRuleCache = koinInject()
+        val enabledRules by blockRuleCache.enabledRules.collectAsState()
+        val isAuthorBlocked by remember(enabledRules, userId) {
+            derivedStateOf {
+                enabledRules.any { rule ->
+                    rule.type == com.projectu.shared.domain.model.BlockRuleType.AUTHOR_ID &&
+                    rule.value == userId &&
+                    rule.enabled
+                }
+            }
+        }
+        
+        // 获取BlockRuleRepository以添加/删除屏蔽规则
+        val blockRuleRepository: com.projectu.shared.domain.repository.BlockRuleRepository = koinInject()
+        
         UserScreenContent(
             state = state,
             onTabChange = viewModel::switchTab,
@@ -194,7 +211,24 @@ data class UserScreen(
             onBackClick = { navigator.pop() },
             onToggleTagFilter = viewModel::toggleTagFilter,
             onSelectTag = viewModel::selectTag,
-            onTagClick = { tag -> tagClickHandler.handleTagClick(tag) }
+            onTagClick = { tag -> tagClickHandler.handleTagClick(tag) },
+            onBlockAuthor = {
+                // 跳转到屏蔽列表页面并预填充作者ID
+                navigator.push(BlockListScreen(prefilledAuthorId = userId))
+            },
+            onUnblockAuthor = {
+                // 查找并删除屏蔽规则
+                scope.launch {
+                    val authorRule = enabledRules.find { rule ->
+                        rule.type == com.projectu.shared.domain.model.BlockRuleType.AUTHOR_ID &&
+                        rule.value == userId
+                    }
+                    authorRule?.let { rule ->
+                        blockRuleRepository.deleteRule(rule.id)
+                    }
+                }
+            },
+            isAuthorBlocked = isAuthorBlocked
         )
     }
 }
@@ -227,7 +261,11 @@ fun UserScreenContent(
     // 用于外部控制置顶/刷新
     onRegisterScrollToTopOrRefreshCallback: ((callback: () -> Unit) -> Unit)? = null,
     // Tag点击处理
-    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    // 屏蔽作者相关
+    onBlockAuthor: (() -> Unit)? = null,
+    onUnblockAuthor: (() -> Unit)? = null,
+    isAuthorBlocked: Boolean = false
 ) {
     val coroutineScope = rememberCoroutineScope()
     
@@ -390,7 +428,10 @@ fun UserScreenContent(
                                     onRetry = { onRetryTab(tab) },
                                     onToggleTagFilter = { onToggleTagFilter(tab) },
                                     onSelectTag = { selectedTag -> onSelectTag(tab, selectedTag) },
-                                    onTagClick = onTagClick
+                                    onTagClick = onTagClick,
+                                    onBlockAuthor = onBlockAuthor,
+                                    onUnblockAuthor = onUnblockAuthor,
+                                    isAuthorBlocked = isAuthorBlocked
                                 )
                             }
                         } else {
@@ -616,7 +657,10 @@ fun UserTabContent(
     onRetry: () -> Unit,
     onToggleTagFilter: () -> Unit = {},
     onSelectTag: (String?) -> Unit = {},
-    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null
+    onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onBlockAuthor: (() -> Unit)? = null,
+    onUnblockAuthor: (() -> Unit)? = null,
+    isAuthorBlocked: Boolean = false
 ) {
     // 获取或创建当前Tab的Tag筛选行滚动状态
     val tagScrollState = tagFilterScrollStates.getOrPut(tab) { ScrollState(0) }
@@ -632,7 +676,10 @@ fun UserTabContent(
                     UserInfoContent(
                         userDetailInfo = userDetailInfo,
                         tab = tab,
-                        tabListStates = tabListStates
+                        tabListStates = tabListStates,
+                        onBlockAuthor = onBlockAuthor,
+                        onUnblockAuthor = onUnblockAuthor,
+                        isAuthorBlocked = isAuthorBlocked
                     )
                 } else {
                     CircularProgressIndicator()
@@ -1027,7 +1074,10 @@ fun NovelSeriesList(
 fun UserInfoContent(
     userDetailInfo: UserDetailInfo,
     tab: UserProfileTab,
-    tabListStates: MutableMap<UserProfileTab, ListScrollState>
+    tabListStates: MutableMap<UserProfileTab, ListScrollState>,
+    onBlockAuthor: (() -> Unit)? = null,
+    onUnblockAuthor: (() -> Unit)? = null,
+    isAuthorBlocked: Boolean = false
 ) {
     val listState = rememberLazyListState()
     val uriHandler = LocalUriHandler.current
@@ -1053,6 +1103,27 @@ fun UserInfoContent(
                         label = stringResource(Res.string.user_info_user_id),
                         value = userDetailInfo.userId
                     )
+                    
+                    // 屏蔽/解除屏蔽按钮
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedButton(
+                        onClick = {
+                            if (isAuthorBlocked) {
+                                onUnblockAuthor?.invoke()
+                            } else {
+                                onBlockAuthor?.invoke()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = if (isAuthorBlocked) {
+                                stringResource(Res.string.action_unblock_author)
+                            } else {
+                                stringResource(Res.string.action_block_author)
+                            }
+                        )
+                    }
                 }
             }
         }

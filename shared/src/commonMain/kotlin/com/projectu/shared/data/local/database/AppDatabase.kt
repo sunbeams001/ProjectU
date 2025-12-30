@@ -6,12 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.projectu.shared.data.local.dao.ArtworkDao
+import com.projectu.shared.data.local.dao.BlockRuleDao
 import com.projectu.shared.data.local.dao.BrowseHistoryDao
 import com.projectu.shared.data.local.dao.DownloadDao
 import com.projectu.shared.data.local.dao.DownloadRulesDao
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.dao.UgoiraCacheDao
 import com.projectu.shared.data.local.entity.ArtworkEntity
+import com.projectu.shared.data.local.entity.BlockRuleEntity
 import com.projectu.shared.data.local.entity.BrowseHistoryEntity
 import com.projectu.shared.data.local.entity.DownloadRuleEntity
 import com.projectu.shared.data.local.entity.DownloadTaskEntity
@@ -29,9 +31,10 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         SettingsEntity::class,
         DownloadTaskEntity::class,
         DownloadRuleEntity::class,
-        BrowseHistoryEntity::class
+        BrowseHistoryEntity::class,
+        BlockRuleEntity::class
     ],
-    version = 4,
+    version = 7,
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -66,6 +69,11 @@ abstract class AppDatabase : RoomDatabase() {
      * 浏览历史数据访问对象
      */
     abstract fun browseHistoryDao(): BrowseHistoryDao
+    
+    /**
+     * 屏蔽规则数据访问对象
+     */
+    abstract fun blockRuleDao(): BlockRuleDao
 }
 
 /**

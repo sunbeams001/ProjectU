@@ -45,6 +45,7 @@ actual val databaseModule: Module = module {
     single<DownloadDao> { get<AppDatabase>().downloadDao() }
     single { get<AppDatabase>().downloadRulesDao() }
     single { get<AppDatabase>().browseHistoryDao() }
+    single { get<AppDatabase>().blockRuleDao() }
     
     // 设置存储
     single { SettingsStore(get()) }
@@ -77,6 +78,9 @@ actual val useCaseModule: Module = module {
 actual val viewModelModule: Module = module {
     // 设置 ViewModel
     single { SettingsViewModel(get(), get()) }
+    
+    // 屏蔽列表 ViewModel
+    single { com.projectu.ui.screens.blocklist.BlockListViewModel(get()) }
     
     // 登录 ViewModel
     single { com.projectu.ui.screens.login.LoginViewModel(get()) }

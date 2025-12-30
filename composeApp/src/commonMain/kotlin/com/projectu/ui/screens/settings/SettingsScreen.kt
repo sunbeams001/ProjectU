@@ -499,6 +499,15 @@ private fun SettingsScreenContent(
                 )
             }
             
+            // 屏蔽列表
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_block_list),
+                    subtitle = stringResource(Res.string.settings_block_list_desc),
+                    onClick = { navigator.push(com.projectu.ui.screens.blocklist.BlockListScreen()) }
+                )
+            }
+            
             // 浏览历史
             item {
                 SettingsItem(

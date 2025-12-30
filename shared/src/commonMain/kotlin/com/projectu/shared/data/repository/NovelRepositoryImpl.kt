@@ -9,6 +9,7 @@ import com.projectu.shared.data.remote.model.RankingMode
 import com.projectu.shared.data.remote.model.RankingContent
 import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.repository.NovelRepository
+import com.projectu.shared.domain.usecase.FilterNovelsUseCase
 import com.projectu.shared.util.AgeLimitDeterminer
 
 /**
@@ -16,7 +17,8 @@ import com.projectu.shared.util.AgeLimitDeterminer
  */
 class NovelRepositoryImpl(
     private val pixivApi: PixivApi,
-    private val ageLimitDeterminer: AgeLimitDeterminer
+    private val ageLimitDeterminer: AgeLimitDeterminer,
+    private val filterNovelsUseCase: FilterNovelsUseCase
 ) : NovelRepository {
     
     override suspend fun getNovelDetail(novelId: String): Result<Novel> {
@@ -58,7 +60,9 @@ class NovelRepositoryImpl(
                     tagTranslation = response.body!!.tagTranslation,
                     ageLimitDeterminer = ageLimitDeterminer
                 )
-                Result.success(novels)
+                // 应用屏蔽规则过滤
+                val filteredNovels = filterNovelsUseCase(novels)
+                Result.success(filteredNovels)
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -82,7 +86,9 @@ class NovelRepositoryImpl(
                     tagTranslation = response.body!!.tagTranslation,
                     ageLimitDeterminer = ageLimitDeterminer
                 ) ?: emptyList()
-                Result.success(novels)
+                // 应用屏蔽规则过滤
+                val filteredNovels = filterNovelsUseCase(novels)
+                Result.success(filteredNovels)
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -106,8 +112,10 @@ class NovelRepositoryImpl(
                     tagTranslation = response.body!!.tagTranslation,
                     ageLimitDeterminer = ageLimitDeterminer
                 ) ?: emptyList()
+                // 应用屏蔽规则过滤
+                val filteredNovels = filterNovelsUseCase(novels)
                 val isLastPage = response.body!!.page.isLastPage
-                Result.success(Pair(novels, isLastPage))
+                Result.success(Pair(filteredNovels, isLastPage))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -130,7 +138,8 @@ class NovelRepositoryImpl(
             
             // 转换排行榜数据为小说列表
             val novels = response.displayA.rankA.toNovelRankingList(ageLimitDeterminer)
-            Result.success(novels)
+            val filteredNovels = filterNovelsUseCase(novels)
+            Result.success(filteredNovels)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -152,10 +161,11 @@ class NovelRepositoryImpl(
             
             // 转换排行榜数据为小说列表
             val novels = body.displayA.rankA.toNovelRankingList(ageLimitDeterminer)
+            val filteredNovels = filterNovelsUseCase(novels)
             // 提取日期信息 (注意：小说排行榜的日期字段在body中，可能是start/end，也可能是date)
             val currentDate = body.start ?: body.date
             val dateInfo = Triple(currentDate, body.displayA.prevDate, body.displayA.nextDate)
-            Result.success(Pair(novels, dateInfo))
+            Result.success(Pair(filteredNovels, dateInfo))
         } catch (e: Exception) {
             Result.failure(e)
         }

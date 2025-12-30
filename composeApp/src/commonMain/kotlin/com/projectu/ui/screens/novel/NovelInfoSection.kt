@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.drag
@@ -27,8 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import kotlin.math.abs
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
 import androidx.compose.ui.text.font.FontWeight
@@ -83,6 +87,7 @@ fun NovelInfoSection(
     onCommentClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -494,15 +499,64 @@ fun NovelInfoSection(
                                 }
                                 
                                 // 其他标签（不省略）
+                                val clipboardManager = LocalClipboardManager.current
+                                val scope = rememberCoroutineScope()
+                                val snackbarHostState = remember { SnackbarHostState() }
+                                
                                 novel.tags.forEach { tag ->
                                     val isR18Tag = tag.name.equals("R-18", ignoreCase = true) || 
                                                    tag.name.equals("R-18G", ignoreCase = true)
                                     if (!isR18Tag) { // 避免重复显示
-                                        TagChip(
-                                            text = tag.translatedName ?: tag.name,
-                                            isR18 = false,
-                                            onClick = { onTagClick?.invoke(tag) }
-                                        )
+                                        var showTagMenu by remember { mutableStateOf(false) }
+                                        
+                                        Box {
+                                            TagChip(
+                                                text = tag.translatedName ?: tag.name,
+                                                isR18 = false,
+                                                onClick = { onTagClick?.invoke(tag) },
+                                                onLongClick = { showTagMenu = true }
+                                            )
+                                            
+                                            DropdownMenu(
+                                                expanded = showTagMenu,
+                                                onDismissRequest = { showTagMenu = false }
+                                            ) {
+                                                // 复制标签
+                                                DropdownMenuItem(
+                                                    text = { Text(stringResource(Res.string.action_copy)) },
+                                                    onClick = {
+                                                        clipboardManager.setText(AnnotatedString(tag.name))
+                                                        scope.launch {
+                                                            snackbarHostState.showSnackbar(
+                                                                message = "已复制: ${tag.name}"
+                                                            )
+                                                        }
+                                                        showTagMenu = false
+                                                    },
+                                                    leadingIcon = {
+                                                        Icon(
+                                                            Icons.Default.ContentCopy,
+                                                            contentDescription = null
+                                                        )
+                                                    }
+                                                )
+                                                
+                                                // 屏蔽标签
+                                                DropdownMenuItem(
+                                                    text = { Text(stringResource(Res.string.action_block_tag)) },
+                                                    onClick = {
+                                                        onBlockTag?.invoke(tag)
+                                                        showTagMenu = false
+                                                    },
+                                                    leadingIcon = {
+                                                        Icon(
+                                                            Icons.Default.Block,
+                                                            contentDescription = null
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -594,6 +648,7 @@ private fun TagChip(
     text: String,
     isR18: Boolean,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -608,8 +663,14 @@ private fun TagChip(
     
     Surface(
         modifier = modifier.then(
-            if (onClick != null) Modifier.clickable(onClick = onClick)
-            else Modifier
+            if (onClick != null || onLongClick != null) {
+                Modifier.combinedClickable(
+                    onClick = { onClick?.invoke() },
+                    onLongClick = { onLongClick?.invoke() }
+                )
+            } else {
+                Modifier
+            }
         ),
         shape = RoundedCornerShape(16.dp),
         color = backgroundColor

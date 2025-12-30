@@ -29,6 +29,7 @@ import androidx.compose.ui.input.pointer.positionChange
 import kotlin.math.abs
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,7 @@ import com.projectu.ui.components.BookmarkIndicator
 import com.projectu.ui.components.FollowIndicator
 import com.projectu.ui.components.HtmlText
 import com.projectu.ui.util.formatNumber
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
 
@@ -252,6 +254,7 @@ fun ArtworkDetailInfoSection(
     onDownloadLongClick: (() -> Unit)? = null,
     onScrollAtTop: ((Float) -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -352,6 +355,14 @@ fun ArtworkDetailInfoSection(
                             color = MaterialTheme.colorScheme.primary
                         )
                         
+                        // 长按菜单状态
+                        var showTagMenu by remember { mutableStateOf(false) }
+                        var selectedTag by remember { mutableStateOf<com.projectu.shared.domain.model.Tag?>(null) }
+                        val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+                        val scope = rememberCoroutineScope()
+                        val snackbarHostState = remember { SnackbarHostState() }
+                        val tagCopiedMessage = stringResource(Res.string.tag_copied)
+                        
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -369,11 +380,42 @@ fun ArtworkDetailInfoSection(
                                 val isR18Tag = tag.name.equals("R-18", ignoreCase = true) ||
                                         tag.name.equals("R-18G", ignoreCase = true)
                                 if (!isR18Tag) { // 避免重复显示
-                                    TagChip(
-                                        text = tag.translatedName ?: tag.name,
-                                        isR18 = false,
-                                        onClick = onTagClick?.let { { it(tag) } }
-                                    )
+                                    Box {
+                                        TagChip(
+                                            text = tag.translatedName ?: tag.name,
+                                            isR18 = false,
+                                            onClick = onTagClick?.let { { it(tag) } },
+                                            onLongClick = {
+                                                selectedTag = tag
+                                                showTagMenu = true
+                                            }
+                                        )
+                                        
+                                        DropdownMenu(
+                                            expanded = showTagMenu && selectedTag == tag,
+                                            onDismissRequest = { showTagMenu = false }
+                                        ) {
+                                            // 复制
+                                            DropdownMenuItem(
+                                                text = { Text(stringResource(Res.string.action_copy)) },
+                                                onClick = {
+                                                    clipboardManager.setText(AnnotatedString(tag.name))
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar(tagCopiedMessage)
+                                                    }
+                                                    showTagMenu = false
+                                                }
+                                            )
+                                            // 屏蔽此标签
+                                            DropdownMenuItem(
+                                                text = { Text(stringResource(Res.string.action_block_tag)) },
+                                                onClick = {
+                                                    onBlockTag?.invoke(tag)
+                                                    showTagMenu = false
+                                                }
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -581,7 +623,8 @@ private fun TagChip(
     text: String,
     isR18: Boolean,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null
 ) {
     val r18Color = Color(0xFFFF4060)
     val backgroundColor = if (isR18)
@@ -596,8 +639,11 @@ private fun TagChip(
     Surface(
         modifier = modifier
             .then(
-                if (onClick != null) {
-                    Modifier.clickable { onClick() }
+                if (onClick != null || onLongClick != null) {
+                    Modifier.combinedClickable(
+                        onClick = { onClick?.invoke() },
+                        onLongClick = { onLongClick?.invoke() }
+                    )
                 } else {
                     Modifier
                 }

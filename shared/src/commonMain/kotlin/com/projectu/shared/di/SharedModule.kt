@@ -97,6 +97,11 @@ val dataStoreModule = module {
         SettingsCache(get())
     }
     
+    // 屏蔽规则缓存（内存缓存，高频访问）
+    single {
+        com.projectu.shared.domain.cache.BlockRuleCache(get())
+    }
+    
     // 下载规则存储
     single {
         DownloadRulesStore(get())
@@ -174,7 +179,8 @@ val repositoryModule = module {
         ArtworkRepositoryImpl(
             pixivApi = get(),
             tagTranslationUtil = get(),
-            ageLimitDeterminer = get()
+            ageLimitDeterminer = get(),
+            filterArtworksUseCase = get()
         ) 
     }
     
@@ -190,7 +196,8 @@ val repositoryModule = module {
     single<NovelRepository> {
         NovelRepositoryImpl(
             pixivApi = get(),
-            ageLimitDeterminer = get()
+            ageLimitDeterminer = get(),
+            filterNovelsUseCase = get()
         )
     }
     
@@ -243,6 +250,11 @@ val repositoryModule = module {
     // 浏览历史仓储
     single<com.projectu.shared.domain.repository.BrowseHistoryRepository> {
         com.projectu.shared.data.repository.BrowseHistoryRepositoryImpl(get())
+    }
+    
+    // 屏蔽规则仓储
+    single<com.projectu.shared.domain.repository.BlockRuleRepository> {
+        com.projectu.shared.data.repository.BlockRuleRepositoryImpl(get())
     }
 }
 
@@ -301,6 +313,11 @@ val useCaseModule = module {
     
     // 浏览历史相关
     factory { com.projectu.shared.domain.usecase.SaveBrowseHistoryUseCase(get()) }
+    
+    // 内容过滤相关（使用 BlockRuleCache 缓存）
+    factory { com.projectu.shared.domain.usecase.FilterArtworksUseCase(get()) }
+    factory { com.projectu.shared.domain.usecase.FilterNovelsUseCase(get()) }
+    factory { com.projectu.shared.domain.usecase.FilterMangaSeriesUseCase(get()) }
 }
 
 /**

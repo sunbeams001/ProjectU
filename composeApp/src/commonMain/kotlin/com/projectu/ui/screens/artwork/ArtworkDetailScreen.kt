@@ -16,6 +16,7 @@ import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.comment.CommentsScreen
 import com.projectu.ui.screens.download.DownloadScreen
+import com.projectu.ui.screens.blocklist.BlockListScreen
 import com.projectu.shared.domain.model.CommentContentType
 import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.ui.util.PlatformBackHandler
@@ -262,6 +263,10 @@ data class ArtworkDetailScreen(
                 }
             },
             onTagClick = { tag -> tagClickHandler(tag) },
+            onBlockTag = { tag ->
+                // 跳转到屏蔽列表页面，并传入Tag进行预填充
+                navigator.push(BlockListScreen(prefilledTag = tag.name))
+            },
             snackbarHostState = snackbarHostState
         )
     }

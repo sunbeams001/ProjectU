@@ -28,6 +28,7 @@ import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.navigation.NavigationContextManager
+import com.projectu.ui.screens.blocklist.BlockListScreen
 import com.projectu.ui.screens.comment.CommentsScreen
 import com.projectu.ui.screens.download.DownloadScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
@@ -221,6 +222,9 @@ data class NovelDetailScreen(
                 }
             },
             onTagClick = tagClickHandler::handleTagClick,
+            onBlockTag = { tag ->
+                navigator.push(BlockListScreen(prefilledTag = tag.name))
+            },
             snackbarHostState = snackbarHostState
         )
     }
@@ -246,6 +250,7 @@ private fun NovelDetailContent(
     onCommentClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     snackbarHostState: SnackbarHostState? = null,
     modifier: Modifier = Modifier
 ) {
@@ -286,6 +291,7 @@ private fun NovelDetailContent(
                     onCommentClick = onCommentClick,
                     onDownloadClick = onDownloadClick,
                     onTagClick = onTagClick,
+                    onBlockTag = onBlockTag,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -339,6 +345,7 @@ private fun NovelDetailLayout(
     onCommentClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val novel = state.novel ?: return
@@ -427,6 +434,7 @@ private fun NovelDetailLayout(
             onCommentClick = onCommentClick,
             onDownloadClick = onDownloadClick,
             onTagClick = onTagClick,
+            onBlockTag = onBlockTag,
             modifier = Modifier.fillMaxWidth()
         )
     }

@@ -233,6 +233,54 @@
     <string name="settings_r18_sanity_level_suggestive">Suggestive (4–5)</string>
     <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
     
+    <!-- Settings - Block List -->
+    <string name="settings_block_list">Block List</string>
+    <string name="settings_block_list_desc">Manage blocked authors, tags, and content filters</string>
+    <string name="block_list_title">Block List</string>
+    <string name="block_list_empty">No blocked items</string>
+    <string name="block_list_empty_hint">Add authors or tags to block unwanted content</string>
+    <string name="block_list_fixed_rules">Quick Filters</string>
+    <string name="block_list_custom_rules">Custom Blocks</string>
+    <string name="block_rule_r18_content">R-18 Content</string>
+    <string name="block_rule_ai_generated">AI-Generated Artworks</string>
+    <string name="block_rule_author_id">Author: %1$s</string>
+    <string name="block_rule_tag">Tag: %1$s</string>
+    <string name="block_rule_add">Add Block Rule</string>
+    <string name="block_rule_select_type">Select Block Type</string>
+    <string name="block_rule_type_author">Block Author</string>
+    <string name="block_rule_type_tag">Block Tag</string>
+    <string name="block_rule_add_author">Block Author</string>
+    <string name="block_rule_add_tag">Block Tag</string>
+    <string name="block_rule_author_id_label">Author ID</string>
+    <string name="block_rule_author_id_hint">Enter Pixiv author ID</string>
+    <string name="block_rule_tag_label">Tag Name</string>
+    <string name="block_rule_tag_hint">Enter tag to block</string>
+    <string name="block_rule_delete_confirm_title">Delete Block Rule</string>
+    <string name="block_rule_delete_confirm_message">Are you sure you want to remove this block rule?</string>
+    <string name="block_rule_input_empty_error">Please enter a value</string>
+    <string name="block_rule_already_exists_error">This rule already exists</string>
+    <string name="block_rule_scope_label">Apply to</string>
+    <string name="block_rule_scope_illust">Illustrations</string>
+    <string name="block_rule_scope_manga">Manga</string>
+    <string name="block_rule_scope_ugoira">Animations</string>
+    <string name="block_rule_scope_novel">Novels</string>
+    <string name="block_rule_scope_novel_series">Novel Series</string>
+    <string name="block_rule_scope_manga_series">Manga Series</string>
+    <string name="block_rule_scope_all">All Types</string>
+    <string name="block_rule_scope_hint">Select at least one content type</string>
+    <string name="block_rule_match_mode_label">Match Mode</string>
+    <string name="block_rule_match_mode_exact">Exact Match</string>
+    <string name="block_rule_match_mode_regex">Regular Expression</string>
+    <string name="block_rule_match_mode_exact_hint">Matches exact tag name only</string>
+    <string name="block_rule_match_mode_regex_hint">Matches pattern (e.g., "初音.*" for tags starting with "初音"). Note: Regex mode may have slightly lower performance.</string>
+    
+    <!-- Quick Block Actions -->
+    <string name="action_copy">Copy</string>
+    <string name="action_block_tag">Block This Tag</string>
+    <string name="action_block_author">Block Author</string>
+    <string name="action_unblock_author">Unblock Author</string>
+    <string name="tag_copied">Tag copied</string>
+    
     <!-- Settings - Image Quality -->
     <string name="settings_image_quality">Image Quality</string>
     <string name="settings_preferred_image_quality">Preferred Card Image Quality</string>
