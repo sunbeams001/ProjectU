@@ -411,10 +411,29 @@ class DownloadManager(
                 )
             } finally {
                 activeDownloads.remove(taskId)
+                // 任务完成后，检查并启动下一个等待中的任务
+                tryStartNextPendingTask()
             }
         }
         
         activeDownloads[taskId] = job
+    }
+    
+    /**
+     * 尝试启动下一个等待中的任务
+     * 在任务完成、失败或取消后自动调用，实现队列自动流转
+     */
+    private suspend fun tryStartNextPendingTask() {
+        // 检查是否还有空闲槽位
+        if (downloadDao.getDownloadingTaskCount() >= maxConcurrentDownloads) {
+            return
+        }
+        
+        // 获取第一个等待中的任务
+        val pendingTask = downloadDao.getFirstPendingTask()?.toDownloadTask()
+        if (pendingTask != null) {
+            startDownload(pendingTask.id)
+        }
     }
     
     /**

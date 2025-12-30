@@ -126,4 +126,11 @@ interface DownloadDao {
      */
     @Query("SELECT * FROM download_tasks WHERE status = 'PENDING' ORDER BY createdAt ASC")
     suspend fun getPendingTasks(): List<DownloadTaskEntity>
+    
+    /**
+     * 获取第一个等待中的任务
+     * 用于自动启动下一个下载
+     */
+    @Query("SELECT * FROM download_tasks WHERE status = 'PENDING' ORDER BY createdAt ASC LIMIT 1")
+    suspend fun getFirstPendingTask(): DownloadTaskEntity?
 }
