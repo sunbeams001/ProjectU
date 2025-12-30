@@ -22,9 +22,12 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.projectu.shared.di.pixivApiModule
 import com.projectu.ui.screens.home.HomeScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
 import projectu.composeapp.generated.resources.*
 
 /**
@@ -181,6 +184,15 @@ private fun LoginScreenContent(
                 showWebViewLogin = false
                 onIntent(LoginIntent.PhpSessionIdChanged(phpsessid))
                 onIntent(LoginIntent.LoginClicked)
+                
+                // 重新加载 Pixiv API 模块以使用新的凭据
+                // 这样可以立即生效，无需重启应用
+                try {
+                    unloadKoinModules(pixivApiModule)
+                    loadKoinModules(pixivApiModule)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             },
             onDismiss = {
                 showWebViewLogin = false
