@@ -139,7 +139,7 @@ class UserApi(private val client: PixivApiClient) {
         uid: Long,
         userNum: Int = 20,
         workNum: Int = 3,
-        isR18: Boolean = false
+        isR18: Boolean = true
     ): PixivResponse<UserRecommendBody> {
         return client.get("/ajax/user/$uid/recommends", mapOf(
             "userNum" to userNum,

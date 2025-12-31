@@ -495,6 +495,9 @@
     <string name="user_tab_bookmark_illusts_private">非公開ブックマーク（イラスト）</string>
     <string name="user_tab_bookmark_novels_public">公開ブックマーク（小説）</string>
     <string name="user_tab_bookmark_novels_private">非公開ブックマーク（小説）</string>
+    <string name="user_tab_recommend_users">おすすめユーザー</string>
+    <string name="user_recommend_users_empty">おすすめユーザーがいません</string>
+    <string name="user_recommend_users_empty_hint">似たスタイルのユーザーはすべてフォロー済みかもしれません</string>
     <string name="user_network_error">ネットワークエラー</string>
     <string name="user_load_failed">読み込みに失敗しました</string>
     

@@ -742,6 +742,7 @@ object ProfileTab : Tab {
             // 已登录状态 - 显示用户页面
             UserScreenContent(
                 state = state,
+                viewModel = viewModel,
                 onTabChange = viewModel::switchTab,
                 onLoadMore = viewModel::loadMore,
                 onRefresh = viewModel::refresh,

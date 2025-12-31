@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -67,6 +68,7 @@ import com.projectu.ui.components.HtmlText
 import com.projectu.ui.components.MangaSeriesCard
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.NovelSeriesCard
+import com.projectu.ui.components.UserCard
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.blocklist.BlockListScreen
@@ -156,6 +158,7 @@ data class UserScreen(
         
         UserScreenContent(
             state = state,
+            viewModel = viewModel,
             onTabChange = viewModel::switchTab,
             onLoadMore = viewModel::loadMore,
             onRefresh = viewModel::refresh,
@@ -163,28 +166,57 @@ data class UserScreen(
             scrollIndices = scrollIndices,
             onArtworkClick = { artwork, index ->
                 // 获取当前 Tab 的作品列表
-                val currentArtworkIds = state.tabDataCache[state.currentTab]?.artworks?.map { it.id } ?: emptyList()
                 val currentTab = state.currentTab
                 
-                // 创建绑定到当前 Tab 的列表源
-                val listSource = viewModel.createArtworkListSource(currentTab)
-                
-                // 创建导航上下文
-                val contextKey = NavigationContextManager.createContext(
-                    listSource = listSource,
-                    onReturnWithIndex = { returnIndex ->
-                        scrollIndices[currentTab] = returnIndex
-                    }
-                )
-                
-                // 跳转到作品详情页
-                navigator.push(
-                    ArtworkDetailScreen(
-                        artworkIds = currentArtworkIds,
-                        initialIndex = index,
-                        contextKey = contextKey
+                // 为推荐用户Tab使用特殊的列表源和导航处理
+                if (currentTab == UserProfileTab.RECOMMEND_USERS) {
+                    val currentArtworkIds = state.tabDataCache[currentTab]?.users?.flatMap { user ->
+                        user.illusts.map { it.id }
+                    } ?: emptyList()
+                    
+                    // 创建推荐用户的列表源
+                    val listSource = viewModel.createRecommendUsersArtworkListSource()
+                    
+                    // 创建导航上下文
+                    val contextKey = NavigationContextManager.createContext(
+                        listSource = listSource,
+                        onReturnWithIndex = { returnIndex ->
+                            viewModel.setRecommendUsersScrollIndex(returnIndex)
+                        }
                     )
-                )
+                    
+                    // 跳转到作品详情页
+                    navigator.push(
+                        ArtworkDetailScreen(
+                            artworkIds = currentArtworkIds,
+                            initialIndex = index,
+                            contextKey = contextKey
+                        )
+                    )
+                } else {
+                    // 其他Tab的作品点击处理
+                    val currentArtworkIds = state.tabDataCache[currentTab]?.artworks?.map { it.id } ?: emptyList()
+                    
+                    // 创建绑定到当前 Tab 的列表源
+                    val listSource = viewModel.createArtworkListSource(currentTab)
+                    
+                    // 创建导航上下文
+                    val contextKey = NavigationContextManager.createContext(
+                        listSource = listSource,
+                        onReturnWithIndex = { returnIndex ->
+                            scrollIndices[currentTab] = returnIndex
+                        }
+                    )
+                    
+                    // 跳转到作品详情页
+                    navigator.push(
+                        ArtworkDetailScreen(
+                            artworkIds = currentArtworkIds,
+                            initialIndex = index,
+                            contextKey = contextKey
+                        )
+                    )
+                }
             },
             onNovelClick = { novel ->
                 // 跳转到小说详情页
@@ -237,6 +269,7 @@ data class UserScreen(
 @Composable
 fun UserScreenContent(
     state: UserScreenState,
+    viewModel: UserViewModel,
     onTabChange: (UserProfileTab) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
@@ -416,6 +449,7 @@ fun UserScreenContent(
                                     mangaSeries = state.mangaSeries,
                                     novelSeries = state.novelSeries,
                                     scrollIndices = scrollIndices,
+                                    recommendUsersScrollIndex = viewModel.getRecommendUsersScrollIndex(),
                                     tabListStates = tabListStates,
                                     tagFilterScrollStates = tagFilterScrollStates,
                                     onArtworkClick = onArtworkClick,
@@ -645,6 +679,7 @@ fun UserTabContent(
     mangaSeries: List<MangaSeries>,
     novelSeries: List<NovelSeries>,
     scrollIndices: MutableMap<UserProfileTab, Int>,
+    recommendUsersScrollIndex: Int = 0,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     tagFilterScrollStates: MutableMap<UserProfileTab, ScrollState> = mutableMapOf(),
     onArtworkClick: (Artwork, Int) -> Unit,
@@ -687,10 +722,10 @@ fun UserTabContent(
             }
             else -> {
                 when {
-                    tabData.isLoading && tabData.artworks.isEmpty() && tabData.novels.isEmpty() -> {
+                    tabData.isLoading && tabData.artworks.isEmpty() && tabData.novels.isEmpty() && tabData.users.isEmpty() -> {
                         CircularProgressIndicator()
                     }
-                    tabData.error != null && tabData.artworks.isEmpty() && tabData.novels.isEmpty() -> {
+                    tabData.error != null && tabData.artworks.isEmpty() && tabData.novels.isEmpty() && tabData.users.isEmpty() -> {
                         ErrorDisplay(
                             message = tabData.error,
                             onRetry = onRetry
@@ -698,6 +733,21 @@ fun UserTabContent(
                     }
                     else -> {
                         when (tab) {
+                            UserProfileTab.RECOMMEND_USERS -> {
+                                // 推荐用户列表（使用UserCard组件）
+                                RecommendUsersList(
+                                    users = tabData.users,
+                                    tab = tab,
+                                    tabListStates = tabListStates,
+                                    scrollIndex = recommendUsersScrollIndex,
+                                    onUserClick = onUserClick,
+                                    onArtworkClick = onArtworkClick,
+                                    isLoading = tabData.isLoading,
+                                    isRefreshing = tabData.isRefreshing,
+                                    hasMore = tabData.hasMore,
+                                    onRefresh = onRefresh
+                                )
+                            }
                             UserProfileTab.ILLUSTS, UserProfileTab.MANGA -> {
                                 // 瀑布流展示插画/漫画（用户自己的作品，不显示作者信息）
                                 ArtworkStaggeredGrid(
@@ -1029,6 +1079,110 @@ fun MangaSeriesList(
                 series = item,
                 onClick = { onClick(item) }
             )
+        }
+    }
+}
+
+/**
+ * 推荐用户列表
+ */
+@Composable
+fun RecommendUsersList(
+    users: List<User>,
+    tab: UserProfileTab,
+    tabListStates: MutableMap<UserProfileTab, ListScrollState>,
+    scrollIndex: Int = 0,
+    onUserClick: (String) -> Unit,
+    onArtworkClick: (Artwork, Int) -> Unit,
+    isLoading: Boolean = false,
+    isRefreshing: Boolean = false,
+    hasMore: Boolean = true,
+    onRefresh: () -> Unit = {}
+) {
+    val listState = rememberLazyListState()
+    
+    // 注册滚动状态
+    LaunchedEffect(listState) {
+        tabListStates[tab] = ListScrollState.LazyList(listState)
+    }
+    
+    // 返回后恢复滚动位置
+    LaunchedEffect(scrollIndex, users) {
+        if (scrollIndex > 0 && users.isNotEmpty()) {
+            // 计算需要滚动到的用户索引
+            var accumulatedArtworks = 0
+            var targetUserIndex = 0
+            for ((index, user) in users.withIndex()) {
+                val userArtworkCount = user.illusts.size
+                if (accumulatedArtworks + userArtworkCount > scrollIndex) {
+                    targetUserIndex = index
+                    break
+                }
+                accumulatedArtworks += userArtworkCount
+                targetUserIndex = index + 1
+            }
+            listState.animateScrollToItem(targetUserIndex.coerceAtMost(users.size - 1).coerceAtLeast(0))
+        }
+    }
+    
+    // 计算每个用户作品的起始索引
+    val userArtworkStartIndices = remember(users) {
+        val indices = mutableMapOf<Int, Int>()
+        var currentIndex = 0
+        users.forEachIndexed { userIndex, user ->
+            indices[userIndex] = currentIndex
+            currentIndex += user.illusts.size
+        }
+        indices
+    }
+    
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (users.isEmpty() && !isLoading && !isRefreshing && !hasMore) {
+            // 空状态提示（只有在加载完成后才显示）
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.user_recommend_users_empty),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = stringResource(Res.string.user_recommend_users_empty_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                itemsIndexed(users, key = { _, user -> user.id }) { index, user ->
+                    val artworkStartIndex = userArtworkStartIndices.getOrElse(index) { 0 }
+                    UserCard(
+                        user = user,
+                        onUserClick = { onUserClick(user.id) },
+                        onArtworkClick = { artwork, localIndex ->
+                            val globalIndex = artworkStartIndex + localIndex
+                            onArtworkClick(artwork, globalIndex)
+                        },
+                        artworkStartIndex = 0  // 传入 0，因为我们在外部计算全局索引
+                    )
+                }
+            }
         }
     }
 }

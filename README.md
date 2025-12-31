@@ -471,7 +471,7 @@ _敬请期待，我们将在后续版本中添加应用截图_
 
 ---
 
-## � 开源协议
+## 📄 开源协议
 
 本项目采用 [Apache License 2.0](LICENSE) 开源协议。
 
@@ -514,7 +514,7 @@ limitations under the License.
 
 ---
 
-## �🙏 致谢
+## 🙏 致谢
 
 - [Pixiv](https://www.pixiv.net/) - 提供优秀的创作平台
 - [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) - 强大的跨平台技术

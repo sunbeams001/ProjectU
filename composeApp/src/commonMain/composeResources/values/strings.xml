@@ -504,6 +504,9 @@
     <string name="user_tab_bookmark_illusts_private">Private Bookmarks (Illusts)</string>
     <string name="user_tab_bookmark_novels_public">Public Bookmarks (Novels)</string>
     <string name="user_tab_bookmark_novels_private">Private Bookmarks (Novels)</string>
+    <string name="user_tab_recommend_users">Recommended Users</string>
+    <string name="user_recommend_users_empty">No recommended users</string>
+    <string name="user_recommend_users_empty_hint">All similar users may have been followed</string>
     <string name="user_network_error">Network error</string>
     <string name="user_load_failed">Failed to load</string>
     

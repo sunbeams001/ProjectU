@@ -498,6 +498,9 @@
     <string name="user_tab_bookmark_illusts_private">私人收藏·插画</string>
     <string name="user_tab_bookmark_novels_public">公开收藏·小说</string>
     <string name="user_tab_bookmark_novels_private">私人收藏·小说</string>
+    <string name="user_tab_recommend_users">推荐用户</string>
+    <string name="user_recommend_users_empty">暂无推荐用户</string>
+    <string name="user_recommend_users_empty_hint">可能风格相似的用户都已关注</string>
     <string name="user_network_error">网络错误</string>
     <string name="user_load_failed">加载失败</string>
     

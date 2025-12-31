@@ -504,6 +504,9 @@
     <string name="user_tab_bookmark_illusts_private">私人收藏·插畫</string>
     <string name="user_tab_bookmark_novels_public">公開收藏·小說</string>
     <string name="user_tab_bookmark_novels_private">私人收藏·小說</string>
+    <string name="user_tab_recommend_users">推薦用戶</string>
+    <string name="user_recommend_users_empty">暫無推薦用戶</string>
+    <string name="user_recommend_users_empty_hint">可能風格相似的用戶都已關注</string>
     <string name="user_network_error">網路錯誤</string>
     <string name="user_load_failed">載入失敗</string>
     

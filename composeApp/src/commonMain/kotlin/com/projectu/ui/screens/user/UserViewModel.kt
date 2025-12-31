@@ -10,6 +10,7 @@ import com.projectu.shared.data.remote.mapper.toArtwork
 import com.projectu.shared.data.remote.mapper.toMangaSeries
 import com.projectu.shared.data.remote.mapper.toNovel
 import com.projectu.shared.data.remote.mapper.toNovelSeries
+import com.projectu.shared.data.remote.mapper.toUser
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.BookmarkStatus
 import com.projectu.shared.domain.model.Novel
@@ -50,6 +51,9 @@ class UserViewModel(
     // 当前用户ID
     private var currentUserId: String = ""
     
+    // 推荐用户Tab的滚动位置（作品索引）
+    private var recommendUsersScrollIndex: Int = 0
+    
     init {
         // 监听全局状态变更事件
         screenModelScope.launch {
@@ -65,6 +69,46 @@ class UserViewModel(
                 }
             }
         }
+    }
+    
+    /**
+     * 创建推荐用户Tab的ArtworkListSource
+     * 用于推荐用户作品预览的列表导航功能
+     */
+    fun createRecommendUsersArtworkListSource(): ArtworkListSource {
+        return object : ArtworkListSource {
+            override val artworkIdsFlow: StateFlow<List<String>> = state.map { currentState ->
+                currentState.tabDataCache[UserProfileTab.RECOMMEND_USERS]?.users?.flatMap { user ->
+                    user.illusts.map { it.id }
+                } ?: emptyList()
+            }.stateIn(
+                scope = screenModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = state.value.tabDataCache[UserProfileTab.RECOMMEND_USERS]?.users?.flatMap { user ->
+                    user.illusts.map { it.id }
+                } ?: emptyList()
+            )
+            
+            override fun loadMoreArtworks() {
+                // 推荐用户Tab暂不支持分页加载更多
+                // 未来可以根据需要实现
+            }
+        }
+    }
+    
+    /**
+     * 设置推荐用户Tab的滚动位置
+     * 用于从作品详情页返回时恢复滚动位置
+     */
+    fun setRecommendUsersScrollIndex(index: Int) {
+        recommendUsersScrollIndex = index
+    }
+    
+    /**
+     * 获取推荐用户Tab的滚动位置
+     */
+    fun getRecommendUsersScrollIndex(): Int {
+        return recommendUsersScrollIndex
     }
     
     /**
@@ -210,6 +254,10 @@ class UserViewModel(
                     }
                 }
                 
+                // 推荐用户Tab（放在详情前）
+                availableTabs.add(UserProfileTab.RECOMMEND_USERS)
+                tabDataCache[UserProfileTab.RECOMMEND_USERS] = TabData()
+                
                 // 用户信息Tab（放在最后）
                 availableTabs.add(UserProfileTab.USER_INFO)
                 
@@ -326,9 +374,13 @@ class UserViewModel(
         
         _state.update { it.copy(currentTab = tab) }
         
-        // 如果该Tab还没有加载数据，则加�?
+        // 如果该Tab还没有加载数据，则加载
         val tabData = _state.value.tabDataCache[tab]
-        if (tabData != null && tabData.artworks.isEmpty() && tabData.novels.isEmpty() && !tabData.isLoading) {
+        if (tabData != null && 
+            tabData.artworks.isEmpty() && 
+            tabData.novels.isEmpty() && 
+            tabData.users.isEmpty() && 
+            !tabData.isLoading) {
             loadTabData(tab)
         }
     }
@@ -366,8 +418,8 @@ class UserViewModel(
         }
         
         if (tabData.isLoading) return
-        // 对于收藏Tab，不检查 allIds，而是检查 total
-        if (!tab.isBookmarkTab() && tabData.allIds.isEmpty()) return
+        // 对于收藏Tab和推荐用户Tab，不检查 allIds
+        if (!tab.isBookmarkTab() && tab != UserProfileTab.RECOMMEND_USERS && tabData.allIds.isEmpty()) return
         
         screenModelScope.launch {
             updateTabData(tab) { it.copy(isLoading = true, error = null) }
@@ -387,6 +439,9 @@ class UserViewModel(
                     UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
                     UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
                         loadBookmarkNovels(tab)
+                    }
+                    UserProfileTab.RECOMMEND_USERS -> {
+                        loadRecommendUsers(tab)
                     }
                     else -> {
                         // 系列类型的Tab不需要分页加载
@@ -743,6 +798,7 @@ class UserViewModel(
                     loadedIds = emptyList(),
                     artworks = emptyList(),
                     novels = emptyList(),
+                    users = emptyList(),  // 清空推荐用户列表
                     hasMore = true,
                     error = null,
                     offset = 0  // 重置收藏Tab的偏移量
@@ -765,6 +821,9 @@ class UserViewModel(
                     UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
                     UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
                         loadBookmarkNovels(currentTab)
+                    }
+                    UserProfileTab.RECOMMEND_USERS -> {
+                        loadRecommendUsers(currentTab)
                     }
                     else -> {
                         // 系列等Tab不需要刷新
@@ -794,8 +853,61 @@ class UserViewModel(
         }
     }
     
-    /**
-     * 更新Tab数据
+    /**     * 加载推荐用户
+     */
+    private suspend fun loadRecommendUsers(tab: UserProfileTab) {
+        val userIdLong = currentUserId.toLongOrNull() ?: return
+        
+        val response = pixivApi.userApi.getRecommendUsers(
+            uid = userIdLong,
+            userNum = 20,
+            workNum = 3,
+            isR18 = true
+        )
+        
+        if (response.error) {
+            updateTabData(tab) { 
+                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+            }
+            return
+        }
+        
+        val body = response.body ?: run {
+            updateTabData(tab) { 
+                it.copy(isLoading = false, error = "No data") 
+            }
+            return
+        }
+        
+        // 从 users 字段获取用户详细信息，并转换为 User 对象
+        val recommendUsers = body.users?.map { userDetail ->
+            val user = userDetail.toUser()
+            
+            // 从 thumbnails 中查找该用户的作品
+            val userIllusts = body.thumbnails?.illust?.filter { 
+                it.userId == userDetail.userId 
+            }?.map { illust ->
+                illust.toArtwork(
+                    tagTranslationUtil = tagTranslationUtil,
+                    tagTranslation = null,
+                    ageLimitDeterminer = ageLimitDeterminer
+                )
+            } ?: emptyList()
+            
+            // 将作品添加到用户对象中
+            user.copy(illusts = userIllusts)
+        } ?: emptyList()
+        
+        updateTabData(tab) {
+            it.copy(
+                users = recommendUsers,
+                isLoading = false,
+                hasMore = false  // 推荐用户不支持分页
+            )
+        }
+    }
+    
+    /**     * 更新Tab数据
      */
     private fun updateTabData(tab: UserProfileTab, update: (TabData) -> TabData) {
         _state.update { state ->

@@ -495,6 +495,9 @@
     <string name="user_tab_bookmark_illusts_private">비공개 북마크 (일러스트)</string>
     <string name="user_tab_bookmark_novels_public">공개 북마크 (소설)</string>
     <string name="user_tab_bookmark_novels_private">비공개 북마크 (소설)</string>
+    <string name="user_tab_recommend_users">추천 사용자</string>
+    <string name="user_recommend_users_empty">추천 사용자가 없습니다</string>
+    <string name="user_recommend_users_empty_hint">비슷한 스타일의 사용자를 모두 팔로우했을 수 있습니다</string>
     <string name="user_network_error">네트워크 오류</string>
     <string name="user_load_failed">로드 실패</string>
     

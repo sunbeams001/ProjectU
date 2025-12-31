@@ -21,6 +21,7 @@ enum class UserProfileTab(val displayNameRes: StringResource) {
     BOOKMARK_ILLUSTS_PRIVATE(Res.string.user_tab_bookmark_illusts_private),
     BOOKMARK_NOVELS_PUBLIC(Res.string.user_tab_bookmark_novels_public),
     BOOKMARK_NOVELS_PRIVATE(Res.string.user_tab_bookmark_novels_private),
+    RECOMMEND_USERS(Res.string.user_tab_recommend_users),  // 推荐用户（放在详情前）
     USER_INFO(Res.string.user_tab_info)  // 用户详情（放在最后）
 }
 
@@ -134,6 +135,7 @@ data class TabData(
     val loadedIds: List<String> = emptyList(),  // 已加载的ID（用于用户作品）
     val artworks: List<Artwork> = emptyList(),  // 插画/漫画列表
     val novels: List<Novel> = emptyList(),      // 小说列表
+    val users: List<com.projectu.shared.domain.model.User> = emptyList(),  // 用户列表（用于推荐用户Tab）
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,          // 下拉刷新中
     val hasMore: Boolean = true,
