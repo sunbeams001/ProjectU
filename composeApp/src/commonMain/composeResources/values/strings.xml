@@ -464,7 +464,9 @@
     <string name="artwork_publish_time">Publish time: %1$s</string>
     <string name="artwork_similar">Similar</string>
     <string name="artwork_recommend_title">Recommended Artworks</string>
-    <string name="artwork_recommend_empty">No recommendations for this artwork yet</string>    
+    <string name="artwork_recommend_empty">No recommendations for this artwork yet</string>
+    <string name="novel_recommend_title">Recommended Novels</string>
+    <string name="novel_recommend_empty">No recommendations for this novel yet</string>
     <string name="novel_id">Novel ID</string>
     <string name="novel_user_id">User ID</string>
     <string name="novel_info">Novel Info</string>    

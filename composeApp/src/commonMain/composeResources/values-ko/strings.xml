@@ -458,6 +458,8 @@
     <string name="artwork_similar">유사한 작품</string>
     <string name="artwork_recommend_title">추천 작품</string>
     <string name="artwork_recommend_empty">이 작품에 대한 추천이 아직 없습니다</string>
+    <string name="novel_recommend_title">추천 소설</string>
+    <string name="novel_recommend_empty">이 소설에 대한 추천이 아직 없습니다</string>
     
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d시간 %2$d분</string>

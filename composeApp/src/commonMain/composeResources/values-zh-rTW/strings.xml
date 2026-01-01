@@ -467,6 +467,8 @@
     <string name="artwork_similar">相似作品</string>
     <string name="artwork_recommend_title">推薦作品</string>
     <string name="artwork_recommend_empty">該作品暫無推薦內容</string>
+    <string name="novel_recommend_title">推薦小說</string>
+    <string name="novel_recommend_empty">該小說暫無推薦內容</string>
     
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d小時%2$d分鐘</string>

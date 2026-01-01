@@ -22,6 +22,8 @@ import com.projectu.shared.data.remote.dto.illust_series.IllustSeriesBody
 import com.projectu.shared.data.remote.dto.bookmark.NovelBookmarkRequest
 import com.projectu.shared.data.remote.dto.novel.NovelBookmarkStatusBody
 import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
+import com.projectu.shared.data.remote.dto.novel.NovelRecommendBody
+import com.projectu.shared.data.remote.dto.novel.NovelRecommendInitBody
 import com.projectu.shared.data.remote.dto.novel.NovelSearchBody
 import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesBody
 import com.projectu.shared.data.remote.dto.novel_series.NovelSeriesContentBody
@@ -234,6 +236,8 @@ class ApiTestViewModel(
                         ApiMethod.GetNovelDetail -> testGetNovelDetail()
                         ApiMethod.GetNovelBookmarkData -> testGetNovelBookmarkData()
                         ApiMethod.GetNovelDiscovery -> testGetNovelDiscovery()
+                        ApiMethod.GetNovelRecommendInit -> testGetNovelRecommendInit()
+                        ApiMethod.GetRecommendNovels -> testGetRecommendNovels()
                         
                         // ==================== IllustSeriesApi ====================
                         ApiMethod.GetIllustSeriesDetail -> testGetIllustSeriesDetail()
@@ -2127,6 +2131,102 @@ class ApiTestViewModel(
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
             appendLine("响应体类型: ${response.body?.let { it::class.simpleName }}")
             appendLine("请查看 JSON 标签页查看完整数据")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetNovelRecommendInit() {
+        val novelId = getParam("novelId").toLongOrNull() ?: 26840082L
+        val limit = getParam("limit").toIntOrNull() ?: 9
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<NovelRecommendInitBody>(
+            "/ajax/novel/$novelId/recommend/init",
+            mapOf("limit" to limit)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 小说推荐初始化成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("基准小说ID: $novelId")
+            appendLine("数量限制: $limit")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            response.body?.let { body ->
+                appendLine("返回小说数: ${body.novels.size}")
+                appendLine("NextIds数量: ${body.nextIds.size}")
+                if (body.novels.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("小说列表预览:")
+                    body.novels.take(3).forEach { novel ->
+                        appendLine("  • ${novel.title} (ID: ${novel.id})")
+                        appendLine("    作者: ${novel.userName} (${novel.userId})")
+                        appendLine("    字数: ${novel.textCount}, 阅读时间: ${novel.readingTime}秒")
+                        appendLine("    收藏: ${novel.bookmarkCount ?: 0}, AI类型: ${novel.aiType}")
+                    }
+                    if (body.novels.size > 3) {
+                        appendLine("  ... 还有 ${body.novels.size - 3} 部小说")
+                    }
+                }
+                if (body.nextIds.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("NextIds: ${body.nextIds.take(5).joinToString(", ")}${if (body.nextIds.size > 5) "..." else ""}")
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
+            appendLine("提示: 使用 nextIds 调用 getRecommendNovels 获取后续推荐")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetRecommendNovels() {
+        val novelIdsStr = getParam("novelIds")
+        val novelIds = novelIdsStr.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        
+        if (novelIds.isEmpty()) {
+            _state.update { current ->
+                current.copy(
+                    testResult = TestResult.Error("请提供有效的小说ID列表 (逗号分隔)")
+                )
+            }
+            return
+        }
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<NovelRecommendBody>(
+            "/ajax/novel/recommend/novels",
+            mapOf("novelIds[]" to novelIds)
+        )
+        val response = responseWithRaw.response
+        
+        val summary = buildString {
+            appendLine("✅ 推荐小说获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请求的小说ID数: ${novelIds.size}")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            response.body?.let { body ->
+                appendLine("返回小说数: ${body.novels.size}")
+                if (body.novels.isNotEmpty()) {
+                    appendLine("━━━━━━━━━━━━━━━━━━━━━")
+                    appendLine("小说列表预览:")
+                    body.novels.take(5).forEach { novel ->
+                        appendLine("  • ${novel.title} (ID: ${novel.id})")
+                        appendLine("    作者: ${novel.userName} (${novel.userId})")
+                        appendLine("    字数: ${novel.textCount}, 阅读时间: ${novel.readingTime}秒")
+                        appendLine("    收藏: ${novel.bookmarkCount ?: 0}, AI类型: ${novel.aiType}")
+                    }
+                    if (body.novels.size > 5) {
+                        appendLine("  ... 还有 ${body.novels.size - 5} 部小说")
+                    }
+                }
+            }
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("请查看 JSON 标签页查看完整结果")
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)

@@ -4,6 +4,8 @@ import com.projectu.shared.data.remote.dto.common.PixivResponse
 import com.projectu.shared.data.remote.dto.illust.DiscoveryBody
 import com.projectu.shared.data.remote.dto.novel.NovelBookmarkStatusBody
 import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
+import com.projectu.shared.data.remote.dto.novel.NovelRecommendBody
+import com.projectu.shared.data.remote.dto.novel.NovelRecommendInitBody
 
 /**
  * 小说 API
@@ -45,6 +47,32 @@ class NovelApi(private val client: PixivApiClient) {
         sampleNovelId?.let { params["sampleNovelId"] = it }
 
         return client.get("/ajax/discovery/novels", params)
+    }
+
+    /**
+     * 查询推荐小说（初始化）
+     * @param novelId 基准小说ID
+     * @param limit 返回数量
+     */
+    suspend fun getRecommendInit(
+        novelId: Long,
+        limit: Int = 9
+    ): PixivResponse<NovelRecommendInitBody> {
+        return client.get("/ajax/novel/$novelId/recommend/init", mapOf(
+            "limit" to limit
+        ))
+    }
+
+    /**
+     * 查询推荐小说
+     * @param novelIds 基准小说ID列表
+     */
+    suspend fun getRecommendNovels(
+        novelIds: List<String>
+    ): PixivResponse<NovelRecommendBody> {
+        return client.get("/ajax/novel/recommend/novels", mapOf(
+            "novelIds[]" to novelIds
+        ))
     }
 
 }

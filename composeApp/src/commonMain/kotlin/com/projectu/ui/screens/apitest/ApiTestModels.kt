@@ -608,6 +608,27 @@ sealed class ApiMethod(
         priority = 1
     )
     
+    object GetNovelRecommendInit : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "getNovelRecommendInit",
+        displayName = "小说推荐初始化",
+        parameters = listOf(
+            ApiParameter("novelId", "基准小说ID", "26840082", required = true),
+            ApiParameter("limit", "数量", "9", required = false)
+        ),
+        priority = 1
+    )
+    
+    object GetRecommendNovels : ApiMethod(
+        module = ApiModule.NOVEL,
+        methodName = "getRecommendNovels",
+        displayName = "获取推荐小说",
+        parameters = listOf(
+            ApiParameter("novelIds", "小说ID列表(逗号分隔)", "", required = true)
+        ),
+        priority = 1
+    )
+    
     // ==================== IllustSeriesApi ====================
     
     object GetIllustSeriesDetail : ApiMethod(
@@ -843,7 +864,7 @@ sealed class ApiMethod(
             GetNovelCommentRoots, GetNovelCommentReplies, PostNovelComment, DeleteNovelComment,
             // NovelApi
             GetNovelDetail, GetNovelBookmarkData, 
-            GetNovelDiscovery,
+            GetNovelDiscovery, GetNovelRecommendInit, GetRecommendNovels,
             // FollowApi
             GetFollowLatestIllust, GetFollowLatestNovel, GetWatchListManga, GetWatchListNovel,
             // NovelSeriesApi

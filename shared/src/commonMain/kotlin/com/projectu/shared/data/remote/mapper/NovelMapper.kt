@@ -1,6 +1,8 @@
 package com.projectu.shared.data.remote.mapper
 
 import com.projectu.shared.data.remote.dto.novel.NovelDetailBody
+import com.projectu.shared.data.remote.dto.novel.NovelRecommendBody
+import com.projectu.shared.data.remote.dto.novel.NovelRecommendInitBody
 import com.projectu.shared.data.remote.dto.novel.NovelSimple
 import com.projectu.shared.data.remote.dto.ranking.NovelRankingItem
 import com.projectu.shared.domain.model.BookmarkStatus
@@ -9,6 +11,7 @@ import com.projectu.shared.domain.model.NovelEmbeddedImageInfo
 import com.projectu.shared.domain.model.NovelGenre
 import com.projectu.shared.domain.model.Tag
 import com.projectu.shared.util.AgeLimitDeterminer
+import com.projectu.shared.util.TagTranslationUtil
 
 /**
  * 小说 DTO 到 Domain 模型的映射器
@@ -99,6 +102,38 @@ fun List<NovelSimple>.toNovelList(
     ageLimitDeterminer: AgeLimitDeterminer
 ): List<Novel> {
     return this.map { it.toNovel(tagTranslation, ageLimitDeterminer) }
+}
+
+/**
+ * 将 NovelRecommendBody 转换为 Novel 列表
+ * 用于推荐小说接口 (getRecommendNovels)
+ * 
+ * @param tagTranslationUtil 标签翻译工具
+ * @param tagTranslation 全局标签翻译映射表
+ * @param ageLimitDeterminer 年龄限制判定工具
+ */
+fun com.projectu.shared.data.remote.dto.novel.NovelRecommendBody.toNovelList(
+    tagTranslationUtil: TagTranslationUtil,
+    tagTranslation: Map<String, Map<String, String>>? = null,
+    ageLimitDeterminer: AgeLimitDeterminer
+): List<Novel> {
+    return this.novels.toNovelList(tagTranslation, ageLimitDeterminer)
+}
+
+/**
+ * 将 NovelRecommendInitBody 转换为 Novel 列表
+ * 用于推荐小说初始化接口 (getRecommendInit)
+ * 
+ * @param tagTranslationUtil 标签翻译工具
+ * @param tagTranslation 全局标签翻译映射表
+ * @param ageLimitDeterminer 年龄限制判定工具
+ */
+fun com.projectu.shared.data.remote.dto.novel.NovelRecommendInitBody.toNovelList(
+    tagTranslationUtil: TagTranslationUtil,
+    tagTranslation: Map<String, Map<String, String>>? = null,
+    ageLimitDeterminer: AgeLimitDeterminer
+): List<Novel> {
+    return this.novels.toNovelList(tagTranslation, ageLimitDeterminer)
 }
 
 /**

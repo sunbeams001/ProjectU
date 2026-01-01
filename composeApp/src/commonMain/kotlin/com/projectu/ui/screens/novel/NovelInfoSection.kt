@@ -85,6 +85,7 @@ fun NovelInfoSection(
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
     onCommentClick: (() -> Unit)? = null,
+    onRecommendClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
@@ -677,12 +678,12 @@ fun NovelInfoSection(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            // 推荐作品按钮（暂时禁用）
+                            // 推荐作品按钮
                             NovelActionButton(
                                 icon = Icons.Default.Recommend,
-                                label = stringResource(Res.string.artwork_recommend_title),
-                                onClick = { /* TODO: 接口未接入 */ },
-                                enabled = false
+                                label = stringResource(Res.string.novel_recommend_title),
+                                onClick = { onRecommendClick?.invoke() },
+                                enabled = onRecommendClick != null
                             )
                             
                             // 下载按钮

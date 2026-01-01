@@ -457,6 +457,8 @@
     <string name="artwork_similar">相似作品</string>
     <string name="artwork_recommend_title">推荐作品</string>
     <string name="artwork_recommend_empty">该作品暂无推荐内容</string>
+    <string name="novel_recommend_title">推荐小说</string>
+    <string name="novel_recommend_empty">该小说暂无推荐内容</string>
     
     <string name="novel_id">小说ID</string>
     <string name="novel_user_id">用户ID</string>

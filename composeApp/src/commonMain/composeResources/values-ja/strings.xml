@@ -458,6 +458,8 @@
     <string name="artwork_similar">似ている作品</string>
     <string name="artwork_recommend_title">おすすめ作品</string>
     <string name="artwork_recommend_empty">この作品のおすすめがまだありません</string>
+    <string name="novel_recommend_title">おすすめ小説</string>
+    <string name="novel_recommend_empty">この小説のおすすめがまだありません</string>
     
     <!-- Time Format -->
     <string name="time_hours_minutes">%1$d 時間 %2$d 分</string>

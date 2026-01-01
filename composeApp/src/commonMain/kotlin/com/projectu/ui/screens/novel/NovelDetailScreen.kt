@@ -204,6 +204,11 @@ data class NovelDetailScreen(
                     )
                 }
             },
+            onRecommendClick = {
+                state.novel?.let { novel ->
+                    navigator.push(NovelRecommendScreen(novelId = novel.id))
+                }
+            },
             onDownloadClick = {
                 state.novel?.let { novel ->
                     coroutineScope.launch {
@@ -248,6 +253,7 @@ private fun NovelDetailContent(
     onUserClick: ((userId: String) -> Unit)?,
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
+    onRecommendClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
@@ -290,6 +296,7 @@ private fun NovelDetailContent(
                     onSeriesClick = onSeriesClick,
                     onCommentClick = onCommentClick,
                     onDownloadClick = onDownloadClick,
+                    onRecommendClick = onRecommendClick,
                     onTagClick = onTagClick,
                     onBlockTag = onBlockTag,
                     modifier = Modifier
@@ -344,6 +351,7 @@ private fun NovelDetailLayout(
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
     onDownloadClick: () -> Unit,
+    onRecommendClick: () -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -432,6 +440,7 @@ private fun NovelDetailLayout(
             onUserClick = onUserClick,
             onSeriesClick = onSeriesClick,
             onCommentClick = onCommentClick,
+            onRecommendClick = onRecommendClick,
             onDownloadClick = onDownloadClick,
             onTagClick = onTagClick,
             onBlockTag = onBlockTag,
