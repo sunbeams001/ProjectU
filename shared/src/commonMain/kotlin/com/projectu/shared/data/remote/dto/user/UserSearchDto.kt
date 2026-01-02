@@ -4,6 +4,7 @@ import com.projectu.shared.data.remote.dto.common.ZoneConfig
 import com.projectu.shared.data.remote.dto.illust.IllustSimple
 import com.projectu.shared.data.remote.dto.novel.NovelSimple
 import com.projectu.shared.data.remote.serializers.StringToListUserWorkInfoSerializer
+import com.projectu.shared.data.remote.serializers.NestedMapOrEmptyArraySerializer
 import kotlinx.serialization.Serializable
 
 /**
@@ -13,7 +14,8 @@ import kotlinx.serialization.Serializable
 data class UserSearchBody(
     val data: List<String> = emptyList(),
     val page: UserSearchPage,
-    val tagTranslation: Map<String, Map<String, String>> = emptyMap(),
+    @Serializable(with = NestedMapOrEmptyArraySerializer::class)
+    val tagTranslation: Map<String, Map<String, String>>? = null,
     val thumbnails: UserSearchThumbnails,
     val users: List<UserSearchItem>,
     val zoneConfig: ZoneConfig? = null

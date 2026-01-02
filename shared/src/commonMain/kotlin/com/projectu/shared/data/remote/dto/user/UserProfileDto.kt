@@ -75,7 +75,7 @@ data class NovelSeriesInfo(
     val publishedTotalWordCount: Int = 0,
     val publishedReadingTime: Int = 0,
     val useWordCount: Boolean = false,
-    val lastPublishedContentTimestamp: Long = 0,
+    val lastPublishedContentTimestamp: Long? = null,
     val createdTimestamp: Long = 0,
     val updatedTimestamp: Long = 0,
     val createDate: String? = null,
@@ -89,7 +89,7 @@ data class NovelSeriesInfo(
     val watchCount: Int? = null,
     val maxXRestrict: Int? = null,
     val cover: NovelSeriesCover? = null,
-    val coverSettingData: String? = null,
+    val coverSettingData: CoverSettingData? = null,
     val isWatched: Boolean = false,
     val isNotifying: Boolean = false,
     val aiType: Int = 0
@@ -112,6 +112,17 @@ data class NovelSeriesCoverUrls(
     val `1200x1200`: String? = null,
     val `128x128`: String? = null,
     val original: String? = null
+)
+
+@Serializable
+data class CoverSettingData(
+    val title_mode: String? = null,
+    val title: String? = null,
+    val is_mincho: Boolean? = null,
+    val template_id: String? = null,
+    val color: String? = null,
+    val custom_colors: String? = null,
+    val text_alignment: String? = null
 )
 
 @Serializable
