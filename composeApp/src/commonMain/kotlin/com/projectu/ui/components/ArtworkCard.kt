@@ -16,7 +16,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.domain.model.Artwork
+import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.getUrlByQuality
+import com.projectu.ui.util.isPixivImageSquareCropped
 import org.koin.compose.koinInject
 
 /**
@@ -41,9 +43,23 @@ fun ArtworkCard(
     settingsCache: SettingsCache = koinInject()
 ) {
     // 从缓存中读取首选图片质量（内存访问，零延迟）
+    val preferredQuality = settingsCache.getPreferredImageQuality()
     val imageUrl = artwork.imageUrls.pages.firstOrNull()?.urls?.getUrlByQuality(
-        settingsCache.getPreferredImageQuality()
+        preferredQuality
     ) ?: ""
+    
+    // 智能判断：根据URL特征判断是否为方形裁剪
+    // - 关注接口（FollowApi）：URL包含 /c/250x250_80_a2/ 等标识 → 方形裁剪
+    // - 排行榜接口（RankingApi）：普通URL，没有特殊裁剪标识 → 保持原始比例
+    val isSquareCrop = isPixivImageSquareCropped(imageUrl)
+    
+    val displayAspectRatio = when {
+        // 如果URL标识为方形裁剪，使用1:1
+        isSquareCrop && preferredQuality != ImageQuality.MASTER_1200 -> 1f
+        // 否则保持原始宽高比
+        else -> artwork.width.toFloat() / artwork.height.toFloat()
+    }
+    
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -63,7 +79,7 @@ fun ArtworkCard(
                     contentDescription = artwork.title,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(artwork.width.toFloat() / artwork.height.toFloat())
+                        .aspectRatio(displayAspectRatio)
                         .clip(
                             RoundedCornerShape(
                                 topStart = 12.dp,
@@ -90,7 +106,7 @@ fun ArtworkCard(
                     artwork = artwork,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(artwork.width.toFloat() / artwork.height.toFloat())
+                        .aspectRatio(displayAspectRatio)
                 )
             }
             
