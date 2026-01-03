@@ -133,8 +133,8 @@ android {
         applicationId = "com.projectu"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
     }
     
     // 读取签名配置
@@ -227,7 +227,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ProjectU"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
             
             // 添加 JVM 模块 - 确保运行时包含 jdk.unsupported 模块
             // 这个模块包含 sun.misc.Unsafe，被 Protobuf 库使用
