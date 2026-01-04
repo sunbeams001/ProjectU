@@ -162,8 +162,16 @@ class NovelRepositoryImpl(
             // 转换排行榜数据为小说列表
             val novels = body.displayA.rankA.toNovelRankingList(ageLimitDeterminer)
             val filteredNovels = filterNovelsUseCase(novels)
-            // 提取日期信息 (注意：小说排行榜的日期字段在body中，可能是start/end，也可能是date)
-            val currentDate = body.start ?: body.date
+            // 提取日期信息
+            // 注意：小说排行榜API只在 display_a 中返回标准格式日期（yyyyMMdd）
+            // body.date 是本地化显示文本（如 "2026年1月3日"），body.start/end 通常为 null
+            // 如果 next_date 为 null，说明当前是最新日期，可从 prev_date 推算
+            val currentDate = if (body.displayA.nextDate == null && body.displayA.prevDate != null) {
+                // 当前是最新榜单，从 prev_date + 1天 推算
+                calculateNextDate(body.displayA.prevDate)
+            } else {
+                null  // 否则不提供当前日期，UI层会根据 selectedDate 判断
+            }
             val dateInfo = Triple(currentDate, body.displayA.prevDate, body.displayA.nextDate)
             Result.success(Pair(filteredNovels, dateInfo))
         } catch (e: Exception) {
@@ -230,6 +238,42 @@ class NovelRepositoryImpl(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+    
+    /**
+     * 计算给定日期的下一天（yyyyMMdd 格式）
+     */
+    private fun calculateNextDate(dateString: String): String {
+        return try {
+            val year = dateString.substring(0, 4).toInt()
+            val month = dateString.substring(4, 6).toInt()
+            val day = dateString.substring(6, 8).toInt()
+            
+            val isLeapYear = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
+            val daysInMonth = when (month) {
+                1, 3, 5, 7, 8, 10, 12 -> 31
+                4, 6, 9, 11 -> 30
+                2 -> if (isLeapYear) 29 else 28
+                else -> 31
+            }
+            
+            var newDay = day + 1
+            var newMonth = month
+            var newYear = year
+            
+            if (newDay > daysInMonth) {
+                newDay = 1
+                newMonth++
+                if (newMonth > 12) {
+                    newMonth = 1
+                    newYear++
+                }
+            }
+            
+            "%04d%02d%02d".format(newYear, newMonth, newDay)
+        } catch (e: Exception) {
+            dateString  // 如果计算失败，返回原始值
         }
     }
 }
