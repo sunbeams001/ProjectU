@@ -1,22 +1,22 @@
-package com.projectu.ui.screens.followlatest.more
+package com.projectu.ui.screens.followlatest
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.projectu.shared.data.remote.dto.follow.WatchedIllustSeries
+import com.projectu.shared.data.remote.dto.follow.WatchedNovelSeries
 import com.projectu.shared.domain.repository.WatchListRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
- * 漫画追更列表 ViewModel
- * 获取并管理已追更的漫画系列
+ * 小说追更列表 ViewModel
+ * 获取并管理已追更的小说系列
  */
-class WatchListMangaViewModel(
+class WatchListNovelsViewModel(
     private val watchListRepository: WatchListRepository
 ) : ScreenModel {
     
-    private val _state = MutableStateFlow(WatchListMangaState())
-    val state: StateFlow<WatchListMangaState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(WatchListNovelsState())
+    val state: StateFlow<WatchListNovelsState> = _state.asStateFlow()
     
     /**
      * 初始化加载
@@ -63,7 +63,7 @@ class WatchListMangaViewModel(
                 _state.update { it.copy(isLoading = true, error = null) }
             }
             
-            watchListRepository.getWatchListManga(page)
+            watchListRepository.getWatchListNovels(page)
                 .onSuccess { (newSeries, isLastPage) ->
                     _state.update { currentState ->
                         val mergedSeries = if (isLoadingMore) {
@@ -96,10 +96,10 @@ class WatchListMangaViewModel(
 }
 
 /**
- * 漫画追更列表状态
+ * 小说追更列表状态
  */
-data class WatchListMangaState(
-    val series: List<WatchedIllustSeries> = emptyList(),
+data class WatchListNovelsState(
+    val series: List<WatchedNovelSeries> = emptyList(),
     val currentPage: Int = 0,
     val isLastPage: Boolean = false,
     val isLoading: Boolean = false,

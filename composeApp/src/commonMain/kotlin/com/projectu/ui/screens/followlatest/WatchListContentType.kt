@@ -1,4 +1,4 @@
-package com.projectu.ui.screens.followlatest.more
+package com.projectu.ui.screens.followlatest
 
 import org.jetbrains.compose.resources.StringResource
 import projectu.composeapp.generated.resources.Res

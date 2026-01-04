@@ -33,6 +33,10 @@ import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.UserCard
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.components.TabbedNavigationBar
+import com.projectu.ui.components.PageMapping
+import com.projectu.ui.components.SimpleTwoLayerMapper
+import com.projectu.ui.components.rememberPagedNavigationState
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
@@ -76,43 +80,79 @@ fun DiscoveryContent(
     
     // 为每个内容类型创建独立的列表状态缓存
     val listStates = remember {
-        mutableStateMapOf<DiscoveryContentType, Any>()
+        mutableStateMapOf<String, Any>()
     }
     
     val coroutineScope = rememberCoroutineScope()
     
-    // 创建 Pager 状态，使用传入的初始页面索引
+    // 定义发现页面的映射信息
+    data class DiscoveryPageMapping(
+        override val primaryIndex: Int,
+        override val secondaryIndex: Int,
+        override val showSecondaryNav: Boolean,
+        val contentType: DiscoveryContentType,
+        val mode: DiscoveryMode?
+    ) : PageMapping
+    
+    // 使用简化的双层导航映射器
+    // 结构：用户(0) → 插画×3(1-3) → 小说×3(4-6)
+    val modes = remember { DiscoveryMode.entries }
+    val mapper = remember {
+        SimpleTwoLayerMapper(
+            primaryCount = contentTypes.size,
+            secondaryCount = modes.size,
+            firstHasSecondary = false
+        ) { primaryIndex, secondaryIndex, showSecondary ->
+            val contentType = contentTypes[primaryIndex]
+            val mode = if (showSecondary) modes[secondaryIndex] else null
+            DiscoveryPageMapping(primaryIndex, secondaryIndex, showSecondary, contentType, mode)
+        }
+    }
+    
+    // 创建 Pager 状态
     val pagerState = rememberPagerState(
-        initialPage = initialPageIndex,
-        pageCount = { contentTypes.size }
+        initialPage = initialPageIndex.coerceIn(0, mapper.totalPages - 1),
+        pageCount = { mapper.totalPages }
     )
     
-    val currentContentType = contentTypes[pagerState.currentPage]
+    // 创建页码导航状态
+    val navState = rememberPagedNavigationState(pagerState, mapper)
     
     // 监听页面切换，触发惰性加载并通知外部
     LaunchedEffect(pagerState.currentPage) {
         // 通知外部保存当前页面索引
         onPageChanged?.invoke(pagerState.currentPage)
         
-        when (contentTypes[pagerState.currentPage]) {
+        val mapping = mapper.parsePageIndex(pagerState.currentPage)
+        when (mapping.contentType) {
             DiscoveryContentType.USERS -> usersViewModel.initLoadIfNeeded()
-            DiscoveryContentType.ILLUSTS -> illustsViewModel.initLoadIfNeeded()
-            DiscoveryContentType.NOVELS -> novelsViewModel.initLoadIfNeeded()
+            DiscoveryContentType.ILLUSTS -> {
+                illustsViewModel.initLoadIfNeeded()
+                // 同步模式状态
+                mapping.mode?.let { if (it != illustsState.currentMode) illustsViewModel.switchMode(it) }
+            }
+            DiscoveryContentType.NOVELS -> {
+                novelsViewModel.initLoadIfNeeded()
+                // 同步模式状态
+                mapping.mode?.let { if (it != novelsState.currentMode) novelsViewModel.switchMode(it) }
+            }
         }
     }
     
-    // 创建刷新回调映射
-    val refreshCallbacks = remember {
-        mapOf(
-            DiscoveryContentType.USERS to usersViewModel::refresh,
-            DiscoveryContentType.ILLUSTS to illustsViewModel::refresh,
-            DiscoveryContentType.NOVELS to novelsViewModel::refresh
-        )
+    // 创建刷新回调
+    val refreshCurrentPage: () -> Unit = {
+        val mapping = mapper.parsePageIndex(pagerState.currentPage)
+        when (mapping.contentType) {
+            DiscoveryContentType.USERS -> usersViewModel.refresh()
+            DiscoveryContentType.ILLUSTS -> illustsViewModel.refresh()
+            DiscoveryContentType.NOVELS -> novelsViewModel.refresh()
+        }
     }
     
     // 创建滚动到顶部或刷新的回调
     val scrollToTopOrRefresh: () -> Unit = {
-        val listState = listStates[currentContentType]
+        val pageKey = "page_${pagerState.currentPage}"
+        val listState = listStates[pageKey]
         val isAtTop = when (listState) {
             is LazyStaggeredGridState -> 
                 listState.firstVisibleItemIndex == 0 && 
@@ -125,7 +165,7 @@ fun DiscoveryContent(
         
         if (isAtTop) {
             // 刷新当前页面
-            refreshCallbacks[currentContentType]?.invoke()
+            refreshCurrentPage()
         } else {
             coroutineScope.launch {
                 when (listState) {
@@ -142,40 +182,62 @@ fun DiscoveryContent(
     }
     
     Column(modifier = Modifier.fillMaxSize()) {
-        // 第1层导航：内容类型选择器
-        SimpleNavigationBar(
-            items = contentTypes,
-            selectedIndex = pagerState.currentPage,
-            onItemClick = { index ->
-                if (index == pagerState.currentPage) {
-                    scrollToTopOrRefresh()
-                } else {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(index)
-                    }
+        // 双层导航：使用 TabbedNavigationBar（Tab + FilterChip）
+        // 使用页码映射机制，滑动时先切换二级导航，再切换一级导航
+        val currentMapping = navState.currentMapping
+        
+        TabbedNavigationBar(
+            primaryItems = contentTypes,
+            primarySelectedIndex = currentMapping.primaryIndex,
+            onPrimaryItemClick = { index ->
+                navState.handlePrimaryClick(
+                    primaryIndex = index,
+                    currentSecondaryIndex = currentMapping.secondaryIndex,
+                    scope = coroutineScope,
+                    onSamePage = scrollToTopOrRefresh
+                )
+            },
+            getPrimaryItemLabel = { type -> stringResource(type.displayNameRes) },
+            secondaryItems = modes,
+            secondarySelectedIndex = currentMapping.secondaryIndex,
+            onSecondaryItemClick = { secondaryIndex ->
+                navState.handleSecondaryClick(
+                    secondaryIndex = secondaryIndex,
+                    currentPrimaryIndex = currentMapping.primaryIndex,
+                    scope = coroutineScope,
+                    onSamePage = scrollToTopOrRefresh
+                )
+            },
+            getSecondaryItemLabel = { mode ->
+                when (mode) {
+                    DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
+                    DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
+                    DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
                 }
             },
-            getItemLabel = { type -> stringResource(type.displayNameRes) },
+            showSecondaryNav = currentMapping.showSecondaryNav,
             modifier = Modifier.fillMaxWidth()
         )
         
-        // HorizontalPager：支持左右滑动切换内容类型
+        // HorizontalPager：支持左右滑动切换所有页面
+        // 滑动顺序：用户 → 插画-ALL → 插画-SAFE → 插画-R18 → 小说-ALL → 小说-SAFE → 小说-R18
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            key = { contentTypes[it] }
+            key = { it }
         ) { page ->
-            val contentType = contentTypes[page]
+            val mapping = mapper.parsePageIndex(page)
+            val pageKey = "page_$page"
             
-            when (contentType) {
+            when (mapping.contentType) {
                 DiscoveryContentType.USERS -> {
                     val listState = rememberLazyListState()
-                    remember(contentType) {
-                        listStates.getOrPut(contentType) { listState }
+                    LaunchedEffect(pageKey) {
+                        listStates[pageKey] = listState
                     }
                     
                     // 监听滚动索引变化，滚动到指定位置（这里是用户索引）
-                    val targetScrollIndex by remember(contentType) {
+                    val targetScrollIndex by remember(pageKey) {
                         derivedStateOf { scrollIndices["users"] }
                     }
                     
@@ -245,34 +307,16 @@ fun DiscoveryContent(
                 }
                 
                 DiscoveryContentType.ILLUSTS -> {
-                    // 为每个模式保存独立的滚动位置
-                    val scrollPositions = remember { mutableStateMapOf<DiscoveryMode, Int>() }
-                    val listState = rememberLazyStaggeredGridState(
-                        initialFirstVisibleItemIndex = scrollPositions[illustsState.currentMode] ?: 0
-                    )
-                    remember(contentType) {
-                        listStates.getOrPut(contentType) { listState }
+                    val mode = mapping.mode ?: DiscoveryMode.ALL
+                    val listState = rememberLazyStaggeredGridState()
+                    LaunchedEffect(pageKey) {
+                        listStates[pageKey] = listState
                     }
                     
-                    val currentMode = illustsState.currentMode
-                    val scrollKey = "illusts_${currentMode.name}"
-                    
-                    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
-                    var previousMode by remember { mutableStateOf(currentMode) }
-                    LaunchedEffect(currentMode) {
-                        if (previousMode != currentMode) {
-                            // 保存上一个模式的滚动位置
-                            scrollPositions[previousMode] = listState.firstVisibleItemIndex
-                            
-                            // 恢复目标模式的滚动位置
-                            val targetIndex = scrollPositions[currentMode] ?: 0
-                            listState.scrollToItem(targetIndex)
-                            previousMode = currentMode
-                        }
-                    }
+                    val scrollKey = "illusts_${mode.name}"
                     
                     // 监听滚动索引变化，滚动到指定位置（从详情页返回时）
-                    val targetScrollIndex by remember(contentType, currentMode) {
+                    val targetScrollIndex by remember(pageKey) {
                         derivedStateOf { scrollIndices[scrollKey] }
                     }
                     
@@ -286,22 +330,21 @@ fun DiscoveryContent(
                     
                     DiscoveryIllustsPage(
                         state = illustsState,
-                        onModeChange = illustsViewModel::switchMode,
+                        onModeChange = { }, // 不再需要，通过滑动切换
                         onLoadMore = illustsViewModel::loadMore,
                         onRefresh = illustsViewModel::refresh,
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onArtworkClick = { artwork, index ->
-                            val key = "illusts_${currentMode.name}"
                             val currentArtworkIds = illustsState.artworks.map { it.id }
                             
                             // 创建绑定到当前模式的列表源
-                            val listSource = illustsViewModel.createArtworkListSource(currentMode)
+                            val listSource = illustsViewModel.createArtworkListSource(mode)
                             
                             // 创建导航上下文
                             val contextKey = NavigationContextManager.createContext(
                                 listSource = listSource,
                                 onReturnWithIndex = { lastIndex ->
-                                    scrollIndices[key] = lastIndex
+                                    scrollIndices[scrollKey] = lastIndex
                                 }
                             )
                             
@@ -321,29 +364,10 @@ fun DiscoveryContent(
                 }
                 
                 DiscoveryContentType.NOVELS -> {
-                    // 为每个模式保存独立的滚动位置
-                    val scrollPositions = remember { mutableStateMapOf<DiscoveryMode, Int>() }
-                    val listState = rememberLazyListState(
-                        initialFirstVisibleItemIndex = scrollPositions[novelsState.currentMode] ?: 0
-                    )
-                    remember(contentType) {
-                        listStates.getOrPut(contentType) { listState }
-                    }
-                    
-                    val currentMode = novelsState.currentMode
-                    
-                    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
-                    var previousMode by remember { mutableStateOf(currentMode) }
-                    LaunchedEffect(currentMode) {
-                        if (previousMode != currentMode) {
-                            // 保存上一个模式的滚动位置
-                            scrollPositions[previousMode] = listState.firstVisibleItemIndex
-                            
-                            // 恢复目标模式的滚动位置
-                            val targetIndex = scrollPositions[currentMode] ?: 0
-                            listState.scrollToItem(targetIndex)
-                            previousMode = currentMode
-                        }
+                    val mode = mapping.mode ?: DiscoveryMode.ALL
+                    val listState = rememberLazyListState()
+                    LaunchedEffect(pageKey) {
+                        listStates[pageKey] = listState
                     }
                     
                     // 创建Tag点击处理器
@@ -357,7 +381,7 @@ fun DiscoveryContent(
                     
                     DiscoveryNovelsPage(
                         state = novelsState,
-                        onModeChange = novelsViewModel::switchMode,
+                        onModeChange = { }, // 不再需要，通过滑动切换
                         onLoadMore = novelsViewModel::loadMore,
                         onRefresh = novelsViewModel::refresh,
                         onRefreshOrScrollToTop = scrollToTopOrRefresh,
@@ -435,6 +459,7 @@ fun DiscoveryUsersPage(
 
 /**
  * 推荐插画·漫画页面内容
+ * 注意：第二层导航（Mode选择器）已集成到主导航栏中，此组件不再显示
  */
 @Composable
 fun DiscoveryIllustsPage(
@@ -447,63 +472,40 @@ fun DiscoveryIllustsPage(
     onUserClick: (userId: String) -> Unit,
     listState: LazyStaggeredGridState
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 第2层导航：Mode 选择器
-        SimpleNavigationBar(
-            items = DiscoveryMode.entries,
-            selectedIndex = DiscoveryMode.entries.indexOf(state.currentMode),
-            onItemClick = { index ->
-                val newMode = DiscoveryMode.entries[index]
-                if (newMode == state.currentMode) {
-                    onRefreshOrScrollToTop()
-                } else {
-                    onModeChange(newMode)
-                }
-            },
-            getItemLabel = { mode ->
-                when (mode) {
-                    DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
-                    DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
-                    DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Box(modifier = Modifier.fillMaxSize()) {
-            when {
-                state.isLoading && state.artworks.isEmpty() -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+    // 第二层导航已移到主导航栏，此处直接显示内容
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            state.isLoading && state.artworks.isEmpty() -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            state.error != null && state.artworks.isEmpty() -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = state.error,
+                        color = MaterialTheme.colorScheme.error
                     )
-                }
-                state.error != null && state.artworks.isEmpty() -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = state.error,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Button(onClick = onRefresh) {
-                            Text(stringResource(Res.string.common_retry))
-                        }
+                    Button(onClick = onRefresh) {
+                        Text(stringResource(Res.string.common_retry))
                     }
                 }
-                state.artworks.isNotEmpty() -> {
-                    ArtworkStaggeredGridLayout(
-                        artworks = state.artworks,
-                        onArtworkClick = onArtworkClick,
-                        onUserClick = onUserClick,
-                        onLoadMore = onLoadMore,
-                        isLoadingMore = state.isLoadingMore,
-                        listState = listState,
-                        isRefreshing = state.isLoading && state.artworks.isNotEmpty(),
-                        onRefresh = onRefresh
-                    )
-                }
+            }
+            state.artworks.isNotEmpty() -> {
+                ArtworkStaggeredGridLayout(
+                    artworks = state.artworks,
+                    onArtworkClick = onArtworkClick,
+                    onUserClick = onUserClick,
+                    onLoadMore = onLoadMore,
+                    isLoadingMore = state.isLoadingMore,
+                    listState = listState,
+                    isRefreshing = state.isLoading && state.artworks.isNotEmpty(),
+                    onRefresh = onRefresh
+                )
             }
         }
     }
@@ -511,6 +513,7 @@ fun DiscoveryIllustsPage(
 
 /**
  * 推荐小说页面内容
+ * 注意：第二层导航（Mode选择器）已集成到主导航栏中，此组件不再显示
  */
 @Composable
 fun DiscoveryNovelsPage(
@@ -525,65 +528,42 @@ fun DiscoveryNovelsPage(
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     listState: LazyListState
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 第2层导航：Mode 选择器
-        SimpleNavigationBar(
-            items = DiscoveryMode.entries,
-            selectedIndex = DiscoveryMode.entries.indexOf(state.currentMode),
-            onItemClick = { index ->
-                val newMode = DiscoveryMode.entries[index]
-                if (newMode == state.currentMode) {
-                    onRefreshOrScrollToTop()
-                } else {
-                    onModeChange(newMode)
-                }
-            },
-            getItemLabel = { mode ->
-                when (mode) {
-                    DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
-                    DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
-                    DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Box(modifier = Modifier.fillMaxSize()) {
-            when {
-                state.isLoading && state.novels.isEmpty() -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+    // 第二层导航已移到主导航栏，此处直接显示内容
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            state.isLoading && state.novels.isEmpty() -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            state.error != null && state.novels.isEmpty() -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = state.error,
+                        color = MaterialTheme.colorScheme.error
                     )
-                }
-                state.error != null && state.novels.isEmpty() -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = state.error,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Button(onClick = onRefresh) {
-                            Text(stringResource(Res.string.common_retry))
-                        }
+                    Button(onClick = onRefresh) {
+                        Text(stringResource(Res.string.common_retry))
                     }
                 }
-                state.novels.isNotEmpty() -> {
-                    NovelListLayout(
-                        novels = state.novels,
-                        onNovelClick = onNovelClick,
-                        onSeriesClick = onSeriesClick,
-                        onUserClick = onUserClick,
-                        onTagClick = onTagClick,
-                        onLoadMore = onLoadMore,
-                        isLoadingMore = state.isLoadingMore,
-                        listState = listState,
-                        isRefreshing = state.isLoading && state.novels.isNotEmpty(),
-                        onRefresh = onRefresh
-                    )
-                }
+            }
+            state.novels.isNotEmpty() -> {
+                NovelListLayout(
+                    novels = state.novels,
+                    onNovelClick = onNovelClick,
+                    onSeriesClick = onSeriesClick,
+                    onUserClick = onUserClick,
+                    onTagClick = onTagClick,
+                    onLoadMore = onLoadMore,
+                    isLoadingMore = state.isLoadingMore,
+                    listState = listState,
+                    isRefreshing = state.isLoading && state.novels.isNotEmpty(),
+                    onRefresh = onRefresh
+                )
             }
         }
     }

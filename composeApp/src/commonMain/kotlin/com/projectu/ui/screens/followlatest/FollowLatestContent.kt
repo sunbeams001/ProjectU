@@ -26,9 +26,15 @@ import com.projectu.shared.domain.model.Novel
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.NovelCard
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.components.TabbedNavigationBar
+import com.projectu.ui.components.PageMapping
+import com.projectu.ui.components.CustomTwoLayerMapper
+import com.projectu.ui.components.rememberPagedNavigationState
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
-import com.projectu.ui.screens.followlatest.more.FollowLatestMoreScreen
+import com.projectu.ui.screens.followlatest.WatchListMangaViewModel
+import com.projectu.ui.screens.followlatest.WatchListNovelsViewModel
+import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
@@ -61,48 +67,116 @@ fun FollowLatestContent(
     // 预先创建所有 ViewModel，避免切换时重新创建
     val illustsViewModel: FollowLatestIllustsViewModel = koinInject()
     val novelsViewModel: FollowLatestNovelsViewModel = koinInject()
+    val watchListMangaViewModel: WatchListMangaViewModel = koinInject()
+    val watchListNovelsViewModel: WatchListNovelsViewModel = koinInject()
     
     // 收集所有状态
     val illustsState by illustsViewModel.state.collectAsState()
     val novelsState by novelsViewModel.state.collectAsState()
+    val watchListMangaState by watchListMangaViewModel.state.collectAsState()
+    val watchListNovelsState by watchListNovelsViewModel.state.collectAsState()
     
-    // 为每个内容类型创建独立的列表状态缓存
+    // 为每个页面创建独立的列表状态缓存
     val listStates = remember {
-        mutableStateMapOf<FollowLatestContentType, Any>()
+        mutableStateMapOf<String, Any>()
     }
     
     val coroutineScope = rememberCoroutineScope()
     
-    // 创建 Pager 状态，使用传入的初始页面索引
+    // 定义动态页面的映射信息
+    data class FollowLatestPageMapping(
+        override val primaryIndex: Int,
+        override val secondaryIndex: Int,
+        override val showSecondaryNav: Boolean,
+        val contentType: FollowLatestContentType,
+        val mode: FollowLatestMode
+    ) : PageMapping
+    
+    // 使用自定义双层导航映射器
+    // 结构：插画×2(0-1) → 小说×2(2-3) → 追更列表×2(4-5) → 好P友×1(6)
+    val modes = remember { FollowLatestMode.entries }
+    val mapper = remember {
+        CustomTwoLayerMapper(
+            secondaryCountPerPrimary = listOf(2, 2, 2, 1), // 插画2个、小说2个、追更列表2个、好P友1个
+            createMapping = { primaryIndex, secondaryIndex, showSecondary ->
+                val contentType = contentTypes[primaryIndex]
+                val mode = when (contentType) {
+                    FollowLatestContentType.ILLUSTS, FollowLatestContentType.NOVELS -> {
+                        if (showSecondary) modes[secondaryIndex] else modes[0]
+                    }
+                    else -> modes[0] // 追更列表和好P友不使用mode
+                }
+                FollowLatestPageMapping(primaryIndex, secondaryIndex, showSecondary, contentType, mode)
+            }
+        )
+    }
+    
+    // 创建 Pager 状态
     val pagerState = rememberPagerState(
-        initialPage = initialPageIndex,
-        pageCount = { contentTypes.size }
+        initialPage = initialPageIndex.coerceIn(0, mapper.totalPages - 1),
+        pageCount = { mapper.totalPages }
     )
     
-    val currentContentType = contentTypes[pagerState.currentPage]
+    // 创建页码导航状态
+    val navState = rememberPagedNavigationState(pagerState, mapper)
     
     // 监听页面切换，触发惰性加载并通知外部
     LaunchedEffect(pagerState.currentPage) {
         // 通知外部保存当前页面索引
         onPageChanged?.invoke(pagerState.currentPage)
         
-        when (contentTypes[pagerState.currentPage]) {
-            FollowLatestContentType.ILLUSTS -> illustsViewModel.initLoadIfNeeded()
-            FollowLatestContentType.NOVELS -> novelsViewModel.initLoadIfNeeded()
+        val mapping = mapper.parsePageIndex(pagerState.currentPage)
+        when (mapping.contentType) {
+            FollowLatestContentType.ILLUSTS -> {
+                illustsViewModel.initLoadIfNeeded()
+                // 同步模式状态
+                if (mapping.mode != illustsState.currentMode) {
+                    illustsViewModel.switchMode(mapping.mode)
+                }
+            }
+            FollowLatestContentType.NOVELS -> {
+                novelsViewModel.initLoadIfNeeded()
+                // 同步模式状态
+                if (mapping.mode != novelsState.currentMode) {
+                    novelsViewModel.switchMode(mapping.mode)
+                }
+            }
+            FollowLatestContentType.WATCH_LIST -> {
+                // 根据secondaryIndex判断是漫画还是小说
+                if (mapping.secondaryIndex == 0) {
+                    watchListMangaViewModel.initLoadIfNeeded()
+                } else {
+                    watchListNovelsViewModel.initLoadIfNeeded()
+                }
+            }
+            FollowLatestContentType.GOOD_P_FRIENDS -> {
+                // 好P友页面占位，暂无数据加载
+            }
         }
     }
     
-    // 创建刷新回调映射
-    val refreshCallbacks = remember {
-        mapOf(
-            FollowLatestContentType.ILLUSTS to illustsViewModel::refresh,
-            FollowLatestContentType.NOVELS to novelsViewModel::refresh
-        )
+    // 创建刷新回调
+    val refreshCurrentPage: () -> Unit = {
+        val mapping = mapper.parsePageIndex(pagerState.currentPage)
+        when (mapping.contentType) {
+            FollowLatestContentType.ILLUSTS -> illustsViewModel.refresh()
+            FollowLatestContentType.NOVELS -> novelsViewModel.refresh()
+            FollowLatestContentType.WATCH_LIST -> {
+                // 根据secondaryIndex判断是漫画还是小说
+                if (mapping.secondaryIndex == 0) {
+                    watchListMangaViewModel.refresh()
+                } else {
+                    watchListNovelsViewModel.refresh()
+                }
+            }
+            FollowLatestContentType.GOOD_P_FRIENDS -> {} // 无需刷新
+        }
     }
     
     // 创建滚动到顶部或刷新的回调
     val scrollToTopOrRefresh: () -> Unit = {
-        val listState = listStates[currentContentType]
+        val pageKey = "page_${pagerState.currentPage}"
+        val listState = listStates[pageKey]
         val isAtTop = when (listState) {
             is LazyStaggeredGridState -> 
                 listState.firstVisibleItemIndex == 0 && 
@@ -115,7 +189,7 @@ fun FollowLatestContent(
         
         if (isAtTop) {
             // 刷新当前页面
-            refreshCallbacks[currentContentType]?.invoke()
+            refreshCurrentPage()
         } else {
             coroutineScope.launch {
                 when (listState) {
@@ -132,70 +206,79 @@ fun FollowLatestContent(
     }
     
     Column(modifier = Modifier.fillMaxSize()) {
-        // 第1层导航：内容类型选择器（插画·漫画 / 小说）+ 更多按钮
-        SimpleNavigationBar(
-            items = contentTypes,
-            selectedIndex = pagerState.currentPage,
-            onItemClick = { index ->
-                if (index == pagerState.currentPage) {
-                    scrollToTopOrRefresh()
-                } else {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(index)
+        // 双层导航：使用 TabbedNavigationBar（Tab + FilterChip）
+        val currentMapping = navState.currentMapping
+        
+        // 根据当前一级导航选择对应的二级导航项
+        val watchListTypes = remember { WatchListContentType.getAll() }
+        val secondaryItems = when (currentMapping.contentType) {
+            FollowLatestContentType.ILLUSTS, FollowLatestContentType.NOVELS -> modes
+            FollowLatestContentType.WATCH_LIST -> watchListTypes
+            else -> emptyList()
+        }
+        
+        TabbedNavigationBar(
+            primaryItems = contentTypes,
+            primarySelectedIndex = currentMapping.primaryIndex,
+            onPrimaryItemClick = { index ->
+                navState.handlePrimaryClick(
+                    primaryIndex = index,
+                    currentSecondaryIndex = currentMapping.secondaryIndex,
+                    scope = coroutineScope,
+                    onSamePage = scrollToTopOrRefresh
+                )
+            },
+            getPrimaryItemLabel = { type -> stringResource(type.displayNameRes) },
+            secondaryItems = secondaryItems,
+            secondarySelectedIndex = currentMapping.secondaryIndex,
+            onSecondaryItemClick = { secondaryIndex ->
+                navState.handleSecondaryClick(
+                    secondaryIndex = secondaryIndex,
+                    currentPrimaryIndex = currentMapping.primaryIndex,
+                    scope = coroutineScope,
+                    onSamePage = scrollToTopOrRefresh
+                )
+            },
+            getSecondaryItemLabel = { item ->
+                when (item) {
+                    is FollowLatestMode -> {
+                        when (item) {
+                            FollowLatestMode.ALL -> stringResource(Res.string.follow_latest_mode_all)
+                            FollowLatestMode.R18 -> stringResource(Res.string.follow_latest_mode_r18)
+                        }
                     }
+                    is WatchListContentType -> {
+                        stringResource(item.displayNameRes)
+                    }
+                    else -> ""
                 }
             },
-            getItemLabel = { type -> stringResource(type.displayNameRes) },
-            modifier = Modifier.fillMaxWidth(),
-            trailingContent = {
-                TextButton(
-                    onClick = {
-                        parentNavigator?.push(FollowLatestMoreScreen())
-                    }
-                ) {
-                    Text(stringResource(Res.string.follow_latest_more))
-                }
-            }
+            showSecondaryNav = currentMapping.showSecondaryNav,
+            modifier = Modifier.fillMaxWidth()
         )
         
-        // HorizontalPager：支持左右滑动切换内容类型
+        // HorizontalPager：支持左右滑动切换所有页面
+        // 滑动顺序：插画-公开(0) → 插画-R18(1) → 小说-公开(2) → 小说-R18(3)
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            key = { contentTypes[it] }
+            key = { it }
         ) { page ->
-            val contentType = contentTypes[page]
+            val mapping = mapper.parsePageIndex(page)
+            val pageKey = "page_$page"
             
-            when (contentType) {
+            when (mapping.contentType) {
                 FollowLatestContentType.ILLUSTS -> {
-                    // 为每个模式保存独立的滚动位置
-                    val scrollPositions = remember { mutableStateMapOf<FollowLatestMode, Int>() }
-                    val listState = rememberLazyStaggeredGridState(
-                        initialFirstVisibleItemIndex = scrollPositions[illustsState.currentMode] ?: 0
-                    )
-                    remember(contentType) {
-                        listStates.getOrPut(contentType) { listState }
+                    val listState = rememberLazyStaggeredGridState()
+                    LaunchedEffect(pageKey) {
+                        listStates[pageKey] = listState
                     }
                     
-                    val currentMode = illustsState.currentMode
+                    val currentMode = mapping.mode
                     val scrollKey = "followlatest_illusts_${currentMode.name}"
                     
-                    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
-                    var previousMode by remember { mutableStateOf(currentMode) }
-                    LaunchedEffect(currentMode) {
-                        if (previousMode != currentMode) {
-                            // 保存上一个模式的滚动位置
-                            scrollPositions[previousMode] = listState.firstVisibleItemIndex
-                            
-                            // 恢复目标模式的滚动位置
-                            val targetIndex = scrollPositions[currentMode] ?: 0
-                            listState.scrollToItem(targetIndex)
-                            previousMode = currentMode
-                        }
-                    }
-                    
                     // 监听滚动索引变化，滚动到指定位置（从详情页返回时）
-                    val targetScrollIndex by remember(contentType, currentMode) {
+                    val targetScrollIndex by remember(pageKey) {
                         derivedStateOf { scrollIndices[scrollKey] }
                     }
                     
@@ -209,10 +292,8 @@ fun FollowLatestContent(
                     
                     FollowLatestIllustsPage(
                         state = illustsState,
-                        onModeChange = illustsViewModel::switchMode,
                         onLoadMore = illustsViewModel::loadMore,
                         onRefresh = illustsViewModel::refresh,
-                        onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onArtworkClick = { artwork, index ->
                             val key = "followlatest_illusts_${currentMode.name}"
                             val currentArtworkIds = illustsState.artworks.map { it.id }
@@ -239,34 +320,14 @@ fun FollowLatestContent(
                         onUserClick = { userId ->
                             parentNavigator?.push(UserScreen(userId))
                         },
-                        listState = listState as LazyStaggeredGridState
+                        listState = listState
                     )
                 }
                 
                 FollowLatestContentType.NOVELS -> {
-                    // 为每个模式保存独立的滚动位置
-                    val scrollPositions = remember { mutableStateMapOf<FollowLatestMode, Int>() }
-                    val listState = rememberLazyListState(
-                        initialFirstVisibleItemIndex = scrollPositions[novelsState.currentMode] ?: 0
-                    )
-                    remember(contentType) {
-                        listStates.getOrPut(contentType) { listState }
-                    }
-                    
-                    val currentMode = novelsState.currentMode
-                    
-                    // 当模式变化时，保存当前滚动位置，然后恢复目标模式的滚动位置
-                    var previousMode by remember { mutableStateOf(currentMode) }
-                    LaunchedEffect(currentMode) {
-                        if (previousMode != currentMode) {
-                            // 保存上一个模式的滚动位置
-                            scrollPositions[previousMode] = listState.firstVisibleItemIndex
-                            
-                            // 恢复目标模式的滚动位置
-                            val targetIndex = scrollPositions[currentMode] ?: 0
-                            listState.scrollToItem(targetIndex)
-                            previousMode = currentMode
-                        }
+                    val listState = rememberLazyListState()
+                    LaunchedEffect(pageKey) {
+                        listStates[pageKey] = listState
                     }
                     
                     // 创建Tag点击处理器
@@ -280,10 +341,8 @@ fun FollowLatestContent(
                     
                     FollowLatestNovelsPage(
                         state = novelsState,
-                        onModeChange = novelsViewModel::switchMode,
                         onLoadMore = novelsViewModel::loadMore,
                         onRefresh = novelsViewModel::refresh,
-                        onRefreshOrScrollToTop = scrollToTopOrRefresh,
                         onNovelClick = { novel ->
                             // 跳转到小说详情页
                             parentNavigator?.push(NovelDetailScreen(novelId = novel.id))
@@ -297,8 +356,74 @@ fun FollowLatestContent(
                         onTagClick = tagClickHandler?.let { handler ->
                             { tag: com.projectu.shared.domain.model.Tag -> handler.handleTagClick(tag) }
                         },
-                        listState = listState as LazyListState
+                        listState = listState
                     )
+                }
+                
+                FollowLatestContentType.WATCH_LIST -> {
+                    val listState = rememberLazyListState()
+                    LaunchedEffect(pageKey) {
+                        listStates[pageKey] = listState
+                    }
+                    
+                    // 创建Tag点击处理器
+                    val scope = rememberCoroutineScope()
+                    val searchHistoryStore: com.projectu.shared.data.local.SearchHistoryStore = koinInject()
+                    val tagClickHandler = remember(parentNavigator) {
+                        parentNavigator?.let { nav ->
+                            TagClickHandler(nav, searchHistoryStore, scope)
+                        }
+                    }
+                    
+                    // 根据secondaryIndex判断是漫画还是小说
+                    when (mapping.secondaryIndex) {
+                        0 -> {
+                            // 漫画追更列表
+                            WatchListMangaPage(
+                                state = watchListMangaState,
+                                onLoadMore = watchListMangaViewModel::loadMore,
+                                onRefresh = watchListMangaViewModel::refresh,
+                                onSeriesClick = { series ->
+                                    parentNavigator?.push(MangaSeriesScreen(series.id))
+                                }
+                            )
+                        }
+                        1 -> {
+                            // 小说追更列表
+                            WatchListNovelsPage(
+                                state = watchListNovelsState,
+                                onLoadMore = watchListNovelsViewModel::loadMore,
+                                onRefresh = watchListNovelsViewModel::refresh,
+                                onSeriesClick = { series ->
+                                    parentNavigator?.push(NovelSeriesScreen(series.id))
+                                },
+                                onTagClick = if (tagClickHandler != null) tagClickHandler::handleTagClick else null
+                            )
+                        }
+                    }
+                }
+                
+                FollowLatestContentType.GOOD_P_FRIENDS -> {
+                    // 好P友页面占位
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.follow_latest_good_p_friends),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = stringResource(Res.string.follow_latest_coming_soon),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -311,70 +436,46 @@ fun FollowLatestContent(
 @Composable
 fun FollowLatestIllustsPage(
     state: FollowLatestIllustsState,
-    onModeChange: (FollowLatestMode) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
-    onRefreshOrScrollToTop: () -> Unit,
     onArtworkClick: (Artwork, Int) -> Unit,
     onUserClick: (userId: String) -> Unit,
     listState: LazyStaggeredGridState
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 第2层导航：Mode 选择器（全部 / R-18）
-        SimpleNavigationBar(
-            items = FollowLatestMode.entries,
-            selectedIndex = FollowLatestMode.entries.indexOf(state.currentMode),
-            onItemClick = { index ->
-                val newMode = FollowLatestMode.entries[index]
-                if (newMode == state.currentMode) {
-                    onRefreshOrScrollToTop()
-                } else {
-                    onModeChange(newMode)
-                }
-            },
-            getItemLabel = { mode ->
-                when (mode) {
-                    FollowLatestMode.ALL -> stringResource(Res.string.follow_latest_mode_all)
-                    FollowLatestMode.R18 -> stringResource(Res.string.follow_latest_mode_r18)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Box(modifier = Modifier.fillMaxSize()) {
-            when {
-                state.isLoading && state.artworks.isEmpty() -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+    // 移除了第二层导航栏，现在直接显示内容
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            state.isLoading && state.artworks.isEmpty() -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            state.error != null && state.artworks.isEmpty() -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = state.error,
+                        color = MaterialTheme.colorScheme.error
                     )
-                }
-                state.error != null && state.artworks.isEmpty() -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = state.error,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Button(onClick = onRefresh) {
-                            Text(stringResource(Res.string.common_retry))
-                        }
+                    Button(onClick = onRefresh) {
+                        Text(stringResource(Res.string.common_retry))
                     }
                 }
-                state.artworks.isNotEmpty() -> {
-                    FollowLatestArtworkStaggeredGridLayout(
-                        artworks = state.artworks,
-                        onArtworkClick = onArtworkClick,
-                        onUserClick = onUserClick,
-                        onLoadMore = onLoadMore,
-                        isLoadingMore = state.isLoadingMore,
-                        listState = listState,
-                        isRefreshing = state.isLoading && state.artworks.isNotEmpty(),
-                        onRefresh = onRefresh
-                    )
-                }
+            }
+            state.artworks.isNotEmpty() -> {
+                FollowLatestArtworkStaggeredGridLayout(
+                    artworks = state.artworks,
+                    onArtworkClick = onArtworkClick,
+                    onUserClick = onUserClick,
+                    onLoadMore = onLoadMore,
+                    isLoadingMore = state.isLoadingMore,
+                    listState = listState,
+                    isRefreshing = state.isLoading && state.artworks.isNotEmpty(),
+                    onRefresh = onRefresh
+                )
             }
         }
     }
@@ -386,74 +487,50 @@ fun FollowLatestIllustsPage(
 @Composable
 fun FollowLatestNovelsPage(
     state: FollowLatestNovelsState,
-    onModeChange: (FollowLatestMode) -> Unit,
     onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
-    onRefreshOrScrollToTop: () -> Unit,
     onNovelClick: (Novel) -> Unit,
     onSeriesClick: (String) -> Unit,
     onUserClick: (userId: String) -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     listState: LazyListState
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 第2层导航：Mode 选择器（全部 / R-18）
-        SimpleNavigationBar(
-            items = FollowLatestMode.entries,
-            selectedIndex = FollowLatestMode.entries.indexOf(state.currentMode),
-            onItemClick = { index ->
-                val newMode = FollowLatestMode.entries[index]
-                if (newMode == state.currentMode) {
-                    onRefreshOrScrollToTop()
-                } else {
-                    onModeChange(newMode)
-                }
-            },
-            getItemLabel = { mode ->
-                when (mode) {
-                    FollowLatestMode.ALL -> stringResource(Res.string.follow_latest_mode_all)
-                    FollowLatestMode.R18 -> stringResource(Res.string.follow_latest_mode_r18)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Box(modifier = Modifier.fillMaxSize()) {
-            when {
-                state.isLoading && state.novels.isEmpty() -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+    // 移除了第二层导航栏，现在直接显示内容
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            state.isLoading && state.novels.isEmpty() -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            state.error != null && state.novels.isEmpty() -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = state.error,
+                        color = MaterialTheme.colorScheme.error
                     )
-                }
-                state.error != null && state.novels.isEmpty() -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = state.error,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Button(onClick = onRefresh) {
-                            Text(stringResource(Res.string.common_retry))
-                        }
+                    Button(onClick = onRefresh) {
+                        Text(stringResource(Res.string.common_retry))
                     }
                 }
-                state.novels.isNotEmpty() -> {
-                    FollowLatestNovelListLayout(
-                        novels = state.novels,
-                        onNovelClick = onNovelClick,
-                        onSeriesClick = onSeriesClick,
-                        onUserClick = onUserClick,
-                        onTagClick = onTagClick,
-                        onLoadMore = onLoadMore,
-                        isLoadingMore = state.isLoadingMore,
-                        listState = listState,
-                        isRefreshing = state.isLoading && state.novels.isNotEmpty(),
-                        onRefresh = onRefresh
-                    )
-                }
+            }
+            state.novels.isNotEmpty() -> {
+                FollowLatestNovelListLayout(
+                    novels = state.novels,
+                    onNovelClick = onNovelClick,
+                    onSeriesClick = onSeriesClick,
+                    onUserClick = onUserClick,
+                    onTagClick = onTagClick,
+                    onLoadMore = onLoadMore,
+                    isLoadingMore = state.isLoadingMore,
+                    listState = listState,
+                    isRefreshing = state.isLoading && state.novels.isNotEmpty(),
+                    onRefresh = onRefresh
+                )
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
@@ -219,8 +220,8 @@ fun <T> SimpleNavigationBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 左侧：可滚动的导航项
@@ -231,14 +232,16 @@ fun <T> SimpleNavigationBar(
                     .onGloballyPositioned { coordinates ->
                         rowCoordinates = coordinates
                     },
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 items.forEachIndexed { index, item ->
                     FilterChip(
                         selected = index == selectedIndex,
                         onClick = { onItemClick(index) },
                         label = { Text(text = getItemLabel(item)) },
-                        modifier = Modifier.onGloballyPositioned { coordinates ->
+                        modifier = Modifier
+                            .height(30.dp)
+                            .onGloballyPositioned { coordinates ->
                             chipCoordinatesList[index] = coordinates
                         }
                     )
@@ -250,3 +253,80 @@ fun <T> SimpleNavigationBar(
         }
     }
 }
+
+/**
+ * 双层Tab导航栏（Tab + FilterChip）
+ * 用于优化视觉层次，第一层使用 Material 3 TabRow，第二层使用 FilterChip
+ * 
+ * 设计特点：
+ * - 第1层：TabRow（48dp），有下划线指示器，表示主要分类
+ * - 第2层：FilterChip（44dp），表示筛选条件或次级分类
+ * - 总高度：92dp，视觉层次清晰
+ * 
+ * @param primaryItems 第一层导航项列表
+ * @param primarySelectedIndex 第一层当前选中的索引
+ * @param onPrimaryItemClick 第一层点击回调
+ * @param getPrimaryItemLabel 获取第一层导航项标签文本
+ * @param secondaryItems 第二层导航项列表（可选）
+ * @param secondarySelectedIndex 第二层当前选中的索引
+ * @param onSecondaryItemClick 第二层点击回调
+ * @param getSecondaryItemLabel 获取第二层导航项标签文本
+ * @param showSecondaryNav 是否显示第二层导航
+ * @param modifier 修饰符
+ */
+@Composable
+fun <T, S> TabbedNavigationBar(
+    primaryItems: List<T>,
+    primarySelectedIndex: Int,
+    onPrimaryItemClick: (Int) -> Unit,
+    getPrimaryItemLabel: @Composable (T) -> String,
+    secondaryItems: List<S>? = null,
+    secondarySelectedIndex: Int = 0,
+    onSecondaryItemClick: ((Int) -> Unit)? = null,
+    getSecondaryItemLabel: (@Composable (S) -> String)? = null,
+    showSecondaryNav: Boolean = true,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        // 第一层：ScrollableTabRow（支持横向滚动）
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
+        ) {
+            ScrollableTabRow(
+                selectedTabIndex = primarySelectedIndex,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary,
+                edgePadding = 16.dp,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                primaryItems.forEachIndexed { index, item ->
+                    Tab(
+                        selected = primarySelectedIndex == index,
+                        onClick = { onPrimaryItemClick(index) },
+                        text = { 
+                            Text(
+                                text = getPrimaryItemLabel(item),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        modifier = Modifier.height(40.dp)  // 减小Tab高度（默认48dp）
+                    )
+                }
+            }
+        }
+        
+        // 第二层：FilterChip（条件显示）
+        if (showSecondaryNav && secondaryItems != null && onSecondaryItemClick != null && getSecondaryItemLabel != null) {
+            SimpleNavigationBar(
+                items = secondaryItems,
+                selectedIndex = secondarySelectedIndex,
+                onItemClick = onSecondaryItemClick,
+                getItemLabel = getSecondaryItemLabel,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+

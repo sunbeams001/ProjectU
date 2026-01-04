@@ -18,8 +18,8 @@ import com.projectu.ui.screens.discovery.DiscoveryNovelsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryUsersViewModel
 import com.projectu.ui.screens.followlatest.FollowLatestIllustsViewModel
 import com.projectu.ui.screens.followlatest.FollowLatestNovelsViewModel
-import com.projectu.ui.screens.followlatest.more.WatchListMangaViewModel
-import com.projectu.ui.screens.followlatest.more.WatchListNovelsViewModel
+import com.projectu.ui.screens.followlatest.WatchListMangaViewModel
+import com.projectu.ui.screens.followlatest.WatchListNovelsViewModel
 import com.projectu.ui.screens.userrelations.UserRelationsViewModel
 import com.projectu.ui.screens.comment.CommentsViewModel
 import com.projectu.ui.screens.download.DownloadRulesViewModel
