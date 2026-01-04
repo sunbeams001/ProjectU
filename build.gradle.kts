@@ -11,6 +11,9 @@ plugins {
     alias(libs.plugins.ksp) apply false
 }
 
+// 应用版本管理任务
+apply(from = "version.gradle.kts")
+
 /**
  * 检查 Kotlin 源码中的硬编码中文字符串
  * 
