@@ -11,6 +11,13 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
 }
 
+// 配置所有 configuration，排除从 compose-webview-multiplatform 传递来的 JOGAMP 依赖
+// 我们使用本地 JAR 文件来代替，避免从 jogamp.org 下载超时
+configurations.all {
+    exclude(group = "org.jogamp.gluegen", module = "gluegen-rt")
+    exclude(group = "org.jogamp.jogl", module = "jogl-all")
+}
+
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -66,8 +73,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             
-            // WebView Multiplatform
-            api(libs.compose.webview.multiplatform)
+            // WebView Multiplatform - 排除 JOGAMP 依赖，使用本地 JAR
+            implementation(libs.compose.webview.multiplatform)
         }
         
         androidMain.dependencies {
@@ -119,6 +126,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
             
+            // JOGAMP 依赖 - 使用本地 JAR 文件（解决官方仓库不稳定问题）
+            implementation(files("../libs/jogamp/gluegen-rt-2.5.0.jar"))
+            implementation(files("../libs/jogamp/jogl-all-2.5.0.jar"))
+
             // Room数据库依赖 - Desktop平台需要
             implementation(libs.room.runtime)
         }
