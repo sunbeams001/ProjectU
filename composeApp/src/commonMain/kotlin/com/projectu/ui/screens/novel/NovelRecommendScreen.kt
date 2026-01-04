@@ -60,6 +60,13 @@ data class NovelRecommendScreen(
     private val novelId: String
 ) : Screen {
     
+    /**
+     * 自定义 Screen key，确保不同小说的推荐页面有独立的 ViewModel 实例
+     * 每个基准小说ID对应一个独立的推荐列表状态
+     */
+    override val key: cafe.adriel.voyager.core.screen.ScreenKey
+        get() = "NovelRecommendScreen_$novelId"
+    
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow

@@ -61,6 +61,13 @@ data class ArtworkRecommendScreen(
     private val artworkId: String
 ) : Screen {
     
+    /**
+     * 自定义 Screen key，确保不同作品的推荐页面有独立的 ViewModel 实例
+     * 每个基准作品ID对应一个独立的推荐列表状态
+     */
+    override val key: cafe.adriel.voyager.core.screen.ScreenKey
+        get() = "ArtworkRecommendScreen_$artworkId"
+    
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
