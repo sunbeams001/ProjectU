@@ -24,7 +24,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.domain.model.Artwork
 import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.ErrorDisplay
-import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.components.TabbedNavigationBar
 import com.projectu.ui.components.UserCard
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
@@ -139,7 +139,22 @@ fun UserRelationsContent(
         }
     }
     
-    // 处理导航栏点击
+    // 创建滚动到顶部或刷新的回调
+    val scrollToTopOrRefresh: () -> Unit = {
+        val listState = listStates[state.currentPage.key]
+        val isAtTop = listState?.firstVisibleItemIndex == 0 && 
+                     listState.firstVisibleItemScrollOffset == 0
+        
+        if (isAtTop) {
+            onRefresh()
+        } else {
+            coroutineScope.launch {
+                listState?.animateScrollToItem(0)
+            }
+        }
+    }
+    
+    // 处理一级导航点击
     val handlePrimaryNavClick: (Int) -> Unit = { primaryIndex ->
         val targetPage = when (primaryIndex) {
             0 -> if (state.currentSecondaryIndex == 1) RelationPage.FollowingPrivate else RelationPage.FollowingPublic
@@ -149,37 +164,42 @@ fun UserRelationsContent(
         }
         
         if (targetPage == state.currentPage) {
-            // 点击已选中项：滚动到顶部或刷新
-            val listState = listStates[state.currentPage.key]
-            if (listState?.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) {
-                onRefresh()
-            } else {
-                coroutineScope.launch {
-                    listState?.animateScrollToItem(0)
-                }
-            }
+            scrollToTopOrRefresh()
         } else {
             onPageChange(targetPage)
         }
     }
     
+    // 处理二级导航点击
     val handleSecondaryNavClick: (Int) -> Unit = { secondaryIndex ->
         val targetPage = if (secondaryIndex == 0) RelationPage.FollowingPublic else RelationPage.FollowingPrivate
         
         if (targetPage == state.currentPage) {
-            // 点击已选中项：滚动到顶部或刷新
-            val listState = listStates[state.currentPage.key]
-            if (listState?.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) {
-                onRefresh()
-            } else {
-                coroutineScope.launch {
-                    listState?.animateScrollToItem(0)
-                }
-            }
+            scrollToTopOrRefresh()
         } else {
             onPageChange(targetPage)
         }
     }
+    
+    // 一级导航项
+    val primaryItems = if (state.isSelf) {
+        listOf(
+            UserRelationType.FOLLOWING,
+            UserRelationType.MY_PIXIV,
+            UserRelationType.FOLLOWERS
+        )
+    } else {
+        listOf(
+            UserRelationType.FOLLOWING,
+            UserRelationType.MY_PIXIV
+        )
+    }
+    
+    // 二级导航项
+    val secondaryItems = listOf(
+        FollowingVisibility.PUBLIC,
+        FollowingVisibility.PRIVATE
+    )
     
     Scaffold(
         topBar = {
@@ -203,20 +223,18 @@ fun UserRelationsContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 一级导航栏
-            PrimaryNavigationBar(
-                isSelf = state.isSelf,
-                currentPrimaryIndex = state.currentPrimaryIndex,
-                onPrimaryClick = handlePrimaryNavClick
+            // 双层导航：使用 TabbedNavigationBar（Tab + FilterChip）
+            TabbedNavigationBar(
+                primaryItems = primaryItems,
+                primarySelectedIndex = state.currentPrimaryIndex,
+                onPrimaryItemClick = handlePrimaryNavClick,
+                getPrimaryItemLabel = { type -> stringResource(type.displayNameRes) },
+                secondaryItems = secondaryItems,
+                secondarySelectedIndex = state.currentSecondaryIndex,
+                onSecondaryItemClick = handleSecondaryNavClick,
+                getSecondaryItemLabel = { visibility -> stringResource(visibility.displayNameRes) },
+                showSecondaryNav = state.hasSecondaryNavigation
             )
-            
-            // 二级导航栏（仅对"已关注"显示）
-            if (state.hasSecondaryNavigation) {
-                SecondaryNavigationBar(
-                    currentSecondaryIndex = state.currentSecondaryIndex,
-                    onSecondaryClick = handleSecondaryNavClick
-                )
-            }
             
             // 内容区域 - HorizontalPager
             HorizontalPager(
@@ -224,94 +242,39 @@ fun UserRelationsContent(
                 modifier = Modifier.fillMaxSize(),
                 key = { state.availablePages.getOrNull(it)?.key ?: it }
             ) { pageIndex ->
-                val page = state.availablePages[pageIndex]
-                val pageData = state.pageDataCache[page.key] ?: RelationPageData()
-                
-                // 获取或创建列表状态
-                val listState = listStates.getOrPut(page.key) { LazyListState() }
-                
-                // 收集所有作品ID（用于列表导航，使用完整列表）
-                val allArtworkIds = remember(pageData.users) {
-                    pageData.users.flatMap { user -> user.illusts.map { it.id } }
-                }
-                
-                // 响应 scrollTargets 的变化执行滚动
-                val scrollTarget = state.scrollTargets[page.key]
-                LaunchedEffect(scrollTarget) {
-                    if (scrollTarget != null && scrollTarget > 0) {
-                        listState.animateScrollToItem(scrollTarget)
-                        viewModel.clearScrollTarget(page.key)
-                    }
-                }
-                
-                UserListContent(
-                    pageData = pageData,
-                    listState = listState,
-                    pageKey = page.key,
-                    allArtworkIds = allArtworkIds,
-                    onUserClick = onUserClick,
-                    onArtworkClick = onArtworkClick,
-                    onLoadMore = onLoadMore,
-                    onRefresh = onRefresh
-                )
+            val page = state.availablePages[pageIndex]
+            val pageData = state.pageDataCache[page.key] ?: RelationPageData()
+            
+            // 获取或创建列表状态
+            val listState = listStates.getOrPut(page.key) { LazyListState() }
+            
+            // 收集所有作品ID（用于列表导航，使用完整列表）
+            val allArtworkIds = remember(pageData.users) {
+                pageData.users.flatMap { user -> user.illusts.map { it.id } }
             }
+            
+            // 响应 scrollTargets 的变化执行滚动
+            val scrollTarget = state.scrollTargets[page.key]
+            LaunchedEffect(scrollTarget) {
+                if (scrollTarget != null && scrollTarget > 0) {
+                    listState.animateScrollToItem(scrollTarget)
+                    viewModel.clearScrollTarget(page.key)
+                }
+            }
+            
+            UserListContent(
+                pageData = pageData,
+                listState = listState,
+                pageKey = page.key,
+                allArtworkIds = allArtworkIds,
+                onUserClick = onUserClick,
+                onArtworkClick = onArtworkClick,
+                onLoadMore = onLoadMore,
+                onRefresh = onRefresh
+            )
         }
     }
-}
-
-/**
- * 一级导航栏
- */
-@Composable
-fun PrimaryNavigationBar(
-    isSelf: Boolean,
-    currentPrimaryIndex: Int,
-    onPrimaryClick: (Int) -> Unit
-) {
-    val items = if (isSelf) {
-        listOf(
-            UserRelationType.FOLLOWING,
-            UserRelationType.MY_PIXIV,
-            UserRelationType.FOLLOWERS
-        )
-    } else {
-        listOf(
-            UserRelationType.FOLLOWING,
-            UserRelationType.MY_PIXIV
-        )
     }
-    
-    SimpleNavigationBar(
-        items = items,
-        selectedIndex = currentPrimaryIndex,
-        onItemClick = onPrimaryClick,
-        getItemLabel = { type ->
-            stringResource(type.displayNameRes)
-        }
-    )
-}
-
-/**
- * 二级导航栏
- */
-@Composable
-fun SecondaryNavigationBar(
-    currentSecondaryIndex: Int,
-    onSecondaryClick: (Int) -> Unit
-) {
-    val items = listOf(
-        FollowingVisibility.PUBLIC,
-        FollowingVisibility.PRIVATE
-    )
-    
-    SimpleNavigationBar(
-        items = items,
-        selectedIndex = currentSecondaryIndex,
-        onItemClick = onSecondaryClick,
-        getItemLabel = { visibility ->
-            stringResource(visibility.displayNameRes)
-        }
-    )
 }
 
 /**

@@ -31,6 +31,10 @@ import com.projectu.ui.components.NovelCard
 import org.koin.compose.koinInject
 import com.projectu.ui.components.NavigationBar
 import com.projectu.ui.components.SimpleNavigationBar
+import com.projectu.ui.components.TabbedNavigationBar
+import com.projectu.ui.components.PageMapping
+import com.projectu.ui.components.CustomTwoLayerMapper
+import com.projectu.ui.components.rememberPagedNavigationState
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -38,8 +42,23 @@ import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
 
 /**
+ * 排行榜页面的映射信息
+ */
+data class RankingPageMapping(
+    override val primaryIndex: Int,
+    override val secondaryIndex: Int,
+    override val showSecondaryNav: Boolean,
+    val contentType: RankingContent,
+    val mode: RankingMode
+) : PageMapping
+
+/**
  * 排行榜内容区域
  * 用于在 HomeScreen 的 RankingTab 中显示
+ * 
+ * 使用"一层 Pager + 页码映射"机制实现双层导航
+ * - 第一层：内容类型（综合/插画/动图/漫画/小说）
+ * - 第二层：排行榜模式（每日/每周/每月等，根据内容类型动态变化）
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -58,23 +77,98 @@ fun RankingContent(
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
-    // 获取当前内容类型支持的所有模式
-    val supportedModes = remember(state.currentContentType) {
-        RankingContentModeConfig.getSupportedModes(state.currentContentType)
+    // 1. 准备数据：内容类型列表
+    val contentTypes = remember {
+        listOf(
+            RankingContent.ALL,
+            RankingContent.ILLUST,
+            RankingContent.UGOIRA,
+            RankingContent.MANGA,
+            RankingContent.NOVEL
+        )
     }
     
-    // 为每个 mode 创建独立的列表状态缓存
-    val listStates = remember(state.currentContentType) {
+    // 2. 准备数据：每个内容类型支持的模式列表
+    val modesPerType = remember {
+        contentTypes.map { type ->
+            RankingContentModeConfig.getSupportedModes(type)
+        }
+    }
+    
+    // 3. 创建页码映射器（使用 CustomTwoLayerMapper）
+    val mapper = remember {
+        CustomTwoLayerMapper(
+            secondaryCountPerPrimary = modesPerType.map { it.size }, // [16, 7, 4, 7, 14]
+            createMapping = { primaryIndex, secondaryIndex, showSecondary ->
+                val contentType = contentTypes[primaryIndex]
+                val mode = modesPerType[primaryIndex][secondaryIndex]
+                RankingPageMapping(
+                    primaryIndex = primaryIndex,
+                    secondaryIndex = secondaryIndex,
+                    showSecondaryNav = showSecondary,
+                    contentType = contentType,
+                    mode = mode
+                )
+            }
+        )
+    }
+    
+    // 4. 计算初始页码
+    val initialPage = remember(state.currentContentType, state.currentMode) {
+        val primaryIndex = contentTypes.indexOf(state.currentContentType).coerceAtLeast(0)
+        val modes = modesPerType.getOrNull(primaryIndex) ?: emptyList()
+        val secondaryIndex = modes.indexOf(state.currentMode).coerceAtLeast(0)
+        mapper.calculatePageIndex(primaryIndex, secondaryIndex)
+    }
+    
+    // 5. 创建 Pager 状态
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = { mapper.totalPages }
+    )
+    
+    // 6. 创建页码导航状态
+    val navState = rememberPagedNavigationState(pagerState, mapper)
+    val coroutineScope = rememberCoroutineScope()
+    
+    // 7. 为每个页面创建独立的列表状态缓存
+    val listStates = remember {
         mutableStateMapOf<String, Any>()
     }
     
-    val coroutineScope = rememberCoroutineScope()
+    // 8. 同步 Pager 页面切换到 ViewModel
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress) {
+            val mapping = mapper.parsePageIndex(pagerState.currentPage)
+            if (mapping.contentType != state.currentContentType) {
+                onContentTypeChange(mapping.contentType)
+            }
+            if (mapping.mode != state.currentMode) {
+                onModeChange(mapping.mode)
+            }
+        }
+    }
     
-    // 创建滚动到顶部或刷新的回调
-    val scrollToTopOrRefresh: () -> Unit = remember(state.currentMode, listStates) {
+    // 9. 当外部通过 ViewModel 切换时，同步到 Pager
+    LaunchedEffect(state.currentContentType, state.currentMode) {
+        val primaryIndex = contentTypes.indexOf(state.currentContentType).coerceAtLeast(0)
+        val modes = modesPerType.getOrNull(primaryIndex) ?: emptyList()
+        val secondaryIndex = modes.indexOf(state.currentMode).coerceAtLeast(0)
+        val targetPage = mapper.calculatePageIndex(primaryIndex, secondaryIndex)
+        
+        if (targetPage != pagerState.currentPage) {
+            pagerState.animateScrollToPage(targetPage)
+        }
+    }
+    
+    // 10. 创建滚动到顶部或刷新的回调
+    val scrollToTopOrRefresh: () -> Unit = remember(state.currentContentType, state.currentMode, listStates) {
         {
+            val currentContentType = state.currentContentType
             val currentMode = state.currentMode
-            val listState = listStates[currentMode.value]
+            // 使用和列表状态缓存相同的 key
+            val pageKey = "${currentContentType.name}_${currentMode.value}"
+            val listState = listStates[pageKey]
             val isAtTop = when (listState) {
                 is androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState -> 
                     listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
@@ -98,87 +192,97 @@ fun RankingContent(
         }
     }
     
-    // 注册回调
+    // 11. 注册回调
     LaunchedEffect(scrollToTopOrRefresh) {
         onRegisterScrollToTopOrRefreshCallback?.invoke(scrollToTopOrRefresh)
-    }
-    
-    // 创建 Pager 状态
-    val pagerState = rememberPagerState(
-        initialPage = supportedModes.indexOf(state.currentMode).coerceAtLeast(0),
-        pageCount = { supportedModes.size }
-    )
-    
-    // 同步 Pager 页面切换到 ViewModel
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress) {
-            val newMode = supportedModes.getOrNull(pagerState.currentPage)
-            if (newMode != null && newMode != state.currentMode) {
-                onModeChange(newMode)
-            }
-        }
-    }
-    
-    // 当外部通过点击切换 mode 时，同步到 Pager
-    LaunchedEffect(state.currentMode) {
-        val targetPage = supportedModes.indexOf(state.currentMode)
-        if (targetPage >= 0 && targetPage != pagerState.currentPage) {
-            pagerState.animateScrollToPage(targetPage)
-        }
     }
     
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 第一层选择器：内容类型 + 日期选择（固定不滑动）
-        ContentTypeSelector(
-            state = state,
-            currentContentType = state.currentContentType,
-            selectedDate = state.selectedDate,
-            onContentTypeChange = onContentTypeChange,
-            onDateChange = onDateChange,
-            modifier = Modifier.fillMaxWidth()
-        )
+        // 12. 使用 TabbedNavigationBar（双层导航）
+        val currentMapping = navState.currentMapping
         
-        // 第二层选择器：排行榜模式（固定不滑动，但会响应 Pager 的页面变化）
-        RankingModeSelector(
-            supportedModes = supportedModes,
-            currentModeIndex = pagerState.currentPage,
-            onModeChange = { mode ->
-                onModeChange(mode)
+        TabbedNavigationBar(
+            primaryItems = contentTypes,
+            primarySelectedIndex = currentMapping.primaryIndex,
+            onPrimaryItemClick = { index ->
+                if (index == currentMapping.primaryIndex) {
+                    // 重复点击当前分类，刷新或滚动到顶部
+                    scrollToTopOrRefresh()
+                } else {
+                    // 切换到新的分类，尝试保持相同的 Mode
+                    val currentMode = currentMapping.mode
+                    val newModes = modesPerType[index]
+                    
+                    // 尝试在新分类中找到相同的 Mode
+                    val newSecondaryIndex = newModes.indexOf(currentMode).let {
+                        if (it >= 0) it else 0  // 找到则使用，否则使用第一个
+                    }
+                    
+                    val targetPage = mapper.calculatePageIndex(index, newSecondaryIndex)
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(targetPage)
+                    }
+                }
             },
-            onRefreshOrScrollToTop = scrollToTopOrRefresh,
+            getPrimaryItemLabel = { it.getLocalizedDisplayName() },
+            secondaryItems = modesPerType[currentMapping.primaryIndex],
+            secondarySelectedIndex = currentMapping.secondaryIndex,
+            onSecondaryItemClick = { index ->
+                navState.handleSecondaryClick(
+                    secondaryIndex = index,
+                    currentPrimaryIndex = currentMapping.primaryIndex,
+                    scope = coroutineScope,
+                    onSamePage = scrollToTopOrRefresh
+                )
+            },
+            getSecondaryItemLabel = { it.getLocalizedDisplayName() },
+            showSecondaryNav = true,  // 排行榜的所有内容类型都有第二层导航
+            primaryTrailingContent = {
+                // 日期选择器放在第一层导航末尾
+                DateSelectorChip(
+                    selectedDate = state.selectedDate,
+                    currentDate = state.currentDate,
+                    prevDate = state.prevDate,
+                    nextDate = state.nextDate,
+                    onDateChange = onDateChange
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         )
         
-        // HorizontalPager：支持左右滑动切换 mode
+        // 14. 单一 HorizontalPager
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            key = { supportedModes[it].value }
+            key = { page ->
+                val mapping = mapper.parsePageIndex(page)
+                "${mapping.contentType.name}_${mapping.mode.value}"
+            }
         ) { page ->
-            val mode = supportedModes[page]
-            val modeData = state.modeDataCache[mode.value] ?: ModeData()
+            val mapping = mapper.parsePageIndex(page)
+            val modeData = state.modeDataCache[mapping.mode.value] ?: ModeData()
             
-            // 为当前 mode 获取或创建列表状态
-            val listState = if (state.currentContentType == RankingContent.NOVEL) {
+            // 为当前页面创建唯一的 key（包含内容类型和模式，避免不同类型共享状态）
+            val pageKey = "${mapping.contentType.name}_${mapping.mode.value}"
+            
+            // 为当前页面获取或创建列表状态
+            val listState = if (mapping.contentType == RankingContent.NOVEL) {
                 val lazyListState = rememberLazyListState()
-                remember(mode.value, state.currentContentType) {
-                    listStates.getOrPut(mode.value) { lazyListState }
+                remember(pageKey) {
+                    listStates.getOrPut(pageKey) { lazyListState }
                 }
             } else {
                 val lazyStaggeredGridState = rememberLazyStaggeredGridState()
-                remember(mode.value, state.currentContentType) {
-                    listStates.getOrPut(mode.value) { lazyStaggeredGridState }
+                remember(pageKey) {
+                    listStates.getOrPut(pageKey) { lazyStaggeredGridState }
                 }
             }
             
-
-            
-            // 监听 scrollIndices 变化，滚动到指定位置
-            // 使用 derivedStateOf 建立响应式依赖
-            val targetScrollIndex by remember(mode.value) {
-                derivedStateOf { scrollIndices[mode.value] }
+            // 监听 scrollIndices 变化，滚动到指定位置（仍使用 mode.value 作为 key）
+            val targetScrollIndex by remember(mapping.mode.value) {
+                derivedStateOf { scrollIndices[mapping.mode.value] }
             }
             
             LaunchedEffect(targetScrollIndex) {
@@ -195,10 +299,9 @@ fun RankingContent(
                             listState.animateScrollToItem(scrollIndex)
                         }
                     }
-
                     
                     // 清除标记，避免重复滚动
-                    scrollIndices.remove(mode.value)
+                    scrollIndices.remove(mapping.mode.value)
                 }
             }
             
@@ -220,7 +323,7 @@ fun RankingContent(
                             isFullScreen = true
                         )
                     }
-                    state.currentContentType == RankingContent.NOVEL && modeData.novels.isNotEmpty() -> {
+                    mapping.contentType == RankingContent.NOVEL && modeData.novels.isNotEmpty() -> {
                         // 小说列表布局
                         NovelListLayout(
                             novels = modeData.novels,
@@ -235,7 +338,7 @@ fun RankingContent(
                             onRefresh = onRefresh
                         )
                     }
-                    state.currentContentType != RankingContent.NOVEL && modeData.artworks.isNotEmpty() -> {
+                    mapping.contentType != RankingContent.NOVEL && modeData.artworks.isNotEmpty() -> {
                         // 作品瀑布流布局
                         ArtworkStaggeredGridLayout(
                             artworks = modeData.artworks,
@@ -255,56 +358,11 @@ fun RankingContent(
 }
 
 /**
- * 第一层选择器：内容类型 + 日期选择
- */
-@Composable
-fun ContentTypeSelector(
-    state: RankingState,
-    currentContentType: RankingContent,
-    selectedDate: String?,
-    onContentTypeChange: (RankingContent) -> Unit,
-    onDateChange: (String?) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // 内容类型列表
-    val contentTypes = listOf(
-        RankingContent.ALL,
-        RankingContent.ILLUST,
-        RankingContent.UGOIRA,
-        RankingContent.MANGA,
-        RankingContent.NOVEL
-    )
-    
-    NavigationBar(
-        items = contentTypes,
-        selectedIndex = contentTypes.indexOf(currentContentType),
-        onItemClick = { index -> onContentTypeChange(contentTypes[index]) },
-        itemContent = { contentType, isSelected ->
-            FilterChip(
-                selected = isSelected,
-                onClick = { onContentTypeChange(contentType) },
-                label = { Text(text = contentType.getLocalizedDisplayName()) }
-            )
-        },
-        trailingContent = {
-            DateSelector(
-                selectedDate = selectedDate,
-                currentDate = state.currentDate,
-                prevDate = state.prevDate,
-                nextDate = state.nextDate,
-                onDateChange = onDateChange
-            )
-        },
-        modifier = modifier
-    )
-}
-
-/**
- * 日期选择器
+ * 日期选择器 Chip（用于放在导航栏末尾）
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateSelector(
+fun DateSelectorChip(
     selectedDate: String?,
     currentDate: String?,
     prevDate: String?,
@@ -477,35 +535,6 @@ fun DateSelector(
             )
         }
     }
-}
-
-/**
- * 第二层选择器：排行榜模式
- */
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun RankingModeSelector(
-    supportedModes: List<RankingMode>,
-    currentModeIndex: Int,
-    onModeChange: (RankingMode) -> Unit,
-    onRefreshOrScrollToTop: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    SimpleNavigationBar(
-        items = supportedModes,
-        selectedIndex = currentModeIndex,
-        onItemClick = { index ->
-            if (index == currentModeIndex) {
-                // 点击已选中的 mode，触发刷新或滚动到顶部
-                onRefreshOrScrollToTop()
-            } else {
-                // 切换到新的 mode
-                onModeChange(supportedModes[index])
-            }
-        },
-        getItemLabel = { mode -> mode.getLocalizedDisplayName() },
-        modifier = modifier
-    )
 }
 
 /**

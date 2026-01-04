@@ -285,34 +285,51 @@ fun <T, S> TabbedNavigationBar(
     onSecondaryItemClick: ((Int) -> Unit)? = null,
     getSecondaryItemLabel: (@Composable (S) -> String)? = null,
     showSecondaryNav: Boolean = true,
+    primaryTrailingContent: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        // 第一层：ScrollableTabRow（支持横向滚动）
+        // 第一层：ScrollableTabRow（支持横向滚动）+ 尾部内容
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
-            ScrollableTabRow(
-                selectedTabIndex = primarySelectedIndex,
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.primary,
-                edgePadding = 16.dp,
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),  // 固定高度，与 Tab 高度一致，避免尾部内容撑高
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                primaryItems.forEachIndexed { index, item ->
-                    Tab(
-                        selected = primarySelectedIndex == index,
-                        onClick = { onPrimaryItemClick(index) },
-                        text = { 
-                            Text(
-                                text = getPrimaryItemLabel(item),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        modifier = Modifier.height(40.dp)  // 减小Tab高度（默认48dp）
-                    )
+                ScrollableTabRow(
+                    selectedTabIndex = primarySelectedIndex,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    edgePadding = 16.dp,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    primaryItems.forEachIndexed { index, item ->
+                        Tab(
+                            selected = primarySelectedIndex == index,
+                            onClick = { onPrimaryItemClick(index) },
+                            text = { 
+                                Text(
+                                    text = getPrimaryItemLabel(item),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
+                            modifier = Modifier.height(40.dp)  // 减小Tab高度（默认48dp）
+                        )
+                    }
+                }
+                
+                // 尾部内容（如日期选择器）
+                primaryTrailingContent?.let {
+                    Box(
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        it()
+                    }
                 }
             }
         }
