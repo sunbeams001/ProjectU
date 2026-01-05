@@ -9,7 +9,10 @@ import com.projectu.shared.data.remote.dto.user.ProfileNovelsBody
 import com.projectu.shared.data.remote.dto.user.UnfollowUserResponse
 import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
+import com.projectu.shared.data.remote.dto.user.UserIllustsByTagBody
+import com.projectu.shared.data.remote.dto.user.UserIllustTag
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
+import com.projectu.shared.data.remote.dto.user.UserNovelsByTagBody
 import com.projectu.shared.data.remote.dto.user.UserRecommendBody
 
 /**
@@ -245,5 +248,105 @@ class UserApi(private val client: PixivApiClient) {
             "limit" to limit
         ))
     }
+
+    /**
+     * 获取用户插画的全部标签
+     * 
+     * 获取指定用户所有插画作品的标签列表，包括标签名称、翻译和作品数量
+     * 
+     * @param uid 用户ID
+     * @param all 获取全部标签（固定为1）
+     * @return 标签列表响应体
+     * 
+     * 接口地址: GET /ajax/user/{userId}/illusts/tags?all=1&lang=zh
+     * 示例: https://www.pixiv.net/ajax/user/757415/illusts/tags?all=1&lang=zh
+     */
+    suspend fun getUserIllustTags(
+        uid: Long,
+        all: Int = 1
+    ): PixivResponse<List<UserIllustTag>> {
+        return client.get("/ajax/user/$uid/illusts/tags", mapOf(
+            "all" to all
+        ))
+    }
+
+    /**
+     * 获取用户指定标签的插画作品
+     * 
+     * 根据标签筛选获取用户的插画作品列表
+     * 
+     * @param uid 用户ID
+     * @param tag 标签名称（需URL编码）
+     * @param offset 偏移量
+     * @param limit 返回数量（最大48）
+     * @param sensitiveFilterMode 敏感内容过滤模式，默认 "userSetting"
+     * @return 作品列表响应体
+     * 
+     * 接口地址: GET /ajax/user/{userId}/illusts/tag?tag={tag}&offset={offset}&limit={limit}&sensitiveFilterMode=userSetting&lang=zh
+     * 示例: https://www.pixiv.net/ajax/user/16208053/illusts/tag?tag=女の子&offset=0&limit=48&sensitiveFilterMode=userSetting&lang=zh
+     */
+    suspend fun getUserIllustsByTag(
+        uid: Long,
+        tag: String,
+        offset: Int = 0,
+        limit: Int = 48,
+        sensitiveFilterMode: String = "userSetting"
+    ): PixivResponse<UserIllustsByTagBody> {
+        return client.get("/ajax/user/$uid/illusts/tag", mapOf(
+            "tag" to tag,
+            "offset" to offset,
+            "limit" to limit,
+            "sensitiveFilterMode" to sensitiveFilterMode
+        ))
+    }
+
+    /**
+     * 获取用户小说的全部标签
+     * 
+     * 获取指定用户所有小说作品的标签列表，包括标签名称、翻译和作品数量
+     * 
+     * @param uid 用户ID
+     * @param all 获取全部标签（固定为1）
+     * @return 标签列表响应体
+     * 
+     * 接口地址: GET /ajax/user/{userId}/novels/tags?all=1&lang=zh
+     * 示例: https://www.pixiv.net/ajax/user/16208053/novels/tags?all=1&lang=zh
+     */
+    suspend fun getUserNovelTags(
+        uid: Long,
+        all: Int = 1
+    ): PixivResponse<List<UserIllustTag>> {
+        return client.get("/ajax/user/$uid/novels/tags", mapOf(
+            "all" to all
+        ))
+    }
+
+    /**
+     * 获取用户指定标签的小说作品
+     * 
+     * 根据标签筛选获取用户的小说作品列表
+     * 
+     * @param uid 用户ID
+     * @param tag 标签名称（需URL编码）
+     * @param offset 偏移量
+     * @param limit 返回数量（最大30）
+     * @return 作品列表响应体
+     * 
+     * 接口地址: GET /ajax/user/{userId}/novels/tag?tag={tag}&offset={offset}&limit={limit}&lang=zh
+     * 示例: https://www.pixiv.net/ajax/user/16208053/novels/tag?tag=凌辱&offset=0&limit=30&lang=zh
+     */
+    suspend fun getUserNovelsByTag(
+        uid: Long,
+        tag: String,
+        offset: Int = 0,
+        limit: Int = 30
+    ): PixivResponse<UserNovelsByTagBody> {
+        return client.get("/ajax/user/$uid/novels/tag", mapOf(
+            "tag" to tag,
+            "offset" to offset,
+            "limit" to limit
+        ))
+    }
 }
+
 

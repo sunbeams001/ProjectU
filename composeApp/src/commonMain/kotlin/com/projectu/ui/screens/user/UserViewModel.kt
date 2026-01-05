@@ -501,6 +501,15 @@ class UserViewModel(
      */
     private suspend fun loadIllustOrManga(tab: UserProfileTab) {
         val tabData = _state.value.tabDataCache[tab] ?: return
+        val selectedTag = tabData.selectedTag
+        
+        // 如果选择了标签，使用按标签筛选的接口
+        if (selectedTag != null) {
+            loadIllustOrMangaByTag(tab, selectedTag)
+            return
+        }
+        
+        // 原有逻辑：按ID列表加载
         val allIds = tabData.allIds
         val loadedIds = tabData.loadedIds
         
@@ -557,10 +566,71 @@ class UserViewModel(
     }
     
     /**
+     * 按标签加载插画或漫画
+     */
+    private suspend fun loadIllustOrMangaByTag(tab: UserProfileTab, tag: String) {
+        val tabData = _state.value.tabDataCache[tab] ?: return
+        val currentOffset = tabData.offset
+        
+        val userIdLong = currentUserId.toLongOrNull() ?: return
+        val response = pixivApi.userApi.getUserIllustsByTag(
+            uid = userIdLong,
+            tag = tag,
+            offset = currentOffset,
+            limit = ILLUST_PAGE_SIZE
+        )
+        
+        if (response.error) {
+            updateTabData(tab) { 
+                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+            }
+            return
+        }
+        
+        val body = response.body ?: run {
+            updateTabData(tab) { it.copy(isLoading = false, error = "Data is empty") }
+            return
+        }
+        
+        val newArtworks = body.works.map { illust ->
+            illust.toArtwork(
+                tagTranslationUtil = tagTranslationUtil,
+                tagTranslation = null,
+                ageLimitDeterminer = ageLimitDeterminer
+            )
+        }
+        
+        // 同步全局状态缓存
+        val syncedArtworks = syncArtworkStatesUseCase(newArtworks)
+        
+        val newOffset = currentOffset + syncedArtworks.size
+        val hasMore = newOffset < body.total
+        
+        updateTabData(tab) {
+            it.copy(
+                artworks = it.artworks + syncedArtworks,
+                offset = newOffset,
+                total = body.total,
+                isLoading = false,
+                hasMore = hasMore
+            )
+        }
+    }
+    
+    /**
      * 加载小说
      */
     private suspend fun loadNovels(tab: UserProfileTab) {
         val tabData = _state.value.tabDataCache[tab] ?: return
+        val selectedTag = tabData.selectedTag
+        
+        // 如果选择了标签，使用按标签筛选的接口
+        if (selectedTag != null) {
+            loadNovelsByTag(tab, selectedTag)
+            return
+        }
+        
+        // 原有逻辑：按ID列表加载
         val allIds = tabData.allIds
         val loadedIds = tabData.loadedIds
         
@@ -603,6 +673,57 @@ class UserViewModel(
                 novels = it.novels + syncedNovels,
                 isLoading = false,
                 hasMore = remainingIds.size > nextIds.size
+            )
+        }
+    }
+    
+    /**
+     * 按标签加载小说
+     */
+    private suspend fun loadNovelsByTag(tab: UserProfileTab, tag: String) {
+        val tabData = _state.value.tabDataCache[tab] ?: return
+        val currentOffset = tabData.offset
+        
+        val userIdLong = currentUserId.toLongOrNull() ?: return
+        val response = pixivApi.userApi.getUserNovelsByTag(
+            uid = userIdLong,
+            tag = tag,
+            offset = currentOffset,
+            limit = NOVEL_PAGE_SIZE
+        )
+        
+        if (response.error) {
+            updateTabData(tab) { 
+                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+            }
+            return
+        }
+        
+        val body = response.body ?: run {
+            updateTabData(tab) { it.copy(isLoading = false, error = "Data is empty") }
+            return
+        }
+        
+        val newNovels = body.works.map { novel ->
+            novel.toNovel(
+                tagTranslation = null,
+                ageLimitDeterminer = ageLimitDeterminer
+            )
+        }
+        
+        // 同步全局状态缓存
+        val syncedNovels = syncNovelStatesUseCase(newNovels)
+        
+        val newOffset = currentOffset + syncedNovels.size
+        val hasMore = newOffset < body.total
+        
+        updateTabData(tab) {
+            it.copy(
+                novels = it.novels + syncedNovels,
+                offset = newOffset,
+                total = body.total,
+                isLoading = false,
+                hasMore = hasMore
             )
         }
     }
@@ -931,8 +1052,27 @@ class UserViewModel(
         updateTabData(tab) { it.copy(isTagDialogOpen = newOpen) }
         
         // 打开时加载Tag数据（如果还没有加载）
-        if (newOpen && tabData.bookmarkTags.isEmpty() && !tabData.isLoadingTags) {
-            loadBookmarkTags(tab)
+        if (newOpen) {
+            when (tab) {
+                UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
+                UserProfileTab.BOOKMARK_ILLUSTS_PRIVATE,
+                UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
+                UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
+                    // 收藏Tab使用bookmarkTags
+                    if (tabData.bookmarkTags.isEmpty() && !tabData.isLoadingTags) {
+                        loadBookmarkTags(tab)
+                    }
+                }
+                UserProfileTab.ILLUSTS,
+                UserProfileTab.MANGA,
+                UserProfileTab.NOVELS -> {
+                    // 用户作品Tab使用userWorkTags
+                    if (tabData.userWorkTags.isEmpty() && !tabData.isLoadingTags) {
+                        loadUserWorkTags(tab)
+                    }
+                }
+                else -> {}
+            }
         }
     }
     
@@ -975,9 +1115,9 @@ class UserViewModel(
                     return@launch
                 }
                 
-                // 根据公开/私人选择对应的标签列表，并倒序排列
+                // 根据公开/私人选择对应的标签列表，并按作品数量倒序排列（稳定排序）
                 val tags = if (isPublic) body.public else body.private
-                val bookmarkTags = tags.reversed().map { BookmarkTagData(tag = it.tag, count = it.cnt) }
+                val bookmarkTags = tags.sortedByDescending { it.cnt }.map { BookmarkTagData(tag = it.tag, count = it.cnt) }
                 
                 updateTabData(tab) {
                     it.copy(
@@ -992,9 +1132,57 @@ class UserViewModel(
     }
     
     /**
+     * 加载用户作品标签（插画/小说）
+     */
+    private fun loadUserWorkTags(tab: UserProfileTab) {
+        screenModelScope.launch {
+            updateTabData(tab) { it.copy(isLoadingTags = true) }
+            
+            try {
+                val userIdLong = currentUserId.toLongOrNull() ?: return@launch
+                val response = when (tab) {
+                    UserProfileTab.ILLUSTS, UserProfileTab.MANGA -> {
+                        pixivApi.userApi.getUserIllustTags(userIdLong)
+                    }
+                    UserProfileTab.NOVELS -> {
+                        pixivApi.userApi.getUserNovelTags(userIdLong)
+                    }
+                    else -> return@launch
+                }
+                
+                if (response.error) {
+                    updateTabData(tab) { it.copy(isLoadingTags = false) }
+                    return@launch
+                }
+                
+                val tags = response.body ?: run {
+                    updateTabData(tab) { it.copy(isLoadingTags = false) }
+                    return@launch
+                }
+                
+                // 按作品数量倒序排列（稳定排序）
+                val userWorkTags = tags.sortedByDescending { it.cnt }.map { BookmarkTagData(tag = it.tag, count = it.cnt) }
+                
+                updateTabData(tab) {
+                    it.copy(
+                        userWorkTags = userWorkTags,
+                        isLoadingTags = false
+                    )
+                }
+            } catch (e: Exception) {
+                updateTabData(tab) { it.copy(isLoadingTags = false) }
+            }
+        }
+    }
+    
+    /**
      * 选择/取消选择Tag进行筛选
      * @param tab 当前Tab
      * @param tag 选择的标签，传null表示取消筛选
+     * 
+     * 注意：插画/小说Tab在过滤和未过滤时使用不同的接口和分页模式：
+     * - 未过滤：使用 getProfileIllusts/getProfileNovels（ID模式，基于allIds+loadedIds）
+     * - 按标签过滤：使用 getUserIllustsByTag/getUserNovelsByTag（offset模式）
      */
     fun selectTag(tab: UserProfileTab, tag: String?) {
         val tabData = _state.value.tabDataCache[tab] ?: return
@@ -1003,12 +1191,15 @@ class UserViewModel(
         val newSelectedTag = if (tabData.selectedTag == tag) null else tag
         
         // 更新选中状态，并清空列表数据以便重新加载
+        // 重要：需要同时重置 loadedIds（ID模式）和 offset（offset模式）
         updateTabData(tab) {
             it.copy(
                 selectedTag = newSelectedTag,
                 artworks = emptyList(),
                 novels = emptyList(),
-                offset = 0,
+                loadedIds = emptyList(),  // 重置ID模式的加载进度
+                offset = 0,               // 重置offset模式的加载进度
+                total = 0,
                 hasMore = true,
                 isLoading = true,
                 error = null
@@ -1026,6 +1217,13 @@ class UserViewModel(
                     UserProfileTab.BOOKMARK_NOVELS_PUBLIC,
                     UserProfileTab.BOOKMARK_NOVELS_PRIVATE -> {
                         loadBookmarkNovels(tab)
+                    }
+                    UserProfileTab.ILLUSTS,
+                    UserProfileTab.MANGA -> {
+                        loadIllustOrManga(tab)
+                    }
+                    UserProfileTab.NOVELS -> {
+                        loadNovels(tab)
                     }
                     else -> {
                         updateTabData(tab) { it.copy(isLoading = false) }

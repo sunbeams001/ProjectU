@@ -41,7 +41,10 @@ import com.projectu.shared.data.remote.dto.bookmark.UserBookmarkNovelsBody
 import com.projectu.shared.data.remote.dto.user.MyPixivBody
 import com.projectu.shared.data.remote.dto.user.UserFollowDetailBody
 import com.projectu.shared.data.remote.dto.user.UserFollowingBody
+import com.projectu.shared.data.remote.dto.user.UserIllustsByTagBody
+import com.projectu.shared.data.remote.dto.user.UserIllustTag
 import com.projectu.shared.data.remote.dto.user.UserInfoBody
+import com.projectu.shared.data.remote.dto.user.UserNovelsByTagBody
 import com.projectu.shared.data.remote.dto.user.UserRecommendBody
 import com.projectu.shared.data.remote.dto.user.UserSearchBody
 import com.projectu.shared.data.remote.model.RankingCategory
@@ -200,6 +203,10 @@ class ApiTestViewModel(
                         ApiMethod.GetUserFollowing -> testGetUserFollowing()
                         ApiMethod.GetUserFollowers -> testGetUserFollowers()
                         ApiMethod.GetMyPixiv -> testGetMyPixiv()
+                        ApiMethod.GetUserIllustTags -> testGetUserIllustTags()
+                        ApiMethod.GetUserIllustsByTag -> testGetUserIllustsByTag()
+                        ApiMethod.GetUserNovelTags -> testGetUserNovelTags()
+                        ApiMethod.GetUserNovelsByTag -> testGetUserNovelsByTag()
                         ApiMethod.GetRecommendUsers -> testGetRecommendUsers()
                         ApiMethod.GetDiscoveryUsers -> testGetDiscoveryUsers()
                         ApiMethod.FollowUser -> testFollowUser()
@@ -898,6 +905,220 @@ class ApiTestViewModel(
                     }
                 }
             }
+            appendLine()
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetUserIllustTags() {
+        val userId = getParam("userId").toLongOrNull() ?: 757415L
+        val all = getParam("all").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<List<UserIllustTag>>(
+            "/ajax/user/$userId/illusts/tags",
+            mapOf(
+                "all" to all
+            )
+        )
+        
+        val response = responseWithRaw.response
+        val summary = buildString {
+            appendLine("✅ 用户插画标签列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            val body = response.body
+            if (body != null && body.isNotEmpty()) {
+                appendLine("标签总数: ${body.size}")
+                appendLine()
+                appendLine("标签列表（按作品数量排序）:")
+                body.take(20).forEachIndexed { index, tag ->
+                    val translation = if (!tag.tagTranslation.isNullOrBlank()) {
+                        " (${tag.tagTranslation})"
+                    } else ""
+                    appendLine("${index + 1}. ${tag.tag}$translation - ${tag.cnt} 件作品")
+                }
+                if (body.size > 20) {
+                    appendLine("... 还有 ${body.size - 20} 个标签")
+                }
+            }
+            appendLine()
+            appendLine("💡 用途:")
+            appendLine("  • 用于实现用户页面的标签筛选功能")
+            appendLine("  • 获取该用户所有插画的标签统计")
+            appendLine("  • 配合 getUserIllustsByTag 接口使用")
+            appendLine()
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetUserIllustsByTag() {
+        val userId = getParam("userId").toLongOrNull() ?: 16208053L
+        val tag = getParam("tag")
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 48
+        val sensitiveFilterMode = getParam("sensitiveFilterMode")
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<UserIllustsByTagBody>(
+            "/ajax/user/$userId/illusts/tag",
+            mapOf(
+                "tag" to tag,
+                "offset" to offset,
+                "limit" to limit,
+                "sensitiveFilterMode" to sensitiveFilterMode
+            )
+        )
+        
+        val response = responseWithRaw.response
+        val summary = buildString {
+            appendLine("✅ 用户指定标签的插画获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("标签: $tag")
+            appendLine("偏移量: $offset")
+            appendLine("数量限制: $limit")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            val body = response.body
+            if (body != null) {
+                appendLine("该标签总作品数: ${body.total}")
+                appendLine("当前返回数量: ${body.works.size}")
+                if (body.works.isNotEmpty()) {
+                    appendLine()
+                    appendLine("作品列表:")
+                    body.works.take(10).forEachIndexed { index, work ->
+                        appendLine("${index + 1}. ${work.title} (ID: ${work.id})")
+                        appendLine("   类型: ${if (work.illustType == 0) "插画" else if (work.illustType == 1) "漫画" else "动图"}")
+                        appendLine("   尺寸: ${work.width}x${work.height}")
+                        if (work.pageCount > 1) {
+                            appendLine("   页数: ${work.pageCount}")
+                        }
+                        if (work.tags.isNotEmpty()) {
+                            appendLine("   标签: ${work.tags.take(5).joinToString(", ")}")
+                        }
+                    }
+                    if (body.works.size > 10) {
+                        appendLine("... 还有 ${body.works.size - 10} 件作品")
+                    }
+                }
+            }
+            appendLine()
+            appendLine("💡 用途:")
+            appendLine("  • 用于实现用户页面按标签筛选插画")
+            appendLine("  • 配合 getUserIllustTags 接口使用")
+            appendLine("  • 支持分页加载")
+            appendLine()
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetUserNovelTags() {
+        val userId = getParam("userId").toLongOrNull() ?: 16208053L
+        val all = getParam("all").toIntOrNull() ?: 1
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<List<UserIllustTag>>(
+            "/ajax/user/$userId/novels/tags",
+            mapOf(
+                "all" to all
+            )
+        )
+        
+        val response = responseWithRaw.response
+        val summary = buildString {
+            appendLine("✅ 用户小说标签列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            val body = response.body
+            if (body != null && body.isNotEmpty()) {
+                appendLine("标签总数: ${body.size}")
+                appendLine()
+                appendLine("标签列表（按作品数量排序）:")
+                body.take(20).forEachIndexed { index, tag ->
+                    val translation = if (!tag.tagTranslation.isNullOrBlank()) {
+                        " (${tag.tagTranslation})"
+                    } else ""
+                    appendLine("${index + 1}. ${tag.tag}$translation - ${tag.cnt} 件作品")
+                }
+                if (body.size > 20) {
+                    appendLine("... 还有 ${body.size - 20} 个标签")
+                }
+            }
+            appendLine()
+            appendLine("💡 用途:")
+            appendLine("  • 用于实现用户页面的小说标签筛选功能")
+            appendLine("  • 获取该用户所有小说的标签统计")
+            appendLine("  • 配合 getUserNovelsByTag 接口使用")
+            appendLine()
+            appendLine("请查看 JSON 标签页查看完整结果")
+        }
+        
+        updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    private suspend fun testGetUserNovelsByTag() {
+        val userId = getParam("userId").toLongOrNull() ?: 16208053L
+        val tag = getParam("tag")
+        val offset = getParam("offset").toIntOrNull() ?: 0
+        val limit = getParam("limit").toIntOrNull() ?: 30
+        
+        val responseWithRaw = pixivApi.client.getWithRaw<UserNovelsByTagBody>(
+            "/ajax/user/$userId/novels/tag",
+            mapOf(
+                "tag" to tag,
+                "offset" to offset,
+                "limit" to limit
+            )
+        )
+        
+        val response = responseWithRaw.response
+        val summary = buildString {
+            appendLine("✅ 用户指定标签的小说获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("用户ID: $userId")
+            appendLine("标签: $tag")
+            appendLine("偏移量: $offset")
+            appendLine("数量限制: $limit")
+            appendLine("错误: ${response.error}")
+            appendLine("消息: ${response.message}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            val body = response.body
+            if (body != null) {
+                appendLine("该标签总作品数: ${body.total}")
+                appendLine("当前返回数量: ${body.works.size}")
+                if (body.works.isNotEmpty()) {
+                    appendLine()
+                    appendLine("作品列表:")
+                    body.works.take(10).forEachIndexed { index, work ->
+                        appendLine("${index + 1}. ${work.title} (ID: ${work.id})")
+                        appendLine("   字数: ${work.textCount}")
+                        appendLine("   阅读时间: ${work.readingTime / 60} 分钟")
+                        if (work.tags.isNotEmpty()) {
+                            appendLine("   标签: ${work.tags.take(5).joinToString(", ")}")
+                        }
+                        appendLine("   收藏数: ${work.bookmarkCount}")
+                    }
+                    if (body.works.size > 10) {
+                        appendLine("... 还有 ${body.works.size - 10} 件作品")
+                    }
+                }
+            }
+            appendLine()
+            appendLine("💡 用途:")
+            appendLine("  • 用于实现用户页面按标签筛选小说")
+            appendLine("  • 配合 getUserNovelTags 接口使用")
+            appendLine("  • 支持分页加载")
             appendLine()
             appendLine("请查看 JSON 标签页查看完整结果")
         }

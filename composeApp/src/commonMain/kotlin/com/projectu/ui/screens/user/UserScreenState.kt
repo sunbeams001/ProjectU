@@ -129,6 +129,10 @@ data class BookmarkTagData(
  * 支持两种分页模式：
  * 1. ID模式：用于用户作品列表（allIds + loadedIds）
  * 2. Offset模式：用于收藏列表（offset + total）
+ * 
+ * 支持标签筛选模式：
+ * 1. 收藏Tab使用bookmarkTags
+ * 2. 用户作品Tab（插画/小说）使用userWorkTags
  */
 data class TabData(
     val allIds: List<String> = emptyList(),     // 所有作品ID（用于用户作品）
@@ -141,10 +145,11 @@ data class TabData(
     val hasMore: Boolean = true,
     val error: String? = null,
     // 收藏列表分页相关
-    val offset: Int = 0,                        // 当前偏移量（用于收藏列表）
-    val total: Int = 0,                         // 总数量（用于收藏列表）
-    // Tag筛选相关（仅用于收藏Tab）
+    val offset: Int = 0,                        // 当前偏移量（用于收藏列表和按标签筛选的用户作品）
+    val total: Int = 0,                         // 总数量（用于收藏列表和按标签筛选的用户作品）
+    // Tag筛选相关（用于收藏Tab和用户作品Tab）
     val bookmarkTags: List<BookmarkTagData> = emptyList(),  // 收藏标签列表
+    val userWorkTags: List<BookmarkTagData> = emptyList(),  // 用户作品标签列表（用于插画/小说Tab）
     val selectedTag: String? = null,             // 当前选中的标签（null表示不筛选）
     val isTagDialogOpen: Boolean = false,        // Tag筛选弹窗是否打开
     val isLoadingTags: Boolean = false           // 是否正在加载标签

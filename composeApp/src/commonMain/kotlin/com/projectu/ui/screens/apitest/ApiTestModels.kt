@@ -248,6 +248,55 @@ sealed class ApiMethod(
         priority = 2
     )
     
+    object GetUserIllustTags : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getUserIllustTags",
+        displayName = "用户插画标签列表",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "757415", required = true),
+            ApiParameter("all", "获取全部", "1", required = false)
+        ),
+        priority = 2
+    )
+    
+    object GetUserIllustsByTag : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getUserIllustsByTag",
+        displayName = "用户指定标签的插画",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "16208053", required = true),
+            ApiParameter("tag", "标签", "女の子", required = true),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "48", required = false),
+            ApiParameter("sensitiveFilterMode", "敏感过滤", "userSetting", required = false)
+        ),
+        priority = 2
+    )
+    
+    object GetUserNovelTags : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getUserNovelTags",
+        displayName = "用户小说标签列表",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "16208053", required = true),
+            ApiParameter("all", "获取全部", "1", required = false)
+        ),
+        priority = 2
+    )
+    
+    object GetUserNovelsByTag : ApiMethod(
+        module = ApiModule.USER,
+        methodName = "getUserNovelsByTag",
+        displayName = "用户指定标签的小说",
+        parameters = listOf(
+            ApiParameter("userId", "用户ID", "16208053", required = true),
+            ApiParameter("tag", "标签", "凌辱", required = true),
+            ApiParameter("offset", "偏移", "0", required = false),
+            ApiParameter("limit", "数量", "30", required = false)
+        ),
+        priority = 2
+    )
+    
     // ==================== BookmarkApi ====================
 
     // 查询收藏
@@ -851,6 +900,8 @@ sealed class ApiMethod(
             // UserApi
             GetUserInfo, GetUserFullInfo, GetUserIllusts, GetUserNovels,
             GetUserFollowing, GetUserFollowers, GetMyPixiv,
+            GetUserIllustTags, GetUserIllustsByTag,
+            GetUserNovelTags, GetUserNovelsByTag,
             GetRecommendUsers, GetDiscoveryUsers, FollowUser, UnfollowUser,
             GetUserFollowDetail,
             // BookmarkApi

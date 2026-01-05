@@ -27,6 +27,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -780,34 +781,54 @@ fun UserTabContent(
                             }
                             UserProfileTab.ILLUSTS, UserProfileTab.MANGA -> {
                                 // 瀑布流展示插画/漫画（用户自己的作品，不显示作者信息）
-                                ArtworkStaggeredGrid(
-                                    artworks = tabData.artworks,
-                                    tab = tab,
-                                    scrollIndices = scrollIndices,
-                                    tabListStates = tabListStates,
-                                    onArtworkClick = onArtworkClick,
-                                    onLoadMore = onLoadMore,
-                                    isLoading = tabData.isLoading,
-                                    isRefreshing = tabData.isRefreshing,
-                                    onRefresh = onRefresh,
-                                    showUserInfo = false
-                                )
+                                Column(modifier = Modifier.fillMaxSize()) {
+                                    // Tag筛选行
+                                    UserWorkTagFilterRow(
+                                        tabData = tabData,
+                                        scrollState = tagScrollState,
+                                        onToggleExpand = onToggleTagFilter,
+                                        onSelectTag = onSelectTag
+                                    )
+                                    
+                                    ArtworkStaggeredGrid(
+                                        artworks = tabData.artworks,
+                                        tab = tab,
+                                        scrollIndices = scrollIndices,
+                                        tabListStates = tabListStates,
+                                        onArtworkClick = onArtworkClick,
+                                        onLoadMore = onLoadMore,
+                                        isLoading = tabData.isLoading,
+                                        isRefreshing = tabData.isRefreshing,
+                                        onRefresh = onRefresh,
+                                        showUserInfo = false
+                                    )
+                                }
                             }
                             UserProfileTab.NOVELS -> {
                                 // 列表展示小说（用户自己的作品，不显示作者信息）
-                                NovelList(
-                                    novels = tabData.novels,
-                                    tab = tab,
-                                    tabListStates = tabListStates,
-                                    onNovelClick = onNovelClick,
-                                    onSeriesClick = onNovelSeriesClick,
-                                    onTagClick = onTagClick,
-                                    onLoadMore = onLoadMore,
-                                    isLoading = tabData.isLoading,
-                                    isRefreshing = tabData.isRefreshing,
-                                    onRefresh = onRefresh,
-                                    showUserInfo = false
-                                )
+                                Column(modifier = Modifier.fillMaxSize()) {
+                                    // Tag筛选行
+                                    UserWorkTagFilterRow(
+                                        tabData = tabData,
+                                        scrollState = tagScrollState,
+                                        onToggleExpand = onToggleTagFilter,
+                                        onSelectTag = onSelectTag
+                                    )
+                                    
+                                    NovelList(
+                                        novels = tabData.novels,
+                                        tab = tab,
+                                        tabListStates = tabListStates,
+                                        onNovelClick = onNovelClick,
+                                        onSeriesClick = onNovelSeriesClick,
+                                        onTagClick = onTagClick,
+                                        onLoadMore = onLoadMore,
+                                        isLoading = tabData.isLoading,
+                                        isRefreshing = tabData.isRefreshing,
+                                        onRefresh = onRefresh,
+                                        showUserInfo = false
+                                    )
+                                }
                             }
                             UserProfileTab.MANGA_SERIES -> {
                                 // 漫画系列列表
@@ -898,10 +919,11 @@ fun UserTabContent(
             }
         }
         
-        // 标签筛选弹窗（仅在收藏Tab显示）
-        if (tab.isBookmarkTab() && tabData.isTagDialogOpen) {
+        // 标签筛选弹窗（收藏Tab和用户作品Tab都支持）
+        if ((tab.isBookmarkTab() || tab.isUserWorkTab()) && tabData.isTagDialogOpen) {
+            val tags = if (tab.isBookmarkTab()) tabData.bookmarkTags else tabData.userWorkTags
             TagFilterDialog(
-                tags = tabData.bookmarkTags,
+                tags = tags,
                 selectedTag = tabData.selectedTag,
                 onDismiss = onToggleTagFilter,
                 onSelectTag = onSelectTag,
@@ -983,7 +1005,9 @@ fun ArtworkStaggeredGrid(
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalItemSpacing = 8.dp,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
         ) {
             items(artworks, key = { it.id }) { artwork ->
                 val index = artworks.indexOf(artwork)
@@ -1062,7 +1086,9 @@ fun NovelList(
             state = listState,
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
         ) {
             items(novels, key = { it.id }) { novel ->
                 NovelCard(
@@ -1113,7 +1139,9 @@ fun MangaSeriesList(
         state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
     ) {
         items(series, key = { it.id }) { item ->
             MangaSeriesCard(
@@ -1209,7 +1237,9 @@ fun RecommendUsersList(
                 state = listState,
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding()
             ) {
                 itemsIndexed(users, key = { _, user -> user.id }) { index, user ->
                     val artworkStartIndex = userArtworkStartIndices.getOrElse(index) { 0 }
@@ -1250,7 +1280,9 @@ fun NovelSeriesList(
         state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
     ) {
         items(series, key = { it.id }) { item ->
             NovelSeriesCard(
@@ -1288,7 +1320,9 @@ fun UserInfoContent(
             state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
     ) {
         // 用户ID
         item {
@@ -1925,4 +1959,84 @@ fun BookmarkTagFilterRow(
             }
         }
     }
+}
+
+/**
+ * 用户作品标签筛选行
+ * 
+ * 用于插画和小说Tab，点击按钮弹出标签筛选弹窗
+ * 选中标签后，在按钮旁边显示标签芯片，点击可取消筛选
+ * 
+ * @param scrollState 保留参数用于兼容，但不再使用
+ */
+@Composable
+fun UserWorkTagFilterRow(
+    tabData: TabData,
+    scrollState: ScrollState,
+    onToggleExpand: () -> Unit,
+    onSelectTag: (String?) -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        tonalElevation = 0.5.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 按标签筛选按钮
+            OutlinedButton(
+                onClick = onToggleExpand,
+                modifier = Modifier.height(28.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FilterList,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = stringResource(Res.string.bookmark_tag_filter_button),
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+            
+            // 显示当前选中的标签（如果有）
+            if (tabData.selectedTag != null) {
+                FilterChip(
+                    selected = true,
+                    onClick = { onSelectTag(null) },
+                    label = { 
+                        Text(
+                            text = tabData.selectedTag,
+                            style = MaterialTheme.typography.labelSmall
+                        ) 
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(Res.string.bookmark_tag_filter_clear),
+                            modifier = Modifier.size(14.dp)
+                        )
+                    },
+                    modifier = Modifier.height(28.dp)
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 判断Tab是否为用户作品类型（支持标签筛选）
+ */
+fun UserProfileTab.isUserWorkTab(): Boolean = when (this) {
+    UserProfileTab.ILLUSTS,
+    UserProfileTab.MANGA,
+    UserProfileTab.NOVELS -> true
+    else -> false
 }
