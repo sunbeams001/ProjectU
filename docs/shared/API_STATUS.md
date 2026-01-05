@@ -14,25 +14,25 @@
 
 | 模块 | 总方法数 | 已实现 | 已测试 | 完成度 |
 |------|---------|-------|-------|--------|
-| IllustApi | 7 | 7 | 7 | ✅ 100% |
+| IllustApi | 8 | 8 | 8 | ✅ 100% |
 | IllustSeriesApi | 3 | 3 | 3 | ✅ 100% |
-| UserApi | 12 | 12 | 12 | ✅ 100% |
+| UserApi | 16 | 16 | 16 | ✅ 100% |
 | BookmarkApi | 10 | 10 | 10 | ✅ 100% |
 | RankingApi | 2 | 2 | 2 | ✅ 100% |
 | CommentApi | 8 | 8 | 8 | ✅ 100% |
-| NovelApi | 3 | 3 | 3 | ✅ 100% |
+| NovelApi | 5 | 5 | 5 | ✅ 100% |
 | FollowApi | 4 | 4 | 4 | ✅ 100% |
 | NovelSeriesApi | 5 | 5 | 5 | ✅ 100% |
-| TagApi | 4 | 4 | 4 | ✅ 100% |
-| MarkerApi | 3 | 3 | 3 | ✅ 100% |
+| TagApi | 8 | 8 | 8 | ✅ 100% |
+| MarkerApi | 4 | 4 | 4 | ✅ 100% |
 | SearchApi | 3 | 3 | 3 | ✅ 100% |
-| **总计** | **64** | **64** | **64** | **✅ 100%** |
+| **总计** | **76** | **76** | **76** | **✅ 100%** |
 
 ---
 
 ## ✅ 已集成 API 模块
 
-### IllustApi - 插画相关 API (7/7) ✅
+### IllustApi - 插画相关 API (8/8) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
@@ -43,6 +43,7 @@
 | 推荐作品（续） | `/ajax/illust/recommend/illusts` | ✅ | ✅ | ✅ | 更多推荐 |
 | 发现作品 | `/ajax/discovery/artworks` | ✅ | ✅ | ✅ | 编辑精选 |
 | Ugoira 元数据 | `/ajax/illust/{illustId}/ugoira_meta` | ✅ | ✅ | ✅ | 动图 ZIP 和帧信息 |
+| 点赞插画 | `POST /ajax/illusts/like` | ✅ | ✅ | ✅ | 点赞作品 |
 
 ### IllustSeriesApi - 漫画系列相关 API (3/3) ✅
 
@@ -116,13 +117,15 @@
 | 发表小说评论 | `/rpc/post_comment.php` | ✅ | ✅ | ✅ | 文字+表情 |
 | 删除小说评论 | `/rpc_delete_comment.php` | ✅ | ✅ | ✅ | 删除自己的评论 |
 
-### NovelApi - 小说相关 API (3/3) ✅
+### NovelApi - 小说相关 API (5/5) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
 | 获取小说详情 | `/ajax/novel/{novelId}` | ✅ | ✅ | ✅ | 完整小说信息 |
 | 获取小说收藏状态 | `/ajax/novel/{novelId}/bookmarkData` | ✅ | ✅ | ✅ | 收藏状态 |
 | 发现小说 | `/ajax/discovery/novels` | ✅ | ✅ | ✅ | 编辑精选 |
+| 推荐小说（初始化） | `/ajax/novel/{novelId}/recommend/init` | ✅ | ✅ | ✅ | 基于特定小说推荐 |
+| 推荐小说（续） | `/ajax/novel/recommend/novels` | ✅ | ✅ | ✅ | 更多推荐小说 |
 
 ### SearchApi - 搜索相关 API (3/3) ✅
 
@@ -156,7 +159,7 @@
 - `NovelSeriesContentBody` 完全重构，新增嵌套结构
 - `watch`/`unwatch` 方法需发送空 JSON 对象 `{}`
 
-### TagApi - 标签相关 API (4/4) ✅
+### TagApi - 标签相关 API (8/8) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
@@ -164,6 +167,10 @@
 | 获取搜索建议 | `/ajax/search/suggestion` | ✅ | ✅ | ✅ | 点击搜索框时触发 |
 | 标签搜索建议 (RPC) | `/rpc/cps.php` | ✅ | ✅ | ✅ | 输入时的标签提示 |
 | 获取标签信息 | `/ajax/tag/info` | ✅ | ✅ | ✅ 已重构 | TagInfoBody 完全重构 |
+| 为插画添加标签 | `POST /ajax/tags/illust/{illustId}/add` | ✅ | ✅ | ✅ | 为插画添加自定义标签 |
+| 删除插画标签 | `POST /ajax/tags/illust/{illustId}/delete` | ✅ | ✅ | ✅ | 删除插画的自定义标签 |
+| 为小说添加标签 | `POST /ajax/tags/novel/{novelId}/add` | ✅ | ✅ | ✅ | 为小说添加自定义标签 |
+| 删除小说标签 | `POST /ajax/tags/novel/{novelId}/delete` | ✅ | ✅ | ✅ | 删除小说的自定义标签 |
 
 **新增接口详情**:
 - **搜索框推荐内容** (`getSearchRecommendations`): 
@@ -180,13 +187,14 @@
 - `SearchSuggestionBody`: 包含 PopularTags, RecommendTags, TagTranslationInfo, ThumbnailInfo
 - `ThumbnailInfo`: 完整的缩略图信息，包含 BookmarkData 对象
 
-### MarkerApi - 阅读标记相关 API (3/3) ✅
+### MarkerApi - 阅读标记相关 API (4/4) ✅
 
 | 功能 | 端点 | 实现 | 测试 | DTO状态 | 备注 |
 |-----|------|------|------|---------|------|
 | 添加小说阅读标记 | `/ajax/novel/marker/add` | ✅ | ✅ | ✅ | 保存阅读位置 |
 | 删除小说阅读标记 | `/ajax/novel/marker/delete` | ✅ | ✅ | ✅ | 清除阅读位置 |
 | 获取阅读标记列表 | `/ajax/novel/marker/list` | ✅ | ✅ | ✅ | 所有阅读记录 |
+| 根据ID删除标记 | `/ajax/novel/marker/delete` | ✅ | ✅ | ✅ | 通过标记ID删除 |
 
 ---
 

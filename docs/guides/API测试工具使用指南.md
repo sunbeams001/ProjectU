@@ -48,17 +48,17 @@
 **左侧面板** - API 方法选择器：
 
 1. **选择模块**（12 个模块可选）：
-   - 插画 API (IllustApi) - 7 个方法
+   - 插画 API (IllustApi) - 8 个方法
    - 漫画系列 API (IllustSeriesApi) - 3 个方法
-   - 用户 API (UserApi) - 12 个方法
+   - 用户 API (UserApi) - 16 个方法
    - 收藏 API (BookmarkApi) - 10 个方法
    - 排行榜 API (RankingApi) - 2 个方法
    - 评论 API (CommentApi) - 8 个方法
-   - 小说 API (NovelApi) - 3 个方法
+   - 小说 API (NovelApi) - 5 个方法
    - 关注 API (FollowApi) - 4 个方法
    - 小说系列 API (NovelSeriesApi) - 5 个方法
-   - 标签 API (TagApi) - 4 个方法
-   - 阅读标记 API (MarkerApi) - 3 个方法
+   - 标签 API (TagApi) - 8 个方法
+   - 阅读标记 API (MarkerApi) - 4 个方法
    - 搜索 API (SearchApi) - 3 个方法
 
 2. **选择具体方法**：

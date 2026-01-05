@@ -1,7 +1,7 @@
 # ProjectU - Pixiv Kotlin Multiplatform Client
 
-> 📅 最后更新: 2025-12-23  
-> 🚀 当前版本: v1.0.0  
+> 📅 最后更新: 2026-01-05  
+> 🚀 当前版本: v1.0.3  
 > 📱 支持平台: Android (API 24+) | Desktop (Windows/Mac/Linux)
 
 一个功能完整的 Pixiv 客户端应用，使用 Kotlin Compose Multiplatform 开发，提供现代化的界面体验和丰富的功能。
@@ -371,23 +371,23 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 
 > API 详细状态: [docs/shared/API_STATUS.md](docs/shared/API_STATUS.md)
 
-本项目完整集成了 Pixiv Web API，实现了 **64 个 API 方法**，测试覆盖率达 **100%**。
+本项目完整集成了 Pixiv Web API，实现了 **76 个 API 方法**，测试覆盖率达 **100%**。
 
 ### 已集成 API 模块
 
 | API 模块 | 功能 | 方法数 | 测试状态 |
 |---------|------|--------|---------|
-| **IllustApi** | 作品详情、推荐、发现、Ugoira | 7 | ✅ 100% |
+| **IllustApi** | 作品详情、推荐、发现、Ugoira、点赞 | 8 | ✅ 100% |
 | **IllustSeriesApi** | 漫画系列详情、追更 | 3 | ✅ 100% |
-| **UserApi** | 用户信息、关注、作品列表、收藏、好P友 | 12 | ✅ 100% |
+| **UserApi** | 用户信息、关注、作品列表、收藏、好P友、标签筛选 | 16 | ✅ 100% |
 | **BookmarkApi** | 添加/删除收藏、批量操作、标签管理 | 10 | ✅ 100% |
 | **RankingApi** | 插画排行榜、小说排行榜 | 2 | ✅ 100% |
 | **CommentApi** | 查看/发表/删除评论（插画+小说） | 8 | ✅ 100% |
-| **NovelApi** | 小说详情、收藏状态、发现 | 3 | ✅ 100% |
+| **NovelApi** | 小说详情、收藏状态、发现、推荐 | 5 | ✅ 100% |
 | **FollowApi** | 关注用户最新作品、追更列表 | 4 | ✅ 100% |
 | **NovelSeriesApi** | 小说系列详情、内容列表、追更 | 5 | ✅ 100% |
-| **TagApi** | 标签搜索、标签建议、标签信息 | 4 | ✅ 100% |
-| **MarkerApi** | 小说阅读标记（稍后再读） | 3 | ✅ 100% |
+| **TagApi** | 标签搜索、标签建议、标签信息、标签编辑 | 8 | ✅ 100% |
+| **MarkerApi** | 小说阅读标记（稍后再读） | 4 | ✅ 100% |
 | **SearchApi** | 搜索作品、小说、用户 | 3 | ✅ 100% |
 
 **支持的排行榜类型**：
