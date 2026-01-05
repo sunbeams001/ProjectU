@@ -26,7 +26,10 @@ import com.projectu.shared.util.TagTranslationUtil
  * @return true 表示是 AI 作品
  */
 internal fun isAiGeneratedArtwork(aiType: Int, tags: List<String>): Boolean {
-    return aiType == 2 || tags.contains("AIイラスト") || tags.contains("AI生成作品")
+    return aiType == 2 || 
+           tags.contains("AIイラスト") || 
+           tags.contains("AI生成作品") || 
+           tags.contains("AI-Generated")
 }
 
 /**
