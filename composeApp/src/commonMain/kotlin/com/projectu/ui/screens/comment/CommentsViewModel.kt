@@ -45,6 +45,8 @@ class CommentsViewModel(
             is CommentsIntent.LoadMore -> loadMore()
             is CommentsIntent.ToggleReplies -> toggleReplies(intent.commentId)
             is CommentsIntent.LoadMoreReplies -> loadMoreReplies(intent.commentId)
+            is CommentsIntent.ShowDeleteConfirmDialog -> showDeleteConfirmDialog(intent.comment)
+            is CommentsIntent.CancelDelete -> cancelDelete()
             is CommentsIntent.UpdateCommentInput -> updateCommentInput(intent.text)
             is CommentsIntent.SetReplyTarget -> setReplyTarget(intent.target)
             is CommentsIntent.PostComment -> postComment()
@@ -288,6 +290,20 @@ class CommentsViewModel(
     }
     
     /**
+     * 显示删除确认对话框
+     */
+    private fun showDeleteConfirmDialog(comment: Comment) {
+        _state.update { it.copy(commentToDelete = comment) }
+    }
+    
+    /**
+     * 取消删除
+     */
+    private fun cancelDelete() {
+        _state.update { it.copy(commentToDelete = null) }
+    }
+    
+    /**
      * 发表评论
      */
     private fun postComment() {
@@ -381,6 +397,7 @@ class CommentsViewModel(
                         state.copy(
                             comments = updatedComments,
                             isDeletingCommentId = null,
+                            commentToDelete = null,
                             deleteError = null
                         )
                     }
@@ -389,6 +406,7 @@ class CommentsViewModel(
                     _state.update {
                         it.copy(
                             isDeletingCommentId = null,
+                            commentToDelete = null,
                             deleteError = result.message
                         )
                     }

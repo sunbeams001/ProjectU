@@ -629,6 +629,10 @@
     <string name="comments_deleted_user">已注销用户</string>
     <string name="comments_stamp">表情</string>
     <string name="comments_empty_error">评论内容不能为空</string>
+    <string name="comments_delete_confirm_title">删除评论</string>
+    <string name="comments_delete_confirm_message">确定要删除这条评论吗？此操作无法撤销。</string>
+    <string name="comments_delete_confirm">删除</string>
+    <string name="comments_delete_cancel">取消</string>
     
     <!-- Emoji Picker -->
     <string name="emoji_button">表情</string>

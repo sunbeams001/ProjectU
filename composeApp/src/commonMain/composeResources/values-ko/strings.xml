@@ -611,6 +611,10 @@
     <string name="comments_deleted_user">삭제된 사용자</string>
     <string name="comments_stamp">스탬프</string>
     <string name="comments_empty_error">댓글을 입력하세요</string>
+    <string name="comments_delete_confirm_title">댓글 삭제</string>
+    <string name="comments_delete_confirm_message">이 댓글을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.</string>
+    <string name="comments_delete_confirm">삭제</string>
+    <string name="comments_delete_cancel">취소</string>
     
     <!-- Emoji Picker -->
     <string name="emoji_button">이모지</string>

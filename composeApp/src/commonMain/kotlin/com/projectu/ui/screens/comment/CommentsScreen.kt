@@ -223,7 +223,7 @@ fun CommentsContent(
                                         ))
                                     },
                                     onDelete = { comment ->
-                                        onIntent(CommentsIntent.DeleteComment(comment.id))
+                                        onIntent(CommentsIntent.ShowDeleteConfirmDialog(comment))
                                     },
                                     onUserClick = onUserClick
                                 )
@@ -411,7 +411,102 @@ fun CommentInputBar(
                 onIntent(CommentsIntent.PostStampComment(stamp))
             }
         )
+        
+        // 删除确认对话框
+        if (state.commentToDelete != null) {
+            DeleteConfirmDialog(
+                comment = state.commentToDelete,
+                onConfirm = {
+                    onIntent(CommentsIntent.DeleteComment(state.commentToDelete.id))
+                    onIntent(CommentsIntent.CancelDelete)
+                },
+                onDismiss = { onIntent(CommentsIntent.CancelDelete) }
+            )
+        }
+        
+        // 删除确认对话框
+        if (state.commentToDelete != null) {
+            DeleteConfirmDialog(
+                comment = state.commentToDelete,
+                onConfirm = {
+                    onIntent(CommentsIntent.DeleteComment(state.commentToDelete.id))
+                    onIntent(CommentsIntent.CancelDelete)
+                },
+                onDismiss = { onIntent(CommentsIntent.CancelDelete) }
+            )
+        }
     }
+}
+
+/**
+ * 删除评论确认对话框
+ */
+@Composable
+fun DeleteConfirmDialog(
+    comment: Comment,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = stringResource(Res.string.comments_delete_confirm_title))
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(text = stringResource(Res.string.comments_delete_confirm_message))
+                
+                // 显示评论预览
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = comment.userName,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium
+                        )
+                        comment.comment?.let { commentText ->
+                            Text(
+                                text = commentText,
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        if (comment.comment == null && comment.stampLink != null) {
+                            Text(
+                                text = "[${stringResource(Res.string.comments_stamp)}]",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text(stringResource(Res.string.comments_delete_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.comments_delete_cancel))
+            }
+        }
+    )
 }
 
 /**
@@ -613,19 +708,39 @@ fun CommentContent(
                     contentScale = ContentScale.Fit
                 )
             } else if (!comment.comment.isNullOrEmpty()) {
-                // 使用 EmojiText 渲染包含表情的文本
-                EmojiText(
-                    text = comment.comment!!,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                // 使用 EmojiText 渲染包含表情的文本，支持长按选中和复制
+                androidx.compose.foundation.text.selection.SelectionContainer {
+                    EmojiText(
+                        text = comment.comment!!,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
             
-            // 操作按钮
+            // 操作按钮（右对齐）
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 回复按钮
+                TextButton(
+                    onClick = onReply,
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Reply,
+                        contentDescription = stringResource(Res.string.comments_reply),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(Res.string.comments_reply),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                
                 // 展开/收起回复按钮（仅当有回复且非回复本身时显示）
                 if (!isReply && hasReplies && onToggleReplies != null) {
                     TextButton(
@@ -654,23 +769,6 @@ fun CommentContent(
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
-                }
-                
-                // 回复按钮
-                TextButton(
-                    onClick = onReply,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Reply,
-                        contentDescription = stringResource(Res.string.comments_reply),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(Res.string.comments_reply),
-                        style = MaterialTheme.typography.bodySmall
-                    )
                 }
                 
                 // 删除按钮（仅对自己的评论显示）

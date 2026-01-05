@@ -611,6 +611,10 @@
     <string name="comments_deleted_user">削除されたユーザー</string>
     <string name="comments_stamp">スタンプ</string>
     <string name="comments_empty_error">コメントを入力してください</string>
+    <string name="comments_delete_confirm_title">コメントを削除</string>
+    <string name="comments_delete_confirm_message">このコメントを削除してもよろしいですか？この操作は取り消せません。</string>
+    <string name="comments_delete_confirm">削除</string>
+    <string name="comments_delete_cancel">キャンセル</string>
     
     <!-- Emoji Picker -->
     <string name="emoji_button">絵文字</string>

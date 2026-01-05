@@ -635,6 +635,10 @@
     <string name="comments_deleted_user">Deleted user</string>
     <string name="comments_stamp">Stamp</string>
     <string name="comments_empty_error">Comment cannot be empty</string>
+    <string name="comments_delete_confirm_title">Delete Comment</string>
+    <string name="comments_delete_confirm_message">Are you sure you want to delete this comment? This action cannot be undone.</string>
+    <string name="comments_delete_confirm">Delete</string>
+    <string name="comments_delete_cancel">Cancel</string>
     
     <!-- Emoji Picker -->
     <string name="emoji_button">Emoji</string>

@@ -56,6 +56,7 @@ data class CommentsScreenState(
     val replyTarget: ReplyTarget? = null,  // 回复目标，null 表示回复作品
     
     // 删除评论相关
+    val commentToDelete: Comment? = null,  // 待删除的评论（显示确认对话框）
     val isDeletingCommentId: String? = null,  // 正在删除的评论 ID
     val deleteError: String? = null,
     
@@ -97,6 +98,12 @@ sealed interface CommentsIntent {
     
     /** 加载更多回复 */
     data class LoadMoreReplies(val commentId: String) : CommentsIntent
+    
+    /** 显示删除确认对话框 */
+    data class ShowDeleteConfirmDialog(val comment: Comment) : CommentsIntent
+    
+    /** 取消删除 */
+    data object CancelDelete : CommentsIntent
     
     /** 更新评论输入 */
     data class UpdateCommentInput(val text: String) : CommentsIntent
