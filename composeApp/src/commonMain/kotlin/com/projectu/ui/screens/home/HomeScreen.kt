@@ -1,6 +1,7 @@
 package com.projectu.ui.screens.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -800,14 +801,22 @@ object ProfileTab : Tab {
                 onSelectTag = viewModel::selectTag,
                 showBackButton = false,
                 showFollowIndicator = false,
-                useScaffold = false,
+                isStandalone = false,
                 topBarActions = {
-                    // 设置按钮
-                    IconButton(onClick = { parentNavigator?.push(SettingsScreen()) }) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(Res.string.settings_title)
-                        )
+                    // 设置按钮（带半透明圆形背景）
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        tonalElevation = 3.dp,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        IconButton(onClick = { parentNavigator?.push(SettingsScreen()) }) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = stringResource(Res.string.settings_title),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 },
                 onRegisterScrollToTopOrRefreshCallback = { callback ->

@@ -504,8 +504,14 @@
     <string name="user_load_failed">読み込みに失敗しました</string>
     
     <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_button">タグで絞り込む</string>
     <string name="bookmark_tag_filter_expand">タグで絞り込む</string>
     <string name="bookmark_tag_filter_collapse">折りたたむ</string>
+    <string name="bookmark_tag_filter_clear">絞り込みをクリア</string>
+    <string name="bookmark_tag_filter_dialog_title">タグを選択</string>
+    <string name="bookmark_tag_filter_search_hint">タグを検索</string>
+    <string name="bookmark_tag_filter_all">すべてのタグ</string>
+    <string name="bookmark_tag_filter_no_results">一致するタグが見つかりません</string>
     <string name="bookmark_tag_loading">タグを読み込み中…</string>
     <string name="bookmark_tag_empty">タグがありません</string>
     

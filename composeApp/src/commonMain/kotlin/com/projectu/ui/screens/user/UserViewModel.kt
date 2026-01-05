@@ -920,18 +920,18 @@ class UserViewModel(
     }
     
     /**
-     * 切换Tag筛选行的展开/收起状态
-     * 展开时加载Tag数据
+     * 切换Tag筛选弹窗的开关状态
+     * 打开时加载Tag数据
      */
     fun toggleTagFilter(tab: UserProfileTab) {
         // 如果 tabDataCache 中没有该 Tab 的数据，先创建一个默认的
         val tabData = _state.value.tabDataCache[tab] ?: TabData()
-        val newExpanded = !tabData.isTagFilterExpanded
+        val newOpen = !tabData.isTagDialogOpen
         
-        updateTabData(tab) { it.copy(isTagFilterExpanded = newExpanded) }
+        updateTabData(tab) { it.copy(isTagDialogOpen = newOpen) }
         
-        // 展开时加载Tag数据
-        if (newExpanded && tabData.bookmarkTags.isEmpty() && !tabData.isLoadingTags) {
+        // 打开时加载Tag数据（如果还没有加载）
+        if (newOpen && tabData.bookmarkTags.isEmpty() && !tabData.isLoadingTags) {
             loadBookmarkTags(tab)
         }
     }

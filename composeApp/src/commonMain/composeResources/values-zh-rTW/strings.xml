@@ -513,8 +513,14 @@
     <string name="user_load_failed">載入失敗</string>
     
     <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_button">按標籤篩選</string>
     <string name="bookmark_tag_filter_expand">按標籤篩選</string>
     <string name="bookmark_tag_filter_collapse">收起</string>
+    <string name="bookmark_tag_filter_clear">取消篩選</string>
+    <string name="bookmark_tag_filter_dialog_title">選擇標籤</string>
+    <string name="bookmark_tag_filter_search_hint">搜尋標籤</string>
+    <string name="bookmark_tag_filter_all">全部標籤</string>
+    <string name="bookmark_tag_filter_no_results">沒有找到匹配的標籤</string>
     <string name="bookmark_tag_loading">正在載入標籤…</string>
     <string name="bookmark_tag_empty">暫無標籤</string>
     

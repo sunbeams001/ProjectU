@@ -63,6 +63,9 @@ import com.projectu.shared.domain.model.NovelSeries
 import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.ErrorDisplay
+import com.projectu.ui.components.TagFilterDialog
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import com.projectu.ui.components.FollowIndicator
 import com.projectu.ui.components.HtmlText
 import com.projectu.ui.components.MangaSeriesCard
@@ -289,8 +292,8 @@ fun UserScreenContent(
     showBackButton: Boolean = true,
     showFollowIndicator: Boolean = true,
     topBarActions: (@Composable RowScope.() -> Unit)? = null,
-    // 是否使用 Scaffold（嵌入到其他页面时设为 false）
-    useScaffold: Boolean = true,
+    // 是否是独立页面（false 表示嵌入到其他页面如"我的"页面，不显示状态栏 padding）
+    isStandalone: Boolean = true,
     // 用于外部控制置顶/刷新
     onRegisterScrollToTopOrRefreshCallback: ((callback: () -> Unit) -> Unit)? = null,
     // Tag点击处理
@@ -406,23 +409,12 @@ fun UserScreenContent(
                 }
                 else -> {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        // 自定义顶部操作栏（不使用 Scaffold 时）
-                        if (!useScaffold && topBarActions != null) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                topBarActions.invoke(this)
-                            }
-                        }
-                        
                         // 用户信息区域
                         UserProfileHeader(
                             profile = state.userProfile,
                             onUserClick = onUserClick,
-                            onFollowingClick = onFollowingClick
+                            onFollowingClick = onFollowingClick,
+                            applyStatusBarPadding = isStandalone
                         )
                         
                         // Tab导航栏
@@ -487,41 +479,76 @@ fun UserScreenContent(
         }
     }
     
-    // 根据 useScaffold 决定布局
-    if (useScaffold) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { },
-                    navigationIcon = {
-                        if (showBackButton) {
-                            IconButton(onClick = onBackClick) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(Res.string.nav_back)
-                                )
-                            }
-                        }
-                    },
-                    actions = {
-                        // 自定义操作按钮
-                        topBarActions?.invoke(this)
-                        // 关注状态指示器
-                        if (showFollowIndicator && state.userProfile.userId.isNotEmpty()) {
-                            FollowIndicator(
-                                user = state.userProfile.toUser(),
-                                size = 28.dp,
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-                        }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            UserScreenInnerContent(modifier = Modifier.padding(paddingValues))
-        }
-    } else {
+    // 主要布局
+    Box(modifier = Modifier.fillMaxSize()) {
         UserScreenInnerContent()
+        
+        // 只有在独立页面时才显示悬浮的返回和关注按钮
+        if (isStandalone) {
+            // 悬浮返回按钮（左上角）
+            if (showBackButton) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .statusBarsPadding()
+                        .padding(start = 4.dp, top = 4.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        tonalElevation = 3.dp,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.nav_back),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+            }
+            
+            // 悬浮关注状态指示器（右上角）
+            if (showFollowIndicator && state.userProfile.userId.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .padding(end = 8.dp, top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // 自定义操作按钮
+                    topBarActions?.invoke(this)
+                    
+                    // 关注状态
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        tonalElevation = 3.dp
+                    ) {
+                        FollowIndicator(
+                            user = state.userProfile.toUser(),
+                            size = 28.dp,
+                            modifier = Modifier.padding(6.dp)
+                        )
+                    }
+                }
+            }
+        } else {
+            // 嵌入模式时，只显示悬浮的自定义操作按钮（不显示返回和关注按钮）
+            if (topBarActions != null) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 8.dp, top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // 用半透明圆形背景包裹每个按钮
+                    topBarActions.invoke(this)
+                }
+            }
+        }
     }
 }
 
@@ -532,12 +559,15 @@ fun UserScreenContent(
 fun UserProfileHeader(
     profile: UserProfile,
     onUserClick: (String) -> Unit,
-    onFollowingClick: ((String, String) -> Unit)? = null
+    onFollowingClick: ((String, String) -> Unit)? = null,
+    applyStatusBarPadding: Boolean = true
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .then(if (applyStatusBarPadding) Modifier.statusBarsPadding() else Modifier)
+            .padding(horizontal = 16.dp)
+            .padding(top = 12.dp, bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -866,6 +896,17 @@ fun UserTabContent(
                     }
                 }
             }
+        }
+        
+        // 标签筛选弹窗（仅在收藏Tab显示）
+        if (tab.isBookmarkTab() && tabData.isTagDialogOpen) {
+            TagFilterDialog(
+                tags = tabData.bookmarkTags,
+                selectedTag = tabData.selectedTag,
+                onDismiss = onToggleTagFilter,
+                onSelectTag = onSelectTag,
+                isLoading = tabData.isLoadingTags
+            )
         }
     }
 }
@@ -1819,10 +1860,10 @@ private fun UserInfoLinkRow(
 /**
  * 收藏标签筛选行
  * 
- * 默认收起状态，点击展开按钮后加载并显示标签列表
- * 标签列表可以横向滑动，支持单选
+ * 点击按钮弹出标签筛选弹窗，支持搜索和选择标签
+ * 选中标签后，在按钮旁边显示标签芯片，点击可取消筛选
  * 
- * @param scrollState 外部传入的滚动状态，用于在重组时保持滚动位置
+ * @param scrollState 保留参数用于兼容，但不再使用
  */
 @Composable
 fun BookmarkTagFilterRow(
@@ -1836,120 +1877,51 @@ fun BookmarkTagFilterRow(
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         tonalElevation = 0.5.dp
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // 展开/收起按钮行
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onToggleExpand)
-                    .padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // 按标签筛选按钮
+            OutlinedButton(
+                onClick = onToggleExpand,
+                modifier = Modifier.height(28.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = if (tabData.isTagFilterExpanded) {
-                            Icons.Default.KeyboardArrowUp
-                        } else {
-                            Icons.Default.KeyboardArrowDown
-                        },
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = stringResource(
-                            if (tabData.isTagFilterExpanded) {
-                                Res.string.bookmark_tag_filter_collapse
-                            } else {
-                                Res.string.bookmark_tag_filter_expand
-                            }
-                        ),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                
-                // 显示当前选中的标签（如果有）
-                if (tabData.selectedTag != null) {
-                    FilterChip(
-                        selected = true,
-                        onClick = { onSelectTag(null) },
-                        label = { Text(tabData.selectedTag) },
-                        modifier = Modifier.height(28.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.FilterList,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = stringResource(Res.string.bookmark_tag_filter_button),
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
             
-            // 展开时显示标签列表
-            AnimatedVisibility(
-                visible = tabData.isTagFilterExpanded,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                when {
-                    tabData.isLoadingTags -> {
-                        // 加载中
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp),
-                                strokeWidth = 2.dp
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(Res.string.bookmark_tag_loading),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                    tabData.bookmarkTags.isEmpty() -> {
-                        // 无标签
+            // 显示当前选中的标签（如果有）
+            if (tabData.selectedTag != null) {
+                FilterChip(
+                    selected = true,
+                    onClick = { onSelectTag(null) },
+                    label = { 
                         Text(
-                            text = stringResource(Res.string.bookmark_tag_empty),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            text = tabData.selectedTag,
+                            style = MaterialTheme.typography.labelSmall
+                        ) 
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(Res.string.bookmark_tag_filter_clear),
+                            modifier = Modifier.size(14.dp)
                         )
-                    }
-                    else -> {
-                        // 标签列表（可横向滑动）
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .horizontalScroll(scrollState)
-                                .padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            tabData.bookmarkTags.forEach { tagData ->
-                                FilterChip(
-                                    selected = tabData.selectedTag == tagData.tag,
-                                    onClick = { onSelectTag(tagData.tag) },
-                                    label = {
-                                        Text(
-                                            text = "${tagData.tag} (${tagData.count})",
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                    },
-                                    modifier = Modifier.height(28.dp)
-                                )
-                            }
-                        }
-                    }
-                }
+                    },
+                    modifier = Modifier.height(28.dp)
+                )
             }
         }
     }

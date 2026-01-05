@@ -504,8 +504,14 @@
     <string name="user_load_failed">로드 실패</string>
     
     <!-- Bookmark Tag Filter -->
+    <string name="bookmark_tag_filter_button">태그로 필터링</string>
     <string name="bookmark_tag_filter_expand">태그로 필터링</string>
     <string name="bookmark_tag_filter_collapse">접기</string>
+    <string name="bookmark_tag_filter_clear">필터 지우기</string>
+    <string name="bookmark_tag_filter_dialog_title">태그 선택</string>
+    <string name="bookmark_tag_filter_search_hint">태그 검색</string>
+    <string name="bookmark_tag_filter_all">모든 태그</string>
+    <string name="bookmark_tag_filter_no_results">일치하는 태그를 찾을 수 없습니다</string>
     <string name="bookmark_tag_loading">태그 로드 중…</string>
     <string name="bookmark_tag_empty">태그 없음</string>
     

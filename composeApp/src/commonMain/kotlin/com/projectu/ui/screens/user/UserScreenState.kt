@@ -146,7 +146,7 @@ data class TabData(
     // Tag筛选相关（仅用于收藏Tab）
     val bookmarkTags: List<BookmarkTagData> = emptyList(),  // 收藏标签列表
     val selectedTag: String? = null,             // 当前选中的标签（null表示不筛选）
-    val isTagFilterExpanded: Boolean = false,    // Tag筛选行是否展开
+    val isTagDialogOpen: Boolean = false,        // Tag筛选弹窗是否打开
     val isLoadingTags: Boolean = false           // 是否正在加载标签
 )
 
