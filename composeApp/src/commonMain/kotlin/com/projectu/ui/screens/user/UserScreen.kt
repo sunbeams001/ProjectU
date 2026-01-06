@@ -495,18 +495,11 @@ fun UserScreenContent(
                         .statusBarsPadding()
                         .padding(start = 4.dp, top = 4.dp)
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                        tonalElevation = 3.dp,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.nav_back),
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(Res.string.nav_back),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
             
@@ -523,17 +516,10 @@ fun UserScreenContent(
                     topBarActions?.invoke(this)
                     
                     // 关注状态
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                        tonalElevation = 3.dp
-                    ) {
-                        FollowIndicator(
-                            user = state.userProfile.toUser(),
-                            size = 28.dp,
-                            modifier = Modifier.padding(6.dp)
-                        )
-                    }
+                    FollowIndicator(
+                        user = state.userProfile.toUser(),
+                        size = 34.dp
+                    )
                 }
             }
         } else {
@@ -591,7 +577,8 @@ fun UserProfileHeader(
             Text(
                 text = profile.name,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
             if (profile.premium) {
                 Icon(
