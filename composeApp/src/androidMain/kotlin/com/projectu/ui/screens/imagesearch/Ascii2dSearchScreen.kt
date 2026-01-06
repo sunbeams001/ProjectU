@@ -1,6 +1,7 @@
 package com.projectu.ui.screens.imagesearch
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -291,6 +292,25 @@ private fun Ascii2dWebView(
                     loadsImagesAutomatically = true
                     // 允许混合内容
                     mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                }
+                
+                // 设置长按监听器
+                setOnLongClickListener { view ->
+                    val result = (view as? WebView)?.hitTestResult
+                    val url = result?.extra
+                    
+                    if (url != null && (result.type == WebView.HitTestResult.SRC_ANCHOR_TYPE ||
+                                result.type == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
+                        // 长按任何链接都在系统浏览器中打开
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                        return@setOnLongClickListener true
+                    }
+                    false
                 }
                 
                 // 添加 JavaScript 接口用于调试

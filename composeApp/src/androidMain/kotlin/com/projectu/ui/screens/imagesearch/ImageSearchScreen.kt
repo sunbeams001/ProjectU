@@ -1,6 +1,7 @@
 package com.projectu.ui.screens.imagesearch
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.webkit.WebResourceRequest
@@ -324,6 +325,25 @@ private fun SauceNaoResultWebView(
                         loadsImagesAutomatically = true
                         // 设置混合内容模式（允许 HTTPS 页面加载 HTTP 资源）
                         mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                    }
+                    
+                    // 设置长按监听器
+                    setOnLongClickListener { view ->
+                        val result = (view as? WebView)?.hitTestResult
+                        val url = result?.extra
+                        
+                        if (url != null && (result.type == WebView.HitTestResult.SRC_ANCHOR_TYPE ||
+                                    result.type == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
+                            // 长按任何链接都在系统浏览器中打开
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            return@setOnLongClickListener true
+                        }
+                        false
                     }
                     
                     webViewClient = object : WebViewClient() {
