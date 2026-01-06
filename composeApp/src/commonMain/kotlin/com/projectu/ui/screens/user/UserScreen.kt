@@ -458,7 +458,8 @@ fun UserScreenContent(
                                     onTagClick = onTagClick,
                                     onBlockAuthor = onBlockAuthor,
                                     onUnblockAuthor = onUnblockAuthor,
-                                    isAuthorBlocked = isAuthorBlocked
+                                    isAuthorBlocked = isAuthorBlocked,
+                                    isStandalone = isStandalone
                                 )
                             }
                         } else {
@@ -713,7 +714,8 @@ fun UserTabContent(
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockAuthor: (() -> Unit)? = null,
     onUnblockAuthor: (() -> Unit)? = null,
-    isAuthorBlocked: Boolean = false
+    isAuthorBlocked: Boolean = false,
+    isStandalone: Boolean = true
 ) {
     // 获取或创建当前Tab的Tag筛选行滚动状态
     val tagScrollState = tagFilterScrollStates.getOrPut(tab) { ScrollState(0) }
@@ -732,7 +734,8 @@ fun UserTabContent(
                         tabListStates = tabListStates,
                         onBlockAuthor = onBlockAuthor,
                         onUnblockAuthor = onUnblockAuthor,
-                        isAuthorBlocked = isAuthorBlocked
+                        isAuthorBlocked = isAuthorBlocked,
+                        applyNavigationBarsPadding = isStandalone
                     )
                 } else {
                     CircularProgressIndicator()
@@ -763,7 +766,8 @@ fun UserTabContent(
                                     isLoading = tabData.isLoading,
                                     isRefreshing = tabData.isRefreshing,
                                     hasMore = tabData.hasMore,
-                                    onRefresh = onRefresh
+                                    onRefresh = onRefresh,
+                                    applyNavigationBarsPadding = isStandalone
                                 )
                             }
                             UserProfileTab.ILLUSTS, UserProfileTab.MANGA -> {
@@ -787,7 +791,8 @@ fun UserTabContent(
                                         isLoading = tabData.isLoading,
                                         isRefreshing = tabData.isRefreshing,
                                         onRefresh = onRefresh,
-                                        showUserInfo = false
+                                        showUserInfo = false,
+                                        applyNavigationBarsPadding = isStandalone
                                     )
                                 }
                             }
@@ -813,7 +818,8 @@ fun UserTabContent(
                                         isLoading = tabData.isLoading,
                                         isRefreshing = tabData.isRefreshing,
                                         onRefresh = onRefresh,
-                                        showUserInfo = false
+                                        showUserInfo = false,
+                                        applyNavigationBarsPadding = isStandalone
                                     )
                                 }
                             }
@@ -825,7 +831,8 @@ fun UserTabContent(
                                     tabListStates = tabListStates,
                                     onClick = { item ->
                                         onMangaSeriesClick(item.id)
-                                    }
+                                    },
+                                    applyNavigationBarsPadding = isStandalone
                                 )
                             }
                             UserProfileTab.NOVEL_SERIES -> {
@@ -839,7 +846,8 @@ fun UserTabContent(
                                     },
                                     onTagClick = onTagClick?.let { handler ->
                                         { tagName -> handler(com.projectu.shared.domain.model.Tag(tagName)) }
-                                    }
+                                    },
+                                    applyNavigationBarsPadding = isStandalone
                                 )
                             }
                             UserProfileTab.BOOKMARK_ILLUSTS_PUBLIC,
@@ -865,7 +873,8 @@ fun UserTabContent(
                                         isLoading = tabData.isLoading,
                                         isRefreshing = tabData.isRefreshing,
                                         onRefresh = onRefresh,
-                                        showUserInfo = true
+                                        showUserInfo = true,
+                                        applyNavigationBarsPadding = isStandalone
                                     )
                                 }
                             }
@@ -893,7 +902,8 @@ fun UserTabContent(
                                         isLoading = tabData.isLoading,
                                         isRefreshing = tabData.isRefreshing,
                                         onRefresh = onRefresh,
-                                        showUserInfo = true
+                                        showUserInfo = true,
+                                        applyNavigationBarsPadding = isStandalone
                                     )
                                 }
                             }
@@ -935,7 +945,8 @@ fun ArtworkStaggeredGrid(
     isLoading: Boolean,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    showUserInfo: Boolean = false
+    showUserInfo: Boolean = false,
+    applyNavigationBarsPadding: Boolean = true
 ) {
     val gridState = rememberLazyStaggeredGridState()
     val coroutineScope = rememberCoroutineScope()
@@ -994,7 +1005,7 @@ fun ArtworkStaggeredGrid(
             verticalItemSpacing = 8.dp,
             modifier = Modifier
                 .fillMaxSize()
-                .navigationBarsPadding()
+                .then(if (applyNavigationBarsPadding) Modifier.navigationBarsPadding() else Modifier)
         ) {
             items(artworks, key = { it.id }) { artwork ->
                 val index = artworks.indexOf(artwork)
@@ -1039,7 +1050,8 @@ fun NovelList(
     isLoading: Boolean,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    showUserInfo: Boolean = true
+    showUserInfo: Boolean = true,
+    applyNavigationBarsPadding: Boolean = true
 ) {
     val listState = rememberLazyListState()
     
@@ -1075,7 +1087,7 @@ fun NovelList(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .navigationBarsPadding()
+                .then(if (applyNavigationBarsPadding) Modifier.navigationBarsPadding() else Modifier)
         ) {
             items(novels, key = { it.id }) { novel ->
                 NovelCard(
@@ -1113,7 +1125,8 @@ fun MangaSeriesList(
     series: List<MangaSeries>,
     tab: UserProfileTab,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
-    onClick: (MangaSeries) -> Unit
+    onClick: (MangaSeries) -> Unit,
+    applyNavigationBarsPadding: Boolean = true
 ) {
     val listState = rememberLazyListState()
     
@@ -1128,7 +1141,7 @@ fun MangaSeriesList(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier
             .fillMaxSize()
-            .navigationBarsPadding()
+            .then(if (applyNavigationBarsPadding) Modifier.navigationBarsPadding() else Modifier)
     ) {
         items(series, key = { it.id }) { item ->
             MangaSeriesCard(
@@ -1153,7 +1166,8 @@ fun RecommendUsersList(
     isLoading: Boolean = false,
     isRefreshing: Boolean = false,
     hasMore: Boolean = true,
-    onRefresh: () -> Unit = {}
+    onRefresh: () -> Unit = {},
+    applyNavigationBarsPadding: Boolean = true
 ) {
     val listState = rememberLazyListState()
     
@@ -1226,7 +1240,7 @@ fun RecommendUsersList(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .fillMaxSize()
-                    .navigationBarsPadding()
+                    .then(if (applyNavigationBarsPadding) Modifier.navigationBarsPadding() else Modifier)
             ) {
                 itemsIndexed(users, key = { _, user -> user.id }) { index, user ->
                     val artworkStartIndex = userArtworkStartIndices.getOrElse(index) { 0 }
@@ -1254,7 +1268,8 @@ fun NovelSeriesList(
     tab: UserProfileTab,
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onClick: (NovelSeries) -> Unit,
-    onTagClick: ((String) -> Unit)? = null
+    onTagClick: ((String) -> Unit)? = null,
+    applyNavigationBarsPadding: Boolean = true
 ) {
     val listState = rememberLazyListState()
     
@@ -1269,7 +1284,7 @@ fun NovelSeriesList(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier
             .fillMaxSize()
-            .navigationBarsPadding()
+            .then(if (applyNavigationBarsPadding) Modifier.navigationBarsPadding() else Modifier)
     ) {
         items(series, key = { it.id }) { item ->
             NovelSeriesCard(
@@ -1291,7 +1306,8 @@ fun UserInfoContent(
     tabListStates: MutableMap<UserProfileTab, ListScrollState>,
     onBlockAuthor: (() -> Unit)? = null,
     onUnblockAuthor: (() -> Unit)? = null,
-    isAuthorBlocked: Boolean = false
+    isAuthorBlocked: Boolean = false,
+    applyNavigationBarsPadding: Boolean = true
 ) {
     val listState = rememberLazyListState()
     val uriHandler = LocalUriHandler.current
@@ -1309,7 +1325,7 @@ fun UserInfoContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxSize()
-            .navigationBarsPadding()
+            .then(if (applyNavigationBarsPadding) Modifier.navigationBarsPadding() else Modifier)
     ) {
         // 用户ID
         item {
