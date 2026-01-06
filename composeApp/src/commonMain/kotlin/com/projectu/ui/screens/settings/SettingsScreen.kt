@@ -464,7 +464,36 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🌐 4. Pixiv 设置 (Pixiv Settings)
+            // 📚 4. 小说设置 (Novel Settings)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_novel))
+            }
+            
+            // 小说阅读设置（跳转到独立页面）
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_novel_reading),
+                    subtitle = stringResource(Res.string.settings_novel_reading_desc),
+                    onClick = { navigator.push(NovelReadingSettingsScreen()) }
+                )
+            }
+            
+            // 小说下载首选图片质量设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_novel_download_image_quality),
+                    subtitle = when (currentNovelDownloadImageQuality) {
+                        NovelDownloadImageQuality.SMALL -> stringResource(Res.string.novel_download_image_quality_small)
+                        NovelDownloadImageQuality.MEDIUM -> stringResource(Res.string.novel_download_image_quality_medium)
+                        NovelDownloadImageQuality.LARGE -> stringResource(Res.string.novel_download_image_quality_large)
+                        NovelDownloadImageQuality.ORIGINAL -> stringResource(Res.string.novel_download_image_quality_original)
+                    },
+                    description = stringResource(Res.string.settings_novel_download_image_quality_desc),
+                    onClick = { showNovelDownloadImageQualityDialog = true }
+                )
+            }
+            
+            // 🌐 5. Pixiv 设置 (Pixiv Settings)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_pixiv))
             }
@@ -479,7 +508,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🔒 5. 内容管理 (Content Management)
+            // 🔒 6. 内容管理 (Content Management)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_content_management))
             }
@@ -518,7 +547,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 📥 6. 下载设置 (Download Settings)
+            // 📥 7. 下载设置 (Download Settings)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_download))
             }
@@ -564,21 +593,6 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 小说下载首选图片质量设置
-            item {
-                SettingsItem(
-                    title = stringResource(Res.string.settings_novel_download_image_quality),
-                    subtitle = when (currentNovelDownloadImageQuality) {
-                        NovelDownloadImageQuality.SMALL -> stringResource(Res.string.novel_download_image_quality_small)
-                        NovelDownloadImageQuality.MEDIUM -> stringResource(Res.string.novel_download_image_quality_medium)
-                        NovelDownloadImageQuality.LARGE -> stringResource(Res.string.novel_download_image_quality_large)
-                        NovelDownloadImageQuality.ORIGINAL -> stringResource(Res.string.novel_download_image_quality_original)
-                    },
-                    description = stringResource(Res.string.settings_novel_download_image_quality_desc),
-                    onClick = { showNovelDownloadImageQualityDialog = true }
-                )
-            }
-            
             // 下载管理
             item {
                 SettingsItem(
@@ -589,7 +603,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 💾 7. 缓存管理 (Cache Management)
+            // 💾 8. 缓存管理 (Cache Management)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_cache_management))
             }
@@ -621,7 +635,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🔧 8. 开发者选项 (Developer Options)
+            // 🔧 9. 开发者选项 (Developer Options)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_developer_options))
             }
@@ -636,7 +650,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 👤 9. 账号 (Account)
+            // 👤 10. 账号 (Account)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_account))
             }

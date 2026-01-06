@@ -136,6 +136,30 @@ interface SettingsDao {
     suspend fun updateLastUsedTab(tab: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新小说阅读字号
+     */
+    @Query("UPDATE app_settings SET novelFontSize = :fontSize, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateNovelFontSize(fontSize: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
+     * 更新小说阅读文字颜色
+     */
+    @Query("UPDATE app_settings SET novelTextColor = :color, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateNovelTextColor(color: String?, timestamp: Long = System.currentTimeMillis())
+    
+    /**
+     * 更新小说阅读背景色
+     */
+    @Query("UPDATE app_settings SET novelBackgroundColor = :color, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateNovelBackgroundColor(color: String?, timestamp: Long = System.currentTimeMillis())
+    
+    /**
+     * 更新小说阅读背景色方案
+     */
+    @Query("UPDATE app_settings SET novelBackgroundScheme = :scheme, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateNovelBackgroundScheme(scheme: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

@@ -115,7 +115,33 @@ data class AppSettings(
      * 用于记录上次退出App时所在的Tab
      * 默认：HOME (搜索页面)
      */
-    val lastUsedTab: String = "HOME"
+    val lastUsedTab: String = "HOME",
+    
+    /**
+     * 小说阅读字号
+     * 支持：SMALL(14sp), MEDIUM(16sp), LARGE(18sp), EXTRA_LARGE(20sp), HUGE(22sp)
+     * 默认：MEDIUM
+     */
+    val novelFontSize: NovelFontSize = NovelFontSize.MEDIUM,
+    
+    /**
+     * 小说阅读文字颜色（十六进制，如 "#000000"）
+     * 默认：null（使用主题默认颜色）
+     */
+    val novelTextColor: String? = null,
+    
+    /**
+     * 小说阅读背景色（十六进制，如 "#FFFFFF"）
+     * 默认：null（使用主题默认颜色）
+     */
+    val novelBackgroundColor: String? = null,
+    
+    /**
+     * 小说阅读背景色方案（预设方案）
+     * 支持多种预设方案
+     * 默认：THEME_DEFAULT（跟随主题）
+     */
+    val novelBackgroundScheme: NovelBackgroundScheme = NovelBackgroundScheme.THEME_DEFAULT
 ) {
     companion object {
         /**
@@ -189,3 +215,70 @@ enum class StartupTab(val displayNameKey: String) {
     PROFILE("startup_tab_profile");          // 个人页面
 }
 
+/**
+ * 小说字号枚举
+ */
+enum class NovelFontSize(val sp: Int, val displayNameKey: String) {
+    SMALL(14, "novel_font_size_small"),           // 小
+    MEDIUM(16, "novel_font_size_medium"),         // 中（默认）
+    LARGE(18, "novel_font_size_large"),           // 大
+    EXTRA_LARGE(20, "novel_font_size_extra_large"), // 特大
+    HUGE(22, "novel_font_size_huge");              // 超大
+    
+    companion object {
+        fun fromName(name: String): NovelFontSize {
+            return values().find { it.name == name } ?: MEDIUM
+        }
+    }
+}
+
+/**
+ * 小说背景色方案枚举
+ */
+enum class NovelBackgroundScheme(
+    val displayNameKey: String,
+    val backgroundColor: String?,  // 十六进制颜色，null表示使用主题默认
+    val textColor: String?         // 推荐的文字颜色，null表示使用主题默认
+) {
+    THEME_DEFAULT(
+        "novel_bg_theme_default",
+        null,
+        null
+    ),
+    PAPER_WHITE(
+        "novel_bg_paper_white",
+        "#FFFFFF",
+        "#000000"
+    ),
+    EYE_CARE_GREEN(
+        "novel_bg_eye_care_green",
+        "#CCE8CC",  // 护眼绿
+        "#000000"
+    ),
+    WARM_YELLOW(
+        "novel_bg_warm_yellow",
+        "#FFF9E6",  // 暖黄色
+        "#333333"
+    ),
+    CLASSIC_BEIGE(
+        "novel_bg_classic_beige",
+        "#F5E6D3",  // 经典米色
+        "#333333"
+    ),
+    NIGHT_BLACK(
+        "novel_bg_night_black",
+        "#1A1A1A",  // 夜间模式
+        "#CCCCCC"
+    ),
+    CUSTOM(
+        "novel_bg_custom",
+        null,  // 使用用户自定义的颜色
+        null
+    );
+    
+    companion object {
+        fun fromName(name: String): NovelBackgroundScheme {
+            return values().find { it.name == name } ?: THEME_DEFAULT
+        }
+    }
+}

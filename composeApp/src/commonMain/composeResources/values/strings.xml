@@ -107,6 +107,7 @@
     <string name="settings_general">General Settings</string>
     <string name="settings_interaction_preferences">Interaction Preferences</string>
     <string name="settings_browsing_experience">Browsing Experience</string>
+    <string name="settings_novel">Novel Settings</string>
     <string name="settings_staggered_grid_columns">Staggered Grid Columns</string>
     <string name="settings_staggered_grid_columns_desc">Number of columns in artwork grids</string>
     <string name="settings_select_grid_columns">Select Grid Columns</string>
@@ -144,6 +145,8 @@
     <string name="settings_default_startup_tab">Default Startup Tab</string>
     <string name="settings_default_startup_tab_desc">Choose which tab to open when the app starts</string>
     <string name="settings_select_startup_tab">Select Startup Tab</string>
+    <string name="settings_novel_reading">Novel Reading Settings</string>
+    <string name="settings_novel_reading_desc">Font size, text color, background color</string>
     <string name="startup_tab_last_used">Last Used Tab</string>
     <string name="startup_tab_home">Search</string>
     <string name="startup_tab_discovery">Discovery</string>
@@ -915,6 +918,41 @@
     <string name="history_time_days_ago">%1$d days ago</string>
     <string name="history_delete">Delete</string>
     <string name="history_cancel">Cancel</string>
+    
+    <!-- Novel Reading Settings -->
+    <string name="novel_reading_settings_title">Reading Settings</string>
+    <string name="novel_setting_font_size">Font Size</string>
+    <string name="novel_setting_background_scheme">Background Scheme</string>
+    <string name="novel_setting_custom_colors">Custom Colors</string>
+    <string name="novel_setting_text_color">Text Color</string>
+    <string name="novel_setting_background_color">Background Color</string>
+    <string name="novel_preview_label">Preview</string>
+    <string name="novel_preview_content">The quick brown fox jumps over the lazy dog. これはサンプルテキストです。这是示例文本。</string>
+    
+    <!-- Font Sizes -->
+    <string name="novel_font_size_small">Small (14sp)</string>
+    <string name="novel_font_size_medium">Medium (16sp)</string>
+    <string name="novel_font_size_large">Large (18sp)</string>
+    <string name="novel_font_size_extra_large">Extra Large (20sp)</string>
+    <string name="novel_font_size_huge">Huge (22sp)</string>
+    
+    <!-- Background Schemes -->
+    <string name="novel_bg_theme_default">Theme Default</string>
+    <string name="novel_bg_paper_white">Paper White</string>
+    <string name="novel_bg_eye_care_green">Eye Care Green</string>
+    <string name="novel_bg_warm_yellow">Warm Yellow</string>
+    <string name="novel_bg_classic_beige">Classic Beige</string>
+    <string name="novel_bg_night_black">Night Black</string>
+    <string name="novel_bg_custom">Custom</string>
+    
+    <!-- Color Picker -->
+    <string name="color_picker_title">Select Color</string>
+    <string name="color_picker_use_theme_default">Use Theme Default</string>
+    <string name="color_picker_hex_input">Hex Color Code</string>
+    <string name="color_picker_presets">Preset Colors</string>
+    <string name="color_theme_default">Theme Default</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
 </resources>
 
 

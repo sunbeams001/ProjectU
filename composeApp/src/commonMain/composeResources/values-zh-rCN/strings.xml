@@ -102,6 +102,7 @@
     <string name="settings_general">通用设置</string>
     <string name="settings_interaction_preferences">交互偏好</string>
     <string name="settings_browsing_experience">浏览体验</string>
+    <string name="settings_novel">小说设置</string>
     <string name="settings_staggered_grid_columns">瀑布流列数</string>
     <string name="settings_staggered_grid_columns_desc">作品网格布局的列数</string>
     <string name="settings_select_grid_columns">选择网格列数</string>
@@ -139,6 +140,8 @@
     <string name="settings_default_startup_tab">默认启动页面</string>
     <string name="settings_default_startup_tab_desc">选择应用启动时打开的标签页</string>
     <string name="settings_select_startup_tab">选择启动页面</string>
+    <string name="settings_novel_reading">小说阅读设置</string>
+    <string name="settings_novel_reading_desc">字号、文字颜色、背景色</string>
     <string name="startup_tab_last_used">上次退出的页面</string>
     <string name="startup_tab_home">搜索</string>
     <string name="startup_tab_discovery">发现</string>
@@ -920,5 +923,40 @@
     <string name="history_time_days_ago">%1$s 天前</string>
     <string name="history_cancel">取消</string>
     <string name="history_by_author">由 %1$s 创作</string>
+    
+    <!-- Novel Reading Settings -->
+    <string name="novel_reading_settings_title">阅读设置</string>
+    <string name="novel_setting_font_size">字号</string>
+    <string name="novel_setting_background_scheme">背景方案</string>
+    <string name="novel_setting_custom_colors">自定义颜色</string>
+    <string name="novel_setting_text_color">文字颜色</string>
+    <string name="novel_setting_background_color">背景颜色</string>
+    <string name="novel_preview_label">预览</string>
+    <string name="novel_preview_content">快速的棕色狐狸跳过了懒狗。这是一段示例文本，用于预览阅读效果。The quick brown fox jumps over the lazy dog.</string>
+    
+    <!-- Font Sizes -->
+    <string name="novel_font_size_small">小 (14sp)</string>
+    <string name="novel_font_size_medium">中 (16sp)</string>
+    <string name="novel_font_size_large">大 (18sp)</string>
+    <string name="novel_font_size_extra_large">特大 (20sp)</string>
+    <string name="novel_font_size_huge">超大 (22sp)</string>
+    
+    <!-- Background Schemes -->
+    <string name="novel_bg_theme_default">跟随主题</string>
+    <string name="novel_bg_paper_white">纸白</string>
+    <string name="novel_bg_eye_care_green">护眼绿</string>
+    <string name="novel_bg_warm_yellow">暖黄</string>
+    <string name="novel_bg_classic_beige">经典米</string>
+    <string name="novel_bg_night_black">夜间</string>
+    <string name="novel_bg_custom">自定义</string>
+    
+    <!-- Color Picker -->
+    <string name="color_picker_title">选择颜色</string>
+    <string name="color_picker_use_theme_default">使用主题默认</string>
+    <string name="color_picker_hex_input">十六进制颜色代码</string>
+    <string name="color_picker_presets">预设颜色</string>
+    <string name="color_theme_default">主题默认</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_confirm">确定</string>
 </resources>
 

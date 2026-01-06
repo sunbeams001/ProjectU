@@ -3,6 +3,7 @@ package com.projectu.shared.data.local.database
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.Dispatchers
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.projectu.shared.data.local.database.migrations.MIGRATION_1_2
 
 /**
  * 数据库构建器
@@ -18,5 +19,6 @@ fun getRoomDatabase(
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
+        .addMigrations(MIGRATION_1_2)
         .build()
 }

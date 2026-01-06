@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
@@ -66,6 +67,31 @@ fun NovelReadingArea(
     onScrollPositionChanged: ((Int, Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    // 读取阅读设置
+    val settingsRepository: com.projectu.shared.domain.repository.SettingsRepository = org.koin.compose.koinInject()
+    val settings by settingsRepository.getSettings().collectAsState(com.projectu.shared.data.local.AppSettings.DEFAULT)
+    
+    // 计算最终使用的颜色
+    val finalBackgroundColor = remember(settings.novelBackgroundColor, settings.novelBackgroundScheme) {
+        when {
+            settings.novelBackgroundScheme == com.projectu.shared.data.local.NovelBackgroundScheme.CUSTOM && settings.novelBackgroundColor != null -> 
+                parseColor(settings.novelBackgroundColor)
+            settings.novelBackgroundScheme.backgroundColor != null -> 
+                parseColor(settings.novelBackgroundScheme.backgroundColor)
+            else -> null
+        }
+    }
+    
+    val finalTextColor = remember(settings.novelTextColor, settings.novelBackgroundScheme) {
+        when {
+            settings.novelBackgroundScheme == com.projectu.shared.data.local.NovelBackgroundScheme.CUSTOM && settings.novelTextColor != null -> 
+                parseColor(settings.novelTextColor)
+            settings.novelBackgroundScheme.textColor != null -> 
+                parseColor(settings.novelBackgroundScheme.textColor)
+            else -> null
+        }
+    }
+    
     val totalPages = pages.size.coerceAtLeast(1)
     val hasMultiplePages = totalPages > 1
     val canGoPrevious = currentPage > 1
@@ -151,7 +177,7 @@ fun NovelReadingArea(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(finalBackgroundColor ?: MaterialTheme.colorScheme.surface)
     ) {
         // 主内容区域（可点击切换区域）
         Box(
@@ -178,6 +204,8 @@ fun NovelReadingArea(
                     page = currentPageContent,
                     embeddedImages = embeddedImages,
                     listState = listState,
+                    fontSize = settings.novelFontSize.sp.sp,
+                    textColor = finalTextColor,
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
@@ -244,6 +272,8 @@ private fun NovelPageContent(
     page: NovelContentParser.NovelPage,
     embeddedImages: Map<String, NovelEmbeddedImageInfo>,
     listState: LazyListState,
+    fontSize: androidx.compose.ui.unit.TextUnit,
+    textColor: Color?,
     modifier: Modifier = Modifier
 ) {
     val uriHandler = LocalUriHandler.current
@@ -262,6 +292,8 @@ private fun NovelPageContent(
                 ContentElementDisplay(
                     element = element,
                     embeddedImages = embeddedImages,
+                    fontSize = fontSize,
+                    textColor = textColor,
                     onLinkClick = { url ->
                         try {
                             uriHandler.openUri(url)
@@ -322,15 +354,17 @@ private fun buildClickableText(
 private fun ContentElementDisplay(
     element: NovelContentParser.ContentElement,
     embeddedImages: Map<String, NovelEmbeddedImageInfo>,
+    fontSize: androidx.compose.ui.unit.TextUnit,
+    textColor: Color?,
     onLinkClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     when (element) {
         is NovelContentParser.ContentElement.Text -> {
-            val textColor = MaterialTheme.colorScheme.onSurface
             val linkColor = MaterialTheme.colorScheme.primary
-            val annotatedString = remember(element.content, textColor, linkColor) {
-                buildClickableText(element.content, textColor, linkColor)
+            val displayTextColor = textColor ?: MaterialTheme.colorScheme.onSurface
+            val annotatedString = remember(element.content, displayTextColor, linkColor) {
+                buildClickableText(element.content, displayTextColor, linkColor)
             }
             
             // 检查是否包含链接
@@ -341,7 +375,8 @@ private fun ContentElementDisplay(
                 ClickableText(
                     text = annotatedString,
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        lineHeight = 28.sp
+                        fontSize = fontSize,
+                        lineHeight = fontSize * 1.75f
                     ),
                     modifier = modifier.fillMaxWidth(),
                     onClick = { offset ->
@@ -355,9 +390,10 @@ private fun ContentElementDisplay(
                 Text(
                     text = element.content,
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        lineHeight = 28.sp
+                        fontSize = fontSize,
+                        lineHeight = fontSize * 1.75f
                     ),
-                    color = textColor,
+                    color = displayTextColor,
                     modifier = modifier.fillMaxWidth()
                 )
             }
@@ -548,5 +584,21 @@ private fun ContentElementDisplay(
         NovelContentParser.ContentElement.EmptyLine -> {
             Spacer(modifier = modifier.height(16.dp))
         }
+    }
+}
+
+/**
+ * 解析十六进制颜色字符串为Color对象
+ */
+private fun parseColor(hex: String?): Color? {
+    return try {
+        if (hex != null && hex.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
+            val colorInt = hex.substring(1).toLong(16).toInt()
+            Color(0xFF000000 or colorInt.toLong())
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        null
     }
 }

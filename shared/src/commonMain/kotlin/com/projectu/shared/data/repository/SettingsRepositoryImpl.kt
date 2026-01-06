@@ -95,6 +95,22 @@ class SettingsRepositoryImpl(
         settingsStore.setLastUsedTab(tab)
     }
     
+    override suspend fun updateNovelFontSize(fontSize: com.projectu.shared.data.local.NovelFontSize) {
+        settingsStore.setNovelFontSize(fontSize)
+    }
+    
+    override suspend fun updateNovelTextColor(color: String?) {
+        settingsStore.setNovelTextColor(color)
+    }
+    
+    override suspend fun updateNovelBackgroundColor(color: String?) {
+        settingsStore.setNovelBackgroundColor(color)
+    }
+    
+    override suspend fun updateNovelBackgroundScheme(scheme: com.projectu.shared.data.local.NovelBackgroundScheme) {
+        settingsStore.setNovelBackgroundScheme(scheme)
+    }
+    
     override suspend fun updateSettings(settings: AppSettings) {
         settingsStore.updateSettings(settings)
     }

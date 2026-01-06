@@ -182,6 +182,34 @@ class SettingsStore(
     }
     
     /**
+     * 设置小说阅读字号
+     */
+    suspend fun setNovelFontSize(fontSize: NovelFontSize) {
+        settingsDao.updateNovelFontSize(fontSize.name)
+    }
+    
+    /**
+     * 设置小说阅读文字颜色
+     */
+    suspend fun setNovelTextColor(color: String?) {
+        settingsDao.updateNovelTextColor(color)
+    }
+    
+    /**
+     * 设置小说阅读背景色
+     */
+    suspend fun setNovelBackgroundColor(color: String?) {
+        settingsDao.updateNovelBackgroundColor(color)
+    }
+    
+    /**
+     * 设置小说阅读背景色方案
+     */
+    suspend fun setNovelBackgroundScheme(scheme: NovelBackgroundScheme) {
+        settingsDao.updateNovelBackgroundScheme(scheme.name)
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

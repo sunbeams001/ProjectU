@@ -103,6 +103,26 @@ data class SettingsEntity(
     val lastUsedTab: String = "HOME",
     
     /**
+     * 小说阅读字号
+     */
+    val novelFontSize: String = "MEDIUM",
+    
+    /**
+     * 小说阅读文字颜色（十六进制）
+     */
+    val novelTextColor: String? = null,
+    
+    /**
+     * 小说阅读背景色（十六进制）
+     */
+    val novelBackgroundColor: String? = null,
+    
+    /**
+     * 小说阅读背景色方案
+     */
+    val novelBackgroundScheme: String = "THEME_DEFAULT",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -129,7 +149,11 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         fileNameMode = this.downloadSettings.fileNameMode.name,
         customFileNameTemplate = this.downloadSettings.customFileNameTemplate,
         defaultStartupTab = this.defaultStartupTab.name,
-        lastUsedTab = this.lastUsedTab
+        lastUsedTab = this.lastUsedTab,
+        novelFontSize = this.novelFontSize.name,
+        novelTextColor = this.novelTextColor,
+        novelBackgroundColor = this.novelBackgroundColor,
+        novelBackgroundScheme = this.novelBackgroundScheme.name
     )
 }
 
@@ -164,6 +188,10 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         } catch (e: Exception) {
             com.projectu.shared.data.local.StartupTab.LAST_USED
         },
-        lastUsedTab = this.lastUsedTab.ifEmpty { "HOME" }
+        lastUsedTab = this.lastUsedTab.ifEmpty { "HOME" },
+        novelFontSize = com.projectu.shared.data.local.NovelFontSize.fromName(this.novelFontSize),
+        novelTextColor = this.novelTextColor,
+        novelBackgroundColor = this.novelBackgroundColor,
+        novelBackgroundScheme = com.projectu.shared.data.local.NovelBackgroundScheme.fromName(this.novelBackgroundScheme)
     )
 }

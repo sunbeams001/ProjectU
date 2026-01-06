@@ -122,6 +122,26 @@ interface SettingsRepository {
      * @param tab Tab标识字符串
      */
     suspend fun updateLastUsedTab(tab: String)
+    
+    /**
+     * 更新小说阅读字号
+     */
+    suspend fun updateNovelFontSize(fontSize: com.projectu.shared.data.local.NovelFontSize)
+    
+    /**
+     * 更新小说阅读文字颜色
+     */
+    suspend fun updateNovelTextColor(color: String?)
+    
+    /**
+     * 更新小说阅读背景色
+     */
+    suspend fun updateNovelBackgroundColor(color: String?)
+    
+    /**
+     * 更新小说阅读背景色方案
+     */
+    suspend fun updateNovelBackgroundScheme(scheme: com.projectu.shared.data.local.NovelBackgroundScheme)
 
     /**
      * 更新完整设置
