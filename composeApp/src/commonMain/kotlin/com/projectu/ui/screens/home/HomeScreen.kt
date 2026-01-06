@@ -282,6 +282,7 @@ private fun HomeScreenTablet(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
+                    .windowInsetsPadding(WindowInsets.statusBars)
             ) {
                 it.current.Content()
             }
