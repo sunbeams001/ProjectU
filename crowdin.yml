@@ -6,10 +6,15 @@ files:
     translation: /composeApp/src/commonMain/composeResources/values-%android_code%/strings.xml
     languages_mapping:
       android_code:
-        zh-CN: zh-rCN
-        zh-TW: zh-rTW
-        ja: ja
-        ko: ko
+        zh-CN: zh-rCN    # Simplified Chinese
+        zh-TW: zh-rTW    # Traditional Chinese
+        ja: ja           # Japanese
+        ko: ko           # Korean
+        ru: ru           # Russian
+        ms: ms           # Malay
+        th: th           # Thai
+        es: es           # Spanish
+        hi: hi           # Hindi
     update_option: update_as_unapproved
 pull_request_title: New Crowdin translations by Github Action
 pull_request_labels:
