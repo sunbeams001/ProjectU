@@ -1,12 +1,19 @@
 /**
  * 版本管理任务
  * 
- * 用法：
+ * 用法（Linux/Mac）：
  *   ./gradlew setVersion -PnewVersion=1.0.2    # 设置新版本号（自动递增versionCode）
  *   ./gradlew bumpPatch                        # 递增修订版本号 (1.0.1 -> 1.0.2)
  *   ./gradlew bumpMinor                        # 递增次版本号 (1.0.1 -> 1.1.0)
  *   ./gradlew bumpMajor                        # 递增主版本号 (1.0.1 -> 2.0.0)
  *   ./gradlew showVersion                      # 显示当前版本信息
+ * 
+ * 用法（Windows PowerShell）：
+ *   .\gradlew.bat setVersion "-PnewVersion=1.0.2"  # 设置新版本号（参数需要引号）
+ *   .\gradlew.bat bumpPatch                        # 递增修订版本号 (1.0.1 -> 1.0.2)
+ *   .\gradlew.bat bumpMinor                        # 递增次版本号 (1.0.1 -> 1.1.0)
+ *   .\gradlew.bat bumpMajor                        # 递增主版本号 (1.0.1 -> 2.0.0)
+ *   .\gradlew.bat showVersion                      # 显示当前版本信息
  */
 
 // 定义版本文件路径
