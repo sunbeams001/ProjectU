@@ -43,6 +43,7 @@ import projectu.composeapp.generated.resources.novel_recommend_empty
 import projectu.composeapp.generated.resources.common_loading
 import projectu.composeapp.generated.resources.common_retry
 import projectu.composeapp.generated.resources.nav_back
+import projectu.composeapp.generated.resources.list_no_more_items
 
 /**
  * 推荐小说页面
@@ -256,7 +257,7 @@ fun NovelRecommendContent(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
-                                            text = "没有更多了",
+                                            text = stringResource(Res.string.list_no_more_items),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -360,7 +361,7 @@ class NovelRecommendViewModel(
                     _state.update {
                         it.copy(
                             isRefreshing = false,
-                            error = "响应数据为空"
+                            error = "Empty response"
                         )
                     }
                     return@launch
@@ -395,7 +396,7 @@ class NovelRecommendViewModel(
                 _state.update {
                     it.copy(
                         isRefreshing = false,
-                        error = e.message ?: "刷新失败"
+                        error = e.message ?: "Refresh failed"
                     )
                 }
             }
@@ -462,7 +463,7 @@ class NovelRecommendViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = "响应数据为空",
+                            error = "Empty response",
                             isEmpty = true
                         )
                     }
@@ -499,7 +500,7 @@ class NovelRecommendViewModel(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "加载失败",
+                        error = e.message ?: "Load failed",
                         isEmpty = true
                     )
                 }
@@ -571,7 +572,7 @@ class NovelRecommendViewModel(
                 _state.update {
                     it.copy(
                         isLoadingMore = false,
-                        error = e.message ?: "加载更多失败"
+                        error = e.message ?: "Load more failed"
                     )
                 }
             }

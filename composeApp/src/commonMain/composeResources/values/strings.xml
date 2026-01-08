@@ -107,6 +107,7 @@
     <string name="settings_general">General Settings</string>
     <string name="settings_interaction_preferences">Interaction Preferences</string>
     <string name="settings_browsing_experience">Browsing Experience</string>
+    <string name="settings_translation">Translation Settings</string>
     <string name="settings_novel">Novel Settings</string>
     <string name="settings_staggered_grid_columns">Staggered Grid Columns</string>
     <string name="settings_staggered_grid_columns_desc">Number of columns in artwork grids</string>
@@ -147,6 +148,32 @@
     <string name="settings_select_startup_tab">Select Startup Tab</string>
     <string name="settings_novel_reading">Novel Reading Settings</string>
     <string name="settings_novel_reading_desc">Font size, text color, background color</string>
+    
+    <!-- Settings - Translation -->
+    <string name="settings_translation_engine">Translation Engine</string>
+    <string name="settings_translation_engine_desc">Translate artwork captions and novel content</string>
+    <string name="settings_translation_target_language">Target Language</string>
+    <string name="settings_translation_target_language_desc">Language to translate into</string>
+    <string name="settings_select_translation_engine">Select Translation Engine</string>
+    <string name="settings_select_translation_target_language">Select Target Language</string>
+    <string name="translation_engine_none">Disabled</string>
+    <string name="translation_engine_google_free">Google Translate (Free)</string>
+    <string name="translation_lang_zh_cn">简体中文</string>
+    <string name="translation_lang_zh_tw">繁體中文</string>
+    <string name="translation_lang_en">English</string>
+    <string name="translation_lang_ja">日本語</string>
+    <string name="translation_lang_ko">한국어</string>
+    <string name="translation_lang_fr">Français</string>
+    <string name="translation_lang_de">Deutsch</string>
+    <string name="translation_lang_es">Español</string>
+    <string name="translation_lang_it">Italiano</string>
+    <string name="translation_lang_ru">Русский</string>
+    <string name="translation_lang_pt">Português</string>
+    <string name="translation_lang_th">ภาษาไทย</string>
+    <string name="translation_lang_vi">Tiếng Việt</string>
+    <string name="translation_lang_id">Bahasa Indonesia</string>
+    <string name="translation_lang_ms">Bahasa Melayu</string>
+    
     <string name="startup_tab_last_used">Last Used Tab</string>
     <string name="startup_tab_home">Search</string>
     <string name="startup_tab_discovery">Discovery</string>
@@ -172,8 +199,7 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System Default</string>
     
-    <!-- Common -->
-    <string name="common_loading">Loading...</string>
+    <!-- Common -->\n    <string name="common_loading">Loading...</string>
     <string name="common_error">Error occurred</string>
     <string name="common_retry">Retry</string>
     <string name="common_cancel">Cancel</string>
@@ -185,6 +211,10 @@
     <string name="common_no_data">No data</string>
     <string name="common_back">Back</string>
     <string name="common_close">Close</string>
+    <string name="common_add_rule">Add Rule</string>
+    <string name="common_copied">Copied: %s</string>
+    <string name="common_translation_label">📝 Translation</string>
+    <string name="common_columns_format">%d Columns</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">Play</string>
@@ -357,6 +387,12 @@
     <string name="error_data_empty">Data is empty</string>
     <string name="error_invalid_artwork_id">Invalid artwork ID</string>
     <string name="error_cannot_load_frames">Cannot load frames</string>
+    <string name="error_empty_response">Empty response data</string>
+    <string name="error_refresh_failed">Refresh failed</string>
+    <string name="error_load_more_failed">Load more failed</string>
+    
+    <!-- List States -->
+    <string name="list_no_more_items">No more items</string>
     
     <!-- Series -->
     <string name="series_watching">Following</string>
@@ -953,6 +989,11 @@
     <string name="color_theme_default">Theme Default</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_confirm">Confirm</string>
+    
+    <!-- Desktop Specific -->
+    <string name="desktop_webview_restart_required">Restart required to use WebView</string>
+    <string name="desktop_webview_initializing">Initializing WebView component...</string>
+    <string name="desktop_download_progress">Download progress: %d%%</string>
 </resources>
 
 

@@ -66,7 +66,7 @@ fun main() = application {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("需要重启应用才能使用 WebView 功能")
+                    Text(stringResource(Res.string.desktop_webview_restart_required))
                 }
             }
             !initialized -> {
@@ -80,10 +80,10 @@ fun main() = application {
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         CircularProgressIndicator()
-                        Text("正在初始化 WebView 组件...")
+                        Text(stringResource(Res.string.desktop_webview_initializing))
                         if (downloading > 0) {
                             Text(
-                                "下载进度: ${downloading.toInt()}%",
+                                stringResource(Res.string.desktop_download_progress, downloading.toInt()),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }

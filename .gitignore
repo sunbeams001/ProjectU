@@ -65,3 +65,5 @@ keystore.properties
 *.userosscache
 *.sln.docstates
 
+# VSCode
+.vscode/

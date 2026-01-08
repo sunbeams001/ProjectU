@@ -141,7 +141,21 @@ data class AppSettings(
      * 支持多种预设方案
      * 默认：THEME_DEFAULT（跟随主题）
      */
-    val novelBackgroundScheme: NovelBackgroundScheme = NovelBackgroundScheme.THEME_DEFAULT
+    val novelBackgroundScheme: NovelBackgroundScheme = NovelBackgroundScheme.THEME_DEFAULT,
+    
+    /**
+     * 翻译引擎
+     * 用于翻译作品简介、小说内容等
+     * 默认：NONE（不使用翻译）
+     */
+    val translationEngine: com.projectu.shared.domain.model.TranslationEngine = com.projectu.shared.domain.model.TranslationEngine.NONE,
+    
+    /**
+     * 翻译目标语言
+     * 用于指定翻译的目标语言
+     * 默认：简体中文
+     */
+    val translationTargetLanguage: com.projectu.shared.domain.model.TranslationLanguage = com.projectu.shared.domain.model.TranslationLanguage.SIMPLIFIED_CHINESE
 ) {
     companion object {
         /**

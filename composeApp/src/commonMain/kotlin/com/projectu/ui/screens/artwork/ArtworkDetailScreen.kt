@@ -76,10 +76,14 @@ data class ArtworkDetailScreen(
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         val downloadRepository: DownloadRepository = koinInject()
+        val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
         val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
         val downloadActionViewLabel = stringResource(Res.string.download_action_view)
+        
+        // 检查翻译功能是否启用
+        val isTranslationEnabled by remember { derivedStateOf { settingsCache.isTranslationEnabled() } }
         
         // 保存浏览历史
         com.projectu.ui.util.SaveArtworkHistory(state.artwork)
@@ -267,6 +271,12 @@ data class ArtworkDetailScreen(
                 // 跳转到屏蔽列表页面，并传入Tag进行预填充
                 navigator.push(BlockListScreen(prefilledTag = tag.name))
             },
+            onTranslateClick = if (isTranslationEnabled) {
+                { viewModel.translateDescription() }
+            } else null,
+            onClearTranslation = if (isTranslationEnabled) {
+                { viewModel.clearTranslation() }
+            } else null,
             snackbarHostState = snackbarHostState
         )
     }

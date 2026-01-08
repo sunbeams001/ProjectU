@@ -142,6 +142,16 @@ interface SettingsRepository {
      * 更新小说阅读背景色方案
      */
     suspend fun updateNovelBackgroundScheme(scheme: com.projectu.shared.data.local.NovelBackgroundScheme)
+    
+    /**
+     * 更新翻译引擎
+     */
+    suspend fun updateTranslationEngine(engine: com.projectu.shared.domain.model.TranslationEngine)
+    
+    /**
+     * 更新翻译目标语言
+     */
+    suspend fun updateTranslationTargetLanguage(language: com.projectu.shared.domain.model.TranslationLanguage)
 
     /**
      * 更新完整设置

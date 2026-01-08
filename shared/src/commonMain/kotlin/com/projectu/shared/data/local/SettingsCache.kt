@@ -101,9 +101,19 @@ class SettingsCache(
     private val _staggeredGridColumns = MutableStateFlow(3)
     val staggeredGridColumns: StateFlow<Int> = _staggeredGridColumns.asStateFlow()
     
-    // TODO: 后续添加更多配置项缓存
-    // private val _someOtherConfig = MutableStateFlow(defaultValue)
-    // val someOtherConfig: StateFlow<Type> = _someOtherConfig.asStateFlow()
+    /**
+     * 翻译引擎缓存
+     * 用于快速判断是否启用翻译功能
+     */
+    private val _translationEngine = MutableStateFlow(com.projectu.shared.domain.model.TranslationEngine.NONE)
+    val translationEngine: StateFlow<com.projectu.shared.domain.model.TranslationEngine> = _translationEngine.asStateFlow()
+    
+    /**
+     * 翻译目标语言缓存
+     * 用于翻译时快速获取目标语言
+     */
+    private val _translationTargetLanguage = MutableStateFlow(com.projectu.shared.domain.model.TranslationLanguage.SIMPLIFIED_CHINESE)
+    val translationTargetLanguage: StateFlow<com.projectu.shared.domain.model.TranslationLanguage> = _translationTargetLanguage.asStateFlow()
     
     init {
         // 在后台协程中监听设置变化，自动更新所有缓存
@@ -120,6 +130,8 @@ class SettingsCache(
                 _fileNameMode.value = settings.downloadSettings.fileNameMode
                 _customFileNameTemplate.value = settings.downloadSettings.customFileNameTemplate
                 _staggeredGridColumns.value = settings.staggeredGridColumns
+                _translationEngine.value = settings.translationEngine
+                _translationTargetLanguage.value = settings.translationTargetLanguage
                 
                 // TODO: 后续添加更多字段的同步
                 // _someOtherConfig.value = settings.someOtherConfig
@@ -231,6 +243,30 @@ class SettingsCache(
      */
     fun getStaggeredGridColumns(): Int {
         return _staggeredGridColumns.value
+    }
+    
+    /**
+     * 获取当前翻译引擎（同步方法，使用内存缓存）
+     * 用于快速判断是否启用翻译功能
+     */
+    fun getTranslationEngine(): com.projectu.shared.domain.model.TranslationEngine {
+        return _translationEngine.value
+    }
+    
+    /**
+     * 获取当前翻译目标语言（同步方法，使用内存缓存）
+     * 用于翻译时快速获取目标语言设置
+     */
+    fun getTranslationTargetLanguage(): com.projectu.shared.domain.model.TranslationLanguage {
+        return _translationTargetLanguage.value
+    }
+    
+    /**
+     * 是否启用翻译功能（同步方法，使用内存缓存）
+     * 用于快速判断是否显示翻译相关UI
+     */
+    fun isTranslationEnabled(): Boolean {
+        return _translationEngine.value != com.projectu.shared.domain.model.TranslationEngine.NONE
     }
     
     // TODO: 后续添加更多配置项的 getter

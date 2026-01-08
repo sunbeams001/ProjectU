@@ -210,6 +210,20 @@ class SettingsStore(
     }
     
     /**
+     * 设置翻译引擎
+     */
+    suspend fun setTranslationEngine(engine: com.projectu.shared.domain.model.TranslationEngine) {
+        settingsDao.updateTranslationEngine(engine.name)
+    }
+    
+    /**
+     * 设置翻译目标语言
+     */
+    suspend fun setTranslationTargetLanguage(language: com.projectu.shared.domain.model.TranslationLanguage) {
+        settingsDao.updateTranslationTargetLanguage(language.name)
+    }
+    
+    /**
      * 重置为默认设置
      */
     suspend fun reset() {

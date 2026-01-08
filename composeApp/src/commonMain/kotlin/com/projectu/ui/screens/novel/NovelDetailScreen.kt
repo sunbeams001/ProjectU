@@ -17,6 +17,7 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.cache.NovelCacheManager
@@ -72,23 +73,7 @@ data class NovelDetailScreen(
     override fun Content() {
         // 使用 rememberScreenModel 创建独立的 ViewModel 实例
         // 每个 Screen 实例会有自己独立的 ViewModel，由 Voyager 管理生命周期
-        val novelRepository: NovelRepository = koinInject()
-        val userRepository: UserRepository = koinInject()
-        val authRepository: AuthRepository = koinInject()
-        val syncNovelStatesUseCase: SyncNovelStatesUseCase = koinInject()
-        val stateCacheManager: StateCacheManager = koinInject()
-        val novelCacheManager: NovelCacheManager = koinInject()
-        
-        val viewModel = rememberScreenModel {
-            NovelDetailViewModel(
-                novelRepository = novelRepository,
-                userRepository = userRepository,
-                authRepository = authRepository,
-                syncNovelStatesUseCase = syncNovelStatesUseCase,
-                stateCacheManager = stateCacheManager,
-                novelCacheManager = novelCacheManager
-            )
-        }
+        val viewModel: NovelDetailViewModel = koinScreenModel()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
@@ -97,10 +82,14 @@ data class NovelDetailScreen(
             com.projectu.ui.util.SaveNovelHistory(novel)
         }
         val downloadRepository: DownloadRepository = koinInject()
+        val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
         val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
         val downloadActionViewLabel = stringResource(Res.string.download_action_view)
+        
+        // 检查翻译功能是否启用
+        val isTranslationEnabled by remember { derivedStateOf { settingsCache.isTranslationEnabled() } }
         
         // 从 NavigationContextManager 获取上下文
         val context = remember(contextKey) {
@@ -179,6 +168,7 @@ data class NovelDetailScreen(
         NovelDetailContent(
             state = state,
             viewModel = viewModel,
+            isTranslationEnabled = isTranslationEnabled,
             onBackClick = handleExit,  // 左上角返回按钮直接退出
             onListIndexChange = { index -> viewModel.onListIndexChanged(index) },
             onPreviousPage = { viewModel.previousPage() },
@@ -242,6 +232,7 @@ data class NovelDetailScreen(
 private fun NovelDetailContent(
     state: NovelDetailState,
     viewModel: NovelDetailViewModel,
+    isTranslationEnabled: Boolean,
     onBackClick: () -> Unit,
     onListIndexChange: (Int) -> Unit,
     onPreviousPage: () -> Unit,
@@ -287,6 +278,7 @@ private fun NovelDetailContent(
                 NovelDetailLayout(
                     state = state,
                     viewModel = viewModel,
+                    isTranslationEnabled = isTranslationEnabled,
                     onPreviousPage = onPreviousPage,
                     onNextPage = onNextPage,
                     onToggleInfo = onToggleInfo,
@@ -342,6 +334,7 @@ private fun NovelDetailContent(
 private fun NovelDetailLayout(
     state: NovelDetailState,
     viewModel: NovelDetailViewModel,
+    isTranslationEnabled: Boolean,
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
     onToggleInfo: () -> Unit,
@@ -434,6 +427,8 @@ private fun NovelDetailLayout(
             isExpanded = state.isInfoExpanded,
             markerStatus = state.markerStatus,
             isMarkerLoading = state.isMarkerLoading,
+            translatedDescription = state.translatedDescription,
+            isTranslating = state.isTranslating,
             onToggle = onToggleInfo,
             onCollapse = onCollapseInfo,
             onMarkerClick = onMarkerClick,
@@ -444,6 +439,12 @@ private fun NovelDetailLayout(
             onDownloadClick = onDownloadClick,
             onTagClick = onTagClick,
             onBlockTag = onBlockTag,
+            onTranslateClick = if (isTranslationEnabled) {
+                { viewModel.translateDescription() }
+            } else null,
+            onClearTranslation = if (isTranslationEnabled) {
+                { viewModel.clearTranslation() }
+            } else null,
             modifier = Modifier.fillMaxWidth()
         )
     }

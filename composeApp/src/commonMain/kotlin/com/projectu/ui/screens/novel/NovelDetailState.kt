@@ -48,7 +48,9 @@ data class NovelDetailState(
     val novelCache: Map<String, Novel> = emptyMap(),
     val currentNovelId: String? = null,
     val isMarkerLoading: Boolean = false,
-    val pageScrollPositions: Map<Int, Pair<Int, Int>> = emptyMap()
+    val pageScrollPositions: Map<Int, Pair<Int, Int>> = emptyMap(),
+    val translatedDescription: String? = null,
+    val isTranslating: Boolean = false
 ) {
     /**
      * 总页数

@@ -55,7 +55,7 @@ data class BlockRule(
             return BlockRule(
                 id = "fixed_r18",
                 type = BlockRuleType.R18_CONTENT,
-                displayName = "R-18 作品",
+                displayName = "R-18",  // 简单标识，UI层使用资源显示
                 enabled = enabled,
                 scopes = ContentScope.ALL_SCOPES  // R-18 默认应用于所有类型
             )
@@ -68,7 +68,7 @@ data class BlockRule(
             return BlockRule(
                 id = "fixed_ai",
                 type = BlockRuleType.AI_GENERATED,
-                displayName = "AI 生成作品",
+                displayName = "AI Generated",  // 简单标识，UI层使用资源显示
                 enabled = enabled,
                 scopes = ContentScope.DEFAULT_IMAGE_SCOPES  // AI 默认仅应用于图像
             )

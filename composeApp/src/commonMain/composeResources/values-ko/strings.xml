@@ -117,6 +117,7 @@
     <string name="settings_general">일반 설정</string>
     <string name="settings_interaction_preferences">상호작용 기본 설정</string>
     <string name="settings_browsing_experience">탐색 경험</string>
+    <string name="settings_translation">번역 설정</string>
     <string name="settings_novel">소설 설정</string>
     <string name="settings_staggered_grid_columns">그리드 열 수</string>
     <string name="settings_staggered_grid_columns_desc">작품 그리드 레이아웃의 열 수</string>
@@ -153,6 +154,32 @@
     <string name="settings_default_startup_tab">기본 시작 페이지</string>
     <string name="settings_default_startup_tab_desc">앱 시작 시 열릴 탭 선택</string>
     <string name="settings_select_startup_tab">시작 페이지 선택</string>
+    
+    <!-- Settings - Translation -->
+    <string name="settings_translation_engine">번역 엔진</string>
+    <string name="settings_translation_engine_desc">작품 설명 및 소설 콘텐츠 번역</string>
+    <string name="settings_translation_target_language">대상 언어</string>
+    <string name="settings_translation_target_language_desc">번역할 언어</string>
+    <string name="settings_select_translation_engine">번역 엔진 선택</string>
+    <string name="settings_select_translation_target_language">대상 언어 선택</string>
+    <string name="translation_engine_none">사용 안 함</string>
+    <string name="translation_engine_google_free">Google 번역（무료）</string>
+    <string name="translation_lang_zh_cn">简体中文</string>
+    <string name="translation_lang_zh_tw">繁體中文</string>
+    <string name="translation_lang_en">English</string>
+    <string name="translation_lang_ja">日本語</string>
+    <string name="translation_lang_ko">한국어</string>
+    <string name="translation_lang_fr">Français</string>
+    <string name="translation_lang_de">Deutsch</string>
+    <string name="translation_lang_es">Español</string>
+    <string name="translation_lang_it">Italiano</string>
+    <string name="translation_lang_ru">Русский</string>
+    <string name="translation_lang_pt">Português</string>
+    <string name="translation_lang_th">ภาษาไทย</string>
+    <string name="translation_lang_vi">Tiếng Việt</string>
+    <string name="translation_lang_id">Bahasa Indonesia</string>
+    <string name="translation_lang_ms">Bahasa Melayu</string>
+    
     <string name="startup_tab_last_used">마지막 종료 페이지</string>
     <string name="startup_tab_home">검색</string>
     <string name="startup_tab_discovery">발견</string>
@@ -185,6 +212,10 @@
     <string name="common_cancel">취소</string>
     <string name="common_confirm">확인</string>
     <string name="common_save">저장</string>
+    <string name="common_add_rule">규칙 추가</string>
+    <string name="common_copied">복사됨: %s</string>
+    <string name="common_translation_label">📝 번역</string>
+    <string name="common_columns_format">%d 열</string>
     <string name="common_delete">삭제</string>
     <string name="common_edit">편집</string>
     <string name="common_done">완료</string>
@@ -367,6 +398,12 @@
     <string name="error_data_empty">데이터가 비어 있습니다</string>
     <string name="error_invalid_artwork_id">잘못된 작품 ID</string>
     <string name="error_cannot_load_frames">프레임을 로드할 수 없습니다</string>
+    <string name="error_empty_response">응답 데이터가 비어 있음</string>
+    <string name="error_refresh_failed">새로고침 실패</string>
+    <string name="error_load_more_failed">더 불러오기 실패</string>
+    
+    <!-- List States -->
+    <string name="list_no_more_items">더 이상 없음</string>
     
     <!-- Series -->
     <string name="series_watching">구독 중</string>
@@ -972,5 +1009,10 @@
     <string name="color_theme_default">테마 기본값</string>
     <string name="action_cancel">취소</string>
     <string name="action_confirm">확인</string>
+    
+    <!-- Desktop Specific -->
+    <string name="desktop_webview_restart_required">WebView 기능을 사용하려면 앱을 다시 시작해야 합니다</string>
+    <string name="desktop_webview_initializing">WebView 구성 요소 초기화 중...</string>
+    <string name="desktop_download_progress">다운로드 진행률: %d%%</string>
 </resources>
 

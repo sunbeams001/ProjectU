@@ -393,5 +393,23 @@ class SettingsViewModel(
             settingsRepository.updateCustomFileNameTemplate(template)
         }
     }
+    
+    /**
+     * 更新翻译引擎
+     */
+    fun updateTranslationEngine(engine: com.projectu.shared.domain.model.TranslationEngine) {
+        viewModelScope.launch {
+            settingsRepository.updateTranslationEngine(engine)
+        }
+    }
+    
+    /**
+     * 更新翻译目标语言
+     */
+    fun updateTranslationTargetLanguage(language: com.projectu.shared.domain.model.TranslationLanguage) {
+        viewModelScope.launch {
+            settingsRepository.updateTranslationTargetLanguage(language)
+        }
+    }
 }
 

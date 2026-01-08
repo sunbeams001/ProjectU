@@ -156,7 +156,7 @@ private fun BlockListScreenContent(
                 title = { Text(stringResource(Res.string.block_list_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(Res.string.common_back))
                     }
                 }
             )
@@ -166,7 +166,7 @@ private fun BlockListScreenContent(
             
             Box {
                 FloatingActionButton(onClick = { showMenu = true }) {
-                    Icon(Icons.Default.Add, contentDescription = "添加规则")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.common_add_rule))
                 }
                 
                 DropdownMenu(
@@ -388,7 +388,7 @@ private fun CustomRuleItem(
                     onCheckedChange = { onToggle() }
                 )
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "删除")
+                    Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.common_delete))
                 }
             }
         }

@@ -160,6 +160,18 @@ interface SettingsDao {
     suspend fun updateNovelBackgroundScheme(scheme: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新翻译引擎
+     */
+    @Query("UPDATE app_settings SET translationEngine = :engine, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateTranslationEngine(engine: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
+     * 更新翻译目标语言
+     */
+    @Query("UPDATE app_settings SET translationTargetLanguage = :language, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateTranslationTargetLanguage(language: String, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

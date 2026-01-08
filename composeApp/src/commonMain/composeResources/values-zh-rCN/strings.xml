@@ -102,6 +102,7 @@
     <string name="settings_general">通用设置</string>
     <string name="settings_interaction_preferences">交互偏好</string>
     <string name="settings_browsing_experience">浏览体验</string>
+    <string name="settings_translation">翻译设置</string>
     <string name="settings_novel">小说设置</string>
     <string name="settings_staggered_grid_columns">瀑布流列数</string>
     <string name="settings_staggered_grid_columns_desc">作品网格布局的列数</string>
@@ -142,6 +143,32 @@
     <string name="settings_select_startup_tab">选择启动页面</string>
     <string name="settings_novel_reading">小说阅读设置</string>
     <string name="settings_novel_reading_desc">字号、文字颜色、背景色</string>
+    
+    <!-- Settings - Translation -->
+    <string name="settings_translation_engine">翻译引擎</string>
+    <string name="settings_translation_engine_desc">翻译作品简介和小说内容</string>
+    <string name="settings_translation_target_language">目标语言</string>
+    <string name="settings_translation_target_language_desc">翻译的目标语言</string>
+    <string name="settings_select_translation_engine">选择翻译引擎</string>
+    <string name="settings_select_translation_target_language">选择目标语言</string>
+    <string name="translation_engine_none">不使用</string>
+    <string name="translation_engine_google_free">谷歌翻译（免费）</string>
+    <string name="translation_lang_zh_cn">简体中文</string>
+    <string name="translation_lang_zh_tw">繁體中文</string>
+    <string name="translation_lang_en">English</string>
+    <string name="translation_lang_ja">日本語</string>
+    <string name="translation_lang_ko">한국어</string>
+    <string name="translation_lang_fr">Français</string>
+    <string name="translation_lang_de">Deutsch</string>
+    <string name="translation_lang_es">Español</string>
+    <string name="translation_lang_it">Italiano</string>
+    <string name="translation_lang_ru">Русский</string>
+    <string name="translation_lang_pt">Português</string>
+    <string name="translation_lang_th">ภาษาไทย</string>
+    <string name="translation_lang_vi">Tiếng Việt</string>
+    <string name="translation_lang_id">Bahasa Indonesia</string>
+    <string name="translation_lang_ms">Bahasa Melayu</string>
+    
     <string name="startup_tab_last_used">上次退出的页面</string>
     <string name="startup_tab_home">搜索</string>
     <string name="startup_tab_discovery">发现</string>
@@ -180,6 +207,10 @@
     <string name="common_no_data">暂无数据</string>
     <string name="common_back">返回</string>
     <string name="common_close">关闭</string>
+    <string name="common_add_rule">添加规则</string>
+    <string name="common_copied">已复制: %s</string>
+    <string name="common_translation_label">📝 翻译</string>
+    <string name="common_columns_format">%d 列</string>
     
     <!-- Ugoira -->
     <string name="ugoira_play">播放</string>
@@ -349,6 +380,12 @@
     <string name="error_data_empty">数据为空</string>
     <string name="error_invalid_artwork_id">无效的作品ID</string>
     <string name="error_cannot_load_frames">无法加载帧图片</string>
+    <string name="error_empty_response">响应数据为空</string>
+    <string name="error_refresh_failed">刷新失败</string>
+    <string name="error_load_more_failed">加载更多失败</string>
+    
+    <!-- List States -->
+    <string name="list_no_more_items">没有更多了</string>
     
     <!-- Series -->
     <string name="series_watching">追更中</string>
@@ -958,5 +995,10 @@
     <string name="color_theme_default">主题默认</string>
     <string name="action_cancel">取消</string>
     <string name="action_confirm">确定</string>
+    
+    <!-- Desktop Specific -->
+    <string name="desktop_webview_restart_required">需要重启应用才能使用 WebView 功能</string>
+    <string name="desktop_webview_initializing">正在初始化 WebView 组件...</string>
+    <string name="desktop_download_progress">下载进度: %d%%</string>
 </resources>
 

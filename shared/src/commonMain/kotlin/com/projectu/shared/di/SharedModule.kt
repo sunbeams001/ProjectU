@@ -15,10 +15,12 @@ import com.projectu.shared.data.local.store.DownloadRulesStore
 import com.projectu.shared.data.manager.DownloadManager
 import com.projectu.shared.data.remote.api.PixivApi
 import com.projectu.shared.data.remote.api.PixivApiClient
+import com.projectu.shared.data.remote.api.GoogleTranslateApi
 import com.projectu.shared.data.repository.ArtworkRepositoryImpl
 import com.projectu.shared.data.repository.AuthRepositoryImpl
 import com.projectu.shared.data.repository.CommentRepositoryImpl
 import com.projectu.shared.data.repository.DownloadRepositoryImpl
+import com.projectu.shared.data.repository.TranslationRepositoryImpl
 import com.projectu.shared.util.LocalizedTextProvider
 import com.projectu.shared.data.repository.DownloadRulesRepository
 import com.projectu.shared.data.repository.DownloadRulesRepositoryImpl
@@ -41,6 +43,7 @@ import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.repository.StateCacheRepository
 import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.repository.WatchListRepository
+import com.projectu.shared.domain.repository.TranslationRepository
 import com.projectu.shared.domain.usecase.BookmarkArtworkUseCase
 import com.projectu.shared.domain.usecase.BookmarkNovelUseCase
 import com.projectu.shared.domain.usecase.FollowUserUseCase
@@ -52,6 +55,7 @@ import com.projectu.shared.domain.usecase.SyncUserStatesUseCase
 import com.projectu.shared.domain.usecase.UnbookmarkArtworkUseCase
 import com.projectu.shared.domain.usecase.UnbookmarkNovelUseCase
 import com.projectu.shared.domain.usecase.UnfollowUserUseCase
+import com.projectu.shared.domain.usecase.TranslateTextUseCase
 import com.projectu.shared.util.AgeLimitDeterminer
 import com.projectu.shared.util.TagTranslationUtil
 import io.ktor.client.*
@@ -155,6 +159,11 @@ val pixivApiModule = module {
     single {
         get<PixivApi>().searchApi
     }
+    
+    // Google Translate API
+    single {
+        GoogleTranslateApi(get())
+    }
 }
 
 /**
@@ -247,6 +256,13 @@ val repositoryModule = module {
         DownloadRulesRepositoryImpl(get())
     }
     
+    // 翻译仓储
+    single<TranslationRepository> {
+        TranslationRepositoryImpl(
+            googleTranslateApi = get()
+        )
+    }
+    
     // 浏览历史仓储
     single<com.projectu.shared.domain.repository.BrowseHistoryRepository> {
         com.projectu.shared.data.repository.BrowseHistoryRepositoryImpl(get())
@@ -313,6 +329,9 @@ val useCaseModule = module {
     
     // 浏览历史相关
     factory { com.projectu.shared.domain.usecase.SaveBrowseHistoryUseCase(get()) }
+    
+    // 翻译相关
+    factory { TranslateTextUseCase(get()) }
     
     // 内容过滤相关（使用 BlockRuleCache 缓存）
     factory { com.projectu.shared.domain.usecase.FilterArtworksUseCase(get()) }

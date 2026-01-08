@@ -65,6 +65,8 @@ fun ArtworkDetailContent(
     onImageClick: ((pageIndex: Int) -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onTranslateClick: (() -> Unit)? = null,
+    onClearTranslation: (() -> Unit)? = null,
     snackbarHostState: SnackbarHostState? = null,
     modifier: Modifier = Modifier
 ) {
@@ -108,6 +110,8 @@ fun ArtworkDetailContent(
                         onImageClick = onImageClick,
                         onTagClick = onTagClick,
                         onBlockTag = onBlockTag,
+                        onTranslateClick = onTranslateClick,
+                        onClearTranslation = onClearTranslation,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
@@ -116,6 +120,8 @@ fun ArtworkDetailContent(
                         artwork = state.artwork,
                         authorFollowStatus = state.authorFollowStatus,
                         isInfoExpanded = state.isInfoExpanded,
+                        translatedDescription = state.translatedDescription,
+                        isTranslating = state.isTranslating,
                         onExpandInfo = onExpandInfo,
                         onCollapseInfo = onCollapseInfo,
                         onUserClick = onUserClick,
@@ -127,6 +133,8 @@ fun ArtworkDetailContent(
                         onImageClick = onImageClick,
                         onTagClick = onTagClick,
                         onBlockTag = onBlockTag,
+                        onTranslateClick = onTranslateClick,
+                        onClearTranslation = onClearTranslation,
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
@@ -182,6 +190,8 @@ private fun ArtworkListPager(
     onImageClick: ((pageIndex: Int) -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onTranslateClick: (() -> Unit)? = null,
+    onClearTranslation: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(
@@ -227,10 +237,16 @@ private fun ArtworkListPager(
                     FollowStatus.NOT_FOLLOWING
                 }
                 
+                // 翻译状态只对当前页面有效
+                val translatedDesc = if (pageIndex == state.currentIndex) state.translatedDescription else null
+                val isTranslatingNow = if (pageIndex == state.currentIndex) state.isTranslating else false
+                
                 ArtworkDetailLayout(
                     artwork = cachedArtwork,
                     authorFollowStatus = followStatus,
                     isInfoExpanded = state.isInfoExpanded,
+                    translatedDescription = translatedDesc,
+                    isTranslating = isTranslatingNow,
                     onExpandInfo = onExpandInfo,
                     onCollapseInfo = onCollapseInfo,
                     onUserClick = onUserClick,
@@ -242,6 +258,8 @@ private fun ArtworkListPager(
                     onImageClick = onImageClick,
                     onTagClick = onTagClick,
                     onBlockTag = onBlockTag,
+                    onTranslateClick = onTranslateClick,
+                    onClearTranslation = onClearTranslation,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -254,6 +272,8 @@ private fun ArtworkListPager(
                     artwork = state.artwork,
                     authorFollowStatus = state.authorFollowStatus,
                     isInfoExpanded = state.isInfoExpanded,
+                    translatedDescription = state.translatedDescription,
+                    isTranslating = state.isTranslating,
                     onExpandInfo = onExpandInfo,
                     onCollapseInfo = onCollapseInfo,
                     onUserClick = onUserClick,
@@ -265,6 +285,8 @@ private fun ArtworkListPager(
                     onImageClick = onImageClick,
                     onTagClick = onTagClick,
                     onBlockTag = onBlockTag,
+                    onTranslateClick = onTranslateClick,
+                    onClearTranslation = onClearTranslation,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -309,6 +331,8 @@ private fun ArtworkDetailLayout(
     artwork: Artwork,
     authorFollowStatus: com.projectu.shared.domain.model.FollowStatus,
     isInfoExpanded: Boolean = false,
+    translatedDescription: String? = null,
+    isTranslating: Boolean = false,
     onExpandInfo: () -> Unit = {},
     onCollapseInfo: () -> Unit = {},
     onUserClick: ((userId: String) -> Unit)? = null,
@@ -320,6 +344,8 @@ private fun ArtworkDetailLayout(
     onImageClick: ((pageIndex: Int) -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onTranslateClick: (() -> Unit)? = null,
+    onClearTranslation: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -356,12 +382,16 @@ private fun ArtworkDetailLayout(
         // 底层：详情信息区域（固定在底部，高度为屏幕一半）
         ArtworkDetailInfoSection(
             artwork = artwork,
+            translatedDescription = translatedDescription,
+            isTranslating = isTranslating,
             onCommentClick = onCommentClick,
             onSimilarClick = onSimilarClick,
             onDownloadClick = onDownloadClick,
             onDownloadLongClick = onDownloadLongClick,
             onTagClick = onTagClick,
             onBlockTag = onBlockTag,
+            onTranslateClick = onTranslateClick,
+            onClearTranslation = onClearTranslation,
             onScrollAtTop = { delta ->
                 // 当详情区域滚动到顶部时，继续下滑会触发基础信息区域收起
                 if (delta > 0 && dragOffset > 0 && !isCollapsing) {

@@ -248,6 +248,8 @@ fun ArtworkBasicInfoSection(
 @Composable
 fun ArtworkDetailInfoSection(
     artwork: Artwork,
+    translatedDescription: String? = null,
+    isTranslating: Boolean = false,
     onCommentClick: (() -> Unit)? = null,
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
@@ -255,6 +257,8 @@ fun ArtworkDetailInfoSection(
     onScrollAtTop: ((Float) -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
+    onTranslateClick: (() -> Unit)? = null,
+    onClearTranslation: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -543,11 +547,49 @@ fun ArtworkDetailInfoSection(
                     val uriHandler = LocalUriHandler.current
                     
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(
-                            text = stringResource(Res.string.artwork_description),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.artwork_description),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            
+                            // 翻译按钮
+                            if (onTranslateClick != null && onClearTranslation != null) {
+                                IconButton(
+                                    onClick = { 
+                                        if (translatedDescription == null) {
+                                            onTranslateClick()
+                                        } else {
+                                            onClearTranslation()
+                                        }
+                                    },
+                                    enabled = !isTranslating
+                                ) {
+                                    if (isTranslating) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(20.dp),
+                                            strokeWidth = 2.dp
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = if (translatedDescription == null) 
+                                                Icons.Default.Translate 
+                                            else 
+                                                Icons.Default.Close,
+                                            contentDescription = if (translatedDescription == null) "Translate" else "Close",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 原文
                         HtmlText(
                             html = artwork.description,
                             style = MaterialTheme.typography.bodyMedium.copy(
@@ -561,6 +603,34 @@ fun ArtworkDetailInfoSection(
                                 }
                             }
                         )
+                        
+                        // 翻译结果
+                        if (translatedDescription != null) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                            
+                            Text(
+                                text = stringResource(Res.string.common_translation_label),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                            
+                            HtmlText(
+                                html = translatedDescription,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
+                                onLinkClick = { url ->
+                                    try {
+                                        uriHandler.openUri(url)
+                                    } catch (e: Exception) {
+                                        // 忽略无法打开的链接
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }

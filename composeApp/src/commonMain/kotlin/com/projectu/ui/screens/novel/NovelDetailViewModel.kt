@@ -11,6 +11,8 @@ import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
+import com.projectu.shared.domain.usecase.TranslateTextUseCase
+import com.projectu.shared.data.local.SettingsCache
 import com.projectu.ui.util.NovelContentParser
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -30,7 +32,9 @@ class NovelDetailViewModel(
     private val authRepository: AuthRepository,
     private val syncNovelStatesUseCase: SyncNovelStatesUseCase,
     private val stateCacheManager: StateCacheManager,
-    private val novelCacheManager: NovelCacheManager
+    private val novelCacheManager: NovelCacheManager,
+    private val translateTextUseCase: TranslateTextUseCase,
+    private val settingsCache: SettingsCache
 ) : ScreenModel {
 
     private val _state = MutableStateFlow(NovelDetailState())
@@ -124,7 +128,14 @@ class NovelDetailViewModel(
             return
         }
         
-        _state.update { it.copy(currentIndex = newIndex, currentPage = 1) }
+        _state.update { 
+            it.copy(
+                currentIndex = newIndex, 
+                currentPage = 1,
+                translatedDescription = null,
+                isTranslating = false
+            ) 
+        }
         
         val novelId = novelIds[newIndex]
         val cachedError = failedNovelErrors[novelId]
@@ -586,4 +597,54 @@ class NovelDetailViewModel(
      * 获取当前索引（用于返回时定位）
      */
     fun getCurrentIndex(): Int = _state.value.currentIndex
+    
+    /**
+     * 翻译小说简介
+     */
+    fun translateDescription() {
+        val currentNovel = _state.value.novel ?: return
+        val description = currentNovel.description
+        
+        if (description.isBlank()) return
+        if (!settingsCache.isTranslationEnabled()) return
+        
+        screenModelScope.launch {
+            _state.update { it.copy(isTranslating = true) }
+            
+            try {
+                val plainText = description.trim()
+                
+                val result = translateTextUseCase(
+                    text = plainText,
+                    targetLanguage = settingsCache.getTranslationTargetLanguage(),
+                    engine = settingsCache.getTranslationEngine()
+                )
+                
+                result.onSuccess { translation ->
+                    _state.update {
+                        it.copy(
+                            translatedDescription = translation.translatedText,
+                            isTranslating = false
+                        )
+                    }
+                }.onFailure { _ ->
+                    _state.update { it.copy(isTranslating = false) }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isTranslating = false) }
+            }
+        }
+    }
+    
+    /**
+     * 清除翻译结果
+     */
+    fun clearTranslation() {
+        _state.update { 
+            it.copy(
+                translatedDescription = null,
+                isTranslating = false
+            ) 
+        }
+    }
 }

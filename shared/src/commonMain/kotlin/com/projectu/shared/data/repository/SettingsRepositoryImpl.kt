@@ -111,6 +111,14 @@ class SettingsRepositoryImpl(
         settingsStore.setNovelBackgroundScheme(scheme)
     }
     
+    override suspend fun updateTranslationEngine(engine: com.projectu.shared.domain.model.TranslationEngine) {
+        settingsStore.setTranslationEngine(engine)
+    }
+    
+    override suspend fun updateTranslationTargetLanguage(language: com.projectu.shared.domain.model.TranslationLanguage) {
+        settingsStore.setTranslationTargetLanguage(language)
+    }
+    
     override suspend fun updateSettings(settings: AppSettings) {
         settingsStore.updateSettings(settings)
     }

@@ -26,6 +26,8 @@ import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
 import com.projectu.shared.domain.model.DetailImageQuality
 import com.projectu.shared.domain.model.NovelDownloadImageQuality
+import com.projectu.shared.domain.model.TranslationEngine
+import com.projectu.shared.domain.model.TranslationLanguage
 import com.projectu.shared.data.local.FileNameMode
 import com.projectu.ui.screens.download.DownloadRulesScreen
 import com.projectu.ui.util.CacheDetails
@@ -195,6 +197,8 @@ class SettingsScreen : Screen {
             currentBaseDownloadPath = downloadSettings.baseDownloadPath,
             currentFileNameMode = downloadSettings.fileNameMode,
             currentCustomFileNameTemplate = downloadSettings.customFileNameTemplate,
+            currentTranslationEngine = settings.translationEngine,
+            currentTranslationTargetLanguage = settings.translationTargetLanguage,
             navigator = navigator,
             onAppLanguageChange = { viewModel.updateAppLanguage(it) },
             onPixivLanguageChange = { viewModel.updatePixivLanguage(it) },
@@ -216,7 +220,9 @@ class SettingsScreen : Screen {
             onStaggeredGridColumnsChange = { viewModel.updateStaggeredGridColumns(it) },
             onNavigateBack = { navigator.pop() },
             onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) },
-            onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) }
+            onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) },
+            onTranslationEngineChange = { viewModel.updateTranslationEngine(it) },
+            onTranslationTargetLanguageChange = { viewModel.updateTranslationTargetLanguage(it) }
         )
     }
 }
@@ -246,6 +252,8 @@ private fun SettingsScreenContent(
     currentBaseDownloadPath: String,
     currentFileNameMode: FileNameMode,
     currentCustomFileNameTemplate: String,
+    currentTranslationEngine: TranslationEngine,
+    currentTranslationTargetLanguage: TranslationLanguage,
     navigator: cafe.adriel.voyager.navigator.Navigator,
     onAppLanguageChange: (AppLanguage) -> Unit,
     onPixivLanguageChange: (PixivLanguage) -> Unit,
@@ -267,7 +275,9 @@ private fun SettingsScreenContent(
     onStaggeredGridColumnsChange: (Int) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToApiTest: () -> Unit = {},
-    onBaseDownloadPathChange: (String) -> Unit
+    onBaseDownloadPathChange: (String) -> Unit,
+    onTranslationEngineChange: (TranslationEngine) -> Unit,
+    onTranslationTargetLanguageChange: (TranslationLanguage) -> Unit
 ) {
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
@@ -286,6 +296,8 @@ private fun SettingsScreenContent(
     var showCacheSizeDialog by remember { mutableStateOf(false) }
     var showClearCacheConfirmDialog by remember { mutableStateOf(false) }
     var showFileNameVariableHelpDialog by remember { mutableStateOf(false) }
+    var showTranslationEngineDialog by remember { mutableStateOf(false) }
+    var showTranslationTargetLanguageDialog by remember { mutableStateOf(false) }
     
     val pathPicker = rememberPathPicker()
     
@@ -360,7 +372,22 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🎯 2. 交互偏好 (Interaction Preferences)
+            // � 2. Pixiv 设置 (Pixiv Settings)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_pixiv))
+            }
+            
+            // Pixiv 语言设置
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_pixiv_language),
+                    subtitle = currentPixivLanguage.displayName,
+                    description = stringResource(Res.string.settings_pixiv_language_desc),
+                    onClick = { showPixivLanguageDialog = true }
+                )
+            }
+            
+            // 🎯 3. 交互偏好 (Interaction Preferences)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_interaction_preferences))
             }
@@ -399,7 +426,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🖼️ 3. 浏览体验 (Browsing Experience)
+            // 🖼️ 4. 浏览体验 (Browsing Experience)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_browsing_experience))
             }
@@ -457,14 +484,14 @@ private fun SettingsScreenContent(
                         3 -> stringResource(Res.string.settings_grid_columns_3)
                         4 -> stringResource(Res.string.settings_grid_columns_4)
                         5 -> stringResource(Res.string.settings_grid_columns_5)
-                        else -> "$currentStaggeredGridColumns 列"
+                        else -> stringResource(Res.string.common_columns_format, currentStaggeredGridColumns)
                     },
                     description = stringResource(Res.string.settings_staggered_grid_columns_desc),
                     onClick = { showStaggeredGridColumnsDialog = true }
                 )
             }
             
-            // 📚 4. 小说设置 (Novel Settings)
+            // 📚 5. 小说设置 (Novel Settings)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_novel))
             }
@@ -493,22 +520,53 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🌐 5. Pixiv 设置 (Pixiv Settings)
+            // 🌐 6. 翻译设置 (Translation Settings)
             item {
-                SettingsGroupHeader(title = stringResource(Res.string.settings_pixiv))
+                SettingsGroupHeader(title = stringResource(Res.string.settings_translation))
             }
             
-            // Pixiv 语言设置
+            // 翻译引擎设置
             item {
                 SettingsItem(
-                    title = stringResource(Res.string.settings_pixiv_language),
-                    subtitle = currentPixivLanguage.displayName,
-                    description = stringResource(Res.string.settings_pixiv_language_desc),
-                    onClick = { showPixivLanguageDialog = true }
+                    title = stringResource(Res.string.settings_translation_engine),
+                    subtitle = when (currentTranslationEngine) {
+                        TranslationEngine.NONE -> stringResource(Res.string.translation_engine_none)
+                        TranslationEngine.GOOGLE_FREE -> stringResource(Res.string.translation_engine_google_free)
+                    },
+                    description = stringResource(Res.string.settings_translation_engine_desc),
+                    onClick = { showTranslationEngineDialog = true }
                 )
             }
             
-            // 🔒 6. 内容管理 (Content Management)
+            // 翻译目标语言设置（仅当翻译引擎不是NONE时显示）
+            if (currentTranslationEngine != TranslationEngine.NONE) {
+                item {
+                    SettingsItem(
+                        title = stringResource(Res.string.settings_translation_target_language),
+                        subtitle = when (currentTranslationTargetLanguage) {
+                            TranslationLanguage.SIMPLIFIED_CHINESE -> stringResource(Res.string.translation_lang_zh_cn)
+                            TranslationLanguage.TRADITIONAL_CHINESE -> stringResource(Res.string.translation_lang_zh_tw)
+                            TranslationLanguage.ENGLISH -> stringResource(Res.string.translation_lang_en)
+                            TranslationLanguage.JAPANESE -> stringResource(Res.string.translation_lang_ja)
+                            TranslationLanguage.KOREAN -> stringResource(Res.string.translation_lang_ko)
+                            TranslationLanguage.FRENCH -> stringResource(Res.string.translation_lang_fr)
+                            TranslationLanguage.GERMAN -> stringResource(Res.string.translation_lang_de)
+                            TranslationLanguage.SPANISH -> stringResource(Res.string.translation_lang_es)
+                            TranslationLanguage.ITALIAN -> stringResource(Res.string.translation_lang_it)
+                            TranslationLanguage.RUSSIAN -> stringResource(Res.string.translation_lang_ru)
+                            TranslationLanguage.PORTUGUESE -> stringResource(Res.string.translation_lang_pt)
+                            TranslationLanguage.THAI -> stringResource(Res.string.translation_lang_th)
+                            TranslationLanguage.VIETNAMESE -> stringResource(Res.string.translation_lang_vi)
+                            TranslationLanguage.INDONESIAN -> stringResource(Res.string.translation_lang_id)
+                            TranslationLanguage.MALAY -> stringResource(Res.string.translation_lang_ms)
+                        },
+                        description = stringResource(Res.string.settings_translation_target_language_desc),
+                        onClick = { showTranslationTargetLanguageDialog = true }
+                    )
+                }
+            }
+            
+            // 🔒 7. 内容管理 (Content Management)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_content_management))
             }
@@ -547,7 +605,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 📥 7. 下载设置 (Download Settings)
+            // 📥 8. 下载设置 (Download Settings)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_download))
             }
@@ -603,7 +661,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 💾 8. 缓存管理 (Cache Management)
+            // 💾 9. 缓存管理 (Cache Management)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_cache_management))
             }
@@ -635,7 +693,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🔧 9. 开发者选项 (Developer Options)
+            // 🔧 10. 开发者选项 (Developer Options)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_developer_options))
             }
@@ -845,6 +903,30 @@ private fun SettingsScreenContent(
         )
     }
     
+    // 翻译引擎选择对话框
+    if (showTranslationEngineDialog) {
+        TranslationEngineSelectionDialog(
+            currentEngine = currentTranslationEngine,
+            onSelect = { engine ->
+                onTranslationEngineChange(engine)
+                showTranslationEngineDialog = false
+            },
+            onDismiss = { showTranslationEngineDialog = false }
+        )
+    }
+    
+    // 翻译目标语言选择对话框
+    if (showTranslationTargetLanguageDialog) {
+        TranslationTargetLanguageSelectionDialog(
+            currentLanguage = currentTranslationTargetLanguage,
+            onSelect = { language ->
+                onTranslationTargetLanguageChange(language)
+                showTranslationTargetLanguageDialog = false
+            },
+            onDismiss = { showTranslationTargetLanguageDialog = false }
+        )
+    }
+    
     // 编辑 PHPSESSID 对话框
     if (showEditPhpSessionIdDialog) {
         EditPhpSessionIdDialog(
@@ -932,7 +1014,7 @@ private fun SettingsScreenContent(
                                         3 -> stringResource(Res.string.settings_grid_columns_3)
                                         4 -> stringResource(Res.string.settings_grid_columns_4)
                                         5 -> stringResource(Res.string.settings_grid_columns_5)
-                                        else -> "$columns 列"
+                                        else -> stringResource(Res.string.common_columns_format, columns)
                                     },
                                     modifier = Modifier.weight(1f)
                                 )
@@ -1636,6 +1718,128 @@ private fun NovelDownloadImageQualitySelectionDialog(
                             RadioButton(
                                 selected = quality == currentQuality,
                                 onClick = { onSelect(quality) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 翻译引擎选择对话框
+ */
+@Composable
+private fun TranslationEngineSelectionDialog(
+    currentEngine: TranslationEngine,
+    onSelect: (TranslationEngine) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val engines = listOf(
+        TranslationEngine.NONE to stringResource(Res.string.translation_engine_none),
+        TranslationEngine.GOOGLE_FREE to stringResource(Res.string.translation_engine_google_free)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_select_translation_engine)) },
+        text = {
+            Column {
+                engines.forEach { (engine, name) ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(engine) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = engine == currentEngine,
+                                onClick = { onSelect(engine) }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.common_cancel))
+            }
+        }
+    )
+}
+
+/**
+ * 翻译目标语言选择对话框
+ */
+@Composable
+private fun TranslationTargetLanguageSelectionDialog(
+    currentLanguage: TranslationLanguage,
+    onSelect: (TranslationLanguage) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val languages = listOf(
+        TranslationLanguage.SIMPLIFIED_CHINESE to stringResource(Res.string.translation_lang_zh_cn),
+        TranslationLanguage.TRADITIONAL_CHINESE to stringResource(Res.string.translation_lang_zh_tw),
+        TranslationLanguage.ENGLISH to stringResource(Res.string.translation_lang_en),
+        TranslationLanguage.JAPANESE to stringResource(Res.string.translation_lang_ja),
+        TranslationLanguage.KOREAN to stringResource(Res.string.translation_lang_ko),
+        TranslationLanguage.FRENCH to stringResource(Res.string.translation_lang_fr),
+        TranslationLanguage.GERMAN to stringResource(Res.string.translation_lang_de),
+        TranslationLanguage.SPANISH to stringResource(Res.string.translation_lang_es),
+        TranslationLanguage.ITALIAN to stringResource(Res.string.translation_lang_it),
+        TranslationLanguage.RUSSIAN to stringResource(Res.string.translation_lang_ru),
+        TranslationLanguage.PORTUGUESE to stringResource(Res.string.translation_lang_pt),
+        TranslationLanguage.THAI to stringResource(Res.string.translation_lang_th),
+        TranslationLanguage.VIETNAMESE to stringResource(Res.string.translation_lang_vi),
+        TranslationLanguage.INDONESIAN to stringResource(Res.string.translation_lang_id),
+        TranslationLanguage.MALAY to stringResource(Res.string.translation_lang_ms)
+    )
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_select_translation_target_language)) },
+        text = {
+            LazyColumn(
+                modifier = Modifier.heightIn(max = 400.dp)
+            ) {
+                items(languages.size) { index ->
+                    val (language, name) = languages[index]
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(language) }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = language == currentLanguage,
+                                onClick = { onSelect(language) }
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(

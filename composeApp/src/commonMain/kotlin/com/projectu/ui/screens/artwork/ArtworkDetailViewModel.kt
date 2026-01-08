@@ -7,9 +7,11 @@ import com.projectu.shared.domain.model.FollowStatus
 import com.projectu.shared.domain.repository.ArtworkRepository
 import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.usecase.SyncArtworkStatesUseCase
+import com.projectu.shared.domain.usecase.TranslateTextUseCase
 import com.projectu.shared.data.cache.ArtworkCacheManager
 import com.projectu.shared.data.cache.StateCacheManager
 import com.projectu.shared.data.cache.StateCacheEvent
+import com.projectu.shared.data.local.SettingsCache
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -27,7 +29,9 @@ class ArtworkDetailViewModel(
     private val userRepository: UserRepository,
     private val syncArtworkStatesUseCase: SyncArtworkStatesUseCase,
     private val stateCacheManager: StateCacheManager,
-    private val artworkCacheManager: ArtworkCacheManager
+    private val artworkCacheManager: ArtworkCacheManager,
+    private val translateTextUseCase: TranslateTextUseCase,
+    private val settingsCache: SettingsCache
 ) : ScreenModel {
 
     private val _state = MutableStateFlow(ArtworkDetailState())
@@ -143,8 +147,15 @@ class ArtworkDetailViewModel(
             return
         }
         
-        // 翻页时重置展开状态为折叠
-        _state.update { it.copy(currentIndex = newIndex, isInfoExpanded = false) }
+        // 翻页时重置展开状态为折叠，并清除翻译
+        _state.update { 
+            it.copy(
+                currentIndex = newIndex, 
+                isInfoExpanded = false,
+                translatedDescription = null,
+                isTranslating = false
+            ) 
+        }
         
         // 从缓存加载或异步加载
         val artworkId = artworkIds[newIndex]
@@ -440,6 +451,75 @@ class ArtworkDetailViewModel(
     fun collapseInfo() {
         _state.update { it.copy(isInfoExpanded = false) }
     }
+    
+    /**
+     * 翻译作品简介
+     */
+    fun translateDescription() {
+        val currentArtwork = _state.value.artwork ?: return
+        val description = currentArtwork.description
+        
+        if (description.isBlank()) return
+        if (!settingsCache.isTranslationEnabled()) return
+        
+        screenModelScope.launch {
+            _state.update { it.copy(isTranslating = true) }
+            
+            try {
+                // 方案1（已注释）：去除HTML标签进行翻译，但保留换行结构
+                /*
+                val plainText = description
+                    .replace("<br>", "\n")
+                    .replace("<br/>", "\n")
+                    .replace("<br />", "\n")
+                    .replace("</p>", "\n")
+                    .replace(Regex("<[^>]+>"), "")  // 移除其他HTML标签
+                    .replace("&nbsp;", " ")
+                    .replace("&lt;", "<")
+                    .replace("&gt;", ">")
+                    .replace("&amp;", "&")
+                    .replace("&quot;", "\"")
+                    .replace("&#39;", "'")
+                    .replace(Regex("\n{3,}"), "\n\n")  // 连续3个以上换行符替换为2个
+                    .trim()
+                */
+                
+                // 方案2（当前使用）：直接使用原始文本，不做任何清理
+                val plainText = description.trim()
+                
+                val result = translateTextUseCase(
+                    text = plainText,
+                    targetLanguage = settingsCache.getTranslationTargetLanguage(),
+                    engine = settingsCache.getTranslationEngine()
+                )
+                
+                result.onSuccess { translation ->
+                    _state.update {
+                        it.copy(
+                            translatedDescription = translation.translatedText,
+                            isTranslating = false
+                        )
+                    }
+                }.onFailure { _ ->
+                    _state.update { it.copy(isTranslating = false) }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isTranslating = false) }
+            }
+        }
+    }
+    
+    /**
+     * 清除翻译结果
+     */
+    fun clearTranslation() {
+        _state.update { 
+            it.copy(
+                translatedDescription = null,
+                isTranslating = false
+            ) 
+        }
+    }
 }
 
 /**
@@ -463,5 +543,7 @@ data class ArtworkDetailState(
     val currentIndex: Int = 0,
     val artworkCache: Map<String, Artwork> = emptyMap(),
     val isInfoExpanded: Boolean = false,
-    val currentArtworkId: String? = null  // 当前作品ID（用于单个作品模式的重试）
+    val currentArtworkId: String? = null,  // 当前作品ID（用于单个作品模式的重试）
+    val translatedDescription: String? = null,
+    val isTranslating: Boolean = false
 )

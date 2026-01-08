@@ -254,7 +254,7 @@ class ArtworkRecommendViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = "响应数据为空",
+                            error = "Empty response",
                             isEmpty = true
                         )
                     }
@@ -291,7 +291,7 @@ class ArtworkRecommendViewModel(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "加载失败",
+                        error = e.message ?: "Load failed",
                         isEmpty = true
                     )
                 }
@@ -362,7 +362,7 @@ class ArtworkRecommendViewModel(
                 _state.update {
                     it.copy(
                         isLoadingMore = false,
-                        error = e.message ?: "加载失败"
+                        error = e.message ?: "Load failed"
                     )
                 }
             }

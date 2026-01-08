@@ -123,6 +123,16 @@ data class SettingsEntity(
     val novelBackgroundScheme: String = "THEME_DEFAULT",
     
     /**
+     * 翻译引擎
+     */
+    val translationEngine: String = "NONE",
+    
+    /**
+     * 翻译目标语言
+     */
+    val translationTargetLanguage: String = "SIMPLIFIED_CHINESE",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
@@ -153,7 +163,9 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         novelFontSize = this.novelFontSize.name,
         novelTextColor = this.novelTextColor,
         novelBackgroundColor = this.novelBackgroundColor,
-        novelBackgroundScheme = this.novelBackgroundScheme.name
+        novelBackgroundScheme = this.novelBackgroundScheme.name,
+        translationEngine = this.translationEngine.name,
+        translationTargetLanguage = this.translationTargetLanguage.name
     )
 }
 
@@ -192,6 +204,16 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         novelFontSize = com.projectu.shared.data.local.NovelFontSize.fromName(this.novelFontSize),
         novelTextColor = this.novelTextColor,
         novelBackgroundColor = this.novelBackgroundColor,
-        novelBackgroundScheme = com.projectu.shared.data.local.NovelBackgroundScheme.fromName(this.novelBackgroundScheme)
+        novelBackgroundScheme = com.projectu.shared.data.local.NovelBackgroundScheme.fromName(this.novelBackgroundScheme),
+        translationEngine = try {
+            com.projectu.shared.domain.model.TranslationEngine.valueOf(this.translationEngine)
+        } catch (e: Exception) {
+            com.projectu.shared.domain.model.TranslationEngine.NONE
+        },
+        translationTargetLanguage = try {
+            com.projectu.shared.domain.model.TranslationLanguage.valueOf(this.translationTargetLanguage)
+        } catch (e: Exception) {
+            com.projectu.shared.domain.model.TranslationLanguage.SIMPLIFIED_CHINESE
+        }
     )
 }
