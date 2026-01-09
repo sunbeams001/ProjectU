@@ -276,13 +276,17 @@ fun SearchResultContent(
     }
     
     // 同步 Pager 和 Category
-    LaunchedEffect(pagerState.currentPage) {
-        val category = SearchCategory.entries[pagerState.currentPage]
-        if (category != state.currentCategory) {
-            onCategoryChange(category)
+    // 只在滑动结束后同步，避免在动画过程中触发
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress) {
+            val category = SearchCategory.entries[pagerState.currentPage]
+            if (category != state.currentCategory) {
+                onCategoryChange(category)
+            }
         }
     }
     
+    // 当category变化时，同步pager位置
     LaunchedEffect(state.currentCategory) {
         val targetPage = state.currentCategory.ordinal
         if (pagerState.currentPage != targetPage) {
@@ -326,10 +330,8 @@ fun SearchResultContent(
                                         // 点击当前选中的tab：刷新或置顶
                                         scrollToTopOrRefresh()
                                     } else {
-                                        // 切换到其他tab
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(category.ordinal)
-                                        }
+                                        // 切换到其他tab：只需更新category，LaunchedEffect会自动同步pager
+                                        onCategoryChange(category)
                                     }
                                 },
                                 text = { Text(category.getDisplayName(), maxLines = 1) }
