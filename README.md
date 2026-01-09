@@ -1,7 +1,12 @@
 # ProjectU - Pixiv Kotlin Multiplatform Client
 
-> 📅 最后更新: 2026-01-05  
-> 🚀 当前版本: v1.0.3  
+![GitHub release](https://img.shields.io/github/v/release/sunbeams001/ProjectU?style=flat-square&color=blue)
+![GitHub tag](https://img.shields.io/github/v/tag/sunbeams001/ProjectU?style=flat-square&color=blueviolet)
+![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Desktop-brightgreen.svg?style=flat-square)
+![Android](https://img.shields.io/badge/Android-API%2024%2B-green.svg?style=flat-square)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-purple.svg?style=flat-square)
+![License](https://img.shields.io/github/license/sunbeams001/ProjectU?style=flat-square&color=orange)
+
 > 📱 支持平台: Android (API 24+) | Desktop (Windows/Mac/Linux)
 
 一个功能完整的 Pixiv 客户端应用，使用 Kotlin Compose Multiplatform 开发，提供现代化的界面体验和丰富的功能。
