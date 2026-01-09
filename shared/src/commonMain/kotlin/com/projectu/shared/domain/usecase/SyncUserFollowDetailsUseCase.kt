@@ -65,7 +65,6 @@ class SyncUserFollowDetailsUseCase(
                     }
                 } catch (e: Exception) {
                     // 异常情况，保持原状态
-                    println("⚠️ 获取用户${user.id}关注详情失败: ${e.message}")
                     user.id to user.followStatus
                 }
             }
@@ -114,7 +113,6 @@ class SyncUserFollowDetailsUseCase(
                 user
             }
         } catch (e: Exception) {
-            println("⚠️ 获取用户${user.id}关注详情失败: ${e.message}")
             user
         }
     }

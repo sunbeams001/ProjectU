@@ -413,7 +413,6 @@ class PixivApiClient(
         } catch (e: Exception) {
             // 如果是403错误（可能是token过期），刷新token并重试
             if (e.message?.contains("403") == true) {
-                println("⚠️ POST请求遇到403错误，刷新CSRF token并重试...")
                 csrfToken = fetchToken()
                 httpClient.submitForm(
                     url = "$host$url",

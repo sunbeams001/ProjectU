@@ -49,8 +49,7 @@ class UserStateManager(
                     _currentUser.value = user
                 }
                 .onFailure { error ->
-                    // 获取失败时记录日志，但不影响应用启动
-                    println("UserStateManager: Failed to load current user - ${error.message}")
+                    // 获取失败时不影响应用启动
                     _currentUser.value = null
                 }
             _isLoading.value = false

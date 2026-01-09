@@ -34,6 +34,11 @@ enum class MarkerStatus {
  * @param currentNovelId 当前正在加载/展示的小说ID（用于重试）
  * @param isMarkerLoading 书签操作是否正在加载
  * @param pageScrollPositions 每个页面的滚动位置（页码 -> (firstVisibleItemIndex, firstVisibleItemScrollOffset)）
+ * @param translatedDescription 简介翻译
+ * @param isTranslating 是否正在翻译简介
+ * @param displayMode 显示模式（原文/翻译/对照）
+ * @param pageTranslations 页面翻译缓存（页码（从1开始） -> 翻译内容）
+ * @param translatingPages 正在翻译的页面集合（页码从1开始）
  */
 data class NovelDetailState(
     val novel: Novel? = null,
@@ -50,7 +55,11 @@ data class NovelDetailState(
     val isMarkerLoading: Boolean = false,
     val pageScrollPositions: Map<Int, Pair<Int, Int>> = emptyMap(),
     val translatedDescription: String? = null,
-    val isTranslating: Boolean = false
+    val isTranslating: Boolean = false,
+    // 新增翻译相关字段
+    val displayMode: NovelDisplayMode = NovelDisplayMode.ORIGINAL,
+    val pageTranslations: Map<Int, String> = emptyMap(),
+    val translatingPages: Set<Int> = emptySet()
 ) {
     /**
      * 总页数

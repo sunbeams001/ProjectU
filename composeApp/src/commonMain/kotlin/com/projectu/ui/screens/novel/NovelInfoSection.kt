@@ -81,6 +81,7 @@ fun NovelInfoSection(
     isMarkerLoading: Boolean = false,
     translatedDescription: String? = null,
     isTranslating: Boolean = false,
+    displayMode: NovelDisplayMode = NovelDisplayMode.ORIGINAL,
     onToggle: () -> Unit,
     onCollapse: () -> Unit = onToggle,
     onMarkerClick: () -> Unit = {},
@@ -93,6 +94,8 @@ fun NovelInfoSection(
     onBlockTag: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onTranslateClick: (() -> Unit)? = null,
     onClearTranslation: (() -> Unit)? = null,
+    onSwitchDisplayMode: ((NovelDisplayMode) -> Unit)? = null,
+    onRetranslateCurrentPage: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val r18Color = Color(0xFFFF4060)
@@ -749,6 +752,62 @@ fun NovelInfoSection(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
+                            // 阅读翻译按钮
+                            if (onSwitchDisplayMode != null) {
+                                var showTranslationMenu by remember { mutableStateOf(false) }
+                                
+                                Box {
+                                    NovelActionButton(
+                                        icon = when (displayMode) {
+                                            NovelDisplayMode.ORIGINAL -> Icons.Default.Translate
+                                            NovelDisplayMode.BILINGUAL -> Icons.Default.Language
+                                            NovelDisplayMode.TRANSLATED -> Icons.Default.TextFields
+                                        },
+                                        label = when (displayMode) {
+                                            NovelDisplayMode.ORIGINAL -> stringResource(Res.string.show_translation)
+                                            NovelDisplayMode.BILINGUAL -> stringResource(Res.string.translation_only)
+                                            NovelDisplayMode.TRANSLATED -> stringResource(Res.string.show_original)
+                                        },
+                                        onClick = {
+                                            // 循环切换：原文 → 对照 → 仅翻译 → 原文
+                                            val nextMode = when (displayMode) {
+                                                NovelDisplayMode.ORIGINAL -> NovelDisplayMode.BILINGUAL
+                                                NovelDisplayMode.BILINGUAL -> NovelDisplayMode.TRANSLATED
+                                                NovelDisplayMode.TRANSLATED -> NovelDisplayMode.ORIGINAL
+                                            }
+                                            onSwitchDisplayMode(nextMode)
+                                        },
+                                        onLongClick = {
+                                            // 长按显示菜单
+                                            showTranslationMenu = true
+                                        }
+                                    )
+                                    
+                                    // 翻译菜单
+                                    DropdownMenu(
+                                        expanded = showTranslationMenu,
+                                        onDismissRequest = { showTranslationMenu = false }
+                                    ) {
+                                        // 重新翻译当前页
+                                        if (onRetranslateCurrentPage != null) {
+                                            DropdownMenuItem(
+                                                text = { Text(stringResource(Res.string.retranslate_current_page)) },
+                                                onClick = {
+                                                    onRetranslateCurrentPage()
+                                                    showTranslationMenu = false
+                                                },
+                                                leadingIcon = {
+                                                    Icon(
+                                                        Icons.Default.Refresh,
+                                                        contentDescription = null
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            
                             // 推荐作品按钮
                             NovelActionButton(
                                 icon = Icons.Default.Recommend,
@@ -878,14 +937,22 @@ private fun NovelActionButton(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .then(
                 if (enabled) {
-                    Modifier.clickable(onClick = onClick)
+                    if (onLongClick != null) {
+                        Modifier.combinedClickable(
+                            onClick = onClick,
+                            onLongClick = onLongClick
+                        )
+                    } else {
+                        Modifier.clickable(onClick = onClick)
+                    }
                 } else {
                     Modifier
                 }

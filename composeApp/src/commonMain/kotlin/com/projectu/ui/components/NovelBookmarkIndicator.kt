@@ -112,32 +112,23 @@ fun NovelBookmarkIndicator(
                                     // 根据配置执行收藏行为
                                     when (clickAction) {
                                         BookmarkAction.PUBLIC -> {
-                                            println("📌 NovelBookmarkIndicator: 添加公开收藏（配置） - 小说ID: ${novel.id}")
                                             bookmarkUseCase(
                                                 novelId = novel.id.toLong(),
                                                 isPrivate = false
                                             ).onSuccess {
                                                 onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
-                                                println("✅ 收藏成功：公开收藏")
-                                            }.onFailure { e ->
-                                                println("❌ 收藏失败: ${e.message}")
                                             }
                                         }
                                         BookmarkAction.PRIVATE -> {
-                                            println("📌 NovelBookmarkIndicator: 添加私人收藏（配置） - 小说ID: ${novel.id}")
                                             bookmarkUseCase(
                                                 novelId = novel.id.toLong(),
                                                 isPrivate = true
                                             ).onSuccess {
                                                 onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
-                                                println("✅ 收藏成功：私人收藏")
-                                            }.onFailure { e ->
-                                                println("❌ 收藏失败: ${e.message}")
                                             }
                                         }
                                         BookmarkAction.WITH_TAGS -> {
                                             // 显示标签选择对话框
-                                            println("📌 NovelBookmarkIndicator: 打开标签收藏对话框 - 小说ID: ${novel.id}")
                                             tagDialogTrigger = clickAction
                                             showTagDialog = true
                                         }
@@ -145,13 +136,9 @@ fun NovelBookmarkIndicator(
                                 }
                                 BookmarkStatus.PUBLIC, BookmarkStatus.PRIVATE -> {
                                     // 取消收藏
-                                    println("📌 NovelBookmarkIndicator: 取消收藏 - 小说ID: ${novel.id}")
                                     unbookmarkUseCase(novel.id.toLong())
                                         .onSuccess {
                                             onStatusChanged?.invoke(BookmarkStatus.NOT_BOOKMARKED)
-                                            println("✅ 已取消收藏")
-                                        }.onFailure { e ->
-                                            println("❌ 取消收藏失败: ${e.message}")
                                         }
                                 }
                             }
@@ -171,32 +158,23 @@ fun NovelBookmarkIndicator(
                                     // 根据配置执行收藏行为
                                     when (longPressAction) {
                                         BookmarkAction.PUBLIC -> {
-                                            println("📌 NovelBookmarkIndicator: 添加公开收藏（长按配置） - 小说ID: ${novel.id}")
                                             bookmarkUseCase(
                                                 novelId = novel.id.toLong(),
                                                 isPrivate = false
                                             ).onSuccess {
                                                 onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
-                                                println("✅ 收藏成功：公开收藏")
-                                            }.onFailure { e ->
-                                                println("❌ 收藏失败: ${e.message}")
                                             }
                                         }
                                         BookmarkAction.PRIVATE -> {
-                                            println("📌 NovelBookmarkIndicator: 添加私人收藏（长按配置） - 小说ID: ${novel.id}")
                                             bookmarkUseCase(
                                                 novelId = novel.id.toLong(),
                                                 isPrivate = true
                                             ).onSuccess {
                                                 onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
-                                                println("✅ 收藏成功：私人收藏")
-                                            }.onFailure { e ->
-                                                println("❌ 私人收藏失败: ${e.message}")
                                             }
                                         }
                                         BookmarkAction.WITH_TAGS -> {
                                             // 显示标签选择对话框
-                                            println("📌 NovelBookmarkIndicator: 长按打开标签收藏对话框 - 小说ID: ${novel.id}")
                                             tagDialogTrigger = longPressAction
                                             showTagDialog = true
                                         }
@@ -204,27 +182,18 @@ fun NovelBookmarkIndicator(
                                 }
                                 BookmarkStatus.PUBLIC -> {
                                     // 先取消，再添加为私人收藏
-                                    println("📌 NovelBookmarkIndicator: 公开→私人 - 小说ID: ${novel.id}")
                                     unbookmarkUseCase(novel.id.toLong())
                                         .onSuccess {
-                                            println("🔸 步骤1完成：已取消公开收藏")
                                             bookmarkUseCase(
                                                 novelId = novel.id.toLong(),
                                                 isPrivate = true
                                             ).onSuccess {
-                                                println("🔸 步骤2完成：已添加私人收藏")
                                                 onStatusChanged?.invoke(BookmarkStatus.PRIVATE)
-                                                println("✅ 已切换为私人收藏")
-                                            }.onFailure { e ->
-                                                println("❌ 切换为私人收藏失败: ${e.message}")
                                             }
-                                        }.onFailure { e ->
-                                            println("❌ 取消收藏失败: ${e.message}")
                                         }
                                 }
                                 BookmarkStatus.PRIVATE -> {
                                     // 先取消，再添加为公开收藏
-                                    println("📌 NovelBookmarkIndicator: 私人→公开 - 小说ID: ${novel.id}")
                                     unbookmarkUseCase(novel.id.toLong())
                                         .onSuccess {
                                             bookmarkUseCase(
@@ -232,12 +201,7 @@ fun NovelBookmarkIndicator(
                                                 isPrivate = false
                                             ).onSuccess {
                                                 onStatusChanged?.invoke(BookmarkStatus.PUBLIC)
-                                                println("✅ 已切换为公开收藏")
-                                            }.onFailure { e ->
-                                                println("❌ 切换为公开收藏失败: ${e.message}")
                                             }
-                                        }.onFailure { e ->
-                                            println("❌ 取消收藏失败: ${e.message}")
                                         }
                                 }
                             }

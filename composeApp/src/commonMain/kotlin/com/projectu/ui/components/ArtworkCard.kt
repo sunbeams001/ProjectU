@@ -90,12 +90,9 @@ fun ArtworkCard(
                         )
                         .combinedClickable(
                             onClick = {
-                                println("ArtworkCard: 点击图片 - ID: ${artwork.id}, 标题: ${artwork.title}")
                                 onClick()
                             },
-                            onLongClick = {
-                                println("ArtworkCard: 长按图片 - ID: ${artwork.id}, 标题: ${artwork.title}")
-                            }
+                            onLongClick = {}
                         ),
                     contentScale = ContentScale.Crop,
                     showErrorDetails = false
@@ -116,12 +113,9 @@ fun ArtworkCard(
                     .fillMaxWidth()
                     .combinedClickable(
                         onClick = {
-                            println("ArtworkCard: 点击信息区域 - ID: ${artwork.id}, 作者: ${artwork.userName}")
                             onClick()
                         },
-                        onLongClick = {
-                            println("ArtworkCard: 长按信息区域 - ID: ${artwork.id}, 作者: ${artwork.userName}")
-                        }
+                        onLongClick = {}
                     )
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)

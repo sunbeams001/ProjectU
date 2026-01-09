@@ -16,6 +16,8 @@ import dev.datlag.kcef.KCEF
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.context.loadKoinModules
+import projectu.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import java.io.File
 import kotlin.math.max
 

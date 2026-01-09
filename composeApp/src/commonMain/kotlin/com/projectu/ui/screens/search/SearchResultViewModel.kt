@@ -451,7 +451,6 @@ class SearchResultViewModel(
                     }
                 }
             } catch (e: Exception) {
-                println("[SearchResultViewModel] 用户搜索异常: ${e.message}")
                 e.printStackTrace()
                 _state.update { 
                     it.copy(

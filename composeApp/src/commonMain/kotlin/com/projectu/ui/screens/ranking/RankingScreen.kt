@@ -288,8 +288,6 @@ fun RankingContent(
             LaunchedEffect(targetScrollIndex) {
                 val scrollIndex = targetScrollIndex
                 if (scrollIndex != null && scrollIndex > 0) {
-                    println("[RankingScreen] Scrolling to index: $scrollIndex")
-                    
                     // 平滑滚动到目标位置
                     when (listState) {
                         is androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState -> {

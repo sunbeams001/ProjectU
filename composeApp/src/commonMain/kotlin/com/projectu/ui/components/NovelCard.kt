@@ -96,12 +96,9 @@ fun NovelCard(
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = {
-                        println("NovelCard: 点击卡片主体 - ID: ${novel.id}, 标题: ${novel.title}")
                         onClick()
                     },
-                    onLongClick = {
-                        println("NovelCard: 长按卡片主体 - ID: ${novel.id}, 标题: ${novel.title}")
-                    }
+                    onLongClick = {}
                 )
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -114,12 +111,9 @@ fun NovelCard(
                     .clip(RoundedCornerShape(8.dp))
                     .combinedClickable(
                         onClick = {
-                            println("NovelCard: 点击封面 - ID: ${novel.id}")
                             onClick()
                         },
-                        onLongClick = {
-                            println("NovelCard: 长按封面 - ID: ${novel.id}")
-                        }
+                        onLongClick = {}
                     )
             ) {
                 // 封面图片或默认图标
@@ -219,8 +213,8 @@ fun NovelCard(
                                 modifier = Modifier
                                     .height(20.dp)
                                     .combinedClickable(
-                                        onClick = { println("NovelCard: 点击标签 - R-18") },
-                                        onLongClick = { println("NovelCard: 长按标签 - R-18") }
+                                        onClick = {},
+                                        onLongClick = {}
                                     )
                             ) {
                                 Box(
@@ -246,8 +240,8 @@ fun NovelCard(
                                 modifier = Modifier
                                     .height(20.dp)
                                     .combinedClickable(
-                                        onClick = { println("NovelCard: 点击标签 - R-18G") },
-                                        onLongClick = { println("NovelCard: 长按标签 - R-18G") }
+                                        onClick = {},
+                                        onLongClick = {}
                                     )
                             ) {
                                 Box(
@@ -285,9 +279,7 @@ fun NovelCard(
                                         onClick = { 
                                             onTagClick?.invoke(tag)
                                         },
-                                        onLongClick = { 
-                                            println("NovelCard: 长按标签 - ${tag.translatedName ?: tag.name}") 
-                                        }
+                                        onLongClick = {}
                                     )
                             ) {
                                 Box(
@@ -345,14 +337,11 @@ fun NovelCard(
                             modifier = Modifier
                                 .combinedClickable(
                                     onClick = { 
-                                        println("NovelCard: 点击系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
                                         novel.seriesId?.let { seriesId ->
                                             onSeriesClick?.invoke(seriesId)
                                         }
                                     },
-                                    onLongClick = { 
-                                        println("NovelCard: 长按系列 - ${novel.seriesTitle} (ID: ${novel.seriesId})") 
-                                    }
+                                    onLongClick = {}
                                 )
                         )
                     }

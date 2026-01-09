@@ -13,6 +13,8 @@ import com.projectu.shared.domain.repository.UserRepository
 import com.projectu.shared.domain.usecase.SyncNovelStatesUseCase
 import com.projectu.shared.domain.usecase.TranslateTextUseCase
 import com.projectu.shared.data.local.SettingsCache
+import com.projectu.shared.domain.model.TranslationLanguage
+import com.projectu.shared.domain.model.TranslationEngine
 import com.projectu.ui.util.NovelContentParser
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -34,7 +36,8 @@ class NovelDetailViewModel(
     private val stateCacheManager: StateCacheManager,
     private val novelCacheManager: NovelCacheManager,
     private val translateTextUseCase: TranslateTextUseCase,
-    private val settingsCache: SettingsCache
+    private val settingsCache: SettingsCache,
+    private val novelTranslationCacheRepository: com.projectu.shared.domain.repository.NovelTranslationCacheRepository
 ) : ScreenModel {
 
     private val _state = MutableStateFlow(NovelDetailState())
@@ -213,6 +216,10 @@ class NovelDetailViewModel(
                 if (!silent) {
                     val followStatus = getAuthorFollowStatus(globalCachedNovel.userId)
                     val pages = parseNovelContent(globalCachedNovel)
+                    
+                    // 加载翻译缓存
+                    loadTranslationCache(novelId)
+                    
                     _state.update {
                         it.copy(
                             novel = globalCachedNovel,
@@ -275,6 +282,9 @@ class NovelDetailViewModel(
                 
                 // 缓存到全局缓存
                 novelCacheManager.cacheNovelDetail(novel)
+                
+                // 加载翻译缓存
+                loadTranslationCache(novelId)
                 
                 if (!silent) {
                     _state.update {
@@ -359,7 +369,11 @@ class NovelDetailViewModel(
     fun nextPage() {
         val currentState = _state.value
         if (currentState.canGoNext) {
-            _state.update { it.copy(currentPage = it.currentPage + 1) }
+            val newPage = currentState.currentPage + 1
+            _state.update { it.copy(currentPage = newPage) }
+            
+            // 翻页后检查新页面的翻译状态
+            checkPageTranslationState(newPage)
         }
     }
 
@@ -369,7 +383,11 @@ class NovelDetailViewModel(
     fun previousPage() {
         val currentState = _state.value
         if (currentState.canGoPrevious) {
-            _state.update { it.copy(currentPage = it.currentPage - 1) }
+            val newPage = currentState.currentPage - 1
+            _state.update { it.copy(currentPage = newPage) }
+            
+            // 翻页后检查新页面的翻译状态
+            checkPageTranslationState(newPage)
         }
     }
 
@@ -380,6 +398,9 @@ class NovelDetailViewModel(
         val currentState = _state.value
         if (page in 1..currentState.totalPages) {
             _state.update { it.copy(currentPage = page) }
+            
+            // 翻页后检查新页面的翻译状态
+            checkPageTranslationState(page)
         }
     }
 
@@ -647,4 +668,380 @@ class NovelDetailViewModel(
             ) 
         }
     }
+    
+    /**
+     * 切换显示模式
+     * 
+     * @param mode 新的显示模式
+     */
+    fun switchDisplayMode(mode: NovelDisplayMode) {
+        _state.update { it.copy(displayMode = mode) }
+        
+        // 如果切换到翻译或对照模式，触发当前页面的翻译
+        if (mode != NovelDisplayMode.ORIGINAL) {
+            translateCurrentPageIfNeeded()
+        }
+    }
+    
+    /**
+     * 检查页面翻译状态，并根据情况调整显示模式
+     * 
+     * @param pageNumber 页码
+     */
+    private fun checkPageTranslationState(pageNumber: Int) {
+        val currentState = _state.value
+        val displayMode = currentState.displayMode
+        
+        // 如果不在翻译相关模式下，无需检查
+        if (displayMode == NovelDisplayMode.ORIGINAL) {
+            return
+        }
+        
+        val hasTranslation = currentState.pageTranslations.containsKey(pageNumber)
+        val isTranslating = currentState.translatingPages.contains(pageNumber)
+        
+        when {
+            // 如果页面已有翻译，保持当前显示模式
+            hasTranslation -> {
+                // 保持当前显示模式
+            }
+            // 如果页面正在翻译，保持当前显示模式
+            isTranslating -> {
+                // 保持当前显示模式
+            }
+            // 如果页面没有翻译且不在翻译中，触发翻译
+            else -> {
+                translateCurrentPageIfNeeded()
+            }
+        }
+    }
+    
+    /**
+     * 翻译当前页面（若需要）
+     */
+    private fun translateCurrentPageIfNeeded() {
+        val state = _state.value
+        val currentPage = state.currentPage
+        
+        // 如果当前页面已有翻译或正在翻译，则不重复翻译
+        if (state.pageTranslations.containsKey(currentPage) || 
+            state.translatingPages.contains(currentPage)) {
+            return
+        }
+        
+        translatePage(currentPage)
+    }
+    
+    /**
+     * 翻译指定页面
+     * 
+     * @param pageNumber 页码（从1开始）
+     */
+    private fun translatePage(pageNumber: Int) {
+        val state = _state.value
+        val novel = state.novel ?: return
+        val page = state.parsedPages.getOrNull(pageNumber - 1) ?: return
+        
+        if (!settingsCache.isTranslationEnabled()) {
+            return
+        }
+        if (page.content.isBlank()) {
+            return
+        }
+        
+        screenModelScope.launch {
+            val targetLanguage = settingsCache.getTranslationTargetLanguage()
+            val engine = settingsCache.getTranslationEngine()
+            
+            // 先检查缓存
+            val cachedTranslation = novelTranslationCacheRepository.getTranslation(
+                novelId = novel.id,
+                pageIndex = pageNumber - 1, // 缓存使用0-based索引
+                targetLanguage = targetLanguage.code
+            )
+            
+            if (cachedTranslation != null) {
+                // 使用缓存的翻译
+                _state.update {
+                    it.copy(
+                        pageTranslations = it.pageTranslations + (pageNumber to cachedTranslation)
+                    )
+                }
+                return@launch
+            }
+            
+            // 缓存未命中，开始翻译
+            _state.update { 
+                it.copy(
+                    translatingPages = it.translatingPages + pageNumber,
+                    pageTranslations = it.pageTranslations - pageNumber // 清空旧翻译（如果有）
+                ) 
+            }
+            
+            try {
+                // 检查文本长度，决定是否分块
+                val maxChunkSize = 4500
+                
+                if (page.content.length <= maxChunkSize) {
+                    // 短文本，直接翻译
+                    val result = translateTextUseCase(
+                        text = page.content,
+                        targetLanguage = targetLanguage,
+                        engine = engine
+                    )
+                    
+                    result.onSuccess { translation ->
+                        val translatedText = translation.translatedText
+                        
+                        // 保存到缓存
+                        novelTranslationCacheRepository.saveTranslation(
+                            novelId = novel.id,
+                            pageIndex = pageNumber - 1,
+                            originalContent = page.content,
+                            translatedContent = translatedText,
+                            targetLanguage = targetLanguage.code,
+                            engine = engine.name
+                        )
+                        
+                        // 更新状态
+                        _state.update {
+                            it.copy(
+                                pageTranslations = it.pageTranslations + (pageNumber to translatedText),
+                                translatingPages = it.translatingPages - pageNumber
+                            )
+                        }
+                    }.onFailure { error ->
+                        error.printStackTrace()
+                        _state.update {
+                            it.copy(translatingPages = it.translatingPages - pageNumber)
+                        }
+                    }
+                } else {
+                    // 长文本，分块翻译并增量显示
+                    translatePageIncrementally(novel.id, pageNumber, page.content, targetLanguage, engine)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _state.update {
+                    it.copy(translatingPages = it.translatingPages - pageNumber)
+                }
+            }
+        }
+    }
+    
+    /**
+     * 分块翻译页面，每块翻译完成后立即显示
+     * 
+     * @param novelId 小说ID
+     * @param pageNumber 页码（从1开始）
+     * @param content 页面内容
+     * @param targetLanguage 目标语言
+     * @param engine 翻译引擎
+     */
+    private suspend fun translatePageIncrementally(
+        novelId: String,
+        pageNumber: Int,
+        content: String,
+        targetLanguage: TranslationLanguage,
+        engine: TranslationEngine
+    ) {
+        try {
+            // 将文本分块
+            val chunks = splitTextIntoChunks(content, 4500)
+            
+            val translatedChunks = mutableListOf<String>()
+            
+            // 逐个翻译每个块
+            chunks.forEachIndexed { index, chunk ->
+                val result = translateTextUseCase(
+                    text = chunk,
+                    targetLanguage = targetLanguage,
+                    engine = engine
+                )
+                
+                result.onSuccess { translation ->
+                    val translatedChunk = translation.translatedText
+                    translatedChunks.add(translatedChunk)
+                    
+                    // 每翻译完一块，立即更新UI显示
+                    val partialTranslation = translatedChunks.joinToString("")
+                    
+                    _state.update {
+                        it.copy(
+                            pageTranslations = it.pageTranslations + (pageNumber to partialTranslation)
+                        )
+                    }
+                }.onFailure { error ->
+                    error.printStackTrace()
+                    // 出错时停止翻译
+                    _state.update {
+                        it.copy(translatingPages = it.translatingPages - pageNumber)
+                    }
+                    return
+                }
+                
+                // 延迟以避免API限流
+                if (index < chunks.size - 1) {
+                    kotlinx.coroutines.delay(500)
+                }
+            }
+            
+            // 所有块翻译完成，保存到缓存
+            val fullTranslation = translatedChunks.joinToString("")
+            
+            novelTranslationCacheRepository.saveTranslation(
+                novelId = novelId,
+                pageIndex = pageNumber - 1,
+                originalContent = content,
+                translatedContent = fullTranslation,
+                targetLanguage = targetLanguage.code,
+                engine = engine.toString()
+            )
+            
+            // 移除翻译中标记
+            _state.update {
+                it.copy(translatingPages = it.translatingPages - pageNumber)
+            }
+            
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _state.update {
+                it.copy(translatingPages = it.translatingPages - pageNumber)
+            }
+        }
+    }
+    
+    /**
+     * 将文本分块
+     */
+    private fun splitTextIntoChunks(text: String, maxChunkSize: Int): List<String> {
+        if (text.length <= maxChunkSize) {
+            return listOf(text)
+        }
+        
+        val chunks = mutableListOf<String>()
+        var currentChunk = StringBuilder()
+        
+        // 按句子分割（简单处理：按句号、问号、感叹号等分割）
+        val sentences = text.split(Regex("(?<=[。！？\\.\\!\\?\\n])"))
+        
+        for (sentence in sentences) {
+            if (sentence.isBlank()) continue
+            
+            // 如果单个句子就超过限制，需要强制分割
+            if (sentence.length > maxChunkSize) {
+                // 先保存当前块
+                if (currentChunk.isNotEmpty()) {
+                    chunks.add(currentChunk.toString())
+                    currentChunk.clear()
+                }
+                
+                // 强制按字符数分割长句
+                var remaining = sentence
+                while (remaining.length > maxChunkSize) {
+                    chunks.add(remaining.substring(0, maxChunkSize))
+                    remaining = remaining.substring(maxChunkSize)
+                }
+                if (remaining.isNotEmpty()) {
+                    currentChunk.append(remaining)
+                }
+                continue
+            }
+            
+            // 检查加入这个句子后是否超过限制
+            if (currentChunk.length + sentence.length > maxChunkSize) {
+                // 保存当前块并开始新块
+                chunks.add(currentChunk.toString())
+                currentChunk.clear()
+            }
+            
+            currentChunk.append(sentence)
+        }
+        
+        // 添加最后一块
+        if (currentChunk.isNotEmpty()) {
+            chunks.add(currentChunk.toString())
+        }
+        
+        return chunks
+    }
+    
+    /**
+     * 清除当前小说的翻译缓存
+     */
+    fun clearTranslationCache() {
+        val novel = _state.value.novel ?: return
+        
+        screenModelScope.launch {
+            try {
+                novelTranslationCacheRepository.clearNovelCache(novel.id)
+                _state.update {
+                    it.copy(
+                        pageTranslations = emptyMap(),
+                        displayMode = NovelDisplayMode.ORIGINAL
+                    )
+                }
+            } catch (e: Exception) {
+                // 处理错误
+            }
+        }
+    }
+    
+    /**
+     * 重新翻译当前页面
+     * 清除当前页的翻译缓存并重新翻译
+     */
+    fun retranslateCurrentPage() {
+        val state = _state.value
+        val novel = state.novel ?: return
+        val currentPage = state.currentPage
+        
+        screenModelScope.launch {
+            try {
+                // 清除当前页的缓存
+                novelTranslationCacheRepository.clearPageCache(
+                    novelId = novel.id,
+                    pageIndex = currentPage - 1,
+                    targetLanguage = settingsCache.getTranslationTargetLanguage().code
+                )
+                
+                // 从状态中移除当前页的翻译
+                _state.update {
+                    it.copy(
+                        pageTranslations = it.pageTranslations - currentPage
+                    )
+                }
+                
+                // 如果当前在翻译模式下，触发重新翻译
+                if (state.displayMode != NovelDisplayMode.ORIGINAL) {
+                    translatePage(currentPage)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    
+    /**
+     * 加载小说的所有翻译缓存
+     */
+    private suspend fun loadTranslationCache(novelId: String) {
+        try {
+            val targetLanguage = settingsCache.getTranslationTargetLanguage()
+            val translations = novelTranslationCacheRepository.getNovelTranslations(
+                novelId = novelId,
+                targetLanguage = targetLanguage.code
+            )
+            
+            // 将0-based索引转换为1-based页码
+            val pageTranslations = translations.mapKeys { it.key + 1 }
+            
+            _state.update {
+                it.copy(pageTranslations = pageTranslations)
+            }
+        } catch (e: Exception) {
+            // 加载缓存失败，忽略错误
+        }
+    }
 }
+

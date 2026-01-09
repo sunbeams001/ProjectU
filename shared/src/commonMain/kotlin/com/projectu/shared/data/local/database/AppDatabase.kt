@@ -10,6 +10,7 @@ import com.projectu.shared.data.local.dao.BlockRuleDao
 import com.projectu.shared.data.local.dao.BrowseHistoryDao
 import com.projectu.shared.data.local.dao.DownloadDao
 import com.projectu.shared.data.local.dao.DownloadRulesDao
+import com.projectu.shared.data.local.dao.NovelTranslationCacheDao
 import com.projectu.shared.data.local.dao.SettingsDao
 import com.projectu.shared.data.local.dao.UgoiraCacheDao
 import com.projectu.shared.data.local.entity.ArtworkEntity
@@ -17,6 +18,7 @@ import com.projectu.shared.data.local.entity.BlockRuleEntity
 import com.projectu.shared.data.local.entity.BrowseHistoryEntity
 import com.projectu.shared.data.local.entity.DownloadRuleEntity
 import com.projectu.shared.data.local.entity.DownloadTaskEntity
+import com.projectu.shared.data.local.entity.NovelTranslationCacheEntity
 import com.projectu.shared.data.local.entity.SettingsEntity
 import com.projectu.shared.data.local.entity.UgoiraCacheEntity
 
@@ -32,9 +34,10 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         DownloadTaskEntity::class,
         DownloadRuleEntity::class,
         BrowseHistoryEntity::class,
-        BlockRuleEntity::class
+        BlockRuleEntity::class,
+        NovelTranslationCacheEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -74,6 +77,11 @@ abstract class AppDatabase : RoomDatabase() {
      * 屏蔽规则数据访问对象
      */
     abstract fun blockRuleDao(): BlockRuleDao
+    
+    /**
+     * 小说翻译缓存数据访问对象
+     */
+    abstract fun novelTranslationCacheDao(): NovelTranslationCacheDao
 }
 
 /**

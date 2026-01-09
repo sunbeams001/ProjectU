@@ -158,7 +158,7 @@
     
     <!-- Settings - Translation -->
     <string name="settings_translation_engine">翻訳エンジン</string>
-    <string name="settings_translation_engine_desc">作品の説明と小説の内容を翻訳</string>
+    <string name="settings_translation_engine_desc">作品の説明、小説の説明、小説の閲覧内容を翻訳</string>
     <string name="settings_translation_target_language">ターゲット言語</string>
     <string name="settings_translation_target_language_desc">翻訳先の言語</string>
     <string name="settings_select_translation_engine">翻訳エンジンを選択</string>
@@ -1014,5 +1014,15 @@
     <string name="desktop_webview_restart_required">WebView機能を使用するにはアプリの再起動が必要です</string>
     <string name="desktop_webview_initializing">WebViewコンポーネントを初期化中...</string>
     <string name="desktop_download_progress">ダウンロード進行状況: %d%%</string>
+    
+    <!-- Novel Translation -->
+    <string name="show_translation">翻訳を表示</string>
+    <string name="show_original">原文を表示</string>
+    <string name="translation_only">翻訳のみ</string>
+    <string name="translating">翻訳中...</string>
+    <string name="translation_not_available">翻訳はまだ利用できません</string>
+    <string name="retranslate_current_page">現在のページを再翻訳</string>
+    <string name="description_original">原文モード</string>
+    <string name="description_translated">翻訳モード</string>
 </resources>
 

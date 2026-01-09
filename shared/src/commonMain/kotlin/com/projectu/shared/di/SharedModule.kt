@@ -272,6 +272,13 @@ val repositoryModule = module {
     single<com.projectu.shared.domain.repository.BlockRuleRepository> {
         com.projectu.shared.data.repository.BlockRuleRepositoryImpl(get())
     }
+    
+    // 小说翻译缓存仓储
+    single {
+        com.projectu.shared.domain.repository.NovelTranslationCacheRepository(
+            dao = get<com.projectu.shared.data.local.database.AppDatabase>().novelTranslationCacheDao()
+        )
+    }
 }
 
 /**

@@ -146,7 +146,7 @@
     
     <!-- Settings - Translation -->
     <string name="settings_translation_engine">翻译引擎</string>
-    <string name="settings_translation_engine_desc">翻译作品简介和小说内容</string>
+    <string name="settings_translation_engine_desc">翻译作品简介、小说简介和小说阅读内容</string>
     <string name="settings_translation_target_language">目标语言</string>
     <string name="settings_translation_target_language_desc">翻译的目标语言</string>
     <string name="settings_select_translation_engine">选择翻译引擎</string>
@@ -168,6 +168,16 @@
     <string name="translation_lang_vi">Tiếng Việt</string>
     <string name="translation_lang_id">Bahasa Indonesia</string>
     <string name="translation_lang_ms">Bahasa Melayu</string>
+    
+    <!-- Novel Reading Translation -->
+    <string name="show_translation">显示翻译</string>
+    <string name="show_original">显示原文</string>
+    <string name="translation_only">仅翻译</string>
+    <string name="translating">翻译中...</string>
+    <string name="translation_not_available">暂无翻译</string>
+    <string name="retranslate_current_page">重新翻译当前页</string>
+    <string name="description_original">原文</string>
+    <string name="description_translated">译文</string>
     
     <string name="startup_tab_last_used">上次退出的页面</string>
     <string name="startup_tab_home">搜索</string>

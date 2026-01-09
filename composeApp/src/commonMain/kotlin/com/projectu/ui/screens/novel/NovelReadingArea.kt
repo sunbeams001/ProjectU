@@ -48,6 +48,9 @@ import projectu.composeapp.generated.resources.*
  * @param pages 解析后的页面列表
  * @param currentPage 当前页码（从1开始）
  * @param embeddedImages 内嵌图片映射（imageId -> 图片信息）
+ * @param displayMode 显示模式（原文/翻译/对照）
+ * @param pageTranslations 页面翻译缓存（页码 -> 翻译内容）
+ * @param translatingPages 正在翻译的页面集合
  * @param onPreviousPage 上一页回调
  * @param onNextPage 下一页回调
  * @param onToggleInfo 切换信息区域回调
@@ -60,6 +63,9 @@ fun NovelReadingArea(
     pages: List<NovelContentParser.NovelPage>,
     currentPage: Int,
     embeddedImages: Map<String, NovelEmbeddedImageInfo> = emptyMap(),
+    displayMode: NovelDisplayMode = NovelDisplayMode.ORIGINAL,
+    pageTranslations: Map<Int, String> = emptyMap(),
+    translatingPages: Set<Int> = emptySet(),
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
     onToggleInfo: () -> Unit,
@@ -200,14 +206,57 @@ fun NovelReadingArea(
                 }
         ) {
             if (currentPageContent != null) {
-                NovelPageContent(
-                    page = currentPageContent,
-                    embeddedImages = embeddedImages,
-                    listState = listState,
-                    fontSize = settings.novelFontSize.sp.sp,
-                    textColor = finalTextColor,
-                    modifier = Modifier.fillMaxSize()
-                )
+                // 根据显示模式显示内容
+                when (displayMode) {
+                    NovelDisplayMode.ORIGINAL -> {
+                        // 仅显示原文
+                        NovelPageContent(
+                            page = currentPageContent,
+                            embeddedImages = embeddedImages,
+                            listState = listState,
+                            fontSize = settings.novelFontSize.sp.sp,
+                            textColor = finalTextColor,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    
+                    NovelDisplayMode.TRANSLATED -> {
+                        // 仅显示翻译
+                        val isTranslating = currentPage in translatingPages
+                        val translation = pageTranslations[currentPage]
+                        
+                        if (isTranslating) {
+                            TranslatingIndicator()
+                        } else if (translation != null) {
+                            TranslatedPageContent(
+                                translatedText = translation,
+                                listState = listState,
+                                fontSize = settings.novelFontSize.sp.sp,
+                                textColor = finalTextColor,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            EmptyTranslationPlaceholder()
+                        }
+                    }
+                    
+                    NovelDisplayMode.BILINGUAL -> {
+                        // 对照显示
+                        val isTranslating = currentPage in translatingPages
+                        val translation = pageTranslations[currentPage]
+                        
+                        BilingualPageContent(
+                            page = currentPageContent,
+                            translation = translation,
+                            isTranslating = isTranslating,
+                            embeddedImages = embeddedImages,
+                            listState = listState,
+                            fontSize = settings.novelFontSize.sp.sp,
+                            textColor = finalTextColor,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
             } else {
                 // 空内容提示
                 Box(
@@ -600,5 +649,163 @@ private fun parseColor(hex: String?): Color? {
         }
     } catch (e: Exception) {
         null
+    }
+}
+
+/**
+ * 翻译进度指示器
+ */
+@Composable
+private fun TranslatingIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CircularProgressIndicator()
+            Text(
+                text = stringResource(Res.string.translating),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+/**
+ * 空翻译占位符
+ */
+@Composable
+private fun EmptyTranslationPlaceholder() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(Res.string.translation_not_available),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+/**
+ * 纯翻译页面内容
+ */
+@Composable
+private fun TranslatedPageContent(
+    translatedText: String,
+    listState: LazyListState,
+    fontSize: androidx.compose.ui.unit.TextUnit,
+    textColor: Color?,
+    modifier: Modifier = Modifier
+) {
+    SelectionContainer {
+        LazyColumn(
+            state = listState,
+            modifier = modifier.padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(top = 48.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                Text(
+                    text = translatedText,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = fontSize,
+                        lineHeight = fontSize * 1.8f,
+                        color = textColor ?: MaterialTheme.colorScheme.onSurface
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 对照页面内容（原文+翻译）
+ */
+@Composable
+private fun BilingualPageContent(
+    page: NovelContentParser.NovelPage,
+    translation: String?,
+    isTranslating: Boolean,
+    embeddedImages: Map<String, NovelEmbeddedImageInfo>,
+    listState: LazyListState,
+    fontSize: androidx.compose.ui.unit.TextUnit,
+    textColor: Color?,
+    modifier: Modifier = Modifier
+) {
+    SelectionContainer {
+        LazyColumn(
+            state = listState,
+            modifier = modifier.padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(top = 48.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // 原文部分
+            item {
+                Text(
+                    text = stringResource(Res.string.description_original),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            
+            items(page.elements) { element ->
+                ContentElementDisplay(
+                    element = element,
+                    embeddedImages = embeddedImages,
+                    fontSize = fontSize,
+                    textColor = textColor,
+                    onLinkClick = { }
+                )
+            }
+            
+            // 分隔线
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+            
+            // 翻译部分
+            item {
+                Text(
+                    text = stringResource(Res.string.description_translated),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            
+            item {
+                if (isTranslating) {
+                    TranslatingIndicator()
+                } else if (translation != null) {
+                    Text(
+                        text = translation,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = fontSize,
+                            lineHeight = fontSize * 1.8f,
+                            color = textColor ?: MaterialTheme.colorScheme.onSurface
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    EmptyTranslationPlaceholder()
+                }
+            }
+        }
     }
 }

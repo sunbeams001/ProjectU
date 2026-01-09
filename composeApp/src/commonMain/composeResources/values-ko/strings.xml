@@ -157,7 +157,7 @@
     
     <!-- Settings - Translation -->
     <string name="settings_translation_engine">번역 엔진</string>
-    <string name="settings_translation_engine_desc">작품 설명 및 소설 콘텐츠 번역</string>
+    <string name="settings_translation_engine_desc">작품 설명, 소설 설명 및 소설 독서 콘텐츠 번역</string>
     <string name="settings_translation_target_language">대상 언어</string>
     <string name="settings_translation_target_language_desc">번역할 언어</string>
     <string name="settings_select_translation_engine">번역 엔진 선택</string>
@@ -1014,5 +1014,15 @@
     <string name="desktop_webview_restart_required">WebView 기능을 사용하려면 앱을 다시 시작해야 합니다</string>
     <string name="desktop_webview_initializing">WebView 구성 요소 초기화 중...</string>
     <string name="desktop_download_progress">다운로드 진행률: %d%%</string>
+    
+    <!-- Novel Translation -->
+    <string name="show_translation">번역 표시</string>
+    <string name="show_original">원문 표시</string>
+    <string name="translation_only">번역만</string>
+    <string name="translating">번역 중...</string>
+    <string name="translation_not_available">번역을 아직 사용할 수 없습니다</string>
+    <string name="retranslate_current_page">현재 페이지 재번역</string>
+    <string name="description_original">원문 모드</string>
+    <string name="description_translated">번역 모드</string>
 </resources>
 

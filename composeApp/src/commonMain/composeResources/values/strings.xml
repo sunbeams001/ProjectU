@@ -151,7 +151,7 @@
     
     <!-- Settings - Translation -->
     <string name="settings_translation_engine">Translation Engine</string>
-    <string name="settings_translation_engine_desc">Translate artwork captions and novel content</string>
+    <string name="settings_translation_engine_desc">Translate artwork captions, novel descriptions, and novel reading content</string>
     <string name="settings_translation_target_language">Target Language</string>
     <string name="settings_translation_target_language_desc">Language to translate into</string>
     <string name="settings_select_translation_engine">Select Translation Engine</string>
@@ -173,6 +173,16 @@
     <string name="translation_lang_vi">Tiếng Việt</string>
     <string name="translation_lang_id">Bahasa Indonesia</string>
     <string name="translation_lang_ms">Bahasa Melayu</string>
+    
+    <!-- Novel Reading Translation -->
+    <string name="show_translation">Show Translation</string>
+    <string name="show_original">Show Original</string>
+    <string name="translation_only">Translation Only</string>
+    <string name="translating">Translating...</string>
+    <string name="translation_not_available">Translation not available</string>
+    <string name="retranslate_current_page">Retranslate current page</string>
+    <string name="description_original">Original</string>
+    <string name="description_translated">Translated</string>
     
     <string name="startup_tab_last_used">Last Used Tab</string>
     <string name="startup_tab_home">Search</string>

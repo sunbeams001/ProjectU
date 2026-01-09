@@ -161,17 +161,6 @@ actual suspend fun platformEncodeToMp4(
         encodingSuccessful = true
         
     } catch (e: Exception) {
-        Log.e("UgoiraMp4", "MP4 encoding failed: ${e.javaClass.simpleName}: ${e.message}", e)
-        
-        // 尝试获取编码器状态信息
-        try {
-            codec?.let { c ->
-                Log.e("UgoiraMp4", "Codec name: ${c.name}")
-            }
-        } catch (ex: Exception) {
-            Log.e("UgoiraMp4", "Cannot get codec info: ${ex.message}")
-        }
-        
         throw RuntimeException("MP4 encoding failed: ${e.message}", e)
     } finally {
         try {

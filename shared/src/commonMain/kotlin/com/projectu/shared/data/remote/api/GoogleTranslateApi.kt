@@ -2,13 +2,15 @@ package com.projectu.shared.data.remote.api
 
 import com.projectu.shared.data.remote.dto.TranslationResult
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
+import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.parameters
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 /**
@@ -29,7 +31,8 @@ class GoogleTranslateApi(
 ) {
     companion object {
         private const val BASE_URL = "https://translate.googleapis.com/translate_a/single"
-        private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+        private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        private const val REFERER = "https://translate.google.com/"
     }
     
     /**
@@ -46,20 +49,34 @@ class GoogleTranslateApi(
         sourceLang: String = "auto"
     ): Result<TranslationResult> {
         return try {
-            val response = httpClient.get(BASE_URL) {
-                url {
-                    parameters.append("client", "gtx")
-                    parameters.append("sl", sourceLang)
-                    parameters.append("tl", targetLang)
-                    parameters.append("dt", "t")  // t = translation
-                    parameters.append("q", text)
+            // 使用POST + Form方式提交，更不容易被拦截
+            val response = httpClient.submitForm(
+                url = BASE_URL,
+                formParameters = parameters {
+                    append("client", "gtx")
+                    append("sl", sourceLang)
+                    append("tl", targetLang)
+                    append("dt", "t")
+                    append("ie", "UTF-8")
+                    append("oe", "UTF-8")
+                    append("q", text)
                 }
+            ) {
                 header("User-Agent", USER_AGENT)
+                header("Referer", REFERER)
                 header("Accept", "*/*")
-                header("Accept-Language", "en-US,en;q=0.9")
+                header("Accept-Language", "zh-CN,zh;q=0.9")
+                header("Content-Type", "application/x-www-form-urlencoded")
+                header("Origin", "https://translate.google.com")
             }
             
             val responseText = response.bodyAsText()
+            
+            // 检查是否返回了HTML错误页面
+            if (responseText.trim().startsWith("<!DOCTYPE") || responseText.trim().startsWith("<html")) {
+                throw IllegalStateException("Google Translate API returned HTML error page. Possible rate limiting or blocking.")
+            }
+            
             val result = parseResponse(responseText, targetLang)
             
             Result.success(result)
@@ -71,16 +88,14 @@ class GoogleTranslateApi(
     /**
      * 解析 Google Translate 响应
      * 
-     * 响应格式：
+     * 标准响应格式（不使用dj=1）：
      * [
      *   [
      *     ["翻译结果1", "原文1", null, null, 10],
-     *     ["翻译结果2", "原文2", null, null, 10],
-     *     ...
+     *     ["翻译结果2", "原文2", null, null, 10]
      *   ],
      *   null,
-     *   "ja",  // 源语言
-     *   ...
+     *   "ja"
      * ]
      */
     private fun parseResponse(responseText: String, targetLang: String): TranslationResult {

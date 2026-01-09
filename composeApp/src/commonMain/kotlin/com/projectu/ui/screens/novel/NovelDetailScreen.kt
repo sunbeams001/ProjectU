@@ -408,6 +408,9 @@ private fun NovelDetailLayout(
             pages = state.parsedPages,
             currentPage = state.currentPage,
             embeddedImages = novel.embeddedImages,
+            displayMode = state.displayMode,
+            pageTranslations = state.pageTranslations,
+            translatingPages = state.translatingPages,
             onPreviousPage = onPreviousPage,
             onNextPage = onNextPage,
             onToggleInfo = onToggleInfo,
@@ -429,6 +432,7 @@ private fun NovelDetailLayout(
             isMarkerLoading = state.isMarkerLoading,
             translatedDescription = state.translatedDescription,
             isTranslating = state.isTranslating,
+            displayMode = state.displayMode,
             onToggle = onToggleInfo,
             onCollapse = onCollapseInfo,
             onMarkerClick = onMarkerClick,
@@ -444,6 +448,14 @@ private fun NovelDetailLayout(
             } else null,
             onClearTranslation = if (isTranslationEnabled) {
                 { viewModel.clearTranslation() }
+            } else null,
+            onSwitchDisplayMode = if (isTranslationEnabled) {
+                { mode -> 
+                    viewModel.switchDisplayMode(mode) 
+                }
+            } else null,
+            onRetranslateCurrentPage = if (isTranslationEnabled) {
+                { viewModel.retranslateCurrentPage() }
             } else null,
             modifier = Modifier.fillMaxWidth()
         )

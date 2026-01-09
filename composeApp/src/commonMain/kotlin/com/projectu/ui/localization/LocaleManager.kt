@@ -63,8 +63,7 @@ class LocaleManager(
             try {
                 settingsRepository.updateAppLanguage(language)
             } catch (e: Exception) {
-                // 如果保存失败，记录错误但不影响UI更新
-                println("Failed to save language setting: ${e.message}")
+                // 如果保存失败，不影响UI更新
             }
         }
     }
