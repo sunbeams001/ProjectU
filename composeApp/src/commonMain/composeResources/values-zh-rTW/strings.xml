@@ -38,9 +38,19 @@
     <string name="discovery_recommended_users">推薦用戶</string>
     <string name="discovery_recommended_illusts">推薦插畫·漫畫</string>
     <string name="discovery_recommended_novels">推薦小說</string>
+    <string name="discovery_pixivision">Pixivision</string>
     <string name="discovery_mode_all">全部</string>
     <string name="discovery_mode_safe">全年齡</string>
     <string name="discovery_mode_r18">R-18</string>
+    <!-- Pixivision -->
+    <string name="pixivision_illustration">Illustration</string>
+    <string name="pixivision_manga">Manga</string>
+    <string name="pixivision_detail_title">Article Details</string>
+    <string name="pixivision_artworks_title">Featured Artworks</string>
+    <string name="pixivision_description">Description</string>
+    <string name="pixivision_published_date">Published:</string>
+    <string name="pixivision_open_in_browser">Open in browser</string>
+    <string name="pixivision_webview_load_error">Failed to load</string>
     <!-- Ranking Screen -->
     <string name="ranking_daily">日榜</string>
     <string name="ranking_weekly">週榜</string>
