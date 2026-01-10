@@ -140,67 +140,6 @@ fun <T : PageMapping> rememberPagedNavigationState(
 }
 
 /**
- * 简化的双层导航映射器
- * 适用于简单的场景：第一个主分类无第二层导航，其他主分类有固定数量的第二层导航
- * 
- * 例如：用户(0) → 插画×3(1-3) → 小说×3(4-6)
- * 
- * @param T 页面映射信息类型
- * @param primaryCount 第一层导航数量
- * @param secondaryCount 第二层导航数量（对于每个有第二层的主分类）
- * @param firstHasSecondary 第一个主分类是否有第二层导航（默认为 false）
- * @param createMapping 创建页面映射信息的工厂函数
- */
-class SimpleTwoLayerMapper<T : PageMapping>(
-    private val primaryCount: Int,
-    private val secondaryCount: Int,
-    private val firstHasSecondary: Boolean = false,
-    private val createMapping: (primaryIndex: Int, secondaryIndex: Int, showSecondary: Boolean) -> T
-) : PageIndexMapper<T> {
-    
-    override val totalPages: Int = if (firstHasSecondary) {
-        primaryCount * secondaryCount
-    } else {
-        1 + (primaryCount - 1) * secondaryCount
-    }
-    
-    override fun parsePageIndex(pageIndex: Int): T {
-        if (!firstHasSecondary && pageIndex == 0) {
-            // 第一个主分类，无第二层导航
-            return createMapping(0, 0, false)
-        }
-        
-        val offset = if (firstHasSecondary) 0 else 1
-        val adjustedPage = if (firstHasSecondary) pageIndex else pageIndex - offset
-        
-        val primaryIndex = if (firstHasSecondary) {
-            adjustedPage / secondaryCount
-        } else {
-            adjustedPage / secondaryCount + 1
-        }
-        
-        val secondaryIndex = adjustedPage % secondaryCount
-        
-        return createMapping(primaryIndex, secondaryIndex, true)
-    }
-    
-    override fun calculatePageIndex(primaryIndex: Int, secondaryIndex: Int): Int {
-        if (!firstHasSecondary && primaryIndex == 0) {
-            return 0
-        }
-        
-        val offset = if (firstHasSecondary) 0 else 1
-        val adjustedPrimary = if (firstHasSecondary) primaryIndex else primaryIndex - 1
-        
-        return if (firstHasSecondary) {
-            adjustedPrimary * secondaryCount + secondaryIndex
-        } else {
-            offset + adjustedPrimary * secondaryCount + secondaryIndex
-        }
-    }
-}
-
-/**
  * 自定义双层导航映射器
  * 适用于复杂场景：不同主分类有不同数量的第二层导航
  * 

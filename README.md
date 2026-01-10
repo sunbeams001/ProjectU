@@ -376,7 +376,7 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 
 > API 详细状态: [docs/shared/API_STATUS.md](docs/shared/API_STATUS.md)
 
-本项目完整集成了 Pixiv Web API，实现了 **76 个 API 方法**，测试覆盖率达 **100%**。
+本项目完整集成了 Pixiv Web API，实现了 **78 个 API 方法**，测试覆盖率达 **100%**。
 
 ### 已集成 API 模块
 
@@ -394,6 +394,7 @@ class XxxViewModel(repo: Repository) : ViewModel() {
 | **TagApi** | 标签搜索、标签建议、标签信息、标签编辑 | 8 | ✅ 100% |
 | **MarkerApi** | 小说阅读标记（稍后再读） | 4 | ✅ 100% |
 | **SearchApi** | 搜索作品、小说、用户 | 3 | ✅ 100% |
+| **PixivisionApi** | Pixivision特辑文章列表、详情 | 2 | ✅ 100% |
 
 **支持的排行榜类型**：
 - 一般排行：日榜、周榜、月榜、新人榜、原创、AI 作品

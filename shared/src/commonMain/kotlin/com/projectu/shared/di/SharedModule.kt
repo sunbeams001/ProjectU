@@ -27,6 +27,7 @@ import com.projectu.shared.data.repository.DownloadRulesRepositoryImpl
 import com.projectu.shared.data.repository.MangaSeriesRepositoryImpl
 import com.projectu.shared.data.repository.NovelRepositoryImpl
 import com.projectu.shared.data.repository.NovelSeriesRepositoryImpl
+import com.projectu.shared.data.repository.PixivisionRepositoryImpl
 import com.projectu.shared.data.repository.SettingsRepositoryImpl
 import com.projectu.shared.data.repository.StateCacheRepositoryInMemory
 import com.projectu.shared.data.repository.UserRepositoryImpl
@@ -39,6 +40,7 @@ import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.shared.domain.repository.MangaSeriesRepository
 import com.projectu.shared.domain.repository.NovelRepository
 import com.projectu.shared.domain.repository.NovelSeriesRepository
+import com.projectu.shared.domain.repository.PixivisionRepository
 import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.repository.StateCacheRepository
 import com.projectu.shared.domain.repository.UserRepository
@@ -56,6 +58,7 @@ import com.projectu.shared.domain.usecase.UnbookmarkArtworkUseCase
 import com.projectu.shared.domain.usecase.UnbookmarkNovelUseCase
 import com.projectu.shared.domain.usecase.UnfollowUserUseCase
 import com.projectu.shared.domain.usecase.TranslateTextUseCase
+import com.projectu.shared.domain.usecase.GetPixivisionDetailUseCase
 import com.projectu.shared.util.AgeLimitDeterminer
 import com.projectu.shared.util.TagTranslationUtil
 import io.ktor.client.*
@@ -279,6 +282,11 @@ val repositoryModule = module {
             dao = get<com.projectu.shared.data.local.database.AppDatabase>().novelTranslationCacheDao()
         )
     }
+    
+    // Pixivision仓储
+    single<PixivisionRepository> {
+        PixivisionRepositoryImpl(get())
+    }
 }
 
 /**
@@ -344,6 +352,9 @@ val useCaseModule = module {
     factory { com.projectu.shared.domain.usecase.FilterArtworksUseCase(get()) }
     factory { com.projectu.shared.domain.usecase.FilterNovelsUseCase(get()) }
     factory { com.projectu.shared.domain.usecase.FilterMangaSeriesUseCase(get()) }
+    
+    // Pixivision相关
+    factory { GetPixivisionDetailUseCase(get()) }
 }
 
 /**

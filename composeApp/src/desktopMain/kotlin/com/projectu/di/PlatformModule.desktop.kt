@@ -15,7 +15,9 @@ import com.projectu.ui.screens.apitest.ApiTestViewModel
 import com.projectu.ui.screens.settings.SettingsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryIllustsViewModel
 import com.projectu.ui.screens.discovery.DiscoveryNovelsViewModel
+import com.projectu.ui.screens.discovery.DiscoveryPixivisionViewModel
 import com.projectu.ui.screens.discovery.DiscoveryUsersViewModel
+import com.projectu.ui.screens.pixivision.PixivisionDetailViewModel
 import com.projectu.ui.screens.followlatest.FollowLatestIllustsViewModel
 import com.projectu.ui.screens.followlatest.FollowLatestNovelsViewModel
 import com.projectu.ui.screens.followlatest.WatchListMangaViewModel
@@ -105,6 +107,12 @@ actual val viewModelModule: Module = module {
     
     // 发现小说 ScreenModel
     single { DiscoveryNovelsViewModel(get(), get(), get()) }
+    
+    // 发现 Pixivision ScreenModel
+    single { DiscoveryPixivisionViewModel(get(), get()) }
+    
+    // Pixivision 详情 ScreenModel
+    factory { PixivisionDetailViewModel(get(), get(), get(), get()) }
     
     // 关注用户最新插画 ScreenModel
     single { FollowLatestIllustsViewModel(get(), get(), get()) }

@@ -263,14 +263,14 @@ fun MethodItem(
             CardDefaults.outlinedCardBorder()
         }
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(12.dp)
         ) {
             // 优先级标签
             Surface(
                 color = priorityColor,
-                shape = MaterialTheme.shapes.small
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.align(Alignment.Start)
             ) {
                 Text(
                     text = priorityText,
@@ -280,20 +280,18 @@ fun MethodItem(
                 )
             }
             
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             
-            Column {
-                Text(
-                    text = method.displayName,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                )
-                Text(
-                    text = method.methodName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                text = method.displayName,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+            Text(
+                text = method.methodName,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

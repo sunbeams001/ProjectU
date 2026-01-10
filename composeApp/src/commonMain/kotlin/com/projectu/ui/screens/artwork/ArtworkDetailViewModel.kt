@@ -238,14 +238,35 @@ class ArtworkDetailViewModel(
             // 先检查全局缓存是否有完整详情
             val globalCachedArtwork = artworkCacheManager.getDetailedArtwork(artworkId)
             if (globalCachedArtwork != null) {
-                // 全局缓存命中，直接使用
-                sessionCache[artworkId] = globalCachedArtwork
+                // 全局缓存命中，检查是否需要补充用户信息
+                var artwork = globalCachedArtwork
+                
+                // 如果头像为空，尝试从用户信息中补充
+                if (artwork.userProfileImageUrl.isEmpty()) {
+                    try {
+                        val userId = artwork.userId.toLongOrNull()
+                        if (userId != null) {
+                            val userInfo = userRepository.getUserById(userId).getOrNull()
+                            if (userInfo != null && userInfo.profileImageUrl.isNotEmpty()) {
+                                // 补充头像
+                                artwork = artwork.copy(userProfileImageUrl = userInfo.profileImageUrl)
+                                // 更新缓存，避免下次再次加载
+                                artworkCacheManager.cacheArtworkDetail(artwork)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // 补充失败不影响主流程，使用原有数据
+                        e.printStackTrace()
+                    }
+                }
+                
+                sessionCache[artworkId] = artwork
                 
                 if (!silent) {
-                    val followStatus = getAuthorFollowStatus(globalCachedArtwork.userId)
+                    val followStatus = getAuthorFollowStatus(artwork.userId)
                     _state.update {
                         it.copy(
-                            artwork = globalCachedArtwork,
+                            artwork = artwork,
                             authorFollowStatus = followStatus,
                             isLoading = false,
                             error = null,

@@ -279,6 +279,10 @@ class ApiTestViewModel(
                         ApiMethod.SearchIllust -> testSearchIllust()
                         ApiMethod.SearchNovel -> testSearchNovel()
                         ApiMethod.SearchUser -> testSearchUser()
+                        
+                        // ==================== PixivisionApi ====================
+                        ApiMethod.GetPixivisionArticleList -> testGetPixivisionArticleList()
+                        ApiMethod.GetPixivisionArticleDetail -> testGetPixivisionArticleDetail()
                     }
                 }
                 
@@ -3205,6 +3209,141 @@ class ApiTestViewModel(
         }
         
         updateResultWithRaw(responseWithRaw.rawJson, summary)
+    }
+    
+    // ==================== PixivisionApi 测试方法 ====================
+    
+    private suspend fun testGetPixivisionArticleList() {
+        val categoryStr = getParam("category")
+        val lang = getParam("lang").ifEmpty { "zh" }
+        val page = getParam("page").toIntOrNull() ?: 1
+        
+        val category = when (categoryStr) {
+            "illustration" -> com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.ILLUSTRATION
+            "manga" -> com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.MANGA
+            else -> com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.ILLUSTRATION
+        }
+        
+        val response = pixivApi.pixivisionApi.getArticleList(category, lang, page)
+        
+        val summary = buildString {
+            appendLine("✅ Pixivision文章列表获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("类别: ${category.displayName} (${category.path})")
+            appendLine("语言: $lang")
+            appendLine("页码: $page")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("文章总数: ${response.articles.size}")
+            appendLine()
+            
+            if (response.articles.isNotEmpty()) {
+                appendLine("【文章列表】")
+                response.articles.forEachIndexed { index, article ->
+                    appendLine()
+                    appendLine("${index + 1}. ${article.title}")
+                    appendLine("   • ID: ${article.id}")
+                    appendLine("   • URL: ${article.url}")
+                    appendLine("   • 类别: ${article.category}")
+                    appendLine("   • 发布日期: ${article.publishDate}")
+                    if (article.tags.isNotEmpty()) {
+                        appendLine("   • 标签: ${article.tags.joinToString(", ")}")
+                    }
+                    appendLine("   • 缩略图: ${article.thumbnailUrl.take(80)}...")
+                }
+            } else {
+                appendLine("⚠️ 暂无文章")
+            }
+            appendLine()
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("提示：查看 JSON 标签页获取完整数据结构")
+        }
+        
+        // 手动构建 JSON
+        val rawJson = buildString {
+            appendLine("{")
+            appendLine("""  "articles": [""")
+            response.articles.forEachIndexed { index, article ->
+                appendLine("    {")
+                appendLine("""      "id": "${article.id}",""")
+                appendLine("""      "title": "${article.title.replace("\"", "\\\"")}",""")
+                appendLine("""      "url": "${article.url}",""")
+                appendLine("""      "thumbnailUrl": "${article.thumbnailUrl}",""")
+                appendLine("""      "category": "${article.category}",""")
+                appendLine("""      "publishDate": "${article.publishDate}",""")
+                appendLine("""      "tags": [${article.tags.joinToString { "\"${it.replace("\"", "\\\"")}\"" }}]""")
+                append("    }")
+                if (index < response.articles.size - 1) appendLine(",") else appendLine()
+            }
+            appendLine("  ]")
+            append("}")
+        }
+        
+        updateResultWithRaw(rawJson, summary)
+    }
+    
+    private suspend fun testGetPixivisionArticleDetail() {
+        val articleId = getParam("articleId")
+        val lang = getParam("lang").ifEmpty { "zh" }
+        
+        val detail = pixivApi.pixivisionApi.getArticleDetail(articleId, lang)
+        
+        val summary = buildString {
+            appendLine("✅ Pixivision文章详情获取成功")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("文章ID: ${detail.id}")
+            appendLine("标题: ${detail.title}")
+            appendLine("类别: ${detail.category}")
+            appendLine("发布日期: ${detail.publishDate}")
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine()
+            appendLine("【简介】")
+            appendLine(detail.description)
+            appendLine()
+            appendLine("【封面图】")
+            appendLine(detail.coverImageUrl)
+            appendLine()
+            appendLine("【作品列表】(共 ${detail.artworks.size} 个)")
+            
+            detail.artworks.forEachIndexed { index, artwork ->
+                appendLine()
+                appendLine("${index + 1}. ${artwork.artworkTitle}")
+                appendLine("   • 作品ID: ${artwork.artworkId}")
+                appendLine("   • 作者: ${artwork.authorName} (ID: ${artwork.authorId})")
+                appendLine("   • 作品图片: ${artwork.artworkImageUrl.take(80)}...")
+                appendLine("   • 作者头像: ${artwork.authorAvatarUrl.take(80)}...")
+            }
+            
+            appendLine()
+            appendLine("━━━━━━━━━━━━━━━━━━━━━")
+            appendLine("提示：查看 JSON 标签页获取完整数据结构")
+        }
+        
+        // 手动构建 JSON
+        val rawJson = buildString {
+            appendLine("{")
+            appendLine("""  "id": "${detail.id}",""")
+            appendLine("""  "title": "${detail.title.replace("\"", "\\\"")}",""")
+            appendLine("""  "description": "${detail.description.replace("\"", "\\\"").replace("\n", "\\n")}",""")
+            appendLine("""  "coverImageUrl": "${detail.coverImageUrl}",""")
+            appendLine("""  "category": "${detail.category}",""")
+            appendLine("""  "publishDate": "${detail.publishDate}",""")
+            appendLine("""  "artworks": [""")
+            detail.artworks.forEachIndexed { index, artwork ->
+                appendLine("    {")
+                appendLine("""      "artworkId": "${artwork.artworkId}",""")
+                appendLine("""      "artworkTitle": "${artwork.artworkTitle.replace("\"", "\\\"")}",""")
+                appendLine("""      "artworkImageUrl": "${artwork.artworkImageUrl}",""")
+                appendLine("""      "authorId": "${artwork.authorId}",""")
+                appendLine("""      "authorName": "${artwork.authorName.replace("\"", "\\\"")}",""")
+                appendLine("""      "authorAvatarUrl": "${artwork.authorAvatarUrl}"""")
+                append("    }")
+                if (index < detail.artworks.size - 1) appendLine(",") else appendLine()
+            }
+            appendLine("  ]")
+            append("}")
+        }
+        
+        updateResultWithRaw(rawJson, summary)
     }
     
     // ==================== 辅助方法 ====================

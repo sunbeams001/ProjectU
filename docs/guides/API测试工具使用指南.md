@@ -1,7 +1,7 @@
 # API 测试工具使用指南
 
 > 📅 创建日期: 2025-10-30  
-> 🔄 更新日期: 2025-12-23  
+> 🔄 更新日期: 2026-01-10  
 > 🎯 目的: 介绍如何使用内置的 API 测试工具进行 API 调试和验证
 
 ---
@@ -60,6 +60,7 @@
    - 标签 API (TagApi) - 8 个方法
    - 阅读标记 API (MarkerApi) - 4 个方法
    - 搜索 API (SearchApi) - 3 个方法
+   - Pixivision API (PixivisionApi) - 2 个方法
 
 2. **选择具体方法**：
    - **P0**（红色）: 核心功能，高优先级
@@ -408,6 +409,20 @@ composeApp/src/commonMain/kotlin/com/projectu/ui/screens/
 | searchIllust | P0 | 搜索作品 | `初音ミク` |
 | searchNovel | P0 | 搜索小说 | `初音ミク` |
 | searchUser | P0 | 搜索用户 | `少女` |
+
+### 13. PixivisionApi - Pixivision 特辑 API (2 个方法) ✅ 100%
+
+| 方法 | 优先级 | 说明 | 默认测试参数 |
+|-----|--------|------|------------|
+| getArticleList | P0 | 获取文章列表 | category=illustration, lang=zh |
+| getArticleDetail | P0 | 获取文章详情 | `11373` |
+
+**特别说明**:
+- **数据来源**: Pixivision (https://www.pixivision.net/) 是Pixiv的附属网站，提供各种主题的插画、漫画特辑
+- **数据格式**: 返回HTML，工具会自动使用Ksoup解析
+- **支持类别**: illustration(插画特辑)、manga(漫画特辑)
+- **支持语言**: zh(简体中文), zh-tw(繁体中文), en(英语), ja(日语), ko(韩语)
+- **分页支持**: 使用page参数进行翻页
 
 ---
 

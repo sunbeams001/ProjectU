@@ -31,11 +31,12 @@ import com.projectu.shared.domain.model.Novel
 import com.projectu.shared.domain.model.User
 import com.projectu.ui.components.ArtworkCard
 import com.projectu.ui.components.NovelCard
+import com.projectu.ui.components.PixivisionArticleCard
 import com.projectu.ui.components.UserCard
 import com.projectu.ui.components.SimpleNavigationBar
 import com.projectu.ui.components.TabbedNavigationBar
 import com.projectu.ui.components.PageMapping
-import com.projectu.ui.components.SimpleTwoLayerMapper
+import com.projectu.ui.components.CustomTwoLayerMapper
 import com.projectu.ui.components.rememberPagedNavigationState
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
@@ -72,11 +73,13 @@ fun DiscoveryContent(
     val usersViewModel: DiscoveryUsersViewModel = koinInject()
     val illustsViewModel: DiscoveryIllustsViewModel = koinInject()
     val novelsViewModel: DiscoveryNovelsViewModel = koinInject()
+    val pixivisionViewModel: DiscoveryPixivisionViewModel = koinInject()
     
     // 收集所有状态
     val usersState by usersViewModel.state.collectAsState()
     val illustsState by illustsViewModel.state.collectAsState()
     val novelsState by novelsViewModel.state.collectAsState()
+    val pixivisionState by pixivisionViewModel.state.collectAsState()
     
     // 为每个内容类型创建独立的列表状态缓存
     val listStates = remember {
@@ -91,22 +94,44 @@ fun DiscoveryContent(
         override val secondaryIndex: Int,
         override val showSecondaryNav: Boolean,
         val contentType: DiscoveryContentType,
-        val mode: DiscoveryMode?
+        val mode: DiscoveryMode?,
+        val pixivisionCategory: com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory?
     ) : PageMapping
     
-    // 使用简化的双层导航映射器
-    // 结构：用户(0) → 插画×3(1-3) → 小说×3(4-6)
+    // 使用自定义双层导航映射器，支持灵活配置每个主分类的二级导航数量
+    // 结构：
+    // - USERS: 1个页面（无二级导航）
+    // - ILLUSTS: 3个页面（ALL, SAFE, R18）
+    // - NOVELS: 3个页面（ALL, SAFE, R18）
+    // - PIXIVISION: 2个页面（ILLUSTRATION, MANGA）
     val modes = remember { DiscoveryMode.entries }
+    val pixivisionCategories = remember { 
+        listOf(
+            com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.ILLUSTRATION,
+            com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.MANGA
+        )
+    }
+    
     val mapper = remember {
-        SimpleTwoLayerMapper(
-            primaryCount = contentTypes.size,
-            secondaryCount = modes.size,
-            firstHasSecondary = false
-        ) { primaryIndex, secondaryIndex, showSecondary ->
-            val contentType = contentTypes[primaryIndex]
-            val mode = if (showSecondary) modes[secondaryIndex] else null
-            DiscoveryPageMapping(primaryIndex, secondaryIndex, showSecondary, contentType, mode)
-        }
+        CustomTwoLayerMapper(
+            secondaryCountPerPrimary = listOf(1, 3, 3, 2), // USERS=1, ILLUSTS=3, NOVELS=3, PIXIVISION=2
+            createMapping = { primaryIndex, secondaryIndex, showSecondary ->
+                val contentType = contentTypes[primaryIndex]
+                when (contentType) {
+                    DiscoveryContentType.USERS -> {
+                        DiscoveryPageMapping(primaryIndex, secondaryIndex, false, contentType, null, null)
+                    }
+                    DiscoveryContentType.ILLUSTS, DiscoveryContentType.NOVELS -> {
+                        val mode = modes[secondaryIndex]
+                        DiscoveryPageMapping(primaryIndex, secondaryIndex, true, contentType, mode, null)
+                    }
+                    DiscoveryContentType.PIXIVISION -> {
+                        val category = pixivisionCategories[secondaryIndex]
+                        DiscoveryPageMapping(primaryIndex, secondaryIndex, true, contentType, null, category)
+                    }
+                }
+            }
+        )
     }
     
     // 创建 Pager 状态
@@ -136,6 +161,13 @@ fun DiscoveryContent(
                 // 同步模式状态
                 mapping.mode?.let { if (it != novelsState.currentMode) novelsViewModel.switchMode(it) }
             }
+            DiscoveryContentType.PIXIVISION -> {
+                pixivisionViewModel.initLoadIfNeeded()
+                // 同步类别状态
+                mapping.pixivisionCategory?.let { 
+                    if (it != pixivisionState.currentCategory) pixivisionViewModel.switchCategory(it) 
+                }
+            }
         }
     }
     
@@ -146,6 +178,7 @@ fun DiscoveryContent(
             DiscoveryContentType.USERS -> usersViewModel.refresh()
             DiscoveryContentType.ILLUSTS -> illustsViewModel.refresh()
             DiscoveryContentType.NOVELS -> novelsViewModel.refresh()
+            DiscoveryContentType.PIXIVISION -> pixivisionViewModel.refresh()
         }
     }
     
@@ -186,6 +219,15 @@ fun DiscoveryContent(
         // 使用页码映射机制，滑动时先切换二级导航，再切换一级导航
         val currentMapping = navState.currentMapping
         
+        // 根据当前一级导航动态确定二级导航项
+        val secondaryItems = remember(currentMapping.contentType) {
+            when (currentMapping.contentType) {
+                DiscoveryContentType.ILLUSTS, DiscoveryContentType.NOVELS -> modes
+                DiscoveryContentType.PIXIVISION -> pixivisionCategories
+                DiscoveryContentType.USERS -> emptyList()
+            }
+        }
+        
         TabbedNavigationBar(
             primaryItems = contentTypes,
             primarySelectedIndex = currentMapping.primaryIndex,
@@ -198,7 +240,7 @@ fun DiscoveryContent(
                 )
             },
             getPrimaryItemLabel = { type -> stringResource(type.displayNameRes) },
-            secondaryItems = modes,
+            secondaryItems = secondaryItems,
             secondarySelectedIndex = currentMapping.secondaryIndex,
             onSecondaryItemClick = { secondaryIndex ->
                 navState.handleSecondaryClick(
@@ -208,11 +250,20 @@ fun DiscoveryContent(
                     onSamePage = scrollToTopOrRefresh
                 )
             },
-            getSecondaryItemLabel = { mode ->
-                when (mode) {
-                    DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
-                    DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
-                    DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
+            getSecondaryItemLabel = { item ->
+                when (item) {
+                    is DiscoveryMode -> when (item) {
+                        DiscoveryMode.ALL -> stringResource(Res.string.discovery_mode_all)
+                        DiscoveryMode.SAFE -> stringResource(Res.string.discovery_mode_safe)
+                        DiscoveryMode.R18 -> stringResource(Res.string.discovery_mode_r18)
+                    }
+                    is com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory -> when (item) {
+                        com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.ILLUSTRATION -> 
+                            stringResource(Res.string.pixivision_illustration)
+                        com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.MANGA -> 
+                            stringResource(Res.string.pixivision_manga)
+                    }
+                    else -> ""
                 }
             },
             showSecondaryNav = currentMapping.showSecondaryNav,
@@ -399,6 +450,27 @@ fun DiscoveryContent(
                             { tag: com.projectu.shared.domain.model.Tag -> handler.handleTagClick(tag) }
                         },
                         listState = listState as LazyListState
+                    )
+                }
+                
+                DiscoveryContentType.PIXIVISION -> {
+                    val listState = rememberLazyListState()
+                    LaunchedEffect(pageKey) {
+                        listStates[pageKey] = listState
+                    }
+                    
+                    DiscoveryPixivisionPage(
+                        state = pixivisionState,
+                        onLoadMore = pixivisionViewModel::loadMore,
+                        onRefresh = pixivisionViewModel::refresh,
+                        onRefreshOrScrollToTop = scrollToTopOrRefresh,
+                        onArticleClick = { article ->
+                            // 跳转到Pixivision文章详情页
+                            parentNavigator?.push(
+                                com.projectu.ui.screens.pixivision.PixivisionDetailScreen(article.id)
+                            )
+                        },
+                        listState = listState
                     )
                 }
             }
@@ -784,6 +856,125 @@ fun NovelListLayout(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Pixivision 文章列表页面内容
+ */
+@Composable
+fun DiscoveryPixivisionPage(
+    state: DiscoveryPixivisionState,
+    onLoadMore: () -> Unit,
+    onRefresh: () -> Unit,
+    onRefreshOrScrollToTop: () -> Unit,
+    onArticleClick: (com.projectu.shared.data.remote.dto.pixivision.PixivisionArticle) -> Unit,
+    listState: LazyListState
+) {
+    // 监听滚动到底部时自动加载更多
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisibleIndex ->
+                val articles = state.getCurrentArticles()
+                if (lastVisibleIndex != null && 
+                    lastVisibleIndex >= articles.size - 3 && 
+                    !state.isLoadingMore && 
+                    state.getCurrentHasMore() &&
+                    articles.isNotEmpty()) {
+                    onLoadMore()
+                }
+            }
+    }
+    
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            // 初次加载中
+            state.isLoading && state.getCurrentArticles().isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            
+            // 加载失败
+            state.error != null && state.getCurrentArticles().isEmpty() -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = state.error,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = onRefresh) {
+                        Text(stringResource(Res.string.common_retry))
+                    }
+                }
+            }
+            
+            // 显示列表
+            else -> {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
+                    items(
+                        items = state.getCurrentArticles(),
+                        key = { it.id }
+                    ) { article ->
+                        PixivisionArticleCard(
+                            article = article,
+                            onClick = { onArticleClick(article) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 6.dp)
+                        )
+                    }
+                    
+                    // 加载更多指示器
+                    if (state.isLoadingMore && state.getCurrentHasMore()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    }
+                    
+                    // 没有更多数据提示
+                    if (!state.getCurrentHasMore() && state.getCurrentArticles().isNotEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.list_no_more_items),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
                 }
             }

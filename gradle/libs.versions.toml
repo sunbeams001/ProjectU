@@ -21,6 +21,7 @@ androidx-activity-compose = "1.12.2"
 androidx-lifecycle = "2.10.0"
 androidx-documentfile = "1.1.0"
 compose-webview-multiplatform = "2.0.3"
+ksoup = "0.2.5"
 
 [libraries]
 # Kotlin
@@ -69,6 +70,9 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 
 # Okio - 文件和压缩处理
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+
+# Ksoup - HTML解析器（Kotlin Multiplatform）
+ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" }
 
 # GIF.kt - GIF编解码库
 gifkt = { module = "com.shakster:gifkt", version.ref = "gifkt" }

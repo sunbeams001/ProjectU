@@ -46,6 +46,9 @@ kotlin {
             // Okio文件处理
             implementation(libs.okio)
             
+            // Ksoup - HTML解析器
+            implementation(libs.ksoup)
+            
             // GIF.kt - GIF编解码
             implementation(libs.gifkt)
         }

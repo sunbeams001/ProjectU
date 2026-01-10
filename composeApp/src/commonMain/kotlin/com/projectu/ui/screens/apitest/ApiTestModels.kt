@@ -15,7 +15,8 @@ enum class ApiModule(val displayName: String) {
     TAG("标签 API (TagApi)"),
     MARKER("书签 API (MarkerApi)"),
     FOLLOW("关注 API (FollowApi)"),
-    SEARCH("搜索 API (SearchApi)")
+    SEARCH("搜索 API (SearchApi)"),
+    PIXIVISION("Pixivision API (PixivisionApi)")
 }
 
 /**
@@ -645,6 +646,34 @@ sealed class ApiMethod(
         priority = 0
     )
     
+    // ==================== PixivisionApi ====================
+    
+    object GetPixivisionArticleList : ApiMethod(
+        module = ApiModule.PIXIVISION,
+        methodName = "getArticleList",
+        displayName = "获取文章列表",
+        parameters = listOf(
+            ApiParameter("category", "类别", "illustration", required = true,
+                options = listOf("illustration", "manga")),
+            ApiParameter("lang", "语言", "zh", required = false,
+                options = listOf("zh", "zh-tw", "en", "ja", "ko")),
+            ApiParameter("page", "页码", "1", required = false)
+        ),
+        priority = 0
+    )
+    
+    object GetPixivisionArticleDetail : ApiMethod(
+        module = ApiModule.PIXIVISION,
+        methodName = "getArticleDetail",
+        displayName = "获取文章详情",
+        parameters = listOf(
+            ApiParameter("articleId", "文章ID", "11373", required = true),
+            ApiParameter("lang", "语言", "zh", required = false,
+                options = listOf("zh", "zh-tw", "en", "ja", "ko"))
+        ),
+        priority = 0
+    )
+    
     object GetNovelDiscovery : ApiMethod(
         module = ApiModule.NOVEL,
         methodName = "getNovelDiscovery",
@@ -926,7 +955,9 @@ sealed class ApiMethod(
             // MarkerApi
             AddNovelMarker, DeleteNovelMarker, GetNovelMarkerList,
             // SearchApi
-            SearchIllust, SearchNovel, SearchUser
+            SearchIllust, SearchNovel, SearchUser,
+            // PixivisionApi
+            GetPixivisionArticleList, GetPixivisionArticleDetail
         )
         
         /**
