@@ -156,7 +156,14 @@ class SettingsViewModel(
      */
     fun logout(navigator: Navigator) {
         viewModelScope.launch {
+            // 清除登录凭据
             authRepository.clearCredentials()
+            // 清除WebView Cookie缓存，确保下次登录时不会自动使用上次的账号
+            try {
+                com.projectu.ui.util.clearWebViewCookies()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             // 跳转到登录页面
             navigator.replaceAll(LoginScreen())
         }

@@ -17,6 +17,12 @@ expect suspend fun extractCookiesFromWebView(
 ): Map<String, String>
 
 /**
+ * 清除WebView的所有Cookie
+ * 用于退出登录时清理缓存，确保下次登录时不会自动使用上次的账号
+ */
+expect suspend fun clearWebViewCookies()
+
+/**
  * 从Cookie映射表中提取PHPSESSID
  * @param cookies Cookie映射表
  * @return PHPSESSID值，如果不存在或格式不正确则返回null

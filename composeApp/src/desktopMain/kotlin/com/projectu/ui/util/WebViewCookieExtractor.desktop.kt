@@ -19,3 +19,14 @@ actual suspend fun extractCookiesFromWebView(
     println("⚠️ Desktop平台Cookie提取暂未实现")
     return emptyMap()
 }
+
+/**
+ * Desktop平台清除WebView Cookie实现
+ * 
+ * TODO: 实现Desktop平台的Cookie清除
+ * KCEF的Cookie管理需要通过CefCookieManager
+ */
+actual suspend fun clearWebViewCookies() {
+    // TODO: 实现Desktop平台的Cookie清除
+    println("⚠️ Desktop平台Cookie清除暂未实现")
+}

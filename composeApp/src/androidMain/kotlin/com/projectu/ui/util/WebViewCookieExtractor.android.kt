@@ -31,3 +31,21 @@ actual suspend fun extractCookiesFromWebView(
         emptyMap()
     }
 }
+
+/**
+ * Android平台清除WebView Cookie实现
+ * 清除所有Cookie和网站数据，确保下次登录时不会自动使用上次的账号
+ */
+actual suspend fun clearWebViewCookies() = withContext(Dispatchers.Main) {
+    try {
+        val cookieManager = CookieManager.getInstance()
+        // 清除所有Cookie
+        cookieManager.removeAllCookies(null)
+        // 刷新Cookie存储
+        cookieManager.flush()
+        println("✅ WebView Cookies cleared successfully")
+    } catch (e: Exception) {
+        e.printStackTrace()
+        println("❌ Failed to clear WebView cookies: ${e.message}")
+    }
+}
