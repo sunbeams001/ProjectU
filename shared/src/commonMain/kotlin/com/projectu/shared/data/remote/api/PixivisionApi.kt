@@ -174,8 +174,39 @@ class PixivisionApi(private val client: PixivApiClient) {
             val coverElement = doc.selectFirst("img.aie__image")
             val coverImageUrl = coverElement?.attr("src") ?: ""
             
-            val paragraphElements = doc.select("div.fab__paragraph p")
-            val description = paragraphElements.joinToString("\n") { it.text() }
+            // 解析简介部分，支持多种HTML结构
+            // 只选择第一个段落块作为简介，避免包含后续的活动宣传和广告内容
+            // 1. 先尝试从第一个 div._feature-article-body__paragraph 中获取
+            // 2. 如果为空，尝试从 meta 标签中获取
+            val firstParagraphBlock = doc.selectFirst("div._feature-article-body__paragraph")
+            
+            val description = if (firstParagraphBlock != null) {
+                // 在第一个段落块中查找 div 或 p 标签
+                val descriptionDivs = firstParagraphBlock.select("div.fab__paragraph > div")
+                val descriptionParas = firstParagraphBlock.select("div.fab__paragraph > p")
+                
+                when {
+                    descriptionDivs.isNotEmpty() -> {
+                        // 新版格式：使用 <div> 标签
+                        descriptionDivs.joinToString("\n") { it.text().trim() }
+                            .trim()
+                            .takeIf { it.isNotEmpty() } ?: ""
+                    }
+                    descriptionParas.isNotEmpty() -> {
+                        // 旧版格式：使用 <p> 标签
+                        descriptionParas.joinToString("\n") { it.text().trim() }
+                            .trim()
+                            .takeIf { it.isNotEmpty() } ?: ""
+                    }
+                    else -> {
+                        // 后备方案：从 meta 标签获取
+                        doc.selectFirst("meta[property=og:description]")?.attr("content") ?: ""
+                    }
+                }
+            } else {
+                // 如果找不到段落块，从 meta 标签获取
+                doc.selectFirst("meta[property=og:description]")?.attr("content") ?: ""
+            }
             
             val artworks = mutableListOf<PixivisionArtwork>()
             val workElements = doc.select("div._feature-article-body__pixiv_illust div.am__work")
