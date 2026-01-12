@@ -53,6 +53,7 @@ import projectu.composeapp.generated.resources.*
  * 发现页面统一内容区域
  * 参照排行榜设计，支持横向滑动切换内容类型
  * 
+ * @param preferences 发现页导航偏好配置，用于控制显示哪些导航项
  * @param scrollIndices 滚动位置缓存
  * @param initialPageIndex 初始页面索引
  * @param onPageChanged 页面切换回调，用于保存当前页面索引
@@ -61,13 +62,23 @@ import projectu.composeapp.generated.resources.*
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DiscoveryContent(
+    preferences: com.projectu.shared.domain.model.DiscoveryNavigationPreferences = com.projectu.shared.domain.model.DiscoveryNavigationPreferences.DEFAULT,
     scrollIndices: MutableMap<String, Int> = mutableMapOf(),
     initialPageIndex: Int = 1,
     onPageChanged: ((Int) -> Unit)? = null,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
     val parentNavigator = LocalNavigator.current?.parent
-    val contentTypes = remember { DiscoveryContentType.getAll() }
+    
+    // 1. 根据配置过滤内容类型
+    val contentTypes = remember(preferences) {
+        DiscoveryContentType.getAll().filter { 
+            preferences.isContentTypeEnabled(it.name)
+        }.ifEmpty { 
+            // 保护措施：至少保留一个
+            listOf(DiscoveryContentType.USERS)
+        }
+    }
     
     // 预先创建所有 ViewModel，避免切换时重新创建
     val usersViewModel: DiscoveryUsersViewModel = koinInject()
@@ -98,35 +109,58 @@ fun DiscoveryContent(
         val pixivisionCategory: com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory?
     ) : PageMapping
     
-    // 使用自定义双层导航映射器，支持灵活配置每个主分类的二级导航数量
-    // 结构：
-    // - USERS: 1个页面（无二级导航）
-    // - ILLUSTS: 3个页面（ALL, SAFE, R18）
-    // - NOVELS: 3个页面（ALL, SAFE, R18）
-    // - PIXIVISION: 2个页面（ILLUSTRATION, MANGA）
-    val modes = remember { DiscoveryMode.entries }
-    val pixivisionCategories = remember { 
-        listOf(
+    //2. 根据配置为每个内容类型过滤二级导航项
+    val modesForIllusts = remember(preferences) {
+        val allModes = DiscoveryMode.entries
+        allModes.filter { preferences.illustsEnabledModes.contains(it.name) }
+            .ifEmpty { listOf(DiscoveryMode.ALL) }
+    }
+    
+    val modesForNovels = remember(preferences) {
+        val allModes = DiscoveryMode.entries
+        allModes.filter { preferences.novelsEnabledModes.contains(it.name) }
+            .ifEmpty { listOf(DiscoveryMode.ALL) }
+    }
+    
+    val pixivisionCategoriesFiltered = remember(preferences) {
+        val allCategories = listOf(
             com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.ILLUSTRATION,
             com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.MANGA
         )
+        allCategories.filter { preferences.pixivisionEnabledCategories.contains(it.name) }
+            .ifEmpty { listOf(com.projectu.shared.data.remote.dto.pixivision.PixivisionCategory.ILLUSTRATION) }
     }
     
-    val mapper = remember {
+    // 3. 创建页码映射器（使用 CustomTwoLayerMapper）
+    val mapper = remember(contentTypes, modesForIllusts, modesForNovels, pixivisionCategoriesFiltered) {
+        // 计算每个内容类型的二级导航数量
+        val secondaryCountsPerPrimary = contentTypes.map { contentType ->
+            when (contentType) {
+                DiscoveryContentType.USERS -> 1 // 用户没有二级导航
+                DiscoveryContentType.ILLUSTS -> modesForIllusts.size
+                DiscoveryContentType.NOVELS -> modesForNovels.size
+                DiscoveryContentType.PIXIVISION -> pixivisionCategoriesFiltered.size
+            }
+        }
+        
         CustomTwoLayerMapper(
-            secondaryCountPerPrimary = listOf(1, 3, 3, 2), // USERS=1, ILLUSTS=3, NOVELS=3, PIXIVISION=2
+            secondaryCountPerPrimary = secondaryCountsPerPrimary,
             createMapping = { primaryIndex, secondaryIndex, showSecondary ->
                 val contentType = contentTypes[primaryIndex]
                 when (contentType) {
                     DiscoveryContentType.USERS -> {
                         DiscoveryPageMapping(primaryIndex, secondaryIndex, false, contentType, null, null)
                     }
-                    DiscoveryContentType.ILLUSTS, DiscoveryContentType.NOVELS -> {
-                        val mode = modes[secondaryIndex]
+                    DiscoveryContentType.ILLUSTS -> {
+                        val mode = modesForIllusts[secondaryIndex]
+                        DiscoveryPageMapping(primaryIndex, secondaryIndex, true, contentType, mode, null)
+                    }
+                    DiscoveryContentType.NOVELS -> {
+                        val mode = modesForNovels[secondaryIndex]
                         DiscoveryPageMapping(primaryIndex, secondaryIndex, true, contentType, mode, null)
                     }
                     DiscoveryContentType.PIXIVISION -> {
-                        val category = pixivisionCategories[secondaryIndex]
+                        val category = pixivisionCategoriesFiltered[secondaryIndex]
                         DiscoveryPageMapping(primaryIndex, secondaryIndex, true, contentType, null, category)
                     }
                 }
@@ -220,10 +254,11 @@ fun DiscoveryContent(
         val currentMapping = navState.currentMapping
         
         // 根据当前一级导航动态确定二级导航项
-        val secondaryItems = remember(currentMapping.contentType) {
+        val secondaryItems = remember(currentMapping.contentType, modesForIllusts, modesForNovels, pixivisionCategoriesFiltered) {
             when (currentMapping.contentType) {
-                DiscoveryContentType.ILLUSTS, DiscoveryContentType.NOVELS -> modes
-                DiscoveryContentType.PIXIVISION -> pixivisionCategories
+                DiscoveryContentType.ILLUSTS -> modesForIllusts
+                DiscoveryContentType.NOVELS -> modesForNovels
+                DiscoveryContentType.PIXIVISION -> pixivisionCategoriesFiltered
                 DiscoveryContentType.USERS -> emptyList()
             }
         }

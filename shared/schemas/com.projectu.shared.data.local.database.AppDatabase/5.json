@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 4,
-    "identityHash": "2e73442be4b12489c8d7eac20555c84b",
+    "version": 5,
+    "identityHash": "79fe9ce3e62feb6cbea638b48cb6bbd9",
     "entities": [
       {
         "tableName": "artworks",
@@ -179,7 +179,7 @@
       },
       {
         "tableName": "app_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `appLanguage` TEXT NOT NULL, `pixivLanguage` TEXT NOT NULL, `themeMode` TEXT NOT NULL, `r18SanityLevelThreshold` INTEGER NOT NULL, `preferredImageQuality` TEXT NOT NULL, `detailImageQuality` TEXT NOT NULL, `viewerImageQuality` TEXT NOT NULL, `novelDownloadImageQuality` TEXT NOT NULL, `imageCacheSize` TEXT NOT NULL, `clickBookmarkAction` TEXT NOT NULL, `longPressBookmarkAction` TEXT NOT NULL, `staggeredGridColumns` INTEGER NOT NULL, `baseDownloadPath` TEXT NOT NULL, `fileNameMode` TEXT NOT NULL, `customFileNameTemplate` TEXT NOT NULL, `defaultStartupTab` TEXT NOT NULL, `lastUsedTab` TEXT NOT NULL, `novelFontSize` TEXT NOT NULL, `novelTextColor` TEXT, `novelBackgroundColor` TEXT, `novelBackgroundScheme` TEXT NOT NULL, `translationEngine` TEXT NOT NULL, `translationTargetLanguage` TEXT NOT NULL, `rankingEnabledContentTypes` TEXT NOT NULL, `rankingEnabledModesPerContent` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `appLanguage` TEXT NOT NULL, `pixivLanguage` TEXT NOT NULL, `themeMode` TEXT NOT NULL, `r18SanityLevelThreshold` INTEGER NOT NULL, `preferredImageQuality` TEXT NOT NULL, `detailImageQuality` TEXT NOT NULL, `viewerImageQuality` TEXT NOT NULL, `novelDownloadImageQuality` TEXT NOT NULL, `imageCacheSize` TEXT NOT NULL, `clickBookmarkAction` TEXT NOT NULL, `longPressBookmarkAction` TEXT NOT NULL, `staggeredGridColumns` INTEGER NOT NULL, `baseDownloadPath` TEXT NOT NULL, `fileNameMode` TEXT NOT NULL, `customFileNameTemplate` TEXT NOT NULL, `defaultStartupTab` TEXT NOT NULL, `lastUsedTab` TEXT NOT NULL, `novelFontSize` TEXT NOT NULL, `novelTextColor` TEXT, `novelBackgroundColor` TEXT, `novelBackgroundScheme` TEXT NOT NULL, `translationEngine` TEXT NOT NULL, `translationTargetLanguage` TEXT NOT NULL, `rankingNavigationConfig` TEXT NOT NULL, `discoveryNavigationConfig` TEXT NOT NULL, `followLatestNavigationConfig` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -324,14 +324,20 @@
             "notNull": true
           },
           {
-            "fieldPath": "rankingEnabledContentTypes",
-            "columnName": "rankingEnabledContentTypes",
+            "fieldPath": "rankingNavigationConfig",
+            "columnName": "rankingNavigationConfig",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "rankingEnabledModesPerContent",
-            "columnName": "rankingEnabledModesPerContent",
+            "fieldPath": "discoveryNavigationConfig",
+            "columnName": "discoveryNavigationConfig",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "followLatestNavigationConfig",
+            "columnName": "followLatestNavigationConfig",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -815,7 +821,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e73442be4b12489c8d7eac20555c84b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '79fe9ce3e62feb6cbea638b48cb6bbd9')"
     ]
   }
 }

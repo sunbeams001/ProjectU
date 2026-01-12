@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * 应用设置存储
@@ -221,6 +223,50 @@ class SettingsStore(
      */
     suspend fun setTranslationTargetLanguage(language: com.projectu.shared.domain.model.TranslationLanguage) {
         settingsDao.updateTranslationTargetLanguage(language.name)
+    }
+    
+    /**
+     * 更新排行榜导航偏好
+     */
+    suspend fun updateRankingNavigationPreferences(preferences: com.projectu.shared.domain.model.RankingNavigationPreferences) {
+        // 使用SettingsEntity的JSON序列化工具和模型
+        val configJson = com.projectu.shared.data.local.entity.json.encodeToString(
+            com.projectu.shared.data.local.entity.RankingNavigationConfigJson(
+                enabledContentTypes = preferences.enabledContentTypes.toList(),
+                enabledModesPerContent = preferences.enabledModesPerContent.mapValues { it.value.toList() }
+            )
+        )
+        settingsDao.updateRankingNavigationPreferences(configJson)
+    }
+    
+    /**
+     * 更新发现页导航偏好
+     */
+    suspend fun updateDiscoveryNavigationPreferences(preferences: com.projectu.shared.domain.model.DiscoveryNavigationPreferences) {
+        // 使用SettingsEntity的JSON序列化工具和模型
+        val configJson = com.projectu.shared.data.local.entity.json.encodeToString(
+            com.projectu.shared.data.local.entity.DiscoveryNavigationConfigJson(
+                enabledContentTypes = preferences.enabledContentTypes.toList(),
+                illustsEnabledModes = preferences.illustsEnabledModes.toList(),
+                novelsEnabledModes = preferences.novelsEnabledModes.toList(),
+                pixivisionEnabledCategories = preferences.pixivisionEnabledCategories.toList()
+            )
+        )
+        settingsDao.updateDiscoveryNavigationPreferences(configJson)
+    }
+    
+    /**
+     * 更新动态页导航偏好
+     */
+    suspend fun updateFollowLatestNavigationPreferences(preferences: com.projectu.shared.domain.model.FollowLatestNavigationPreferences) {
+        // 使用SettingsEntity的JSON序列化工具和模型
+        val configJson = com.projectu.shared.data.local.entity.json.encodeToString(
+            com.projectu.shared.data.local.entity.FollowLatestNavigationConfigJson(
+                enabledContentTypes = preferences.enabledContentTypes.toList(),
+                watchListEnabledTypes = preferences.watchListEnabledTypes.toList()
+            )
+        )
+        settingsDao.updateFollowLatestNavigationPreferences(configJson)
     }
     
     /**

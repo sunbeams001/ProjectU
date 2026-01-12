@@ -64,9 +64,9 @@ class PagedNavigationState<T : PageMapping>(
      */
     val currentMapping: T
         @Composable
-        get() = remember {
-            derivedStateOf { mapper.parsePageIndex(pagerState.currentPage) }
-        }.value
+        get() = remember(mapper, pagerState.currentPage) {
+            mapper.parsePageIndex(pagerState.currentPage)
+        }
     
     /**
      * 跳转到指定页码

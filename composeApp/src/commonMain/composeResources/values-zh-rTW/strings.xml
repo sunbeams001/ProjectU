@@ -25,6 +25,8 @@
     <string name="follow_latest_more">更多</string>
     <string name="follow_latest_more_title">更多動態</string>
     <string name="follow_latest_watch_list">追更列表</string>
+    <string name="follow_latest_watch_list_manga">漫畫</string>
+    <string name="follow_latest_watch_list_novels">小說</string>
     <string name="follow_latest_good_p_friends">好P友</string>
     <string name="follow_latest_manga">漫畫</string>
     <string name="follow_latest_coming_soon">即將推出</string>
@@ -94,6 +96,27 @@
     <string name="ranking_content_manga">漫畫</string>
     <string name="ranking_content_ugoira">動圖</string>
     <string name="ranking_content_novel">小說</string>
+    
+    <!-- Navigation Settings -->
+    <string name="settings_navigation_config">導航設定</string>
+    <string name="settings_navigation_config_desc">自訂排行榜、發現、動態頁面的導航項</string>
+    <string name="settings_navigation_ranking">導航設定（排行榜）</string>
+    <string name="settings_navigation_ranking_desc">自訂排行榜頁面導航項</string>
+    <string name="settings_navigation_discovery">導航設定（發現頁）</string>
+    <string name="settings_navigation_discovery_desc">自訂發現頁面導航項</string>
+    <string name="settings_navigation_follow_latest">導航設定（動態頁）</string>
+    <string name="settings_navigation_follow_latest_desc">自訂動態頁面導航項</string>
+    <string name="nav_settings_title_ranking">排行榜導航設定</string>
+    <string name="nav_settings_title_discovery">發現頁導航設定</string>
+    <string name="nav_settings_title_follow_latest">動態頁導航設定</string>
+    <string name="nav_settings_description">選擇要顯示的內容類型和模式，至少保留一個項目啟用。</string>
+    <string name="nav_settings_content_types">內容類型</string>
+    <string name="nav_settings_modes">模式</string>
+    <string name="nav_settings_reset">恢復預設</string>
+    <string name="nav_settings_reset_confirm_title">恢復預設設定？</string>
+    <string name="nav_settings_reset_confirm_message">所有導航項將被啟用，此操作不可撤銷。</string>
+    <string name="nav_settings_pixivision_categories">Pixivision類別</string>
+    <string name="nav_settings_watch_list_types">追更列表類型</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">收藏</string>

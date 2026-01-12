@@ -25,6 +25,8 @@
     <string name="follow_latest_more">더보기</string>
     <string name="follow_latest_more_title">더보기 팔로우</string>
     <string name="follow_latest_watch_list">구독 목록</string>
+    <string name="follow_latest_watch_list_manga">만화</string>
+    <string name="follow_latest_watch_list_novels">소설</string>
     <string name="follow_latest_good_p_friends">좋은 P 친구</string>
     <string name="follow_latest_manga">만화</string>
     <string name="follow_latest_coming_soon">곧 출시</string>
@@ -94,6 +96,27 @@
     <string name="ranking_content_manga">만화</string>
     <string name="ranking_content_ugoira">우고이라</string>
     <string name="ranking_content_novel">소설</string>
+    
+    <!-- Navigation Settings -->
+    <string name="settings_navigation_config">탐색 설정</string>
+    <string name="settings_navigation_config_desc">랭킹, 발견, 최신 페이지의 탐색 항목 사용자 지정</string>
+    <string name="settings_navigation_ranking">탐색 설정 (랭킹)</string>
+    <string name="settings_navigation_ranking_desc">랭킹 페이지 탐색 항목 사용자 지정</string>
+    <string name="settings_navigation_discovery">탐색 설정 (발견)</string>
+    <string name="settings_navigation_discovery_desc">발견 페이지 탐색 항목 사용자 지정</string>
+    <string name="settings_navigation_follow_latest">탐색 설정 (최신)</string>
+    <string name="settings_navigation_follow_latest_desc">최신 페이지 탐색 항목 사용자 지정</string>
+    <string name="nav_settings_title_ranking">랭킹 탐색 설정</string>
+    <string name="nav_settings_title_discovery">발견 페이지 탐색 설정</string>
+    <string name="nav_settings_title_follow_latest">최신 페이지 탐색 설정</string>
+    <string name="nav_settings_description">표시할 콘텐츠 유형과 모드를 선택하세요. 최소 하나의 항목은 활성화되어야 합니다.</string>
+    <string name="nav_settings_content_types">콘텐츠 유형</string>
+    <string name="nav_settings_modes">모드</string>
+    <string name="nav_settings_reset">기본값으로 재설정</string>
+    <string name="nav_settings_reset_confirm_title">기본 설정으로 재설정하시겠습니까?</string>
+    <string name="nav_settings_reset_confirm_message">모든 탐색 항목이 활성화됩니다. 이 작업은 취소할 수 없습니다.</string>
+    <string name="nav_settings_pixivision_categories">Pixivision 카테고리</string>
+    <string name="nav_settings_watch_list_types">워치리스트 유형</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">북마크</string>

@@ -6,6 +6,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.projectu.shared.data.local.database.migrations.MIGRATION_1_2
 import com.projectu.shared.data.local.database.migrations.MIGRATION_2_3
 import com.projectu.shared.data.local.database.migrations.MIGRATION_3_4
+import com.projectu.shared.data.local.database.migrations.MIGRATION_4_5
 
 /**
  * 数据库构建器
@@ -21,6 +22,6 @@ fun getRoomDatabase(
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
         .build()
 }

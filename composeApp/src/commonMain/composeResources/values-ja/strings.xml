@@ -25,6 +25,8 @@
     <string name="follow_latest_more">その他</string>
     <string name="follow_latest_more_title">その他のフォロー新着</string>
     <string name="follow_latest_watch_list">ウォッチリスト</string>
+    <string name="follow_latest_watch_list_manga">マンガ</string>
+    <string name="follow_latest_watch_list_novels">小説</string>
     <string name="follow_latest_good_p_friends">良いPフレンド</string>
     <string name="follow_latest_manga">マンガ</string>
     <string name="follow_latest_coming_soon">近日公開</string>
@@ -94,6 +96,27 @@
     <string name="ranking_content_manga">マンガ</string>
     <string name="ranking_content_ugoira">うごイラ</string>
     <string name="ranking_content_novel">小説</string>
+    
+    <!-- Navigation Settings -->
+    <string name="settings_navigation_config">ナビゲーション設定</string>
+    <string name="settings_navigation_config_desc">ランキング、発見、最新ページのナビゲーション項目をカスタマイズ</string>
+    <string name="settings_navigation_ranking">ナビゲーション設定（ランキング）</string>
+    <string name="settings_navigation_ranking_desc">ランキングページのナビゲーション項目をカスタマイズ</string>
+    <string name="settings_navigation_discovery">ナビゲーション設定（発見）</string>
+    <string name="settings_navigation_discovery_desc">発見ページのナビゲーション項目をカスタマイズ</string>
+    <string name="settings_navigation_follow_latest">ナビゲーション設定（最新）</string>
+    <string name="settings_navigation_follow_latest_desc">最新ページのナビゲーション項目をカスタマイズ</string>
+    <string name="nav_settings_title_ranking">ランキングナビゲーション設定</string>
+    <string name="nav_settings_title_discovery">発見ページナビゲーション設定</string>
+    <string name="nav_settings_title_follow_latest">最新ページナビゲーション設定</string>
+    <string name="nav_settings_description">表示するコンテンツタイプとモードを選択してください。少なくとも1つの項目は有効にしておく必要があります。</string>
+    <string name="nav_settings_content_types">コンテンツタイプ</string>
+    <string name="nav_settings_modes">モード</string>
+    <string name="nav_settings_reset">デフォルトに戻す</string>
+    <string name="nav_settings_reset_confirm_title">デフォルト設定に戻しますか？</string>
+    <string name="nav_settings_reset_confirm_message">すべてのナビゲーション項目が有効になります。この操作は元に戻せません。</string>
+    <string name="nav_settings_pixivision_categories">Pixivisionカテゴリ</string>
+    <string name="nav_settings_watch_list_types">ウォッチリストタイプ</string>
     
     <!-- Profile Screen -->
     <string name="profile_bookmarks">ブックマーク</string>

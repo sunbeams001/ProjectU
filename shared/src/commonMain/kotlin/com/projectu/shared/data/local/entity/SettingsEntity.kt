@@ -5,6 +5,9 @@ import androidx.room.PrimaryKey
 import com.projectu.shared.data.local.AppLanguage
 import com.projectu.shared.data.local.PixivLanguage
 import com.projectu.shared.data.local.ThemeMode
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 /**
  * 应用设置数据库实体
@@ -133,9 +136,77 @@ data class SettingsEntity(
     val translationTargetLanguage: String = "SIMPLIFIED_CHINESE",
     
     /**
+     * 排行榜导航配置（嵌套JSON字符串）
+     * 存储格式：{
+     *   "enabledContentTypes": ["ALL", "ILLUST", "MANGA"],
+     *   "enabledModesPerContent": {"ALL":["DAILY","WEEKLY"], "ILLUST":["DAILY"]}
+     * }
+     */
+    val rankingNavigationConfig: String = "{}",
+    
+    /**
+     * 发现页导航配置（嵌套JSON字符串）
+     * 存储格式：{
+     *   "enabledContentTypes": ["USERS", "ILLUSTS", "NOVELS", "PIXIVISION"],
+     *   "illustsModes": ["ALL", "SAFE", "R18"],
+     *   "novelsModes": ["ALL", "SAFE", "R18"],
+     *   "pixivisionCategories": ["ILLUSTRATION", "MANGA"]
+     * }
+     */
+    val discoveryNavigationConfig: String = "{}",
+    
+    /**
+     * 动态页导航配置（嵌套JSON字符串）
+     * 存储格式：{
+     *   "enabledContentTypes": ["ILLUSTS", "NOVELS", "WATCH_LIST", "GOOD_P_FRIENDS"],
+     *   "watchListTypes": ["MANGA", "NOVELS"]
+     * }
+     */
+    val followLatestNavigationConfig: String = "{}",
+    
+    /**
      * 设置更新时间
      */
     val updatedAt: Long = System.currentTimeMillis()
+)
+
+/**
+ * JSON序列化工具
+ */
+internal val json = Json {
+    ignoreUnknownKeys = true
+    encodeDefaults = true
+}
+
+/**
+ * 排行榜导航配置JSON模型
+ */
+@kotlinx.serialization.Serializable
+internal data class RankingNavigationConfigJson(
+    val enabledContentTypes: List<String> = emptyList(),
+    val enabledModesPerContent: Map<String, List<String>> = emptyMap()
+)
+
+/**
+ * 发现页导航配置JSON模型
+ */
+@kotlinx.serialization.Serializable
+internal data class DiscoveryNavigationConfigJson(
+    val enabledContentTypes: List<String> = emptyList(),
+    val illustsEnabledModes: List<String> = emptyList(),
+    val novelsEnabledModes: List<String> = emptyList(),
+    val pixivisionEnabledCategories: List<String> = emptyList()
+)
+
+/**
+ * 动态页导航配置JSON模型
+ */
+@kotlinx.serialization.Serializable
+internal data class FollowLatestNavigationConfigJson(
+    val enabledContentTypes: List<String> = emptyList(),
+    val illustsEnabledModes: List<String> = emptyList(),
+    val novelsEnabledModes: List<String> = emptyList(),
+    val watchListEnabledTypes: List<String> = emptyList()
 )
 
 /**
@@ -165,7 +236,29 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         novelBackgroundColor = this.novelBackgroundColor,
         novelBackgroundScheme = this.novelBackgroundScheme.name,
         translationEngine = this.translationEngine.name,
-        translationTargetLanguage = this.translationTargetLanguage.name
+        translationTargetLanguage = this.translationTargetLanguage.name,
+        rankingNavigationConfig = json.encodeToString(
+            RankingNavigationConfigJson(
+                enabledContentTypes = this.rankingNavigationPreferences.enabledContentTypes.toList(),
+                enabledModesPerContent = this.rankingNavigationPreferences.enabledModesPerContent.mapValues { it.value.toList() }
+            )
+        ),
+        discoveryNavigationConfig = json.encodeToString(
+            DiscoveryNavigationConfigJson(
+                enabledContentTypes = this.discoveryNavigationPreferences.enabledContentTypes.toList(),
+                illustsEnabledModes = this.discoveryNavigationPreferences.illustsEnabledModes.toList(),
+                novelsEnabledModes = this.discoveryNavigationPreferences.novelsEnabledModes.toList(),
+                pixivisionEnabledCategories = this.discoveryNavigationPreferences.pixivisionEnabledCategories.toList()
+            )
+        ),
+        followLatestNavigationConfig = json.encodeToString(
+            FollowLatestNavigationConfigJson(
+                enabledContentTypes = this.followLatestNavigationPreferences.enabledContentTypes.toList(),
+                illustsEnabledModes = this.followLatestNavigationPreferences.illustsEnabledModes.toList(),
+                novelsEnabledModes = this.followLatestNavigationPreferences.novelsEnabledModes.toList(),
+                watchListEnabledTypes = this.followLatestNavigationPreferences.watchListEnabledTypes.toList()
+            )
+        )
     )
 }
 
@@ -214,6 +307,58 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
             com.projectu.shared.domain.model.TranslationLanguage.valueOf(this.translationTargetLanguage)
         } catch (e: Exception) {
             com.projectu.shared.domain.model.TranslationLanguage.SIMPLIFIED_CHINESE
+        },
+        rankingNavigationPreferences = run {
+            try {
+                val config = json.decodeFromString<RankingNavigationConfigJson>(this.rankingNavigationConfig)
+                // 如果为空，使用默认配置
+                if (config.enabledContentTypes.isEmpty() || config.enabledModesPerContent.isEmpty()) {
+                    com.projectu.shared.domain.model.RankingNavigationPreferences.DEFAULT
+                } else {
+                    com.projectu.shared.domain.model.RankingNavigationPreferences(
+                        enabledContentTypes = config.enabledContentTypes.toSet(),
+                        enabledModesPerContent = config.enabledModesPerContent.mapValues { it.value.toSet() }
+                    )
+                }
+            } catch (e: Exception) {
+                com.projectu.shared.domain.model.RankingNavigationPreferences.DEFAULT
+            }
+        },
+        discoveryNavigationPreferences = run {
+            try {
+                val config = json.decodeFromString<DiscoveryNavigationConfigJson>(this.discoveryNavigationConfig)
+                // 如果为空，使用默认配置
+                if (config.enabledContentTypes.isEmpty()) {
+                    com.projectu.shared.domain.model.DiscoveryNavigationPreferences.DEFAULT
+                } else {
+                    com.projectu.shared.domain.model.DiscoveryNavigationPreferences(
+                        enabledContentTypes = config.enabledContentTypes.toSet(),
+                        illustsEnabledModes = config.illustsEnabledModes.toSet(),
+                        novelsEnabledModes = config.novelsEnabledModes.toSet(),
+                        pixivisionEnabledCategories = config.pixivisionEnabledCategories.toSet()
+                    )
+                }
+            } catch (e: Exception) {
+                com.projectu.shared.domain.model.DiscoveryNavigationPreferences.DEFAULT
+            }
+        },
+        followLatestNavigationPreferences = run {
+            try {
+                val config = json.decodeFromString<FollowLatestNavigationConfigJson>(this.followLatestNavigationConfig)
+                // 如果为空，使用默认配置
+                if (config.enabledContentTypes.isEmpty()) {
+                    com.projectu.shared.domain.model.FollowLatestNavigationPreferences.DEFAULT
+                } else {
+                    com.projectu.shared.domain.model.FollowLatestNavigationPreferences(
+                        enabledContentTypes = config.enabledContentTypes.toSet(),
+                        illustsEnabledModes = config.illustsEnabledModes.toSet().ifEmpty { setOf("ALL", "R18") },
+                        novelsEnabledModes = config.novelsEnabledModes.toSet().ifEmpty { setOf("ALL", "R18") },
+                        watchListEnabledTypes = config.watchListEnabledTypes.toSet()
+                    )
+                }
+            } catch (e: Exception) {
+                com.projectu.shared.domain.model.FollowLatestNavigationPreferences.DEFAULT
+            }
         }
     )
 }

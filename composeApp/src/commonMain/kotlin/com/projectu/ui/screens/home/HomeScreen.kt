@@ -449,6 +449,12 @@ object DiscoveryTab : Tab {
     override fun Content() {
         val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
         
+        // 订阅导航偏好配置
+        val settingsRepository: com.projectu.shared.domain.repository.SettingsRepository = koinInject()
+        val settings by settingsRepository.getSettings()
+            .collectAsState(initial = com.projectu.shared.data.local.AppSettings.DEFAULT)
+        val preferences = settings.discoveryNavigationPreferences
+        
         // 监听触发器
         LaunchedEffect(scrollToTopOrRefreshTrigger.value) {
             if (scrollToTopOrRefreshTrigger.value > 0) {
@@ -457,6 +463,7 @@ object DiscoveryTab : Tab {
         }
         
         DiscoveryContent(
+            preferences = preferences,
             scrollIndices = scrollIndices,
             initialPageIndex = currentPageIndex.intValue,
             onPageChanged = { index -> currentPageIndex.intValue = index },
@@ -501,6 +508,12 @@ object FollowLatestTab : Tab {
     override fun Content() {
         val scrollToTopOrRefreshCallback = remember { mutableStateOf<(() -> Unit)?>(null) }
         
+        // 订阅导航偏好配置
+        val settingsRepository: com.projectu.shared.domain.repository.SettingsRepository = koinInject()
+        val settings by settingsRepository.getSettings()
+            .collectAsState(initial = com.projectu.shared.data.local.AppSettings.DEFAULT)
+        val preferences = settings.followLatestNavigationPreferences
+        
         // 监听触发器
         LaunchedEffect(scrollToTopOrRefreshTrigger.value) {
             if (scrollToTopOrRefreshTrigger.value > 0) {
@@ -509,6 +522,7 @@ object FollowLatestTab : Tab {
         }
         
         FollowLatestContent(
+            preferences = preferences,
             scrollIndices = scrollIndices,
             initialPageIndex = currentPageIndex.intValue,
             onPageChanged = { index -> currentPageIndex.intValue = index },
@@ -552,9 +566,38 @@ object RankingTab : Tab {
         val state by viewModel.state.collectAsState()
         val parentNavigator = LocalNavigator.current?.parent
         
+        // 订阅导航偏好配置
+        val settingsRepository: com.projectu.shared.domain.repository.SettingsRepository = koinInject()
+        val settings by settingsRepository.getSettings()
+            .collectAsState(initial = null)  // 不使用默认值，等待数据库加载
+        
+        // 等待设置加载完成
+        if (settings == null) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return
+        }
+        
+        val navigationPreferences = settings!!.rankingNavigationPreferences
+        
         // 惰性加载：只在首次显示且没有数据时加载
         LaunchedEffect(Unit) {
             viewModel.initLoadIfNeeded()
+        }
+        
+        // 配置变更时，检查当前页面是否仍然启用
+        LaunchedEffect(navigationPreferences) {
+            if (!navigationPreferences.isContentTypeEnabled(state.currentContentType)) {
+                // 当前内容类型被禁用，切换到第一个启用的
+                val firstEnabled = navigationPreferences.getEnabledContentTypes().firstOrNull()
+                if (firstEnabled != null && firstEnabled != state.currentContentType) {
+                    viewModel.switchContentType(firstEnabled)
+                }
+            }
         }
         
         // 用于管理刷新或滚动到顶部的触发
@@ -578,6 +621,7 @@ object RankingTab : Tab {
         
         RankingContent(
             state = state,
+            preferences = navigationPreferences,
             scrollIndices = scrollIndices,
             onContentTypeChange = viewModel::switchContentType,
             onModeChange = viewModel::switchMode,

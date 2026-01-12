@@ -37,7 +37,7 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         BlockRuleEntity::class,
         NovelTranslationCacheEntity::class
     ],
-    version = 4,
+    version = 5, // 增加版本号以支持新字段
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)

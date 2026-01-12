@@ -475,6 +475,16 @@ private fun SettingsScreenContent(
                 )
             }
             
+            // 导航设置（跳转到统一设置页面）
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_navigation_config),
+                    subtitle = null,
+                    description = stringResource(Res.string.settings_navigation_config_desc),
+                    onClick = { navigator.push(NavigationPreferencesScreen()) }
+                )
+            }
+            
             // 瀑布流列数设置
             item {
                 SettingsItem(
@@ -1143,7 +1153,7 @@ private fun SettingsGroupHeader(title: String) {
 @Composable
 private fun SettingsItem(
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
     description: String? = null,
     onClick: () -> Unit
 ) {
@@ -1166,11 +1176,13 @@ private fun SettingsItem(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge
                 )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 if (description != null) {
                     Text(
                         text = description,

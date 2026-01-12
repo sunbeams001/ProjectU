@@ -155,7 +155,28 @@ data class AppSettings(
      * 用于指定翻译的目标语言
      * 默认：简体中文
      */
-    val translationTargetLanguage: com.projectu.shared.domain.model.TranslationLanguage = com.projectu.shared.domain.model.TranslationLanguage.SIMPLIFIED_CHINESE
+    val translationTargetLanguage: com.projectu.shared.domain.model.TranslationLanguage = com.projectu.shared.domain.model.TranslationLanguage.SIMPLIFIED_CHINESE,
+    
+    /**
+     * 排行榜导航偏好配置
+     * 控制排行榜页面显示哪些导航项
+     * 默认：全部启用
+     */
+    val rankingNavigationPreferences: com.projectu.shared.domain.model.RankingNavigationPreferences = com.projectu.shared.domain.model.RankingNavigationPreferences.DEFAULT,
+    
+    /**
+     * 发现页导航偏好配置
+     * 控制发现页面显示哪些导航项
+     * 默认：全部启用
+     */
+    val discoveryNavigationPreferences: com.projectu.shared.domain.model.DiscoveryNavigationPreferences = com.projectu.shared.domain.model.DiscoveryNavigationPreferences.DEFAULT,
+    
+    /**
+     * 动态页导航偏好配置
+     * 控制动态页面显示哪些导航项
+     * 默认：全部启用
+     */
+    val followLatestNavigationPreferences: com.projectu.shared.domain.model.FollowLatestNavigationPreferences = com.projectu.shared.domain.model.FollowLatestNavigationPreferences.DEFAULT
 ) {
     companion object {
         /**

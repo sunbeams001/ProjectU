@@ -123,6 +123,18 @@ class SettingsRepositoryImpl(
         settingsStore.updateSettings(settings)
     }
     
+    override suspend fun updateRankingNavigationPreferences(preferences: com.projectu.shared.domain.model.RankingNavigationPreferences) {
+        settingsStore.updateRankingNavigationPreferences(preferences)
+    }
+    
+    override suspend fun updateDiscoveryNavigationPreferences(preferences: com.projectu.shared.domain.model.DiscoveryNavigationPreferences) {
+        settingsStore.updateDiscoveryNavigationPreferences(preferences)
+    }
+    
+    override suspend fun updateFollowLatestNavigationPreferences(preferences: com.projectu.shared.domain.model.FollowLatestNavigationPreferences) {
+        settingsStore.updateFollowLatestNavigationPreferences(preferences)
+    }
+    
     override suspend fun resetSettings() {
         settingsStore.reset()
     }

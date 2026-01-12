@@ -172,6 +172,33 @@ interface SettingsDao {
     suspend fun updateTranslationTargetLanguage(language: String, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新排行榜导航偏好
+     */
+    @Query("UPDATE app_settings SET rankingNavigationConfig = :config, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateRankingNavigationPreferences(
+        config: String,
+        timestamp: Long = System.currentTimeMillis()
+    )
+    
+    /**
+     * 更新发现页导航偏好
+     */
+    @Query("UPDATE app_settings SET discoveryNavigationConfig = :config, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateDiscoveryNavigationPreferences(
+        config: String,
+        timestamp: Long = System.currentTimeMillis()
+    )
+    
+    /**
+     * 更新动态页导航偏好
+     */
+    @Query("UPDATE app_settings SET followLatestNavigationConfig = :config, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateFollowLatestNavigationPreferences(
+        config: String,
+        timestamp: Long = System.currentTimeMillis()
+    )
+    
+    /**
      * 删除所有设置（重置功能）
      */
     @Query("DELETE FROM app_settings")

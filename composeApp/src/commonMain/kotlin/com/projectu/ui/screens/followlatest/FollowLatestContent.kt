@@ -48,6 +48,7 @@ import projectu.composeapp.generated.resources.*
  * 动态页面统一内容区域
  * 参照发现和排行榜设计，支持横向滑动切换内容类型
  * 
+ * @param preferences 动态页导航偏好配置，用于控制显示哪些导航项
  * @param scrollIndices 滚动位置缓存
  * @param initialPageIndex 初始页面索引
  * @param onPageChanged 页面切换回调，用于保存当前页面索引
@@ -56,13 +57,23 @@ import projectu.composeapp.generated.resources.*
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FollowLatestContent(
+    preferences: com.projectu.shared.domain.model.FollowLatestNavigationPreferences = com.projectu.shared.domain.model.FollowLatestNavigationPreferences.DEFAULT,
     scrollIndices: MutableMap<String, Int> = mutableMapOf(),
     initialPageIndex: Int = 0,
     onPageChanged: ((Int) -> Unit)? = null,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
     val parentNavigator = LocalNavigator.current?.parent
-    val contentTypes = remember { FollowLatestContentType.getAll() }
+    
+    // 1. 根据配置过滤内容类型
+    val contentTypes = remember(preferences) {
+        FollowLatestContentType.getAll().filter { 
+            preferences.isContentTypeEnabled(it.name)
+        }.ifEmpty { 
+            // 保护措施：至少保留一个
+            listOf(FollowLatestContentType.ILLUSTS)
+        }
+    }
     
     // 预先创建所有 ViewModel，避免切换时重新创建
     val illustsViewModel: FollowLatestIllustsViewModel = koinInject()
@@ -92,19 +103,41 @@ fun FollowLatestContent(
         val mode: FollowLatestMode
     ) : PageMapping
     
-    // 使用自定义双层导航映射器
-    // 结构：插画×2(0-1) → 小说×2(2-3) → 追更列表×2(4-5) → 好P友×1(6)
-    val modes = remember { FollowLatestMode.entries }
-    val mapper = remember {
+    // 2. 根据配置过滤模式
+    val modesFiltered = remember(preferences) {
+        FollowLatestMode.entries.toList()
+        // 对于插画、小说，无需过滤模式，它们直接使用ALL和R18
+    }
+    
+    // 3. 根据配置过滤追更列表的子类型
+    val watchListTypesFiltered = remember(preferences) {
+        // 追更列表有MANGA和NOVELS两个子类型
+        val allTypes = listOf("MANGA", "NOVELS")
+        allTypes.filter { preferences.watchListEnabledTypes.contains(it) }
+            .ifEmpty { listOf("MANGA") }
+    }
+    
+    // 4. 创建页码映射器（使用 CustomTwoLayerMapper）
+    val mapper = remember(contentTypes, modesFiltered, watchListTypesFiltered) {
+        // 计算每个内容类型的二级导航数量
+        val secondaryCountsPerPrimary = contentTypes.map { contentType ->
+            when (contentType) {
+                FollowLatestContentType.ILLUSTS -> 2 // ALL, R18
+                FollowLatestContentType.NOVELS -> 2 // ALL, R18
+                FollowLatestContentType.WATCH_LIST -> watchListTypesFiltered.size // MANGA, NOVELS (根据配置)
+                FollowLatestContentType.GOOD_P_FRIENDS -> 1 // 无二级导航
+            }
+        }
+        
         CustomTwoLayerMapper(
-            secondaryCountPerPrimary = listOf(2, 2, 2, 1), // 插画2个、小说2个、追更列表2个、好P友1个
+            secondaryCountPerPrimary = secondaryCountsPerPrimary,
             createMapping = { primaryIndex, secondaryIndex, showSecondary ->
                 val contentType = contentTypes[primaryIndex]
                 val mode = when (contentType) {
                     FollowLatestContentType.ILLUSTS, FollowLatestContentType.NOVELS -> {
-                        if (showSecondary) modes[secondaryIndex] else modes[0]
+                        if (showSecondary) modesFiltered[secondaryIndex] else modesFiltered[0]
                     }
-                    else -> modes[0] // 追更列表和好P友不使用mode
+                    else -> modesFiltered[0] // 追更列表和好P友不使用mode
                 }
                 FollowLatestPageMapping(primaryIndex, secondaryIndex, showSecondary, contentType, mode)
             }
@@ -210,9 +243,10 @@ fun FollowLatestContent(
         val currentMapping = navState.currentMapping
         
         // 根据当前一级导航选择对应的二级导航项
+        val modesForIllustAndNovel = remember { FollowLatestMode.entries }
         val watchListTypes = remember { WatchListContentType.getAll() }
         val secondaryItems = when (currentMapping.contentType) {
-            FollowLatestContentType.ILLUSTS, FollowLatestContentType.NOVELS -> modes
+            FollowLatestContentType.ILLUSTS, FollowLatestContentType.NOVELS -> modesForIllustAndNovel
             FollowLatestContentType.WATCH_LIST -> watchListTypes
             else -> emptyList()
         }

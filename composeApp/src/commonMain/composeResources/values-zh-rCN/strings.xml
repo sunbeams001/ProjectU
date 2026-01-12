@@ -80,6 +80,27 @@
     <string name="ranking_content_ugoira">动图</string>
     <string name="ranking_content_novel">小说</string>
     
+    <!-- Navigation Settings -->
+    <string name="settings_navigation_config">导航设置</string>
+    <string name="settings_navigation_config_desc">自定义排行榜、发现、动态页面的导航项</string>
+    <string name="settings_navigation_ranking">导航设置（排行榜）</string>
+    <string name="settings_navigation_ranking_desc">自定义排行榜页面导航项</string>
+    <string name="settings_navigation_discovery">导航设置（发现页）</string>
+    <string name="settings_navigation_discovery_desc">自定义发现页面导航项</string>
+    <string name="settings_navigation_follow_latest">导航设置（动态页）</string>
+    <string name="settings_navigation_follow_latest_desc">自定义动态页面导航项</string>
+    <string name="nav_settings_title_ranking">排行榜导航设置</string>
+    <string name="nav_settings_title_discovery">发现页导航设置</string>
+    <string name="nav_settings_title_follow_latest">动态页导航设置</string>
+    <string name="nav_settings_description">选择要显示的内容类型和模式，至少保留一个项目启用。</string>
+    <string name="nav_settings_content_types">内容类型</string>
+    <string name="nav_settings_modes">模式</string>
+    <string name="nav_settings_reset">恢复默认</string>
+    <string name="nav_settings_reset_confirm_title">恢复默认设置？</string>
+    <string name="nav_settings_reset_confirm_message">所有导航项将被启用，此操作不可撤销。</string>
+    <string name="nav_settings_pixivision_categories">Pixivision类别</string>
+    <string name="nav_settings_watch_list_types">追更列表类型</string>
+    
     <!-- Profile Screen -->
     <string name="profile_bookmarks">收藏</string>
     <string name="profile_following">关注</string>
@@ -642,6 +663,8 @@
     <string name="follow_latest_more">更多</string>
     <string name="follow_latest_more_title">更多动态</string>
     <string name="follow_latest_watch_list">追更列表</string>
+    <string name="follow_latest_watch_list_manga">漫画</string>
+    <string name="follow_latest_watch_list_novels">小说</string>
     <string name="follow_latest_good_p_friends">好P友</string>
     <string name="follow_latest_manga">漫画</string>
     <string name="follow_latest_coming_soon">即将推出</string>

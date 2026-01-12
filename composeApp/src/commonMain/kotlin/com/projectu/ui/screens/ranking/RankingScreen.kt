@@ -59,11 +59,14 @@ data class RankingPageMapping(
  * 使用"一层 Pager + 页码映射"机制实现双层导航
  * - 第一层：内容类型（综合/插画/动图/漫画/小说）
  * - 第二层：排行榜模式（每日/每周/每月等，根据内容类型动态变化）
+ * 
+ * @param preferences 排行榜导航偏好配置，用于控制显示哪些导航项
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RankingContent(
     state: RankingState,
+    preferences: com.projectu.shared.domain.model.RankingNavigationPreferences = com.projectu.shared.domain.model.RankingNavigationPreferences.DEFAULT,
     scrollIndices: MutableMap<String, Int> = mutableMapOf(),
     onContentTypeChange: (RankingContent) -> Unit,
     onModeChange: (RankingMode) -> Unit,
@@ -77,28 +80,22 @@ fun RankingContent(
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onRegisterScrollToTopOrRefreshCallback: ((() -> Unit) -> Unit)? = null
 ) {
-    // 1. 准备数据：内容类型列表
-    val contentTypes = remember {
-        listOf(
-            RankingContent.ALL,
-            RankingContent.ILLUST,
-            RankingContent.UGOIRA,
-            RankingContent.MANGA,
-            RankingContent.NOVEL
-        )
+    // 1. 准备数据：根据偏好配置过滤内容类型列表
+    val contentTypes = remember(preferences) {
+        preferences.getEnabledContentTypes()
     }
     
-    // 2. 准备数据：每个内容类型支持的模式列表
-    val modesPerType = remember {
+    // 2. 准备数据：每个内容类型根据偏好配置过滤模式列表
+    val modesPerType = remember(preferences, contentTypes) {
         contentTypes.map { type ->
-            RankingContentModeConfig.getSupportedModes(type)
+            preferences.getEnabledModes(type)
         }
     }
     
     // 3. 创建页码映射器（使用 CustomTwoLayerMapper）
-    val mapper = remember {
+    val mapper = remember(contentTypes, modesPerType) {
         CustomTwoLayerMapper(
-            secondaryCountPerPrimary = modesPerType.map { it.size }, // [16, 7, 4, 7, 14]
+            secondaryCountPerPrimary = modesPerType.map { it.size },
             createMapping = { primaryIndex, secondaryIndex, showSecondary ->
                 val contentType = contentTypes[primaryIndex]
                 val mode = modesPerType[primaryIndex][secondaryIndex]
@@ -113,11 +110,13 @@ fun RankingContent(
         )
     }
     
-    // 4. 计算初始页码
-    val initialPage = remember(state.currentContentType, state.currentMode) {
-        val primaryIndex = contentTypes.indexOf(state.currentContentType).coerceAtLeast(0)
+    // 4. 计算初始页码（考虑配置变更后当前页面可能不在启用列表中）
+    val initialPage = remember(state.currentContentType, state.currentMode, contentTypes, modesPerType) {
+        val primaryIndex = contentTypes.indexOf(state.currentContentType)
+            .takeIf { it >= 0 } ?: 0
         val modes = modesPerType.getOrNull(primaryIndex) ?: emptyList()
-        val secondaryIndex = modes.indexOf(state.currentMode).coerceAtLeast(0)
+        val secondaryIndex = modes.indexOf(state.currentMode)
+            .takeIf { it >= 0 } ?: 0
         mapper.calculatePageIndex(primaryIndex, secondaryIndex)
     }
     

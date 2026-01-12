@@ -159,6 +159,21 @@ interface SettingsRepository {
     suspend fun updateSettings(settings: AppSettings)
     
     /**
+     * 更新排行榜导航偏好
+     */
+    suspend fun updateRankingNavigationPreferences(preferences: com.projectu.shared.domain.model.RankingNavigationPreferences)
+    
+    /**
+     * 更新发现页导航偏好
+     */
+    suspend fun updateDiscoveryNavigationPreferences(preferences: com.projectu.shared.domain.model.DiscoveryNavigationPreferences)
+    
+    /**
+     * 更新动态页导航偏好
+     */
+    suspend fun updateFollowLatestNavigationPreferences(preferences: com.projectu.shared.domain.model.FollowLatestNavigationPreferences)
+    
+    /**
      * 重置为默认设置
      */
     suspend fun resetSettings()
