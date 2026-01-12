@@ -75,6 +75,26 @@
     <string name="ranking_content_manga">Manga</string>
     <string name="ranking_content_ugoira">Ugoira</string>
     <string name="ranking_content_novel">Novels</string>
+    <!-- Navigation Settings -->
+    <string name="settings_navigation_config">Navigation Settings</string>
+    <string name="settings_navigation_config_desc">Customize navigation items for Ranking, Discovery, and Follow Latest pages</string>
+    <string name="settings_navigation_ranking">Navigation Settings (Ranking)</string>
+    <string name="settings_navigation_ranking_desc">Customize ranking page navigation items</string>
+    <string name="settings_navigation_discovery">Navigation Settings (Discovery)</string>
+    <string name="settings_navigation_discovery_desc">Customize discovery page navigation items</string>
+    <string name="settings_navigation_follow_latest">Navigation Settings (Follow Latest)</string>
+    <string name="settings_navigation_follow_latest_desc">Customize follow latest page navigation items</string>
+    <string name="nav_settings_title_ranking">Ranking Navigation Settings</string>
+    <string name="nav_settings_title_discovery">Discovery Navigation Settings</string>
+    <string name="nav_settings_title_follow_latest">Follow Latest Navigation Settings</string>
+    <string name="nav_settings_description">Choose which content types and modes to display. At least one item must remain enabled.</string>
+    <string name="nav_settings_content_types">Content Types</string>
+    <string name="nav_settings_modes">Modes</string>
+    <string name="nav_settings_reset">Reset to Defaults</string>
+    <string name="nav_settings_reset_confirm_title">Reset to Defaults?</string>
+    <string name="nav_settings_reset_confirm_message">All navigation items will be enabled. This action cannot be undone.</string>
+    <string name="nav_settings_pixivision_categories">Pixivision Categories</string>
+    <string name="nav_settings_watch_list_types">Watch List Types</string>
     <!-- Profile Screen -->
     <string name="profile_bookmarks">Bookmarks</string>
     <string name="profile_following">Following</string>
@@ -600,6 +620,8 @@
     <string name="follow_latest_more">More</string>
     <string name="follow_latest_more_title">More Following</string>
     <string name="follow_latest_watch_list">Watch List</string>
+    <string name="follow_latest_watch_list_manga">Manga</string>
+    <string name="follow_latest_watch_list_novels">Novels</string>
     <string name="follow_latest_good_p_friends">Good P Friends</string>
     <string name="follow_latest_manga">Manga</string>
     <string name="follow_latest_coming_soon">Coming Soon</string>
