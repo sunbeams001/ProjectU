@@ -95,6 +95,9 @@ kotlin {
             
             // Room数据库依赖 - Android平台需要
             implementation(libs.room.runtime)
+            
+            // WorkManager - Widget后台更新
+            implementation(libs.androidx.work.runtime.ktx)
         }
         
         desktopMain.dependencies {

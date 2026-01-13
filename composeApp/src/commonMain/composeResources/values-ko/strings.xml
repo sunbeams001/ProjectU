@@ -1058,5 +1058,10 @@
     <string name="retranslate_current_page">현재 페이지 재번역</string>
     <string name="description_original">원문 모드</string>
     <string name="description_translated">번역 모드</string>
+
+    <!-- Widget 관리 -->
+    <string name="settings_widget">Widget</string>
+    <string name="settings_widget_management">위젯 관리</string>
+    <string name="settings_widget_management_desc">Pixiv 홈 화면 위젯 관리</string>
 </resources>
 

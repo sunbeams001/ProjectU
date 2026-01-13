@@ -59,6 +59,7 @@ actual val databaseModule: Module = module {
     single { get<AppDatabase>().downloadRulesDao() }
     single { get<AppDatabase>().browseHistoryDao() }
     single { get<AppDatabase>().blockRuleDao() }
+    single { get<AppDatabase>().widgetConfigDao() }
     
     // 设置存储
     single { SettingsStore(get()) }
@@ -67,6 +68,14 @@ actual val databaseModule: Module = module {
 actual val repositoryModule: Module = module {
     // 设置仓储
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
+    
+    // Widget 仓储
+    single<com.projectu.shared.domain.repository.WidgetRepository> {
+        com.projectu.shared.data.repository.WidgetRepositoryImpl(
+            widgetConfigDao = get(),
+            artworkRepository = get()
+        )
+    }
 }
 
 actual val useCaseModule: Module = module {
@@ -83,6 +92,13 @@ actual val useCaseModule: Module = module {
             artworkRepository = get(),
             ugoiraCache = get(),
             httpClient = get()
+        )
+    }
+    
+    // Widget UseCase
+    factory {
+        com.projectu.shared.domain.usecase.GetWidgetArtworksUseCase(
+            widgetRepository = get()
         )
     }
 }

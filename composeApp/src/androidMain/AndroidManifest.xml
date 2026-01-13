@@ -82,6 +82,19 @@
                 <data android:pathPattern="/user/.*/series/.*" />
             </intent-filter>
             
+            <!-- App内部 Deep Link: projectu:// scheme -->
+            <!-- 用于 Widget 点击跳转和应用内导航 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <data android:scheme="projectu" />
+                <data android:host="artwork" />
+                <data android:host="widget" />
+                <data android:host="user" />
+            </intent-filter>
+            
             <!-- 接收分享的图片 - 用于以图搜图功能 (SauceNAO) -->
             <intent-filter android:label="@string/share_image_search">
                 <action android:name="android.intent.action.SEND" />
@@ -102,6 +115,38 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity-alias>
+        
+        <!-- Widget Configuration Activity -->
+        <activity
+            android:name="com.projectu.widget.WidgetConfigActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ProjectU"
+            android:label="@string/widget_config_title" />
+        
+        <!-- Pixiv Widget Provider -->
+        <receiver
+            android:name="com.projectu.widget.PixivWidget"
+            android:exported="true"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.projectu.widget.ACTION_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+        
+        <!-- Widget Click Receiver -->
+        <!-- 用于接收 Widget 点击事件，解决应用强制停止后 PendingIntent 数据丢失的问题 -->
+        <receiver
+            android:name="com.projectu.widget.WidgetClickReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.projectu.widget.ACTION_WIDGET_CLICK" />
+                <action android:name="com.projectu.widget.ACTION_WIDGET_REFRESH" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
 

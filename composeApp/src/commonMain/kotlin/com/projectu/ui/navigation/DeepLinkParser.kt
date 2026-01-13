@@ -106,9 +106,28 @@ object DeepLinkParser {
      * @return 解析结果 [DeepLinkTarget]
      */
     fun parse(url: String?): DeepLinkTarget {
-        if (url.isNullOrBlank()) return DeepLinkTarget.Unknown
+        if (url.isNullOrBlank()) {
+            return DeepLinkTarget.Unknown
+        }
         
         return try {
+            // 处理自定义 projectu:// scheme
+            if (url.startsWith("projectu://")) {
+                val urlWithoutScheme = url.removePrefix("projectu://")
+                val parts = urlWithoutScheme.split("/", limit = 2)
+                if (parts.size == 2) {
+                    val type = parts[0]
+                    val id = parts[1].removeSuffix("/")
+                    val result = when (type) {
+                        "artwork" -> DeepLinkTarget.Artwork(id)
+                        "user" -> DeepLinkTarget.User(id)
+                        "novel" -> DeepLinkTarget.Novel(id)
+                        else -> DeepLinkTarget.Unknown
+                    }
+                    return result
+                }
+            }
+            
             // 简单解析 URL
             val urlWithoutProtocol = url.removePrefix("https://").removePrefix("http://")
             val hostAndPath = urlWithoutProtocol.split("?", limit = 2)

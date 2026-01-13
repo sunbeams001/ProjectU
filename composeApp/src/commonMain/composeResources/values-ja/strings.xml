@@ -1058,5 +1058,10 @@
     <string name="retranslate_current_page">現在のページを再翻訳</string>
     <string name="description_original">原文モード</string>
     <string name="description_translated">翻訳モード</string>
+
+    <!-- Widget管理 -->
+    <string name="settings_widget">Widget</string>
+    <string name="settings_widget_management">Widget管理</string>
+    <string name="settings_widget_management_desc">Pixivホーム画面ウィジェットを管理</string>
 </resources>
 

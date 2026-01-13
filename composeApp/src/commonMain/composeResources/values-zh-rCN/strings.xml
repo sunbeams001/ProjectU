@@ -1040,9 +1040,11 @@
     <string name="action_cancel">取消</string>
     <string name="action_confirm">确定</string>
     
-    <!-- Desktop Specific -->
-    <string name="desktop_webview_restart_required">需要重启应用才能使用 WebView 功能</string>
-    <string name="desktop_webview_initializing">正在初始化 WebView 组件...</string>
+    <!-- Widget管理 -->
+    <string name="settings_widget">Widget</string>
+    <string name="settings_widget_management">桌面小部件管理</string>
+    <string name="settings_widget_management_desc">管理Pixiv桌面小部件配置</string>
+
     <string name="desktop_download_progress">下载进度: %d%%</string>
 </resources>
 

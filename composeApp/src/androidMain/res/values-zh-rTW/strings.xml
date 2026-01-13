@@ -2,5 +2,55 @@
 <resources>
     <!-- 分享功能标签 -->
     <string name="share_image_search">以圖搜圖 (SauceNAO)</string>
-    <string name="share_image_search_ascii2d">以圖搜圖 (Ascii2d)</string>
+    <string name="share_image_search_ascii2d">以圖搜圖 (Ascii2d)</string>    
+    <!-- Widget 相關字串 -->
+    <string name="widget_name">Pixiv 作品展示</string>
+    <string name="widget_description">在桌面展示 Pixiv 作品</string>
+    <string name="widget_config_title">配置 Pixiv 小工具</string>
+    <string name="widget_artwork_image">作品圖片</string>
+    <string name="widget_refresh">刷新</string>
+    <string name="widget_management">小工具管理</string>
+    <string name="widget_no_widgets">暫無配置的小工具</string>
+    <string name="widget_delete">刪除</string>
+    <string name="widget_reconfigure">重新配置</string>
+    <string name="widget_data_source">資料來源</string>
+    <string name="widget_data_source_recommended">推薦</string>
+    <string name="widget_data_source_following">關注用戶最新作品</string>
+    <string name="widget_data_source_ranking">排行榜</string>
+    <string name="widget_ranking_mode">排行榜類型</string>
+    <string name="widget_ranking_day">日榜</string>
+    <string name="widget_ranking_week">週榜</string>
+    <string name="widget_ranking_month">月榜</string>
+    <string name="widget_filter_settings">篩選設定</string>
+    <string name="widget_filter_r18">R-18 內容</string>
+    <string name="widget_filter_ai">AI 生成內容</string>
+    <string name="widget_filter_must_be">僅限</string>
+    <string name="widget_filter_must_not_be">排除</string>
+    <string name="widget_filter_any">任意</string>
+    <string name="widget_update_interval">更新間隔</string>
+    <string name="widget_update_interval_minutes">%d 分鐘</string>
+    <string name="widget_show_refresh_button">顯示刷新按鈕</string>
+    <string name="widget_display_settings">顯示設定</string>
+    <string name="widget_image_scale_type">圖片縮放</string>
+    <string name="widget_scale_fit_center">完整顯示</string>
+    <string name="widget_scale_center_crop">填充裁剪</string>
+    <string name="widget_corner_radius">圓角大小</string>
+    <string name="widget_delete_confirm_title">刪除Widget配置</string>
+    <string name="widget_delete_confirm_message">確定要刪除 Widget #%d 的配置嗎?桌面上的Widget也需要手動移除。</string>
+    <string name="widget_add_instruction">長按桌面添加Widget</string>
+    <string name="widget_data_source_label">資料來源: %s</string>
+    <string name="widget_ranking_mode_label">排行: %s</string>
+    <string name="widget_update_interval_label">更新: %d 分鐘</string>
+    <string name="widget_error_no_artwork">沒有可顯示的作品</string>
+    <string name="widget_error_update_failed">更新失敗</string>
+    <string name="widget_error_refresh_failed">刷新失敗</string>
+        <!-- 時間單位 -->
+    <string name="time_unit_minute">%d分鐘</string>
+    <string name="time_unit_hour">%d小時</string>
+    <string name="time_unit_hour_minute">%1$d小時%2$d分鐘</string>
+    <string name="time_unit_day">%d天</string>
+        <!-- 通用字符串 (Android Compose代码专用) -->
+    <string name="common_cancel">取消</string>
+    <string name="common_save">儲存</string>
+    <string name="common_back">返回</string>
 </resources>

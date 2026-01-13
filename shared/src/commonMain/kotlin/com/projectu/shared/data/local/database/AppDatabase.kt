@@ -21,6 +21,8 @@ import com.projectu.shared.data.local.entity.DownloadTaskEntity
 import com.projectu.shared.data.local.entity.NovelTranslationCacheEntity
 import com.projectu.shared.data.local.entity.SettingsEntity
 import com.projectu.shared.data.local.entity.UgoiraCacheEntity
+import com.projectu.shared.data.local.entity.WidgetConfigEntity
+import com.projectu.shared.data.local.dao.WidgetConfigDao
 
 /**
  * 应用数据库配置
@@ -35,9 +37,10 @@ import com.projectu.shared.data.local.entity.UgoiraCacheEntity
         DownloadRuleEntity::class,
         BrowseHistoryEntity::class,
         BlockRuleEntity::class,
-        NovelTranslationCacheEntity::class
+        NovelTranslationCacheEntity::class,
+        WidgetConfigEntity::class
     ],
-    version = 5, // 增加版本号以支持新字段
+    version = 6, // Widget配置表，包含显示设置（图片缩放、圆角）
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -82,6 +85,11 @@ abstract class AppDatabase : RoomDatabase() {
      * 小说翻译缓存数据访问对象
      */
     abstract fun novelTranslationCacheDao(): NovelTranslationCacheDao
+    
+    /**
+     * Widget 配置数据访问对象
+     */
+    abstract fun widgetConfigDao(): WidgetConfigDao
 }
 
 /**

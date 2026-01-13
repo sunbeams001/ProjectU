@@ -20,6 +20,7 @@ ksp = "2.2.21-2.0.4"
 androidx-activity-compose = "1.12.2"
 androidx-lifecycle = "2.10.0"
 androidx-documentfile = "1.1.0"
+androidx-work = "2.11.0"
 compose-webview-multiplatform = "2.0.3"
 ksoup = "0.2.5"
 
@@ -89,6 +90,7 @@ androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmode
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "androidx-documentfile" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 
 # Compose WebView Multiplatform
 compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "compose-webview-multiplatform" }

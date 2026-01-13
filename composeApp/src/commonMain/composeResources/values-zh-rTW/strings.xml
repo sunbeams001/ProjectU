@@ -1061,5 +1061,10 @@
     <string name="retranslate_current_page">重新翻譯當前頁</string>
     <string name="description_original">原文模式</string>
     <string name="description_translated">翻譯模式</string>
+
+    <!-- Widget管理 -->
+    <string name="settings_widget">Widget</string>
+    <string name="settings_widget_management">桌面小工具管理</string>
+    <string name="settings_widget_management_desc">管理Pixiv桌面小工具配置</string>
 </resources>
 

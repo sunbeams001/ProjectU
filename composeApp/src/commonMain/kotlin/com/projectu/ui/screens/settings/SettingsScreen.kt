@@ -501,6 +501,37 @@ private fun SettingsScreenContent(
                 )
             }
             
+            // Widget管理 (Android专用)
+            item { 
+                var hasWidgetScreen by remember { mutableStateOf(false) }
+                LaunchedEffect(Unit) {
+                    hasWidgetScreen = try {
+                        Class.forName("com.projectu.ui.screens.settings.WidgetManagementScreen")
+                        true
+                    } catch (e: ClassNotFoundException) {
+                        false
+                    }
+                }
+                
+                if (hasWidgetScreen) {
+                    Column {
+                        SettingsGroupHeader(title = stringResource(Res.string.settings_widget))
+                        SettingsItem(
+                            title = stringResource(Res.string.settings_widget_management),
+                            subtitle = stringResource(Res.string.settings_widget_management_desc),
+                            onClick = {
+                                try {
+                                    val screenClass = Class.forName("com.projectu.ui.screens.settings.WidgetManagementScreen")
+                                    navigator.push(screenClass.newInstance() as Screen)
+                                } catch (e: Exception) {
+                                    // 忽略错误
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+            
             // 📚 5. 小说设置 (Novel Settings)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_novel))
