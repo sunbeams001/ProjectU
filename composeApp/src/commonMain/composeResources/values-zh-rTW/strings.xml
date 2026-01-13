@@ -962,8 +962,9 @@
     <string name="color_theme_default">主題預設</string>
     <string name="action_cancel">取消</string>
     <string name="action_confirm">確定</string>
-    <!-- Desktop Specific -->
-    <string name="desktop_webview_restart_required">Restart required to use WebView</string>
-    <string name="desktop_webview_initializing">Initializing WebView component...</string>
+    <!-- Widget Management -->
+    <string name="settings_widget">Widget</string>
+    <string name="settings_widget_management">Widget Management</string>
+    <string name="settings_widget_management_desc">Manage Pixiv home screen widgets</string>
     <string name="desktop_download_progress">Download progress: %d%%</string>
 </resources>
