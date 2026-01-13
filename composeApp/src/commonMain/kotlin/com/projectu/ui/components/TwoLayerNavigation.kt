@@ -300,7 +300,7 @@ fun <T, S> TabbedNavigationBar(
                     .height(40.dp),  // 固定高度，与 Tab 高度一致，避免尾部内容撑高
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ScrollableTabRow(
+                PrimaryScrollableTabRow(
                     selectedTabIndex = primarySelectedIndex,
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.primary,

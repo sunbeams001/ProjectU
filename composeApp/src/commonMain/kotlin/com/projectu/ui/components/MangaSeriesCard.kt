@@ -128,8 +128,8 @@ fun MangaSeriesCard(
                     )
                     
                     // 简介（支持展开/收起，解析HTML）
-                    val captionText = series.caption ?: series.description
-                    captionText?.takeIf { it.isNotBlank() }?.let { caption ->
+                    val captionText = series.caption
+                    captionText.takeIf { it.isNotBlank() }?.let { caption ->
                         var isExpanded by remember { mutableStateOf(false) }
                         val plainText = remember(caption) {
                             htmlToPlainText(caption)
@@ -167,9 +167,9 @@ fun MangaSeriesCard(
                     )
                     
                     // 更新日期（如果有）
-                    series.updateDate?.let { date ->
+                    if (series.updateDate.isNotBlank()) {
                         // 只显示日期部分（去掉时间和时区）
-                        val displayDate = date.substringBefore("T")
+                        val displayDate = series.updateDate.substringBefore("T")
                         Text(
                             text = stringResource(Res.string.series_update, displayDate),
                             style = MaterialTheme.typography.labelSmall,

@@ -418,7 +418,7 @@ fun VariableHelpDialog(
                 VariableHelpItem("{r18}", stringResource(Res.string.filename_var_r18), stringResource(Res.string.filename_var_r18_example))
                 VariableHelpItem("{tags}", stringResource(Res.string.filename_var_tags), stringResource(Res.string.filename_var_tags_example))
                 
-                Divider()
+                HorizontalDivider()
                 
                 Text(
                     text = stringResource(Res.string.filename_notes_title),

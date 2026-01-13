@@ -126,7 +126,7 @@ fun NavigationPreferencesContent(
                 .padding(paddingValues)
         ) {
             // Tab导航栏
-            TabRow(selectedTabIndex = selectedTabIndex) {
+            PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
                 Tab(
                     selected = selectedTabIndex == 0,
                     onClick = { selectedTabIndex = 0 },

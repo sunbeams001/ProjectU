@@ -116,10 +116,11 @@ class StoragePermissionManager(
  * 扩展函数：在 Composable 中使用
  */
 @androidx.compose.runtime.Composable
-fun rememberStoragePermissionManager(
-    activity: ComponentActivity = androidx.compose.ui.platform.LocalContext.current as ComponentActivity
-): StoragePermissionManager {
+fun rememberStoragePermissionManager(): StoragePermissionManager {
+    val activity = requireNotNull(androidx.activity.compose.LocalActivity.current) {
+        "LocalActivity must be present"
+    }
     return androidx.compose.runtime.remember(activity) {
-        StoragePermissionManager(activity)
+        StoragePermissionManager(activity as ComponentActivity)
     }
 }

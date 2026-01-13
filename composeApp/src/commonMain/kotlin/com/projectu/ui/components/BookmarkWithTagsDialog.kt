@@ -39,7 +39,7 @@ fun BookmarkWithTagsDialog(
     var currentTagInput by remember { mutableStateOf("") }
     var isPrivate by remember { mutableStateOf(initialPrivate) }
     
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.widthIn(max = 560.dp)
     ) {

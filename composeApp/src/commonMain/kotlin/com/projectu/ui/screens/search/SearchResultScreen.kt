@@ -20,6 +20,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -106,7 +107,7 @@ data class SearchResultScreen(
                     )
                     SearchCategory.USER -> Triple(
                         viewModel.createUserArtworkListSource(),
-                        state.userResults.flatMap { user -> user.illusts?.map { it.id } ?: emptyList() },
+                        state.userResults.flatMap { user -> user.illusts.map { it.id } },
                         "user"
                     )
                     else -> Triple(
@@ -218,7 +219,7 @@ fun SearchResultContent(
             var targetUserIndex = 0
             
             for ((userIndex, user) in state.userResults.withIndex()) {
-                val userArtworkCount = user.illusts?.size ?: 0
+                val userArtworkCount = user.illusts.size
                 if (targetArtworkIndex < accumulatedIndex + userArtworkCount) {
                     targetUserIndex = userIndex
                     break
@@ -317,7 +318,7 @@ fun SearchResultContent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ScrollableTabRow(
+                    PrimaryScrollableTabRow(
                         selectedTabIndex = state.currentCategory.ordinal,
                         modifier = Modifier.weight(1f),
                         edgePadding = 0.dp
@@ -437,7 +438,7 @@ fun SearchInputBar(
         ) {
             // 返回按钮
             IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(Res.string.nav_back))
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.nav_back))
             }
             
             // 搜索输入框（与搜索准备页面保持一致）
@@ -728,7 +729,7 @@ fun UserResultList(
                     var index = 0
                     users.map { user ->
                         val startIndex = index
-                        index += (user.illusts?.size ?: 0)
+                        index += user.illusts.size
                         startIndex
                     }
                 }
@@ -1056,7 +1057,7 @@ fun SearchModeDropdown(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         )
         
         ExposedDropdownMenu(
@@ -1107,7 +1108,7 @@ fun SortOrderDropdown(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         )
         
         ExposedDropdownMenu(
@@ -1156,7 +1157,7 @@ fun BookmarkCountDropdown(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         )
         
         ExposedDropdownMenu(

@@ -1,6 +1,6 @@
 package com.projectu.shared.util
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -12,7 +12,6 @@ import kotlinx.datetime.toLocalDateTime
  * 
  * 用于将ISO 8601格式的UTC时间转换为本地时区的可读格式
  */
-@OptIn(kotlin.time.ExperimentalTime::class)
 object DateTimeFormatter {
     
     // 日本时区 (UTC+9)

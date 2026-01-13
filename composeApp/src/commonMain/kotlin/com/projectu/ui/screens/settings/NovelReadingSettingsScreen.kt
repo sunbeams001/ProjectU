@@ -356,15 +356,15 @@ private fun BackgroundSchemeOption(
                             modifier = Modifier
                                 .size(48.dp, 40.dp)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(parseColor(scheme.backgroundColor) ?: Color.Gray)
+                                .background(parseColor(scheme.backgroundColor))
                                 .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(6.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            // 在背景色上显示"A"字样，使用文字颜色
+                            // 在背景色上显示“A”字样，使用文字颜色
                             Text(
                                 text = "A",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = parseColor(scheme.textColor) ?: Color.Black
+                                color = parseColor(scheme.textColor)
                             )
                         }
                     }
@@ -421,7 +421,7 @@ private fun ColorSettingItem(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(parseColor(color) ?: Color.Gray)
+                            .background(parseColor(color))
                             .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                     )
                     Text(

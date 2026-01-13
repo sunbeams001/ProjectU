@@ -108,13 +108,13 @@ class SearchResultViewModel(
         return object : ArtworkListSource {
             override val artworkIdsFlow: StateFlow<List<String>> = state.map { currentState ->
                 currentState.userResults.flatMap { user ->
-                    user.illusts?.map { it.id } ?: emptyList()
+                    user.illusts.map { it.id }
                 }
             }.stateIn(
                 scope = screenModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = state.value.userResults.flatMap { user ->
-                    user.illusts?.map { it.id } ?: emptyList()
+                    user.illusts.map { it.id }
                 }
             )
             

@@ -121,7 +121,7 @@ fun TagFilterDialog(
                     colors = OutlinedTextFieldDefaults.colors()
                 )
                 
-                Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 
                 // 标签列表
                 when {

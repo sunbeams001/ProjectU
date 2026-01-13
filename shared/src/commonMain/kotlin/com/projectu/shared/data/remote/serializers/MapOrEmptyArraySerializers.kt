@@ -1,6 +1,7 @@
 package com.projectu.shared.data.remote.serializers
 
 import com.projectu.shared.util.AppJson
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -17,6 +18,7 @@ import kotlinx.serialization.json.*
  * 
  * 此序列化器将空数组统一转换为空 Map，保证类型一致性
  */
+@OptIn(ExperimentalSerializationApi::class)
 object MapOrEmptyArraySerializer : KSerializer<Map<String, String?>?> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("MapOrEmptyArray")
 
@@ -58,6 +60,7 @@ object MapOrEmptyArraySerializer : KSerializer<Map<String, String?>?> {
  * - 有数据时返回嵌套对象: {"outer": {"inner": "value"}}
  * - 无数据时返回空数组: []
  */
+@OptIn(ExperimentalSerializationApi::class)
 object NestedMapOrEmptyArraySerializer : KSerializer<Map<String, Map<String, String>>?> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("NestedMapOrEmptyArray")
 
@@ -112,6 +115,7 @@ object NestedMapOrEmptyArraySerializer : KSerializer<Map<String, Map<String, Str
  * 
  * 此序列化器将空数组转换为 null，对象则正常解析为 SocialLinks
  */
+@OptIn(ExperimentalSerializationApi::class)
 object SocialLinksOrEmptyArraySerializer : KSerializer<com.projectu.shared.data.remote.dto.user.SocialLinks?> {
     private val delegateSerializer = com.projectu.shared.data.remote.dto.user.SocialLinks.serializer()
     
@@ -148,6 +152,7 @@ object SocialLinksOrEmptyArraySerializer : KSerializer<com.projectu.shared.data.
  * - 有数据时返回对象: {"tag": ["id1", "id2"]}
  * - 无数据时返回空数组: []
  */
+@OptIn(ExperimentalSerializationApi::class)
 object MapStringListOrEmptyArraySerializer : KSerializer<Map<String, List<String>>?> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("MapStringListOrEmptyArray")
 
@@ -194,6 +199,7 @@ object MapStringListOrEmptyArraySerializer : KSerializer<Map<String, List<String
  * - 有数据时返回对象: {"en": {"planTitle": "...", "planTitleLang": "en"}, ...}
  * - 无数据时返回空数组: []
  */
+@OptIn(ExperimentalSerializationApi::class)
 object PlanTitleTranslationOrEmptyArraySerializer : KSerializer<Map<String, PlanTitleTranslationItem>?> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("PlanTitleTranslationOrEmptyArray")
 

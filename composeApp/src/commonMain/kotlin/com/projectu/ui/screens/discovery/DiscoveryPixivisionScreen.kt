@@ -67,7 +67,7 @@ private fun CategoryTabs(
     currentCategory: PixivisionCategory,
     onCategoryChange: (PixivisionCategory) -> Unit
 ) {
-    TabRow(
+    PrimaryTabRow(
         selectedTabIndex = when (currentCategory) {
             PixivisionCategory.ILLUSTRATION -> 0
             PixivisionCategory.MANGA -> 1

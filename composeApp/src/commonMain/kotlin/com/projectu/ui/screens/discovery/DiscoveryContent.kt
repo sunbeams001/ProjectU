@@ -338,7 +338,7 @@ fun DiscoveryContent(
                     // 创建响应式作品列表 State
                     val userArtworkIdsState = remember {
                         derivedStateOf {
-                            usersState.users.flatMap { it.illusts?.map { it.id } ?: emptyList() }
+                            usersState.users.flatMap { it.illusts.map { it.id } }
                         }
                     }
                     
@@ -347,7 +347,7 @@ fun DiscoveryContent(
                         val map = mutableMapOf<Int, Int>()
                         var artworkIndex = 0
                         usersState.users.forEachIndexed { userIndex, user ->
-                            user.illusts?.forEach { _ ->
+                            user.illusts.forEach { _ ->
                                 map[artworkIndex] = userIndex
                                 artworkIndex++
                             }
@@ -388,7 +388,7 @@ fun DiscoveryContent(
                                 )
                             )
                         },
-                        listState = listState as LazyListState
+                        listState = listState
                     )
                 }
                 
@@ -445,7 +445,7 @@ fun DiscoveryContent(
                         onUserClick = { userId ->
                             parentNavigator?.push(UserScreen(userId))
                         },
-                        listState = listState as LazyStaggeredGridState
+                        listState = listState
                     )
                 }
                 
@@ -484,7 +484,7 @@ fun DiscoveryContent(
                         onTagClick = tagClickHandler?.let { handler ->
                             { tag: com.projectu.shared.domain.model.Tag -> handler.handleTagClick(tag) }
                         },
-                        listState = listState as LazyListState
+                        listState = listState
                     )
                 }
                 
@@ -692,7 +692,7 @@ fun UserListLayout(
 ) {
     // 构建全局作品列表和索引映射
     val allArtworks = remember(users) {
-        users.flatMap { it.illusts ?: emptyList() }
+        users.flatMap { it.illusts }
     }
     
     // 预计算每个用户的作品起始索引（使用完整列表）
@@ -700,7 +700,7 @@ fun UserListLayout(
         var index = 0
         users.map { user ->
             val startIndex = index
-            index += (user.illusts?.size ?: 0)
+            index += user.illusts.size
             startIndex
         }
     }

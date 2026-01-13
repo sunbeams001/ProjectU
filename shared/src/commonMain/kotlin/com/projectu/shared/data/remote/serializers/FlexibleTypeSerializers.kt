@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.serializers
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -27,6 +28,7 @@ import kotlinx.serialization.json.intOrNull
  * - 整数值: 0 -> "0"
  * - null 值: null -> ""
  */
+@OptIn(ExperimentalSerializationApi::class)
 object FlexibleStringSerializer : KSerializer<String> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("FlexibleString", PrimitiveKind.STRING)
 
@@ -59,6 +61,7 @@ object FlexibleStringSerializer : KSerializer<String> {
  * - null 值: null -> null
  * - 字符串数字: "100" -> 100
  */
+@OptIn(ExperimentalSerializationApi::class)
 object FlexibleIntOrNullSerializer : KSerializer<Int?> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("FlexibleIntOrNull", PrimitiveKind.INT)
 

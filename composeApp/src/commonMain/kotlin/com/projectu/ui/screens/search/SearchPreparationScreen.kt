@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package com.projectu.ui.screens.search
 
 import androidx.compose.foundation.background
@@ -38,6 +40,7 @@ import com.projectu.shared.data.remote.dto.tag.ThumbnailInfo
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.components.ErrorDisplay
+import com.projectu.ui.util.rememberCopyToClipboard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -340,7 +343,7 @@ fun EnhancedHistoryChip(
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+    val copyToClipboard = rememberCopyToClipboard()
     
     // 使用 Surface 代替 SuggestionChip，完全控制点击行为
     // 注意：不能同时使用 Surface.onClick 和 combinedClickable，会冲突
@@ -422,7 +425,7 @@ fun EnhancedHistoryChip(
                     }
                 },
                 onClick = {
-                    clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(item.keyword))
+                    copyToClipboard(item.keyword)
                     showMenu = false
                 }
             )

@@ -449,7 +449,7 @@ fun UserScreenContent(
                                     onNovelClick = onNovelClick,
                                     onNovelSeriesClick = onNovelSeriesClick,
                                     onMangaSeriesClick = onMangaSeriesClick,
-                                    onUserClick = { userId -> onUserClick(userId.toString()) },
+                                    onUserClick = { userId -> onUserClick(userId) },
                                     onLoadMore = onLoadMore,
                                     onRefresh = onRefresh,
                                     onRetry = { onRetryTab(tab) },
@@ -906,9 +906,6 @@ fun UserTabContent(
                                         applyNavigationBarsPadding = isStandalone
                                     )
                                 }
-                            }
-                            else -> {
-                                // USER_INFO 已在上面处理
                             }
                         }
                     }

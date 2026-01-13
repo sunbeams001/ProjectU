@@ -157,7 +157,7 @@ class UserViewModel(
                     _state.update { 
                         it.copy(
                             isLoadingProfile = false, 
-                            profileError = userInfoResponse.message ?: "Failed to load user info"
+                            profileError = userInfoResponse.message
                         ) 
                     }
                     return@launch
@@ -176,7 +176,7 @@ class UserViewModel(
                     _state.update { 
                         it.copy(
                             isLoadingProfile = false, 
-                            profileError = profileAllResponse.message ?: "Failed to load works list"
+                            profileError = profileAllResponse.message
                         ) 
                     }
                     return@launch
@@ -538,7 +538,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+                it.copy(isLoading = false, error = response.message) 
             }
             return
         }
@@ -582,7 +582,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+                it.copy(isLoading = false, error = response.message) 
             }
             return
         }
@@ -651,7 +651,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+                it.copy(isLoading = false, error = response.message) 
             }
             return
         }
@@ -694,7 +694,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+                it.copy(isLoading = false, error = response.message) 
             }
             return
         }
@@ -753,7 +753,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+                it.copy(isLoading = false, error = response.message) 
             }
             return
         }
@@ -813,7 +813,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+                it.copy(isLoading = false, error = response.message) 
             }
             return
         }
@@ -988,7 +988,7 @@ class UserViewModel(
         
         if (response.error) {
             updateTabData(tab) { 
-                it.copy(isLoading = false, error = response.message ?: "Failed to load") 
+                it.copy(isLoading = false, error = response.message) 
             }
             return
         }

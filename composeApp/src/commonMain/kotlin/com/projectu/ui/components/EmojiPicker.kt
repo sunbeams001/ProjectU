@@ -92,7 +92,7 @@ fun EmojiPickerContent(
             modifier = Modifier.fillMaxSize()
         ) {
             // Tab 栏
-            TabRow(
+            PrimaryTabRow(
                 selectedTabIndex = pagerState.currentPage,
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.primary

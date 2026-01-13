@@ -40,12 +40,12 @@ class CommentRepositoryImpl(
             }
             
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to get comments"))
+                Result.failure(Exception(response.message))
             } else {
-                val comments = response.body!!.comments.map { it.toComment() }
+                val comments = response.body.comments.map { it.toComment() }
                 Result.success(CommentListResult(
                     comments = comments,
-                    hasNext = response.body!!.hasNext
+                    hasNext = response.body.hasNext
                 ))
             }
         } catch (e: Exception) {
@@ -71,12 +71,12 @@ class CommentRepositoryImpl(
             }
             
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to get comment replies"))
+                Result.failure(Exception(response.message))
             } else {
-                val comments = response.body!!.comments.map { it.toComment() }
+                val comments = response.body.comments.map { it.toComment() }
                 Result.success(CommentListResult(
                     comments = comments,
-                    hasNext = response.body!!.hasNext
+                    hasNext = response.body.hasNext
                 ))
             }
         } catch (e: Exception) {

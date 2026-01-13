@@ -2,7 +2,7 @@ package com.projectu.ui.screens.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -86,7 +86,7 @@ fun WebViewLoginDialog(
         }
     }
     
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier
             .fillMaxWidth(0.95f)
@@ -106,7 +106,7 @@ fun WebViewLoginDialog(
                         if (navigator.canGoBack) {
                             IconButton(onClick = { navigator.navigateBack() }) {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(Res.string.common_back)
                                 )
                             }

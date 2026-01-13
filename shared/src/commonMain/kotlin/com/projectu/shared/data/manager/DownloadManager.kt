@@ -219,7 +219,7 @@ class DownloadManager(
             // 1. 获取作品详情
             val illustResponse = pixivApi.illustApi.getDetail(illustId)
             if (illustResponse.error) {
-                return@withContext Result.failure(Exception(illustResponse.message ?: "Failed to get illust detail"))
+                return@withContext Result.failure(Exception(illustResponse.message))
             }
             val illust = illustResponse.body ?: throw IllegalStateException("Response body is null")
             
@@ -238,13 +238,13 @@ class DownloadManager(
                         resourceType = resourceType,
                         resourceId = illustId.toString(),
                         title = illust.title,
-                        authorId = illust.userId.toString(),
+                        authorId = illust.userId,
                         authorName = illust.userName,
                         pageIndex = i,
                         totalPages = illust.pageCount,
                         isR18 = illust.xRestrict >= 1,
                         isAi = illust.aiType == 2,
-                        tags = illust.tags.tags.toList().map { it.tag },
+                        tags = illust.tags.tags.map { it.tag },
                         publishTime = System.currentTimeMillis() // 使用当前时间作为默认值
                     )
                     taskIds.add(taskId)
@@ -260,13 +260,13 @@ class DownloadManager(
                     resourceType = resourceType,
                     resourceId = illustId.toString(),
                     title = illust.title,
-                    authorId = illust.userId.toString(),
+                    authorId = illust.userId,
                     authorName = illust.userName,
                     pageIndex = pageIndex,
                     totalPages = illust.pageCount,
                     isR18 = illust.xRestrict >= 1,
                     isAi = illust.aiType == 2,
-                    tags = illust.tags.tags.toList().map { it.tag },
+                    tags = illust.tags.tags.map { it.tag },
                     publishTime = System.currentTimeMillis()
                 )
                 
@@ -519,7 +519,7 @@ class DownloadManager(
                 // 从 API 获取元数据
                 val metadataResult = pixivApi.illustApi.getUgoiraMeta(task.resourceId.toLong())
                 if (metadataResult.error) {
-                    throw Exception(metadataResult.message ?: "Failed to get Ugoira metadata")
+                    throw Exception(metadataResult.message)
                 }
                 val metadataBody = metadataResult.body 
                     ?: throw IllegalStateException("Ugoira metadata is null")
@@ -600,7 +600,6 @@ class DownloadManager(
             val fileExtension = when (format) {
                 UgoiraFormat.GIF -> "gif"
                 UgoiraFormat.MP4 -> "mp4"
-                else -> "gif" // 默认 GIF
             }
             
             // 创建下载任务（文件名模板会被应用，但需要确保扩展名正确）
@@ -714,7 +713,7 @@ class DownloadManager(
         // 1. 获取小说详情（包含完整内容）
         val novelResponse = pixivApi.novelApi.getDetail(task.resourceId.toLong())
         if (novelResponse.error) {
-            throw Exception(novelResponse.message ?: "Failed to get novel detail")
+            throw Exception(novelResponse.message)
         }
         val novelBody = novelResponse.body ?: throw IllegalStateException("Novel body is null")
         val novel = novelBody.toNovel(ageLimitDeterminer)
@@ -793,14 +792,14 @@ class DownloadManager(
         // 1. 获取系列详情
         val seriesResponse = pixivApi.novelSeriesApi.getDetail(task.resourceId.toLong())
         if (seriesResponse.error) {
-            throw Exception(seriesResponse.message ?: "Failed to get series detail")
+            throw Exception(seriesResponse.message)
         }
         val seriesBody = seriesResponse.body ?: throw IllegalStateException("Series body is null")
         
         // 2. 获取系列中所有章节的标题和ID
         val titlesResponse = pixivApi.novelSeriesApi.getTitles(task.resourceId.toLong())
         if (titlesResponse.error) {
-            throw Exception(titlesResponse.message ?: "Failed to get series titles")
+            throw Exception(titlesResponse.message)
         }
         val titles = titlesResponse.body ?: throw IllegalStateException("Series titles is null")
         
@@ -900,7 +899,7 @@ class DownloadManager(
     private suspend fun getOriginalImageUrl(illustId: Long, pageIndex: Int): String {
         val response = pixivApi.illustApi.getDetail(illustId)
         if (response.error) {
-            throw Exception(response.message ?: "Failed to get illust detail")
+            throw Exception(response.message)
         }
         val detail = response.body ?: throw IllegalStateException("Response body is null")
         
@@ -908,7 +907,7 @@ class DownloadManager(
             // 多图作品 - 需要使用getPages API
             val pagesResponse = pixivApi.illustApi.getPages(illustId)
             if (pagesResponse.error) {
-                throw Exception(pagesResponse.message ?: "Failed to get pages")
+                throw Exception(pagesResponse.message)
             }
             val pages = pagesResponse.body ?: throw IllegalStateException("Pages body is null")
             pages.getOrNull(pageIndex)?.urls?.original

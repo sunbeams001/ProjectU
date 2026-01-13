@@ -54,13 +54,13 @@ class DiscoveryUsersViewModel(
         return object : ArtworkListSource {
             override val artworkIdsFlow: StateFlow<List<String>> = state.map { currentState ->
                 currentState.users.flatMap { user ->
-                    user.illusts?.map { it.id } ?: emptyList()
+                    user.illusts.map { it.id }
                 }
             }.stateIn(
                 scope = screenModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = state.value.users.flatMap { user ->
-                    user.illusts?.map { it.id } ?: emptyList()
+                    user.illusts.map { it.id }
                 }
             )
             

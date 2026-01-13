@@ -25,9 +25,9 @@ class NovelRepositoryImpl(
         return try {
             val response = pixivApi.novelApi.getDetail(novelId.toLong())
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to get novel detail"))
+                Result.failure(Exception(response.message))
             } else {
-                val novel = response.body!!.toNovel(ageLimitDeterminer)
+                val novel = response.body.toNovel(ageLimitDeterminer)
                 Result.success(novel)
             }
         } catch (e: Exception) {
@@ -54,10 +54,10 @@ class NovelRepositoryImpl(
             )
             
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to search novels"))
+                Result.failure(Exception(response.message))
             } else {
-                val novels = response.body!!.novel.data.toNovelList(
-                    tagTranslation = response.body!!.tagTranslation,
+                val novels = response.body.novel.data.toNovelList(
+                    tagTranslation = response.body.tagTranslation,
                     ageLimitDeterminer = ageLimitDeterminer
                 )
                 // 应用屏蔽规则过滤
@@ -80,10 +80,10 @@ class NovelRepositoryImpl(
             )
             
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to get recommended novels"))
+                Result.failure(Exception(response.message))
             } else {
-                val novels = response.body!!.thumbnails.novel?.toNovelList(
-                    tagTranslation = response.body!!.tagTranslation,
+                val novels = response.body.thumbnails.novel?.toNovelList(
+                    tagTranslation = response.body.tagTranslation,
                     ageLimitDeterminer = ageLimitDeterminer
                 ) ?: emptyList()
                 // 应用屏蔽规则过滤
@@ -106,15 +106,15 @@ class NovelRepositoryImpl(
             )
             
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to get follow latest novels"))
+                Result.failure(Exception(response.message))
             } else {
-                val novels = response.body!!.thumbnails.novel?.toNovelList(
-                    tagTranslation = response.body!!.tagTranslation,
+                val novels = response.body.thumbnails.novel?.toNovelList(
+                    tagTranslation = response.body.tagTranslation,
                     ageLimitDeterminer = ageLimitDeterminer
                 ) ?: emptyList()
                 // 应用屏蔽规则过滤
                 val filteredNovels = filterNovelsUseCase(novels)
-                val isLastPage = response.body!!.page.isLastPage
+                val isLastPage = response.body.page.isLastPage
                 Result.success(Pair(filteredNovels, isLastPage))
             }
         } catch (e: Exception) {
@@ -191,9 +191,9 @@ class NovelRepositoryImpl(
                 tags = tags
             )
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to add bookmark"))
+                Result.failure(Exception(response.message))
             } else {
-                Result.success(response.body!!) // 返回 bookmarkId
+                Result.success(response.body) // 返回 bookmarkId
             }
         } catch (e: Exception) {
             Result.failure(e)

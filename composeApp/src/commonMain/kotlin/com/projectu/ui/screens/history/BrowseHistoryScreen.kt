@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -302,7 +303,7 @@ private fun HistoryItemCard(
                     ) {
                         Icon(
                             imageVector = when (item.contentType) {
-                                HistoryContentType.NOVEL, HistoryContentType.NOVEL_SERIES -> Icons.Default.MenuBook
+                                HistoryContentType.NOVEL, HistoryContentType.NOVEL_SERIES -> Icons.AutoMirrored.Filled.MenuBook
                                 else -> Icons.Default.Image
                             },
                             contentDescription = null,

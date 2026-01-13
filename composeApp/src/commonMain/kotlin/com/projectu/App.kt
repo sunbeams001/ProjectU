@@ -135,7 +135,7 @@ fun App(
             // 同步 App 语言到 LocaleManager
             localeManager.setLanguage(settings.appLanguage)
             // 更新缓存管理器的配置
-            cacheManager?.updateCacheSize(settings.imageCacheSize)
+            cacheManager.updateCacheSize(settings.imageCacheSize)
         }
     }
 

@@ -14,10 +14,18 @@ kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+            // 启用 expect/actual 类支持（Beta 特性）
+            freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }
     
-    jvm("desktop")
+    jvm("desktop") {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            // 启用 expect/actual 类支持（Beta 特性）
+            freeCompilerArgs.add("-Xexpect-actual-classes")
+        }
+    }
     
     sourceSets {
         commonMain.dependencies {

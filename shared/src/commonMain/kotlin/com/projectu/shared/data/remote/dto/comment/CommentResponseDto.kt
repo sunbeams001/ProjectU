@@ -1,5 +1,6 @@
 package com.projectu.shared.data.remote.dto.comment
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,6 +18,7 @@ import kotlinx.serialization.json.longOrNull
 /**
  * 灵活的字符串序列化器，可以处理 String/Int/Long/Boolean/null
  */
+@OptIn(ExperimentalSerializationApi::class)
 object FlexibleStringSerializer : KSerializer<String?> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("FlexibleString", PrimitiveKind.STRING)
     

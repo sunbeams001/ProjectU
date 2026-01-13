@@ -18,7 +18,7 @@ class WatchListRepositoryImpl(
             val response = followApi.getWatchListManga(page)
             
             if (response.error) {
-                Result.failure(Exception(response.message ?: "Failed to get watch list manga"))
+                Result.failure(Exception(response.message))
             } else {
                 val body = response.body
                 val series = body?.illustSeries ?: emptyList()
@@ -38,7 +38,7 @@ class WatchListRepositoryImpl(
             val response = followApi.getWatchListNovel(page)
             
             if (response.error) {
-                Result.failure(Exception(response.message ?: "Failed to get watch list novels"))
+                Result.failure(Exception(response.message))
             } else {
                 val body = response.body
                 val series = body?.thumbnails?.novelSeries ?: emptyList()

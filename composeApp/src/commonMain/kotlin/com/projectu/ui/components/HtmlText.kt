@@ -1,41 +1,40 @@
 package com.projectu.ui.components
 
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import io.ktor.http.decodeURLPart
-
-/**
- * HTML富文本解析结果
- */
-data class HtmlParseResult(
-    val annotatedString: AnnotatedString,
-    val links: Map<Int, String> // 链接位置到URL的映射
-)
 
 /**
  * 解析简单HTML文本，支持 <br />, <a> 标签
  * 
  * @param html HTML文本
  * @param linkColor 链接颜色
- * @return 解析结果
+ * @param onLinkClick 链接点击回调
+ * @return 解析后的 AnnotatedString
  */
-fun parseSimpleHtml(html: String, linkColor: Color): HtmlParseResult {
-    val links = mutableMapOf<Int, String>()
-    
-    val annotatedString = buildAnnotatedString {
+fun parseSimpleHtml(
+    html: String, 
+    linkColor: Color,
+    onLinkClick: ((String) -> Unit)? = null
+): AnnotatedString {
+    return buildAnnotatedString {
         var currentIndex = 0
         val text = html
         
@@ -87,19 +86,35 @@ fun parseSimpleHtml(html: String, linkColor: Color): HtmlParseResult {
                     val closeTagIndex = text.indexOf("</a>", tagEnd, ignoreCase = true)
                     if (closeTagIndex != -1) {
                         val linkText = decodeHtmlEntities(text.substring(tagEnd + 1, closeTagIndex))
-                        val startPos = this.length
                         
-                        // 添加链接样式
-                        pushStringAnnotation(tag = "URL", annotation = resolvedUrl)
-                        withStyle(SpanStyle(
-                            color = linkColor,
-                            textDecoration = TextDecoration.Underline
-                        )) {
+                        // 使用新的 LinkAnnotation API
+                        val link = if (onLinkClick != null) {
+                            LinkAnnotation.Clickable(
+                                tag = "URL",
+                                linkInteractionListener = { onLinkClick(resolvedUrl) },
+                                styles = TextLinkStyles(
+                                    style = SpanStyle(
+                                        color = linkColor,
+                                        textDecoration = TextDecoration.Underline
+                                    )
+                                )
+                            )
+                        } else {
+                            LinkAnnotation.Url(
+                                url = resolvedUrl,
+                                styles = TextLinkStyles(
+                                    style = SpanStyle(
+                                        color = linkColor,
+                                        textDecoration = TextDecoration.Underline
+                                    )
+                                )
+                            )
+                        }
+                        
+                        withLink(link) {
                             append(linkText)
                         }
-                        pop()
                         
-                        links[startPos] = resolvedUrl
                         currentIndex = closeTagIndex + 4 // 跳过 </a>
                     } else {
                         // 没有找到结束标签
@@ -119,8 +134,6 @@ fun parseSimpleHtml(html: String, linkColor: Color): HtmlParseResult {
             }
         }
     }
-    
-    return HtmlParseResult(annotatedString, links)
 }
 
 /**
@@ -200,40 +213,18 @@ fun HtmlText(
     onLinkClick: ((url: String) -> Unit)? = null
 ) {
     val linkColor = MaterialTheme.colorScheme.primary
-    val uriHandler = LocalUriHandler.current
     
-    val parseResult = remember(html, linkColor) {
-        parseSimpleHtml(html, linkColor)
+    val annotatedString = remember(html, linkColor, onLinkClick) {
+        parseSimpleHtml(html, linkColor, onLinkClick)
     }
     
-    ClickableText(
-        text = parseResult.annotatedString,
+    // 使用 Text 组件，它支持新的 LinkAnnotation
+    Text(
+        text = annotatedString,
         modifier = modifier,
         style = style,
         maxLines = maxLines ?: Int.MAX_VALUE,
-        overflow = overflow,
-        onClick = { offset ->
-            // 先检查是否点击了链接
-            val linkAnnotation = parseResult.annotatedString
-                .getStringAnnotations(tag = "URL", start = offset, end = offset)
-                .firstOrNull()
-            
-            if (linkAnnotation != null) {
-                // 点击了链接
-                if (onLinkClick != null) {
-                    onLinkClick(linkAnnotation.item)
-                } else {
-                    try {
-                        uriHandler.openUri(linkAnnotation.item)
-                    } catch (e: Exception) {
-                        // 忽略无法打开的链接
-                    }
-                }
-            } else {
-                // 点击了非链接区域，触发onClick回调
-                onClick?.invoke()
-            }
-        }
+        overflow = overflow
     )
 }
 

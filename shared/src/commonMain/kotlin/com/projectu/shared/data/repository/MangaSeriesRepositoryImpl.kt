@@ -25,7 +25,7 @@ class MangaSeriesRepositoryImpl(
             if (response.error || response.body == null) {
                 Result.failure(Exception(response.message.ifEmpty { "Failed to get series detail" }))
             } else {
-                val body = response.body!!
+                val body = response.body
                 
                 // 从 illustSeries 获取系列基本信息
                 val seriesInfo = body.illustSeries.firstOrNull()
@@ -78,7 +78,7 @@ class MangaSeriesRepositoryImpl(
             if (response.error || response.body == null) {
                 Result.failure(Exception(response.message.ifEmpty { "Failed to get series works" }))
             } else {
-                val body = response.body!!
+                val body = response.body
                 
                 // 从 page.series 获取当前页的作品ID列表（按顺序）
                 val seriesWorks = body.page?.series ?: emptyList()

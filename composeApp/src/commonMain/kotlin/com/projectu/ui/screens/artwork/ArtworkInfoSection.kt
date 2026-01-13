@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package com.projectu.ui.screens.artwork
 
 import androidx.compose.foundation.clickable
@@ -43,6 +45,7 @@ import com.projectu.ui.components.BookmarkIndicator
 import com.projectu.ui.components.FollowIndicator
 import com.projectu.ui.components.HtmlText
 import com.projectu.ui.util.formatNumber
+import com.projectu.ui.util.rememberCopyToClipboardWithScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
@@ -364,8 +367,7 @@ fun ArtworkDetailInfoSection(
                         // 长按菜单状态
                         var showTagMenu by remember { mutableStateOf(false) }
                         var selectedTag by remember { mutableStateOf<com.projectu.shared.domain.model.Tag?>(null) }
-                        val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
-                        val scope = rememberCoroutineScope()
+                        val (copyToClipboard, scope) = rememberCopyToClipboardWithScope()
                         val tagCopiedMessage = stringResource(Res.string.tag_copied)
                         
                         FlowRow(
@@ -404,8 +406,8 @@ fun ArtworkDetailInfoSection(
                                             DropdownMenuItem(
                                                 text = { Text(stringResource(Res.string.action_copy)) },
                                                 onClick = {
-                                                    clipboardManager.setText(AnnotatedString(tag.name))
                                                     scope.launch {
+                                                        copyToClipboard(tag.name)
                                                         snackbarHostState.showSnackbar(tagCopiedMessage)
                                                     }
                                                     showTagMenu = false
@@ -430,8 +432,7 @@ fun ArtworkDetailInfoSection(
                 }
                 
                 // 3. 作品信息（分辨率、ID等）
-                val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
-                val coroutineScope = rememberCoroutineScope()
+                val (copyToClipboard, coroutineScope) = rememberCopyToClipboardWithScope()
                 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     val artworkIdCopiedMessage = stringResource(Res.string.id_copied, artwork.id)
@@ -481,8 +482,8 @@ fun ArtworkDetailInfoSection(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.clickable {
-                            clipboardManager.setText(AnnotatedString(artwork.id))
                             coroutineScope.launch {
+                                copyToClipboard(artwork.id)
                                 snackbarHostState.showSnackbar(
                                     message = artworkIdCopiedMessage,
                                     duration = SnackbarDuration.Short
@@ -512,8 +513,8 @@ fun ArtworkDetailInfoSection(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.clickable {
-                            clipboardManager.setText(AnnotatedString(artwork.userId))
                             coroutineScope.launch {
+                                copyToClipboard(artwork.userId)
                                 snackbarHostState.showSnackbar(
                                     message = userIdCopiedMessage,
                                     duration = SnackbarDuration.Short

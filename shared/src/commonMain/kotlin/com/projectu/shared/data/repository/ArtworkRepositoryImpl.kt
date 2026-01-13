@@ -210,7 +210,7 @@ class ArtworkRepositoryImpl(
         val bookmarkId = detailResponse.body?.bookmarkData?.id
             ?: throw IllegalStateException("Artwork is not bookmarked")
         
-        val response = pixivApi.bookmarkApi.deleteIllust(bookmarkId.toString())
+        val response = pixivApi.bookmarkApi.deleteIllust(bookmarkId)
         if (response.error) {
             throw IllegalStateException(response.message)
         }

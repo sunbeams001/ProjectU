@@ -24,9 +24,9 @@ class NovelSeriesRepositoryImpl(
         return try {
             val response = pixivApi.novelSeriesApi.getDetail(seriesId)
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to get series detail"))
+                Result.failure(Exception(response.message))
             } else {
-                val series = response.body!!.toNovelSeries()
+                val series = response.body.toNovelSeries()
                 Result.success(series)
             }
         } catch (e: Exception) {
@@ -48,14 +48,14 @@ class NovelSeriesRepositoryImpl(
                 orderBy = orderBy
             )
             if (response.error || response.body == null) {
-                Result.failure(Exception(response.message ?: "Failed to get series contents"))
+                Result.failure(Exception(response.message))
             } else {
                 // 从 thumbnails.novel 获取详细信息（仅包含可查看的作品）
-                val thumbnails = response.body!!.thumbnails?.novel ?: emptyList()
+                val thumbnails = response.body.thumbnails?.novel ?: emptyList()
                 val thumbnailMap = thumbnails.associateBy { it.id }
                 
                 // 获取所有 seriesContents（包括好P友限定的作品）
-                val seriesContents = response.body!!.page.seriesContents
+                val seriesContents = response.body.page.seriesContents
                 
                 // 合并数据：使用 seriesContents 作为基础，用 thumbnails 填充详细信息
                 val novels = seriesContents.map { content ->
@@ -135,7 +135,7 @@ class NovelSeriesRepositoryImpl(
         return try {
             val response = pixivApi.novelSeriesApi.watch(seriesId)
             if (response.error) {
-                Result.failure(Exception(response.message ?: "Failed to watch series"))
+                Result.failure(Exception(response.message))
             } else {
                 Result.success(Unit)
             }
@@ -148,7 +148,7 @@ class NovelSeriesRepositoryImpl(
         return try {
             val response = pixivApi.novelSeriesApi.unwatch(seriesId)
             if (response.error) {
-                Result.failure(Exception(response.message ?: "Failed to unwatch series"))
+                Result.failure(Exception(response.message))
             } else {
                 Result.success(Unit)
             }

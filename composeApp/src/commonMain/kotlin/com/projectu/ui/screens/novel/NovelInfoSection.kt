@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package com.projectu.ui.screens.novel
 
 import androidx.compose.animation.AnimatedVisibility
@@ -28,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import kotlin.math.abs
@@ -49,6 +50,7 @@ import com.projectu.ui.components.HtmlText
 import com.projectu.ui.components.NovelBookmarkIndicator
 import com.projectu.ui.util.formatNumber
 import com.projectu.ui.util.formatReadingTime
+import com.projectu.ui.util.rememberCopyToClipboardWithScope
 import org.jetbrains.compose.resources.stringResource
 import projectu.composeapp.generated.resources.*
 
@@ -498,8 +500,7 @@ fun NovelInfoSection(
                                 }
                                 
                                 // 其他标签（不省略）
-                                val clipboardManager = LocalClipboardManager.current
-                                val scope = rememberCoroutineScope()
+                                val (copyToClipboard, scope) = rememberCopyToClipboardWithScope()
                                 
                                 novel.tags.forEach { tag ->
                                     val isR18Tag = tag.name.equals("R-18", ignoreCase = true) || 
@@ -524,8 +525,8 @@ fun NovelInfoSection(
                                                 DropdownMenuItem(
                                                     text = { Text(stringResource(Res.string.action_copy)) },
                                                     onClick = {
-                                                        clipboardManager.setText(AnnotatedString(tag.name))
                                                         scope.launch {
+                                                            copyToClipboard(tag.name)
                                                             snackbarHostState.showSnackbar(
                                                                 message = copiedMessage
                                                             )
@@ -565,8 +566,7 @@ fun NovelInfoSection(
                     HorizontalDivider()
                     
                     // 5. 作品信息（ID等）
-                    val clipboardManager = LocalClipboardManager.current
-                    val coroutineScope = rememberCoroutineScope()
+                    val (copyToClipboard, coroutineScope) = rememberCopyToClipboardWithScope()
                     
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         val novelIdCopiedMessage = stringResource(Res.string.id_copied, novel.id)
@@ -582,8 +582,8 @@ fun NovelInfoSection(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.clickable {
-                                clipboardManager.setText(AnnotatedString(novel.id))
                                 coroutineScope.launch {
+                                    copyToClipboard(novel.id)
                                     snackbarHostState.showSnackbar(
                                         message = novelIdCopiedMessage,
                                         duration = SnackbarDuration.Short
@@ -613,8 +613,8 @@ fun NovelInfoSection(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.clickable {
-                                clipboardManager.setText(AnnotatedString(novel.userId))
                                 coroutineScope.launch {
+                                    copyToClipboard(novel.userId)
                                     snackbarHostState.showSnackbar(
                                         message = userIdCopiedMessage,
                                         duration = SnackbarDuration.Short

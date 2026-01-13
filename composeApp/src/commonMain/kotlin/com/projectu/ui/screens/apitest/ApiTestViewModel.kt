@@ -583,10 +583,10 @@ class ApiTestViewModel(
                 body.bookmarkCount?.let { bookmarks ->
                     appendLine("━━━━━━━━━━━━━━━━━━━━━")
                     appendLine("📚 收藏统计:")
-                    appendLine("公开插画: ${bookmarks.public?.illust ?: 0}")
-                    appendLine("公开小说: ${bookmarks.public?.novel ?: 0}")
-                    appendLine("私密插画: ${bookmarks.private?.illust ?: 0}")
-                    appendLine("私密小说: ${bookmarks.private?.novel ?: 0}")
+                    appendLine("公开插画: ${bookmarks.public.illust}")
+                    appendLine("公开小说: ${bookmarks.public.novel}")
+                    appendLine("私密插画: ${bookmarks.private.illust}")
+                    appendLine("私密小说: ${bookmarks.private.novel}")
                 }
             }
             
@@ -1281,7 +1281,7 @@ class ApiTestViewModel(
         
         // 直接调用API，返回空数组字符串表示成功
         val result = pixivApi.userApi.followUser(userId, tag, restrict)
-        val rawJson = result.toString()
+        val rawJson = result
         
         val summary = buildString {
             // 空数组表示成功
