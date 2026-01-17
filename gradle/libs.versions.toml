@@ -1,8 +1,8 @@
 [versions]
 core-splashscreen = "1.2.0"
 kotlin = "2.3.0"
-compose-plugin = "1.9.3"
-agp = "8.13.2"
+compose-plugin = "1.10.0"
+agp = "9.0.0"
 koin = "4.1.1"
 ktor = "3.3.3"
 room = "2.8.4"
@@ -16,7 +16,7 @@ kotlinx-datetime = "0.7.1"
 okio = "3.16.4"
 gifkt = "0.3.0"
 javacv = "1.5.12"
-ksp = "2.2.21-2.0.4"
+ksp = "2.3.2"
 androidx-activity-compose = "1.12.2"
 androidx-lifecycle = "2.10.0"
 androidx-documentfile = "1.1.0"
@@ -81,7 +81,6 @@ gifkt = { module = "com.shakster:gifkt", version.ref = "gifkt" }
 # JavaCV - FFmpeg封装 (Desktop MP4编码)
 # 注意：不要使用 javacv-platform，它包含所有平台的本地库（~500MB）
 # 应该在 build.gradle.kts 中根据目标平台动态选择特定的依赖
-javacv = { module = "org.bytedeco:javacv", version.ref = "javacv" }
 javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
 
 # AndroidX
@@ -97,7 +96,7 @@ compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

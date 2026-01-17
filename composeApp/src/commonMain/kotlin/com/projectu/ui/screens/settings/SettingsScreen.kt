@@ -522,7 +522,7 @@ private fun SettingsScreenContent(
                             onClick = {
                                 try {
                                     val screenClass = Class.forName("com.projectu.ui.screens.settings.WidgetManagementScreen")
-                                    navigator.push(screenClass.newInstance() as Screen)
+                                    navigator.push(screenClass.getDeclaredConstructor().newInstance() as Screen)
                                 } catch (e: Exception) {
                                     // 忽略错误
                                 }

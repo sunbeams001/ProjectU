@@ -3,14 +3,18 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }
 
 kotlin {
-    androidTarget {
+    androidLibrary {
+        namespace = "com.projectu.shared"
+        compileSdk = 36
+        minSdk = 24
+
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -127,20 +131,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.projectu.shared"
-    compileSdk = 35
-    
-    defaultConfig {
-        minSdk = 24
-    }
-    
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
 room {
     schemaDirectory("$projectDir/schemas")
 }
@@ -150,4 +140,3 @@ dependencies {
     add("kspAndroid", libs.room.compiler)
     add("kspDesktop", libs.room.compiler)
 }
-

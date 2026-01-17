@@ -184,7 +184,7 @@ fun WidgetConfigScreen(
                 onRankingModeChanged = { rankingMode = it }
             )
             
-            Divider()
+            HorizontalDivider()
             
             // 过滤设置
             FilterSection(
@@ -194,7 +194,7 @@ fun WidgetConfigScreen(
                 onAiFilterChanged = { aiFilter = it }
             )
             
-            Divider()
+            HorizontalDivider()
             
             // 更新间隔
             UpdateIntervalSection(
@@ -202,7 +202,7 @@ fun WidgetConfigScreen(
                 onUpdateIntervalChanged = { updateIntervalMinutes = it }
             )
             
-            Divider()
+            HorizontalDivider()
             
             // 刷新按钮
             RefreshButtonSection(
@@ -210,7 +210,7 @@ fun WidgetConfigScreen(
                 onShowRefreshButtonChanged = { showRefreshButton = it }
             )
             
-            Divider()
+            HorizontalDivider()
             
             // 显示设置
             DisplaySettingsSection(
