@@ -118,54 +118,6 @@ class TranslationRepositoryImpl(
      * 尽量按句子边界分割，保持语义完整
      */
     private fun splitTextIntoChunks(text: String, maxChunkSize: Int): List<String> {
-        if (text.length <= maxChunkSize) {
-            return listOf(text)
-        }
-        
-        val chunks = mutableListOf<String>()
-        var currentChunk = StringBuilder()
-        
-        // 按句子分割（简单处理：按句号、问号、感叹号等分割）
-        val sentences = text.split(Regex("(?<=[。！？\\.\\!\\?\\n])"))
-        
-        for (sentence in sentences) {
-            if (sentence.isBlank()) continue
-            
-            // 如果单个句子就超过限制，需要强制分割
-            if (sentence.length > maxChunkSize) {
-                // 先保存当前块
-                if (currentChunk.isNotEmpty()) {
-                    chunks.add(currentChunk.toString())
-                    currentChunk.clear()
-                }
-                
-                // 强制按字符数分割长句
-                var remaining = sentence
-                while (remaining.length > maxChunkSize) {
-                    chunks.add(remaining.substring(0, maxChunkSize))
-                    remaining = remaining.substring(maxChunkSize)
-                }
-                if (remaining.isNotEmpty()) {
-                    currentChunk.append(remaining)
-                }
-                continue
-            }
-            
-            // 检查加入这个句子后是否超过限制
-            if (currentChunk.length + sentence.length > maxChunkSize) {
-                // 保存当前块并开始新块
-                chunks.add(currentChunk.toString())
-                currentChunk.clear()
-            }
-            
-            currentChunk.append(sentence)
-        }
-        
-        // 添加最后一块
-        if (currentChunk.isNotEmpty()) {
-            chunks.add(currentChunk.toString())
-        }
-        
-        return chunks
+        return com.projectu.shared.util.TextSplitter.splitIntoChunks(text, maxChunkSize)
     }
 }

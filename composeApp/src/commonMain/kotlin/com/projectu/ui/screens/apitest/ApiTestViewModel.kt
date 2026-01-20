@@ -3229,7 +3229,7 @@ class ApiTestViewModel(
         val summary = buildString {
             appendLine("✅ Pixivision文章列表获取成功")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")
-            appendLine("类别: ${category.displayName} (${category.path})")
+            appendLine("类别: ${category.path}")
             appendLine("语言: $lang")
             appendLine("页码: $page")
             appendLine("━━━━━━━━━━━━━━━━━━━━━")

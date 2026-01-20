@@ -35,9 +35,13 @@ tasks.register("checkHardcodedChinese") {
     group = "verification"
     description = "Check for hardcoded Chinese strings in Kotlin source files"
     
+    // 将 project 属性存储为任务输入，避免 Configuration Cache 问题
+    val projectDir = layout.projectDirectory.asFile
+    val failOnErrorProperty = providers.gradleProperty("failOnHardcodedChinese")
+    
     doLast {
         // 是否在发现问题时使构建失败（默认只警告）
-        val failOnError = project.findProperty("failOnHardcodedChinese")?.toString()?.toBoolean() ?: false
+        val failOnError = failOnErrorProperty.orNull?.toBoolean() ?: false
         
         // 中文字符的正则表达式（包括中文标点）
         val chinesePattern = Regex("[\\u4e00-\\u9fa5\\u3000-\\u303f\\uff00-\\uffef]")
@@ -55,17 +59,20 @@ tasks.register("checkHardcodedChinese") {
             "简体中文",         // 语言名称常量
             "繁體中文",         // 语言名称常量
             "件",              // HTML解析模式，匹配Pixiv页面内容
-            "个字符"           // HTML解析模式，匹配Pixiv页面内容
+            "个字符",           // HTML解析模式，匹配Pixiv页面内容
+            "入り"             // 日文：Pixiv API 固定标签格式（如 "500users入り"）
         )
         
         // 要扫描的源码目录
         val sourceDirectories = listOf(
-            file("composeApp/src/commonMain/kotlin"),
-            file("composeApp/src/androidMain/kotlin"),
-            file("composeApp/src/desktopMain/kotlin"),
-            file("shared/src/commonMain/kotlin"),
-            file("shared/src/androidMain/kotlin"),
-            file("shared/src/desktopMain/kotlin")
+            File(projectDir, "androidApp/src/main/kotlin"),
+            File(projectDir, "androidApp/src/main/java"),
+            File(projectDir, "composeApp/src/commonMain/kotlin"),
+            File(projectDir, "composeApp/src/androidMain/kotlin"),
+            File(projectDir, "composeApp/src/desktopMain/kotlin"),
+            File(projectDir, "shared/src/commonMain/kotlin"),
+            File(projectDir, "shared/src/androidMain/kotlin"),
+            File(projectDir, "shared/src/desktopMain/kotlin")
         )
         
         // 要排除的路径模式
@@ -95,6 +102,7 @@ tasks.register("checkHardcodedChinese") {
                 val lines = content.lines()
                 var inMultiLineComment = false
                 var suppressNextLine = false
+                var inSuppressedBlock = 0  // 追踪抑制块的嵌套层级
                 
                 for (i in lines.indices) {
                     val line = lines[i]
@@ -119,15 +127,43 @@ tasks.register("checkHardcodedChinese") {
                         line
                     }
                     
-                    // 检查行级别的抑制注解
+                    // 检查 @Suppress 注解（函数、类或行级别）
                     if (line.contains("@Suppress") && line.contains("HardcodedChinese")) {
                         suppressNextLine = true
                         continue
                     }
                     
+                    // 如果前一行有 @Suppress 注解，检查这一行是否是函数/类声明
                     if (suppressNextLine) {
+                        // 检查是否是函数、类、对象或属性声明
+                        val isFunctionOrClass = line.trimStart().let { trimmed ->
+                            trimmed.startsWith("fun ") || 
+                            trimmed.startsWith("internal fun ") ||
+                            trimmed.startsWith("private fun ") ||
+                            trimmed.startsWith("public fun ") ||
+                            trimmed.startsWith("class ") ||
+                            trimmed.startsWith("object ") ||
+                            trimmed.startsWith("enum class ") ||
+                            trimmed.startsWith("data class ") ||
+                            trimmed.startsWith("sealed class ") ||
+                            trimmed.startsWith("interface ") ||
+                            trimmed.startsWith("val ") ||
+                            trimmed.startsWith("var ")
+                        }
+                        
+                        if (isFunctionOrClass && line.contains("{")) {
+                            // 进入被抑制的代码块
+                            inSuppressedBlock = 1
+                        }
                         suppressNextLine = false
                         continue
+                    }
+                    
+                    // 追踪代码块的嵌套
+                    if (inSuppressedBlock > 0) {
+                        inSuppressedBlock += line.count { it == '{' }
+                        inSuppressedBlock -= line.count { it == '}' }
+                        continue  // 跳过被抑制块中的所有行
                     }
                     
                     // 检查是否是日志语句

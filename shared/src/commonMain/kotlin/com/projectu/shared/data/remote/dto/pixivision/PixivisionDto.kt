@@ -131,9 +131,9 @@ data class PixivisionArtwork(
 /**
  * Pixivision 类别枚举
  */
-enum class PixivisionCategory(val path: String, val displayName: String) {
-    ILLUSTRATION("illustration", "插画"),
-    MANGA("manga", "漫画");
+enum class PixivisionCategory(val path: String) {
+    ILLUSTRATION("illustration"),
+    MANGA("manga");
     
     companion object {
         fun fromPath(path: String): PixivisionCategory? {

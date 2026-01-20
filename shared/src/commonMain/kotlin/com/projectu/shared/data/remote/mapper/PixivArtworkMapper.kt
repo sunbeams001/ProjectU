@@ -24,7 +24,10 @@ import com.projectu.shared.util.TagTranslationUtil
  * @param aiType AI 类型标识
  * @param tags 原始标签列表
  * @return true 表示是 AI 作品
+ * 
+ * 注意：标签字符串是用于匹配 Pixiv 用户标签的固定值，不应国际化
  */
+@Suppress("HardcodedChinese")
 internal fun isAiGeneratedArtwork(aiType: Int, tags: List<String>): Boolean {
     return aiType == 2 || 
            tags.contains("AIイラスト") || 
