@@ -1,12 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.Properties
-import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.compose)
 }
@@ -19,12 +17,19 @@ configurations.all {
 }
 
 kotlin {
-    androidTarget {
+    androidLibrary {
+        namespace = "com.projectu.composeapp"
+        compileSdk = libs.versions.androidCompileSdk.get().toInt()
+
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
             // 启用 expect/actual 类支持（Beta 特性）
             freeCompilerArgs.add("-Xexpect-actual-classes")
+        }
+
+        androidResources {
+            enable = true
         }
     }
     
@@ -40,13 +45,13 @@ kotlin {
         val desktopMain by getting
         
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.material.icons.extended)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.ui.tooling.preview)
             
             // 依赖shared模块
             implementation(projects.shared)
@@ -70,9 +75,6 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
             
-            // Compose Resources多语言 (内置支持)
-            implementation(compose.components.resources)
-            
             // Kotlinx库
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
@@ -86,7 +88,7 @@ kotlin {
         }
         
         androidMain.dependencies {
-            implementation(compose.preview)
+            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.core.splashscreen)
             implementation(libs.koin.android)
@@ -109,23 +111,23 @@ kotlin {
             when {
                 osName.contains("win") -> {
                     if (osArch.contains("aarch64") || osArch.contains("arm")) {
-                        implementation(compose.desktop.windows_arm64)
+                        implementation(libs.compose.desktop.windows.arm64)
                     } else {
-                        implementation(compose.desktop.windows_x64)
+                        implementation(libs.compose.desktop.windows.x64)
                     }
                 }
                 osName.contains("mac") || osName.contains("osx") -> {
                     if (osArch.contains("aarch64") || osArch.contains("arm")) {
-                        implementation(compose.desktop.macos_arm64)
+                        implementation(libs.compose.desktop.macos.arm64)
                     } else {
-                        implementation(compose.desktop.macos_x64)
+                        implementation(libs.compose.desktop.macos.x64)
                     }
                 }
                 osName.contains("linux") -> {
                     if (osArch.contains("aarch64") || osArch.contains("arm")) {
-                        implementation(compose.desktop.linux_arm64)
+                        implementation(libs.compose.desktop.linux.arm64)
                     } else {
-                        implementation(compose.desktop.linux_x64)
+                        implementation(libs.compose.desktop.linux.x64)
                     }
                 }
                 else -> {
@@ -147,101 +149,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.projectu"
-    compileSdk = 36
-    
-    defaultConfig {
-        applicationId = "com.projectu"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 9
-        versionName = "1.0.8"
-    }
-    
-    // 读取签名配置
-    // 优先级：1. 本地 keystore.properties 文件  2. 环境变量（用于 CI/CD）  3. 回退到 debug 签名
-    val keystorePropertiesFile = rootProject.file("keystore.properties")
-    val hasKeystoreProperties = keystorePropertiesFile.exists()
-    val hasEnvironmentConfig = System.getenv("RELEASE_KEYSTORE_FILE") != null
-    
-    // 总是创建 release 签名配置
-    signingConfigs {
-        create("release") {
-            if (hasKeystoreProperties) {
-                // 从本地 keystore.properties 文件读取
-                val keystoreProperties = Properties()
-                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-                
-                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-                
-                // 启用 V1 和 V2 签名
-                enableV1Signing = true
-                enableV2Signing = true
-                
-                println("✓ Using release signing config from keystore.properties")
-            } else if (hasEnvironmentConfig) {
-                // 从环境变量读取（用于 GitHub Actions）
-                storeFile = file(System.getenv("RELEASE_KEYSTORE_FILE") ?: "")
-                storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD") ?: ""
-                keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: ""
-                keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: ""
-                
-                // 启用 V1 和 V2 签名
-                enableV1Signing = true
-                enableV2Signing = true
-                
-                println("✓ Using release signing config from environment variables")
-            } else {
-                // 没有自定义签名配置时，不设置任何属性，将使用 debug 签名
-                println("⚠ No signing config found, release build will use debug signing")
-                println("  To configure release signing:")
-                println("  1. Copy keystore.properties.example to keystore.properties")
-                println("  2. Update with your keystore information")
-                println("  3. See docs/guides/签名配置指南.md for details")
-            }
-        }
-    }
-    
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    
-    buildTypes {
-        getByName("debug") {
-            isDebuggable = true
-        }
-        
-        getByName("release") {
-            // 根据是否有签名配置，选择使用 release 或 debug 签名
-            signingConfig = if (hasKeystoreProperties || hasEnvironmentConfig) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
-            
-            isMinifyEnabled = false
-            isShrinkResources = false
-            isDebuggable = false
-            
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
 compose.desktop {
     application {
         mainClass = "com.projectu.MainKt"
@@ -249,7 +156,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ProjectU"
-            packageVersion = "1.0.8"
+            packageVersion = libs.versions.appVersion.get()
             
             // 添加 JVM 模块 - 确保运行时包含 jdk.unsupported 模块
             // 这个模块包含 sun.misc.Unsafe，被 Protobuf 库使用

@@ -1045,6 +1045,9 @@
     <string name="settings_widget_management">桌面小部件管理</string>
     <string name="settings_widget_management_desc">管理Pixiv桌面小部件配置</string>
 
+    <!-- Desktop Specific -->
+    <string name="desktop_webview_restart_required">使用WebView功能需要重启应用</string>
+    <string name="desktop_webview_initializing">正在初始化 WebView 组件...</string>
     <string name="desktop_download_progress">下载进度: %d%%</string>
 </resources>
 

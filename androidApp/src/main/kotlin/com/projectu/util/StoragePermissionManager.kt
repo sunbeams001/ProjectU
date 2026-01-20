@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 
 /**
@@ -115,12 +118,12 @@ class StoragePermissionManager(
 /**
  * 扩展函数：在 Composable 中使用
  */
-@androidx.compose.runtime.Composable
+@Composable
 fun rememberStoragePermissionManager(): StoragePermissionManager {
-    val activity = requireNotNull(androidx.activity.compose.LocalActivity.current) {
+    val activity = requireNotNull(LocalActivity.current) {
         "LocalActivity must be present"
     }
-    return androidx.compose.runtime.remember(activity) {
+    return remember(activity) {
         StoragePermissionManager(activity as ComponentActivity)
     }
 }

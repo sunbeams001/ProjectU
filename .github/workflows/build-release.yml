@@ -50,7 +50,7 @@ jobs:
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          ./gradlew assembleRelease --stacktrace
+          ./gradlew :androidApp:assembleRelease --stacktrace
       
       # 清理临时 keystore 文件
       - name: Cleanup keystore
@@ -73,8 +73,8 @@ jobs:
       - name: Rename APK
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          mv composeApp/build/outputs/apk/release/composeApp-release.apk \
-             composeApp/build/outputs/apk/release/ProjectU-${VERSION}.apk
+          mv androidApp/build/outputs/apk/release/androidApp-release.apk \
+             androidApp/build/outputs/apk/release/ProjectU-${VERSION}.apk
           echo "✓ APK renamed to ProjectU-${VERSION}.apk"
       
       # 上传到 Artifacts
@@ -82,15 +82,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-release-${{ steps.version.outputs.version }}
-          path: composeApp/build/outputs/apk/release/ProjectU-${{ steps.version.outputs.version }}.apk
+          path: androidApp/build/outputs/apk/release/ProjectU-${{ steps.version.outputs.version }}.apk
           retention-days: 90
       
       - name: Build info
         run: |
           echo "✓ Android Release APK built successfully"
           echo "📦 Artifact: ProjectU-${{ steps.version.outputs.version }}.apk"
-          echo "🔐 Signing: Release keystore"
-          ls -lh composeApp/build/outputs/apk/release/
+          echo "🔐 Signing: Release keystore (V1/V2/V3/V4)"
+          ls -lh androidApp/build/outputs/apk/release/
 
   build-desktop:
     name: Build Desktop Release (${{ matrix.os }})
@@ -280,12 +280,6 @@ jobs:
           generate_release_notes: true
           body: |
             ## 📦 ProjectU ${{ steps.version.outputs.version }}
-            
-            ### 平台支持
-            - 🤖 **Android**: APK (支持 Android 7.0+)
-            - 🐧 **Linux**: DEB 安装包
-            - 🪟 **Windows**: MSI 安装包
-            - 🍎 **macOS**: DMG 镜像
             
             ### 新增
             1. ABC

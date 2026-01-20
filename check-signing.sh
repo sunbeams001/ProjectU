@@ -26,7 +26,7 @@ if [ -f "$KEYSTORE_PROPS" ]; then
             echo -e "\033[32m✓ Keystore 文件存在: $STORE_FILE\033[0m"
             echo ""
             echo -e "\033[32m签名配置已正确设置！可以执行 Release 构建。\033[0m"
-            echo -e "\033[33m运行命令: ./gradlew assembleRelease\033[0m"
+            echo -e "\033[33m运行命令: ./gradlew :androidApp:assembleRelease\033[0m"
             echo ""
         else
             echo -e "\033[31m✗ Keystore 文件不存在: $STORE_FILE\033[0m"

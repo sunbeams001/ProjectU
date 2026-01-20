@@ -12,8 +12,8 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.projectu.shared"
-        compileSdk = 36
-        minSdk = 24
+        compileSdk = libs.versions.androidCompileSdk.get().toInt()
+        minSdk = libs.versions.androidMinSdk.get().toInt()
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {

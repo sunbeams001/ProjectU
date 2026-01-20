@@ -1039,6 +1039,9 @@
     <string name="settings_widget_management">Widget Management</string>
     <string name="settings_widget_management_desc">Manage Pixiv home screen widgets</string>
 
+    <!-- Desktop Specific -->
+    <string name="desktop_webview_restart_required">Application restart required to use WebView functionality</string>
+    <string name="desktop_webview_initializing">Initializing WebView component...</string>
     <string name="desktop_download_progress">Download progress: %d%%</string>
 </resources>
 

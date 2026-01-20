@@ -16,8 +16,8 @@
  *   .\gradlew.bat showVersion                      # 显示当前版本信息
  */
 
-// 定义版本文件路径
-val buildGradleFile = file("composeApp/build.gradle.kts")
+// 定义版本文件路径（现在使用 libs.versions.toml）
+val libsVersionsFile = file("gradle/libs.versions.toml")
 
 // 读取当前版本信息
 data class VersionInfo(
@@ -26,10 +26,10 @@ data class VersionInfo(
 )
 
 fun readCurrentVersion(): VersionInfo {
-    val content = buildGradleFile.readText()
+    val content = libsVersionsFile.readText()
     
-    val versionCodeRegex = Regex("""versionCode\s*=\s*(\d+)""")
-    val versionNameRegex = Regex("""versionName\s*=\s*"([^"]+)"""")
+    val versionCodeRegex = Regex("""appVersionCode\s*=\s*"(\d+)"""")
+    val versionNameRegex = Regex("""appVersion\s*=\s*"([^"]+)"""")
     
     val versionCode = versionCodeRegex.find(content)?.groupValues?.get(1)?.toInt() ?: 1
     val versionName = versionNameRegex.find(content)?.groupValues?.get(1) ?: "1.0.0"
@@ -39,25 +39,19 @@ fun readCurrentVersion(): VersionInfo {
 
 // 更新版本号
 fun updateVersion(newVersionName: String, newVersionCode: Int) {
-    val content = buildGradleFile.readText()
+    val content = libsVersionsFile.readText()
     
     var updatedContent = content.replace(
-        Regex("""versionCode\s*=\s*\d+"""),
-        "versionCode = $newVersionCode"
+        Regex("""appVersionCode\s*=\s*"\d+""""),
+        """appVersionCode = "$newVersionCode""""
     )
     
     updatedContent = updatedContent.replace(
-        Regex("""versionName\s*=\s*"[^"]+""""),
-        """versionName = "$newVersionName""""
+        Regex("""appVersion\s*=\s*"[^"]+""""),
+        """appVersion = "$newVersionName""""
     )
     
-    // 同时更新 desktop packageVersion
-    updatedContent = updatedContent.replace(
-        Regex("""packageVersion\s*=\s*"[^"]+""""),
-        """packageVersion = "$newVersionName""""
-    )
-    
-    buildGradleFile.writeText(updatedContent)
+    libsVersionsFile.writeText(updatedContent)
     
     println("✓ 版本更新成功:")
     println("  versionCode: $newVersionCode")

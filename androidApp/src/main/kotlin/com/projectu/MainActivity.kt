@@ -1,10 +1,12 @@
 package com.projectu
 
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +15,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.projectu.shared.data.local.database.ContextHolder
 import com.projectu.widget.PixivWidget
 import androidx.lifecycle.lifecycleScope
+import com.projectu.widget.WidgetClickStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -154,39 +157,39 @@ class MainActivity : ComponentActivity() {
     private fun reactivateWidgetReceiverIfNeeded() {
         // 如果本次应用进程已经重新激活过，跳过
         if (hasReactivatedWidgetsInProcess) {
-            android.util.Log.d("MainActivity", "Widgets already reactivated in this process, skipping")
+            Log.d("MainActivity", "Widgets already reactivated in this process, skipping")
             return
         }
         
         try {
             val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
-            val widgetComponent = android.content.ComponentName(
+            val widgetComponent = ComponentName(
                 applicationContext,
-                com.projectu.widget.PixivWidget::class.java
+                PixivWidget::class.java
             )
             
             // 获取所有已添加的 Widget ID
             val widgetIds = appWidgetManager.getAppWidgetIds(widgetComponent)
             
             if (widgetIds.isNotEmpty()) {
-                android.util.Log.d("MainActivity", "Reactivating ${widgetIds.size} widgets: ${widgetIds.joinToString()}")
+                Log.d("MainActivity", "Reactivating ${widgetIds.size} widgets: ${widgetIds.joinToString()}")
                 
                 // 强制刷新所有 Widget，重新绑定点击事件
-                val updateIntent = Intent(applicationContext, com.projectu.widget.PixivWidget::class.java).apply {
+                val updateIntent = Intent(applicationContext, PixivWidget::class.java).apply {
                     action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
                 }
                 sendBroadcast(updateIntent)
                 
-                android.util.Log.d("MainActivity", "Widget reactivation broadcast sent")
+                Log.d("MainActivity", "Widget reactivation broadcast sent")
                 
                 // 标记本次进程已重新激活
                 hasReactivatedWidgetsInProcess = true
             } else {
-                android.util.Log.d("MainActivity", "No widgets found to reactivate")
+                Log.d("MainActivity", "No widgets found to reactivate")
             }
         } catch (e: Exception) {
-            android.util.Log.e("MainActivity", "Failed to reactivate widgets", e)
+            Log.e("MainActivity", "Failed to reactivate widgets", e)
         }
     }
     
@@ -197,35 +200,35 @@ class MainActivity : ComponentActivity() {
     private fun checkWidgetPendingAction() {
         lifecycleScope.launch {
             try {
-                val pendingAction = com.projectu.widget.WidgetClickStore.consumePendingAction(applicationContext)
+                val pendingAction = WidgetClickStore.consumePendingAction(applicationContext)
                 if (pendingAction != null) {
                     val (action, data) = pendingAction
-                    android.util.Log.d("MainActivity", "Widget pending action: $action, data=$data")
+                    Log.d("MainActivity", "Widget pending action: $action, data=$data")
                     
                     when (action) {
                         "view_artwork" -> {
                             // 跳转到作品详情
                             val deepLink = "projectu://artwork/$data"
-                            android.util.Log.d("MainActivity", "Setting deepLink from widget: $deepLink")
+                            Log.d("MainActivity", "Setting deepLink from widget: $deepLink")
                             pendingDeepLink.value = deepLink
                         }
                         "refresh_widget" -> {
                             // 注意：这个分支现在应该不会被触发了
                             // 刷新按钮已改为直接在 WidgetClickReceiver 中处理，不会打开 App
                             val widgetId = data.toIntOrNull()
-                            android.util.Log.d("MainActivity", "Legacy refresh widget: $widgetId (should not happen)")
+                            Log.d("MainActivity", "Legacy refresh widget: $widgetId (should not happen)")
                             if (widgetId != null && widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                                val widgetIntent = Intent(applicationContext, com.projectu.widget.PixivWidget::class.java)
+                                val widgetIntent = Intent(applicationContext, PixivWidget::class.java)
                                 widgetIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                                 widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
                                 sendBroadcast(widgetIntent)
-                                android.util.Log.d("MainActivity", "Widget refresh broadcast sent")
+                                Log.d("MainActivity", "Widget refresh broadcast sent")
                             }
                         }
                     }
                 }
             } catch (e: Exception) {
-                android.util.Log.e("MainActivity", "Error checking widget pending action", e)
+                Log.e("MainActivity", "Error checking widget pending action", e)
             }
         }
     }
@@ -234,20 +237,20 @@ class MainActivity : ComponentActivity() {
      * 处理 Intent
      */
     private fun handleIntent(intent: Intent?) {
-        android.util.Log.d("MainActivity", "handleIntent: action=${intent?.action}, data=${intent?.data}")
+        Log.d("MainActivity", "handleIntent: action=${intent?.action}, data=${intent?.data}")
         
         when (intent?.action) {
             // 深度链接和 Widget 点击事件（统一使用 ACTION_VIEW）
             Intent.ACTION_VIEW -> {
                 val uri = intent.data
-                android.util.Log.d("MainActivity", "ACTION_VIEW with URI: $uri")
+                Log.d("MainActivity", "ACTION_VIEW with URI: $uri")
                 
                 if (uri != null) {
                     when {
                         // Widget 刷新请求: projectu://widget/refresh?widgetId=xxx
                         uri.scheme == "projectu" && uri.host == "widget" && uri.pathSegments.firstOrNull() == "refresh" -> {
                             val widgetId = uri.getQueryParameter("widgetId")?.toIntOrNull()
-                            android.util.Log.d("MainActivity", "Widget refresh request for widgetId=$widgetId")
+                            Log.d("MainActivity", "Widget refresh request for widgetId=$widgetId")
                             if (widgetId != null && widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
                                 // 触发 Widget 刷新
                                 lifecycleScope.launch {
@@ -258,9 +261,9 @@ class MainActivity : ComponentActivity() {
                                             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
                                         }
                                         sendBroadcast(widgetIntent)
-                                        android.util.Log.d("MainActivity", "Widget refresh broadcast sent")
+                                        Log.d("MainActivity", "Widget refresh broadcast sent")
                                     } catch (e: Exception) {
-                                        android.util.Log.e("MainActivity", "Failed to refresh widget", e)
+                                        Log.e("MainActivity", "Failed to refresh widget", e)
                                     }
                                 }
                             }
@@ -268,14 +271,14 @@ class MainActivity : ComponentActivity() {
                         // 作品详情: projectu://artwork/{id}
                         uri.scheme == "projectu" && uri.host == "artwork" -> {
                             val artworkId = uri.pathSegments.firstOrNull()
-                            android.util.Log.d("MainActivity", "Artwork view request for artworkId=$artworkId")
+                            Log.d("MainActivity", "Artwork view request for artworkId=$artworkId")
                             if (!artworkId.isNullOrBlank()) {
                                 pendingDeepLink.value = uri.toString()
                             }
                         }
                         // 其他深度链接
                         else -> {
-                            android.util.Log.d("MainActivity", "Generic deep link: $uri")
+                            Log.d("MainActivity", "Generic deep link: $uri")
                             pendingDeepLink.value = uri.toString()
                         }
                     }

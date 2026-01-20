@@ -9,12 +9,12 @@ call gradlew.bat clean
 
 REM 构建 Debug APK
 echo 🔨 构建 Debug APK...
-call gradlew.bat :composeApp:assembleDebug
+call gradlew.bat :androidApp:assembleDebug
 
 if %ERRORLEVEL% == 0 (
     echo ✅ 构建成功！
-    echo 📱 APK 位置: composeApp\build\outputs\apk\debug\
-    dir composeApp\build\outputs\apk\debug\*.apk
+    echo 📱 APK 位置: androidApp\build\outputs\apk\debug\
+    dir androidApp\build\outputs\apk\debug\*.apk
 ) else (
     echo ❌ 构建失败，请检查错误信息
     exit /b 1

@@ -23,7 +23,7 @@ if (Test-Path $keystorePropsFile) {
         if (Test-Path $storeFilePath) {
             Write-Host "✓ Keystore 文件存在: $storeFilePath" -ForegroundColor Green
             Write-Host "`n签名配置已正确设置！可以执行 Release 构建。" -ForegroundColor Green
-            Write-Host "运行命令: .\gradlew.bat assembleRelease`n" -ForegroundColor Yellow
+            Write-Host "运行命令: .\gradlew.bat :androidApp:assembleRelease`n" -ForegroundColor Yellow
         } else {
             Write-Host "✗ Keystore 文件不存在: $storeFilePath" -ForegroundColor Red
             Write-Host "  请检查路径或生成 keystore 文件" -ForegroundColor Yellow

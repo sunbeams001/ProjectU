@@ -22,6 +22,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.R
 import com.projectu.shared.domain.model.WidgetConfig
+import com.projectu.shared.domain.model.WidgetDataSource
+import com.projectu.shared.domain.model.WidgetRankingMode
 import com.projectu.shared.domain.repository.WidgetRepository
 import com.projectu.ui.localization.LocalLocaleManager
 import com.projectu.ui.util.createLocalizedContext
@@ -123,14 +125,14 @@ private fun WidgetManagementContent(
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
             when {
                 isLoading -> {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.Companion.align(Alignment.Center)
                     )
                 }
                 widgets.isEmpty() -> {
@@ -152,7 +154,7 @@ private fun WidgetManagementContent(
 @Composable
 private fun EmptyWidgetList(localizedContext: Context) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.Companion.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -205,32 +207,32 @@ private fun WidgetItem(
     var showDeleteDialog by remember { mutableStateOf(false) }
     
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.Companion.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.Companion.padding(16.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.Companion.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.Companion.weight(1f)) {
                     Text(
                         text = "Widget #${widget.widgetId}",
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.Companion.height(4.dp))
                     Text(
                         text = localizedContext.getString(
                             R.string.widget_data_source_label,
                             when (widget.dataSource) {
-                                com.projectu.shared.domain.model.WidgetDataSource.RECOMMENDED -> localizedContext.getString(R.string.widget_data_source_recommended)
-                                com.projectu.shared.domain.model.WidgetDataSource.FOLLOWING_LATEST -> localizedContext.getString(R.string.widget_data_source_following)
-                                com.projectu.shared.domain.model.WidgetDataSource.RANKING -> localizedContext.getString(R.string.widget_data_source_ranking)
+                                WidgetDataSource.RECOMMENDED -> localizedContext.getString(R.string.widget_data_source_recommended)
+                                WidgetDataSource.FOLLOWING_LATEST -> localizedContext.getString(R.string.widget_data_source_following)
+                                WidgetDataSource.RANKING -> localizedContext.getString(R.string.widget_data_source_ranking)
                             }
                         ),
                         style = MaterialTheme.typography.bodyMedium,
@@ -241,9 +243,9 @@ private fun WidgetItem(
                             text = localizedContext.getString(
                                 R.string.widget_ranking_mode_label,
                                 when (mode) {
-                                    com.projectu.shared.domain.model.WidgetRankingMode.DAY -> localizedContext.getString(R.string.widget_ranking_day)
-                                    com.projectu.shared.domain.model.WidgetRankingMode.WEEK -> localizedContext.getString(R.string.widget_ranking_week)
-                                    com.projectu.shared.domain.model.WidgetRankingMode.MONTH -> localizedContext.getString(R.string.widget_ranking_month)
+                                    WidgetRankingMode.DAY -> localizedContext.getString(R.string.widget_ranking_day)
+                                    WidgetRankingMode.WEEK -> localizedContext.getString(R.string.widget_ranking_week)
+                                    WidgetRankingMode.MONTH -> localizedContext.getString(R.string.widget_ranking_month)
                                 }
                             ),
                             style = MaterialTheme.typography.bodySmall,

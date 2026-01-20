@@ -6,10 +6,10 @@
 
 | 技术 | 版本 | 说明 |
 |-----|------|------|
-| **Kotlin** | 2.2.21 | 编程语言 |
-| **Compose Multiplatform** | 1.9.3 | UI 框架 |
-| **Android Gradle Plugin** | 8.13.2 | Android 构建工具 |
-| **KSP** | 2.2.21-2.0.4 | Kotlin 符号处理 |
+| **Kotlin** | 2.3.0 | 编程语言 |
+| **Compose Multiplatform** | 1.10.0 | UI 框架 |
+| **Android Gradle Plugin** | 9.0.0 | Android 构建工具 |
+| **KSP** | 2.3.2 | Kotlin 符号处理 |
 
 ## 平台要求
 
