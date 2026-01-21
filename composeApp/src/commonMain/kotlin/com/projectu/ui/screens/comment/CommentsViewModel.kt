@@ -2,6 +2,7 @@ package com.projectu.ui.screens.comment
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.projectu.shared.data.local.SettingsCache
 import com.projectu.shared.domain.model.Comment
 import com.projectu.shared.domain.model.CommentContentType
 import com.projectu.shared.domain.model.DeleteCommentResultModel
@@ -10,6 +11,7 @@ import com.projectu.shared.domain.model.PostCommentResultModel
 import com.projectu.shared.domain.model.Stamp
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.CommentRepository
+import com.projectu.shared.domain.usecase.TranslateTextUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +23,9 @@ import kotlinx.coroutines.launch
  */
 class CommentsViewModel(
     private val commentRepository: CommentRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val translateTextUseCase: TranslateTextUseCase,
+    private val settingsCache: SettingsCache
 ) : ScreenModel {
     
     private val _state = MutableStateFlow(CommentsScreenState())
@@ -55,6 +59,8 @@ class CommentsViewModel(
             is CommentsIntent.SetEmojiPickerVisible -> setEmojiPickerVisible(intent.visible)
             is CommentsIntent.InsertEmoji -> insertEmoji(intent.emoji)
             is CommentsIntent.PostStampComment -> postStampComment(intent.stamp)
+            is CommentsIntent.TranslateComment -> translateComment(intent.commentId)
+            is CommentsIntent.ClearCommentTranslation -> clearCommentTranslation(intent.commentId)
         }
     }
     
@@ -120,7 +126,10 @@ class CommentsViewModel(
             ).onSuccess { result ->
                 _state.update { state ->
                     val newComments = result.comments.map { comment ->
-                        CommentItem(comment = comment)
+                        CommentItem(
+                            comment = comment,
+                            replies = emptyList()
+                        )
                     }
                     val updatedComments = if (refresh) {
                         newComments
@@ -240,10 +249,12 @@ class CommentsViewModel(
                     
                     val commentItem = state.comments[commentIndex]
                     val updatedReplies = if (page == 1) {
-                        result.comments
+                        result.comments.map { ReplyItem(comment = it) }
                     } else {
-                        val existingIds = commentItem.replies.map { it.id }.toSet()
-                        val uniqueNew = result.comments.filter { it.id !in existingIds }
+                        val existingIds = commentItem.replies.map { it.comment.id }.toSet()
+                        val uniqueNew = result.comments
+                            .filter { it.id !in existingIds }
+                            .map { ReplyItem(comment = it) }
                         commentItem.replies + uniqueNew
                     }
                     
@@ -385,7 +396,7 @@ class CommentsViewModel(
                                 null
                             } else {
                                 // 也检查回复中是否有被删除的评论
-                                val updatedReplies = item.replies.filter { it.id != commentId }
+                                val updatedReplies = item.replies.filter { it.comment.id != commentId }
                                 if (updatedReplies.size != item.replies.size) {
                                     item.copy(replies = updatedReplies)
                                 } else {
@@ -491,6 +502,210 @@ class CommentsViewModel(
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * 翻译评论（包括主评论和回复）
+     */
+    private fun translateComment(commentId: String) {
+        if (!settingsCache.isTranslationEnabled()) return
+        
+        val currentState = _state.value
+        
+        // 先检查是否是主评论
+        val commentItem = currentState.comments.find { it.comment.id == commentId }
+        val commentText = if (commentItem != null) {
+            commentItem.comment.comment
+        } else {
+            // 如果不是主评论，在所有回复中查找
+            var foundText: String? = null
+            for (item in currentState.comments) {
+                val reply = item.replies.find { it.comment.id == commentId }
+                if (reply != null) {
+                    foundText = reply.comment.comment
+                    break
+                }
+            }
+            foundText
+        }
+        
+        // 只有包含文本内容的评论才能翻译
+        if (commentText.isNullOrBlank()) return
+        
+        screenModelScope.launch {
+            // 更新状态为翻译中
+            _state.update { state ->
+                state.copy(
+                    comments = state.comments.map { item ->
+                        if (item.comment.id == commentId) {
+                            // 主评论
+                            item.copy(
+                                isTranslating = true,
+                                translationError = null
+                            )
+                        } else {
+                            // 检查回复
+                            val updatedReplies = item.replies.map { reply ->
+                                if (reply.comment.id == commentId) {
+                                    reply.copy(
+                                        isTranslating = true,
+                                        translationError = null
+                                    )
+                                } else {
+                                    reply
+                                }
+                            }
+                            if (updatedReplies != item.replies) {
+                                item.copy(replies = updatedReplies)
+                            } else {
+                                item
+                            }
+                        }
+                    }
+                )
+            }
+            
+            try {
+                val result = translateTextUseCase(
+                    text = commentText,
+                    targetLanguage = settingsCache.getTranslationTargetLanguage(),
+                    engine = settingsCache.getTranslationEngine()
+                )
+                
+                result.onSuccess { translation ->
+                    _state.update { state ->
+                        state.copy(
+                            comments = state.comments.map { item ->
+                                if (item.comment.id == commentId) {
+                                    // 主评论
+                                    item.copy(
+                                        translatedText = translation.translatedText,
+                                        isTranslating = false,
+                                        translationError = null
+                                    )
+                                } else {
+                                    // 检查回复
+                                    val updatedReplies = item.replies.map { reply ->
+                                        if (reply.comment.id == commentId) {
+                                            reply.copy(
+                                                translatedText = translation.translatedText,
+                                                isTranslating = false,
+                                                translationError = null
+                                            )
+                                        } else {
+                                            reply
+                                        }
+                                    }
+                                    if (updatedReplies != item.replies) {
+                                        item.copy(replies = updatedReplies)
+                                    } else {
+                                        item
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }.onFailure { error ->
+                    _state.update { state ->
+                        state.copy(
+                            comments = state.comments.map { item ->
+                                if (item.comment.id == commentId) {
+                                    // 主评论
+                                    item.copy(
+                                        isTranslating = false,
+                                        translationError = error.message
+                                    )
+                                } else {
+                                    // 检查回复
+                                    val updatedReplies = item.replies.map { reply ->
+                                        if (reply.comment.id == commentId) {
+                                            reply.copy(
+                                                isTranslating = false,
+                                                translationError = error.message
+                                            )
+                                        } else {
+                                            reply
+                                        }
+                                    }
+                                    if (updatedReplies != item.replies) {
+                                        item.copy(replies = updatedReplies)
+                                    } else {
+                                        item
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _state.update { state ->
+                    state.copy(
+                        comments = state.comments.map { item ->
+                            if (item.comment.id == commentId) {
+                                // 主评论
+                                item.copy(
+                                    isTranslating = false,
+                                    translationError = e.message
+                                )
+                            } else {
+                                // 检查回复
+                                val updatedReplies = item.replies.map { reply ->
+                                    if (reply.comment.id == commentId) {
+                                        reply.copy(
+                                            isTranslating = false,
+                                            translationError = e.message
+                                        )
+                                    } else {
+                                        reply
+                                    }
+                                }
+                                if (updatedReplies != item.replies) {
+                                    item.copy(replies = updatedReplies)
+                                } else {
+                                    item
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+    
+    /**
+     * 清除评论翻译（包括主评论和回复）
+     */
+    private fun clearCommentTranslation(commentId: String) {
+        _state.update { state ->
+            state.copy(
+                comments = state.comments.map { item ->
+                    if (item.comment.id == commentId) {
+                        // 主评论
+                        item.copy(
+                            translatedText = null,
+                            translationError = null
+                        )
+                    } else {
+                        // 检查回复
+                        val updatedReplies = item.replies.map { reply ->
+                            if (reply.comment.id == commentId) {
+                                reply.copy(
+                                    translatedText = null,
+                                    translationError = null
+                                )
+                            } else {
+                                reply
+                            }
+                        }
+                        if (updatedReplies != item.replies) {
+                            item.copy(replies = updatedReplies)
+                        } else {
+                            item
+                        }
+                    }
+                }
+            )
         }
     }
 }

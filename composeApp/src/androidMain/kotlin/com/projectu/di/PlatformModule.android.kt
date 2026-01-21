@@ -174,7 +174,7 @@ actual val viewModelModule: Module = module {
     factory { UserRelationsViewModel(get(), get(), get(), get(), get()) }
     
     // 评论页面 ScreenModel
-    factory { CommentsViewModel(get(), get()) }
+    factory { CommentsViewModel(get(), get(), get(), get()) }
     
     // 搜索准备页面 ScreenModel
     single { com.projectu.ui.screens.search.SearchPreparationViewModel(get(), get(), get()) }

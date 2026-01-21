@@ -45,6 +45,7 @@ import com.projectu.ui.screens.user.UserScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import projectu.composeapp.generated.resources.*
 
 /**
@@ -68,6 +69,8 @@ data class CommentsScreen(
         val viewModel = koinScreenModel<CommentsViewModel>()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
+        val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+        val isTranslationEnabled by remember { derivedStateOf { settingsCache.isTranslationEnabled() } }
         
         LaunchedEffect(contentId) {
             viewModel.handleIntent(
@@ -81,6 +84,7 @@ data class CommentsScreen(
         
         CommentsContent(
             state = state,
+            isTranslationEnabled = isTranslationEnabled,
             onIntent = viewModel::handleIntent,
             onUserClick = { userId ->
                 navigator.push(UserScreen(userId))
@@ -94,6 +98,7 @@ data class CommentsScreen(
 @Composable
 fun CommentsContent(
     state: CommentsScreenState,
+    isTranslationEnabled: Boolean,
     onIntent: (CommentsIntent) -> Unit,
     onUserClick: (String) -> Unit,
     onBackClick: () -> Unit
@@ -212,6 +217,7 @@ fun CommentsContent(
                                 CommentItemView(
                                     commentItem = commentItem,
                                     isDeletingId = state.isDeletingCommentId,
+                                    isTranslationEnabled = isTranslationEnabled,
                                     onToggleReplies = { onIntent(CommentsIntent.ToggleReplies(commentItem.comment.id)) },
                                     onLoadMoreReplies = { onIntent(CommentsIntent.LoadMoreReplies(commentItem.comment.id)) },
                                     onReply = { comment ->
@@ -224,6 +230,12 @@ fun CommentsContent(
                                     },
                                     onDelete = { comment ->
                                         onIntent(CommentsIntent.ShowDeleteConfirmDialog(comment))
+                                    },
+                                    onTranslate = { commentId ->
+                                        onIntent(CommentsIntent.TranslateComment(commentId))
+                                    },
+                                    onClearTranslation = { commentId ->
+                                        onIntent(CommentsIntent.ClearCommentTranslation(commentId))
                                     },
                                     onUserClick = onUserClick
                                 )
@@ -516,10 +528,13 @@ fun DeleteConfirmDialog(
 fun CommentItemView(
     commentItem: CommentItem,
     isDeletingId: String?,
+    isTranslationEnabled: Boolean,
     onToggleReplies: () -> Unit,
     onLoadMoreReplies: () -> Unit,
     onReply: (Comment) -> Unit,
     onDelete: (Comment) -> Unit,
+    onTranslate: (String) -> Unit,
+    onClearTranslation: (String) -> Unit,
     onUserClick: (String) -> Unit
 ) {
     val comment = commentItem.comment
@@ -537,9 +552,14 @@ fun CommentItemView(
             hasReplies = comment.hasReplies,
             isExpanded = commentItem.isExpanded,
             isLoadingReplies = commentItem.isLoadingReplies && commentItem.replies.isEmpty(),
+            translatedText = commentItem.translatedText,
+            isTranslating = commentItem.isTranslating,
+            isTranslationEnabled = isTranslationEnabled,
             onToggleReplies = onToggleReplies,
             onReply = { onReply(comment) },
             onDelete = { onDelete(comment) },
+            onTranslate = { onTranslate(comment.id) },
+            onClearTranslation = { onClearTranslation(comment.id) },
             onUserClick = onUserClick
         )
         
@@ -562,11 +582,16 @@ fun CommentItemView(
             ) {
                 commentItem.replies.asReversed().forEach { reply ->
                     CommentContent(
-                        comment = reply,
-                        isDeleting = isDeletingId == reply.id,
+                        comment = reply.comment,
+                        isDeleting = isDeletingId == reply.comment.id,
                         isReply = true,
-                        onReply = { onReply(reply) },
-                        onDelete = { onDelete(reply) },
+                        translatedText = reply.translatedText,
+                        isTranslating = reply.isTranslating,
+                        isTranslationEnabled = isTranslationEnabled,
+                        onReply = { onReply(reply.comment) },
+                        onDelete = { onDelete(reply.comment) },
+                        onTranslate = { onTranslate(reply.comment.id) },
+                        onClearTranslation = { onClearTranslation(reply.comment.id) },
                         onUserClick = onUserClick
                     )
                 }
@@ -606,9 +631,14 @@ fun CommentContent(
     hasReplies: Boolean = false,
     isExpanded: Boolean = false,
     isLoadingReplies: Boolean = false,
+    translatedText: String? = null,
+    isTranslating: Boolean = false,
+    isTranslationEnabled: Boolean = false,
     onToggleReplies: (() -> Unit)? = null,
     onReply: () -> Unit,
     onDelete: () -> Unit,
+    onTranslate: (() -> Unit)? = null,
+    onClearTranslation: (() -> Unit)? = null,
     onUserClick: (String) -> Unit
 ) {
     Row(
@@ -716,6 +746,35 @@ fun CommentContent(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
+                
+                // 翻译文本（如果有）
+                if (translatedText != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.description_translated),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            androidx.compose.foundation.text.selection.SelectionContainer {
+                                EmojiText(
+                                    text = translatedText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
+                        }
+                    }
+                }
             }
             
             // 操作按钮（右对齐）
@@ -724,6 +783,28 @@ fun CommentContent(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 翻译按钮（只在翻译功能启用且有文本内容时显示）
+                if (isTranslationEnabled && !comment.comment.isNullOrBlank() && onTranslate != null && onClearTranslation != null) {
+                    TextButton(
+                        onClick = if (translatedText != null) onClearTranslation else onTranslate,
+                        enabled = !isTranslating,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        if (isTranslating) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = if (translatedText != null) Icons.Default.VisibilityOff else Icons.Default.Translate,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+                
                 // 回复按钮
                 TextButton(
                     onClick = onReply,

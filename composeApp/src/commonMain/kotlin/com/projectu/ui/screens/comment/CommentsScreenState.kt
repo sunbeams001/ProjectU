@@ -6,15 +6,28 @@ import com.projectu.shared.domain.model.Emoji
 import com.projectu.shared.domain.model.Stamp
 
 /**
+ * 回复项，包含回复评论和翻译状态
+ */
+data class ReplyItem(
+    val comment: Comment,
+    val translatedText: String? = null,  // 翻译后的文本
+    val isTranslating: Boolean = false,  // 正在翻译
+    val translationError: String? = null  // 翻译错误
+)
+
+/**
  * 评论项，包含根评论和已加载的回复
  */
 data class CommentItem(
     val comment: Comment,
-    val replies: List<Comment> = emptyList(),
+    val replies: List<ReplyItem> = emptyList(),
     val isLoadingReplies: Boolean = false,
     val isExpanded: Boolean = false,  // 是否展开回复
     val hasMoreReplies: Boolean = false,  // 是否还有更多回复
-    val repliesPage: Int = 1  // 已加载的回复页码
+    val repliesPage: Int = 1,  // 已加载的回复页码
+    val translatedText: String? = null,  // 翻译后的文本
+    val isTranslating: Boolean = false,  // 正在翻译
+    val translationError: String? = null  // 翻译错误
 )
 
 /**
@@ -128,4 +141,10 @@ sealed interface CommentsIntent {
     
     /** 发送 stamp 评论 */
     data class PostStampComment(val stamp: Stamp) : CommentsIntent
+    
+    /** 翻译评论 */
+    data class TranslateComment(val commentId: String) : CommentsIntent
+    
+    /** 清除评论翻译 */
+    data class ClearCommentTranslation(val commentId: String) : CommentsIntent
 }
