@@ -348,7 +348,7 @@ object HomeTab : Tab {
     
     @Composable
     override fun Content() {
-        val viewModel = koinScreenModel<SearchPreparationViewModel>()
+        val viewModel: SearchPreparationViewModel = koinInject()
         val state by viewModel.state.collectAsState()
         val scope = rememberCoroutineScope()
         val parentNavigator = LocalNavigator.current?.parent
@@ -562,7 +562,7 @@ object RankingTab : Tab {
     
     @Composable
     override fun Content() {
-        val viewModel = koinScreenModel<RankingViewModel>()
+        val viewModel: RankingViewModel = koinInject()
         val state by viewModel.state.collectAsState()
         val parentNavigator = LocalNavigator.current?.parent
         
