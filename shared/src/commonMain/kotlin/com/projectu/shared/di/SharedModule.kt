@@ -116,6 +116,37 @@ val dataStoreModule = module {
 }
 
 /**
+ * 备份恢复模块
+ */
+val backupModule = module {
+    // 数据源
+    factory {
+        com.projectu.shared.data.backup.datasource.SettingsBackupDataSource(get())
+    }
+    
+    factory {
+        com.projectu.shared.data.backup.datasource.CredentialsBackupDataSource(get())
+    }
+    
+    // 管理器
+    factory {
+        com.projectu.shared.data.backup.manager.BackupManager(
+            settingsDataSource = get(),
+            credentialsDataSource = get(),
+            backupStorage = get()
+        )
+    }
+    
+    factory {
+        com.projectu.shared.data.backup.manager.RestoreManager(
+            settingsDataSource = get(),
+            credentialsDataSource = get(),
+            backupStorage = get()
+        )
+    }
+}
+
+/**
  * Pixiv API 模块（动态凭据）
  * API 实例会根据 PixivConfigStore 中的凭据动态创建
  */
@@ -276,6 +307,15 @@ val repositoryModule = module {
         com.projectu.shared.data.repository.BlockRuleRepositoryImpl(get())
     }
     
+    // 备份恢复仓储
+    single<com.projectu.shared.domain.repository.BackupRestoreRepository> {
+        com.projectu.shared.data.repository.BackupRestoreRepositoryImpl(
+            backupManager = get(),
+            restoreManager = get(),
+            backupStorage = get()
+        )
+    }
+    
     // 小说翻译缓存仓储
     single {
         com.projectu.shared.domain.repository.NovelTranslationCacheRepository(
@@ -355,6 +395,10 @@ val useCaseModule = module {
     
     // Pixivision相关
     factory { GetPixivisionDetailUseCase(get()) }
+    
+    // 备份恢复相关
+    factory { com.projectu.shared.domain.usecase.CreateBackupUseCase(get()) }
+    factory { com.projectu.shared.domain.usecase.RestoreBackupUseCase(get()) }
 }
 
 /**

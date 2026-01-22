@@ -81,6 +81,9 @@ actual val viewModelModule: Module = module {
     // 设置 ViewModel
     single { SettingsViewModel(get(), get()) }
     
+    // 备份与恢复 ViewModel
+    single { com.projectu.ui.screens.settings.BackupRestoreViewModel(get(), get(), get()) }
+    
     // 屏蔽列表 ViewModel
     single { com.projectu.ui.screens.blocklist.BlockListViewModel(get()) }
     

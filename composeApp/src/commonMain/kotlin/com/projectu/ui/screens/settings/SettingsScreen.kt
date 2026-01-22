@@ -734,7 +734,22 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 🔧 10. 开发者选项 (Developer Options)
+            // � 10. 数据管理 (Data Management)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_data_management))
+            }
+            
+            // 备份与恢复
+            item {
+                SettingsItem(
+                    title = stringResource(Res.string.settings_backup_restore),
+                    subtitle = null,
+                    description = stringResource(Res.string.settings_backup_restore_desc),
+                    onClick = { navigator.push(BackupRestoreScreen()) }
+                )
+            }
+            
+            // 🔧 11. 开发者选项 (Developer Options)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_developer_options))
             }
@@ -749,7 +764,7 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 👤 10. 账号 (Account)
+            // 👤 12. 账号 (Account)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_account))
             }

@@ -126,6 +126,8 @@
     <string name="login_username">用户名或邮箱</string>
     <string name="login_password">密码</string>
     <string name="login_button">登录</string>
+    <string name="login_restore_from_backup">从备份恢复</string>
+    <string name="login_restore_hint">如果您有备份文件，可以在登录前恢复应用设置和凭据</string>
     <string name="login_forgot_password">忘记密码？</string>
     <string name="login_register">创建账号</string>
     
@@ -1045,6 +1047,88 @@
     <string name="settings_widget_management">桌面小部件管理</string>
     <string name="settings_widget_management_desc">管理Pixiv桌面小部件配置</string>
 
+    <!-- 备份与恢复 -->
+    <string name="settings_data_management">数据管理</string>
+    <string name="settings_backup_restore">备份与恢复</string>
+    <string name="settings_backup_restore_desc">备份设置和凭据，从备份文件恢复</string>
+    
+    <string name="backup_restore_title">备份与恢复</string>
+    <string name="backup_tab">备份</string>
+    <string name="restore_tab">恢复</string>
+    
+    <!-- 备份界面 -->
+    <string name="backup_create_title">创建备份</string>
+    <string name="backup_comment_label">备注（可选）</string>
+    <string name="backup_comment_hint">例如：切换设备前的备份</string>
+    <string name="backup_modules_label">备份内容</string>
+    <string name="backup_module_settings">应用设置</string>
+    <string name="backup_module_credentials">登录凭据</string>
+    <string name="backup_button">创建备份</string>
+    <string name="backup_directory_hint">设置备份目录可查看历史备份文件</string>
+    <string name="restore_from_file">从文件恢复</string>
+    <string name="backup_history_title">备份历史</string>
+    <string name="backup_directory_title">备份目录</string>
+    <string name="backup_guide_dialog_title">选择备份目录</string>
+    <string name="backup_guide_recommend">建议选择以下路径：</string>
+    <string name="backup_guide_navigation">📱 导航提示：\n1. 找到并点击 Download 文件夹\n2. 进入 ProjectU 文件夹\n3. 选择 Backups 文件夹</string>
+    <string name="backup_guide_start">开始选择</string>
+    <string name="backup_success_created">备份文件已成功创建</string>
+    <string name="backup_success_location">保存位置：</string>
+    <string name="backup_loading">正在扫描备份文件...</string>
+    <string name="backup_scanned_count">已扫描到 %1$d 个备份文件</string>
+    <string name="backup_time_label">备份时间</string>
+    <string name="backup_comment_label_short">备注</string>
+    <string name="backup_file_location">文件位置</string>
+    <string name="backup_content_label">包含内容</string>
+    <string name="backup_created_title">备份已创建</string>
+    <string name="backup_created_message">备份文件已保存至：\n%1$s</string>
+    <string name="backup_failed_title">备份失败</string>
+    <string name="restore_complete_title">恢复完成</string>
+    <string name="restore_complete_message">成功恢复 %1$d 个模块（%2$d 条记录）。\n\n应用将自动重启以应用所有设置...</string>
+    <string name="restore_failed_title">恢复失败</string>
+    <string name="setup_failed_title">设置失败</string>
+    <string name="setup_failed_no_permission">无法设置备份目录权限</string>
+    <string name="backup_directory_set">备份目录已设置</string>
+    <string name="invalid_file_title">文件无效</string>
+    <string name="invalid_file_message">所选文件不是有效的备份文件</string>
+    <string name="file_error_title">文件错误</string>
+    <string name="file_error_message">读取文件失败</string>
+    <string name="no_file_selected_title">未选择文件</string>
+    <string name="no_file_selected_message">请先选择一个备份文件</string>
+    <string name="delete_failed_title">删除失败</string>
+    <string name="delete_failed_message">删除备份失败</string>
+    <string name="backup_deleted">备份已删除</string>
+    <string name="load_failed_title">加载失败</string>
+    <string name="load_failed_message">加载备份历史失败</string>
+    <string name="backup_history_empty">暂无备份</string>
+    <string name="backup_item_size">大小：%1$s</string>
+    <string name="backup_item_modules">模块：%1$s</string>
+    <string name="backup_item_comment">备注：%1$s</string>
+    <string name="backup_delete_confirm_title">删除备份</string>
+    <string name="backup_delete_confirm_message">确定要删除这个备份吗？</string>
+    
+    <!-- 恢复界面 -->
+    <string name="restore_select_file">选择备份文件</string>
+    <string name="restore_file_info">文件信息</string>
+    <string name="restore_file_version">版本：%s</string>
+    <string name="restore_file_platform">平台：%s</string>
+    <string name="restore_file_created">创建时间：%s</string>
+    <string name="restore_file_modules">模块：%s</string>
+    <string name="restore_file_size">大小：%s</string>
+    <string name="restore_button">开始恢复</string>
+    <string name="restore_warning_title">⚠️ 重要提示</string>
+    <string name="restore_warning_message">• 恢复操作将覆盖当前的设置和登录信息\n• 建议先备份当前数据\n• 恢复完成后应用将重启</string>
+    
+    <!-- 进度对话框 -->
+    <string name="backup_progress_title">正在创建备份...</string>
+    <string name="restore_progress_title">正在恢复...</string>
+    <string name="backup_progress_exporting">正在导出 %s...</string>
+    <string name="backup_progress_compressing">正在压缩...</string>
+    <string name="backup_progress_saving">正在保存...</string>
+    <string name="restore_progress_validating">正在验证备份文件...</string>
+    <string name="restore_progress_extracting">正在解压...</string>
+    <string name="restore_progress_importing">正在导入 %s...</string>
+    
     <!-- Desktop Specific -->
     <string name="desktop_webview_restart_required">使用WebView功能需要重启应用</string>
     <string name="desktop_webview_initializing">正在初始化 WebView 组件...</string>

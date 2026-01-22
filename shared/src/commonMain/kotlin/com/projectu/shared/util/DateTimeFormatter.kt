@@ -92,4 +92,21 @@ object DateTimeFormatter {
             isoString
         }
     }
+    
+    /**
+     * 格式化Unix时间戳（毫秒）为本地时区的可读格式
+     * 
+     * @param timestampMillis Unix时间戳（毫秒）
+     * @return 本地时区的格式化字符串，例如："2025-11-26 23:30"
+     */
+    fun formatTimestamp(timestampMillis: Long): String {
+        return try {
+            val instant = Instant.fromEpochMilliseconds(timestampMillis)
+            val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+            
+            "${localDateTime.year}-${localDateTime.month.number.toString().padStart(2, '0')}-${localDateTime.day.toString().padStart(2, '0')} ${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
+        } catch (e: Exception) {
+            timestampMillis.toString()
+        }
+    }
 }

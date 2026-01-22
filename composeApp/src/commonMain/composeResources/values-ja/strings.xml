@@ -143,6 +143,8 @@
     <string name="login_username">ユーザー名またはメールアドレス</string>
     <string name="login_password">パスワード</string>
     <string name="login_button">ログイン</string>
+    <string name="login_restore_from_backup">バックアップから復元</string>
+    <string name="login_restore_hint">バックアップファイルがある場合、ログイン前にアプリの設定と認証情報を復元できます</string>
     <string name="login_forgot_password">パスワードを忘れた？</string>
     <string name="login_register">アカウント作成</string>
     
@@ -1063,5 +1065,87 @@
     <string name="settings_widget">Widget</string>
     <string name="settings_widget_management">Widget管理</string>
     <string name="settings_widget_management_desc">Pixivホーム画面ウィジェットを管理</string>
+
+    <!-- バックアップと復元 -->
+    <string name="settings_data_management">データ管理</string>
+    <string name="settings_backup_restore">バックアップと復元</string>
+    <string name="settings_backup_restore_desc">設定と認証情報をバックアップ、バックアップから復元</string>
+    
+    <string name="backup_restore_title">バックアップと復元</string>
+    <string name="backup_tab">バックアップ</string>
+    <string name="restore_tab">復元</string>
+    
+    <!-- バックアップ画面 -->
+    <string name="backup_create_title">バックアップを作成</string>
+    <string name="backup_comment_label">コメント（任意）</string>
+    <string name="backup_comment_hint">例：デバイス切り替え前</string>
+    <string name="backup_modules_label">バックアップ内容</string>
+    <string name="backup_module_settings">アプリ設定</string>
+    <string name="backup_module_credentials">ログイン認証情報</string>
+    <string name="backup_button">バックアップを作成</string>
+    <string name="backup_directory_hint">バックアップディレクトリを設定すると履歴ファイルを表示できます</string>
+    <string name="restore_from_file">ファイルから復元</string>
+    <string name="backup_history_title">バックアップ履歴</string>
+    <string name="backup_directory_title">バックアップディレクトリ</string>
+    <string name="backup_guide_dialog_title">バックアップディレクトリを選択</string>
+    <string name="backup_guide_recommend">推奨パス：</string>
+    <string name="backup_guide_navigation">📱 ナビゲーションのヒント：\n1. Downloadフォルダを見つけてタップ\n2. ProjectUフォルダに入る\n3. Backupsフォルダを選択</string>
+    <string name="backup_guide_start">選択を開始</string>
+    <string name="backup_success_created">バックアップファイルが正常に作成されました</string>
+    <string name="backup_success_location">保存場所：</string>
+    <string name="backup_loading">バックアップファイルをスキャン中...</string>
+    <string name="backup_scanned_count">%1$d 個のバックアップファイルをスキャンしました</string>
+    <string name="backup_time_label">バックアップ時刻</string>
+    <string name="backup_comment_label_short">コメント</string>
+    <string name="backup_file_location">ファイルの場所</string>
+    <string name="backup_content_label">内容</string>
+    <string name="backup_created_title">バックアップ作成完了</string>
+    <string name="backup_created_message">バックアップファイルを保存しました：\n%1$s</string>
+    <string name="backup_failed_title">バックアップ失敗</string>
+    <string name="restore_complete_title">復元完了</string>
+    <string name="restore_complete_message">%1$d 個のモジュール（%2$d 件のレコード）を正常に復元しました。\n\nすべての設定を適用するため、アプリが自動的に再起動します...</string>
+    <string name="restore_failed_title">復元失敗</string>
+    <string name="setup_failed_title">設定失敗</string>
+    <string name="setup_failed_no_permission">バックアップディレクトリの権限を設定できません</string>
+    <string name="backup_directory_set">バックアップディレクトリを設定しました</string>
+    <string name="invalid_file_title">無効なファイル</string>
+    <string name="invalid_file_message">選択されたファイルは有効なバックアップではありません</string>
+    <string name="file_error_title">ファイルエラー</string>
+    <string name="file_error_message">ファイルの読み取りに失敗しました</string>
+    <string name="no_file_selected_title">ファイル未選択</string>
+    <string name="no_file_selected_message">まずバックアップファイルを選択してください</string>
+    <string name="delete_failed_title">削除失敗</string>
+    <string name="delete_failed_message">バックアップの削除に失敗しました</string>
+    <string name="backup_deleted">バックアップを削除しました</string>
+    <string name="load_failed_title">読み込み失敗</string>
+    <string name="load_failed_message">バックアップ履歴の読み込みに失敗しました</string>
+    <string name="backup_history_empty">バックアップがありません</string>
+    <string name="backup_item_size">サイズ：%1$s</string>
+    <string name="backup_item_modules">モジュール：%1$s</string>
+    <string name="backup_item_comment">コメント：%1$s</string>
+    <string name="backup_delete_confirm_title">バックアップを削除</string>
+    <string name="backup_delete_confirm_message">このバックアップを削除してもよろしいですか？</string>
+    
+    <!-- 復元画面 -->
+    <string name="restore_select_file">バックアップファイルを選択</string>
+    <string name="restore_file_info">ファイル情報</string>
+    <string name="restore_file_version">バージョン：%s</string>
+    <string name="restore_file_platform">プラットフォーム：%s</string>
+    <string name="restore_file_created">作成日時：%s</string>
+    <string name="restore_file_modules">モジュール：%s</string>
+    <string name="restore_file_size">サイズ：%s</string>
+    <string name="restore_button">復元を開始</string>
+    <string name="restore_warning_title">⚠️ 重要な注意事項</string>
+    <string name="restore_warning_message">• 復元操作により現在の設定とログイン情報が上書きされます\n• 現在のデータを先にバックアップすることをお勧めします\n• 復元完了後、アプリが再起動します</string>
+    
+    <!-- 進行状況ダイアログ -->
+    <string name="backup_progress_title">バックアップ作成中...</string>
+    <string name="restore_progress_title">復元中...</string>
+    <string name="backup_progress_exporting">%s をエクスポート中...</string>
+    <string name="backup_progress_compressing">圧縮中...</string>
+    <string name="backup_progress_saving">保存中...</string>
+    <string name="restore_progress_validating">バックアップファイルを検証中...</string>
+    <string name="restore_progress_extracting">展開中...</string>
+    <string name="restore_progress_importing">%s をインポート中...</string>
 </resources>
 

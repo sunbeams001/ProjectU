@@ -1,13 +1,23 @@
 package com.projectu.ui.screens.login
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -15,6 +25,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -24,6 +35,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.di.pixivApiModule
 import com.projectu.ui.screens.home.HomeScreen
+import com.projectu.ui.screens.settings.BackupRestoreScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.context.loadKoinModules
@@ -64,9 +76,18 @@ private fun LoginScreenContent(
     state: LoginScreenState,
     onIntent: (LoginIntent) -> Unit
 ) {
+    val navigator = LocalNavigator.currentOrThrow
     val keyboardController = LocalSoftwareKeyboardController.current
     var passwordVisible by remember { mutableStateOf(false) }
     var showWebViewLogin by remember { mutableStateOf(false) }
+    var isManualInputExpanded by remember { mutableStateOf(false) }
+    
+    // 如果有错误或正在加载或已经输入了内容，自动展开手动输入框
+    LaunchedEffect(state.errorMessage, state.isLoading, state.phpSessionId) {
+        if (state.errorMessage != null || state.isLoading || state.phpSessionId.isNotEmpty()) {
+            isManualInputExpanded = true
+        }
+    }
     
     Scaffold(
         topBar = {
@@ -104,67 +125,183 @@ private fun LoginScreenContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             
-            // 登录方式切换（预留）
-            if (false) {  // 暂时隐藏，等应用内登录实现后开启
-                SegmentedButton(
-                    currentMode = state.loginMode,
-                    onModeChange = { onIntent(LoginIntent.SwitchLoginMode(it)) }
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
+            // 1. 推荐方式：WebView 登录卡片
+            Card(
+                onClick = { showWebViewLogin = true },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Language,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(Res.string.login_webview_button),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = stringResource(Res.string.login_subtitle), // 这里复用一下 subtitle 作为描述
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                        contentDescription = null
+                    )
+                }
             }
             
-            when (state.loginMode) {
-                LoginMode.PHPSESSID -> {
-                    PhpSessionIdLoginForm(
-                        phpSessionId = state.phpSessionId,
-                        isLoading = state.isLoading,
-                        errorMessage = state.errorMessage,
-                        passwordVisible = passwordVisible,
-                        onPhpSessionIdChange = { onIntent(LoginIntent.PhpSessionIdChanged(it)) },
-                        onPasswordVisibilityToggle = { passwordVisible = !passwordVisible },
-                        onLoginClick = {
-                            keyboardController?.hide()
-                            onIntent(LoginIntent.LoginClicked)
-                        },
-                        onErrorDismiss = { onIntent(LoginIntent.ClearError) }
-                    )
-                    
-                    // WebView登录分隔符和按钮
+            // 2. 高级方式：手动输入 Token 卡片（可展开）
+            OutlinedCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { isManualInputExpanded = !isManualInputExpanded }
+            ) {
+                Column {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        HorizontalDivider(modifier = Modifier.weight(1f))
-                        Text(
-                            text = stringResource(Res.string.login_or_divider),
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Icon(
+                            imageVector = Icons.Default.Code,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        HorizontalDivider(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(Res.string.login_phpsessid_title),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            if (!isManualInputExpanded) {
+                                Text(
+                                    text = stringResource(Res.string.login_phpsessid_description),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
                     
-                    OutlinedButton(
-                        onClick = { showWebViewLogin = true },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !state.isLoading
+                    AnimatedVisibility(
+                        visible = isManualInputExpanded,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut()
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Language,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(Res.string.login_webview_button))
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                             // 直接嵌入表单内容，去掉外层 Card 以避免嵌套 Card
+                             OutlinedTextField(
+                                value = state.phpSessionId,
+                                onValueChange = { onIntent(LoginIntent.PhpSessionIdChanged(it)) },
+                                label = { Text(stringResource(Res.string.login_phpsessid_label)) },
+                                placeholder = { Text("12345678_xxxxxxxxxxxx") },
+                                visualTransformation = if (passwordVisible) VisualTransformation.None 
+                                    else PasswordVisualTransformation(),
+                                trailingIcon = {
+                                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                        Icon(
+                                            imageVector = if (passwordVisible) Icons.Default.Visibility 
+                                                else Icons.Default.VisibilityOff,
+                                            contentDescription = null
+                                        )
+                                    }
+                                },
+                                singleLine = true,
+                                enabled = !state.isLoading,
+                                isError = state.errorMessage != null,
+                                supportingText = state.errorMessage?.let { { Text(it) } },
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(onDone = { 
+                                    keyboardController?.hide()
+                                    onIntent(LoginIntent.LoginClicked) 
+                                }),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Button(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    onIntent(LoginIntent.LoginClicked)
+                                },
+                                enabled = !state.isLoading && state.phpSessionId.isNotBlank(),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                if (state.isLoading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+                                Text(stringResource(if (state.isLoading) Res.string.login_logging_in else Res.string.login_button))
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
                     }
                 }
-                
-                LoginMode.APP_LOGIN -> {
-                    // 预留：应用内登录表单
-                    AppLoginForm()
+            }
+            
+            // 占位，把底部备份恢复顶下去（如果在更大屏幕上）
+            // 但在 Column 中使用 weight 需要父级也是明确大小，这里暂用 Spacer
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            // 3. 底部辅助：从备份恢复
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                border = null, // 无边框，像一个按钮
+                modifier = Modifier.fillMaxWidth().clickable { navigator.push(BackupRestoreScreen()) }
+            ) {
+                 Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Restore,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(Res.string.login_restore_from_backup),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = stringResource(Res.string.login_restore_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
@@ -200,6 +337,7 @@ private fun LoginScreenContent(
         )
     }
 }
+
 
 /**
  * PHPSESSID 登录表单

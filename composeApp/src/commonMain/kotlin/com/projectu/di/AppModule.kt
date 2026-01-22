@@ -15,6 +15,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
         commonModule,
         networkModule,
         com.projectu.shared.di.dataStoreModule,  // Pixiv配置存储
+        com.projectu.shared.di.backupModule,     // 备份恢复模块
         com.projectu.shared.di.pixivApiModule,   // Pixiv API
         databaseModule,
         repositoryModule,

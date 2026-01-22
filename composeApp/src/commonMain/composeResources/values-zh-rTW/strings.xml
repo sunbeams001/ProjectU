@@ -143,6 +143,8 @@
     <string name="login_username">用戶名或郵箱</string>
     <string name="login_password">密碼</string>
     <string name="login_button">登入</string>
+    <string name="login_restore_from_backup">從備份還原</string>
+    <string name="login_restore_hint">如果您有備份檔案，可以在登入前還原應用程式設定和憑證</string>
     <string name="login_forgot_password">忘記密碼？</string>
     <string name="login_register">建立帳號</string>
     
@@ -1066,5 +1068,87 @@
     <string name="settings_widget">Widget</string>
     <string name="settings_widget_management">桌面小工具管理</string>
     <string name="settings_widget_management_desc">管理Pixiv桌面小工具配置</string>
+
+    <!-- 備份與恢復 -->
+    <string name="settings_data_management">資料管理</string>
+    <string name="settings_backup_restore">備份與恢復</string>
+    <string name="settings_backup_restore_desc">備份設定和憑證資訊，從備份檔案恢復</string>
+    
+    <string name="backup_restore_title">備份與恢復</string>
+    <string name="backup_tab">備份</string>
+    <string name="restore_tab">恢復</string>
+    
+    <!-- 備份界面 -->
+    <string name="backup_create_title">創建備份</string>
+    <string name="backup_comment_label">備註（可選）</string>
+    <string name="backup_comment_hint">例如：切換裝置前的備份</string>
+    <string name="backup_modules_label">備份內容</string>
+    <string name="backup_module_settings">應用設定</string>
+    <string name="backup_module_credentials">登入憑證資訊</string>
+    <string name="backup_button">創建備份</string>
+    <string name="backup_directory_hint">設定備份目錄可查看歷史備份檔案</string>
+    <string name="restore_from_file">從檔案還原</string>
+    <string name="backup_history_title">備份歷史</string>
+    <string name="backup_directory_title">備份目錄</string>
+    <string name="backup_guide_dialog_title">選擇備份目錄</string>
+    <string name="backup_guide_recommend">建議選擇以下路徑：</string>
+    <string name="backup_guide_navigation">📱 導覽提示：\n1. 找到並點擊 Download 資料夾\n2. 進入 ProjectU 資料夾\n3. 選擇 Backups 資料夾</string>
+    <string name="backup_guide_start">開始選擇</string>
+    <string name="backup_success_created">備份檔案已成功建立</string>
+    <string name="backup_success_location">儲存位置：</string>
+    <string name="backup_loading">正在掃描備份檔案...</string>
+    <string name="backup_scanned_count">已掃描到 %1$d 個備份檔案</string>
+    <string name="backup_time_label">備份時間</string>
+    <string name="backup_comment_label_short">備註</string>
+    <string name="backup_file_location">檔案位置</string>
+    <string name="backup_content_label">包含內容</string>
+    <string name="backup_created_title">備份已建立</string>
+    <string name="backup_created_message">備份檔案已儲存至：\n%1$s</string>
+    <string name="backup_failed_title">備份失敗</string>
+    <string name="restore_complete_title">還原完成</string>
+    <string name="restore_complete_message">成功還原 %1$d 個模組（%2$d 筆記錄）。\n\n應用程式將自動重新啟動以套用所有設定...</string>
+    <string name="restore_failed_title">還原失敗</string>
+    <string name="setup_failed_title">設定失敗</string>
+    <string name="setup_failed_no_permission">無法設定備份目錄權限</string>
+    <string name="backup_directory_set">備份目錄已設定</string>
+    <string name="invalid_file_title">檔案無效</string>
+    <string name="invalid_file_message">所選檔案不是有效的備份檔案</string>
+    <string name="file_error_title">檔案錯誤</string>
+    <string name="file_error_message">讀取檔案失敗</string>
+    <string name="no_file_selected_title">未選擇檔案</string>
+    <string name="no_file_selected_message">請先選擇一個備份檔案</string>
+    <string name="delete_failed_title">刪除失敗</string>
+    <string name="delete_failed_message">刪除備份失敗</string>
+    <string name="backup_deleted">備份已刪除</string>
+    <string name="load_failed_title">載入失敗</string>
+    <string name="load_failed_message">載入備份歷史失敗</string>
+    <string name="backup_history_empty">暫無備份</string>
+    <string name="backup_item_size">大小：%1$s</string>
+    <string name="backup_item_modules">模組：%1$s</string>
+    <string name="backup_item_comment">備註：%1$s</string>
+    <string name="backup_delete_confirm_title">刪除備份</string>
+    <string name="backup_delete_confirm_message">確定要刪除這個備份嗎？</string>
+    
+    <!-- 恢復界面 -->
+    <string name="restore_select_file">選擇備份檔案</string>
+    <string name="restore_file_info">檔案資訊</string>
+    <string name="restore_file_version">版本：%s</string>
+    <string name="restore_file_platform">平台：%s</string>
+    <string name="restore_file_created">創建時間：%s</string>
+    <string name="restore_file_modules">模組：%s</string>
+    <string name="restore_file_size">大小：%s</string>
+    <string name="restore_button">開始恢復</string>
+    <string name="restore_warning_title">⚠️ 重要提示</string>
+    <string name="restore_warning_message">• 恢復操作將覆蓋當前的設定和登入資訊\n• 建議先備份當前資料\n• 恢復完成後應用將重啟</string>
+    
+    <!-- 進度對話框 -->
+    <string name="backup_progress_title">正在創建備份...</string>
+    <string name="restore_progress_title">正在恢復...</string>
+    <string name="backup_progress_exporting">正在匯出 %s...</string>
+    <string name="backup_progress_compressing">正在壓縮...</string>
+    <string name="backup_progress_saving">正在保存...</string>
+    <string name="restore_progress_validating">正在驗證備份檔案...</string>
+    <string name="restore_progress_extracting">正在解壓...</string>
+    <string name="restore_progress_importing">正在匯入 %s...</string>
 </resources>
 
