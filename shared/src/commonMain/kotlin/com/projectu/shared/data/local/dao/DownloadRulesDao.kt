@@ -16,6 +16,12 @@ interface DownloadRulesDao {
     fun getAllRules(): Flow<List<DownloadRuleEntity>>
     
     /**
+     * 获取所有规则列表（一次性查询，用于备份）
+     */
+    @Query("SELECT * FROM download_rules ORDER BY ruleOrder ASC")
+    suspend fun getAllRulesList(): List<DownloadRuleEntity>
+    
+    /**
      * 获取所有启用的规则（按优先级排序）
      */
     @Query("SELECT * FROM download_rules WHERE enabled = 1 ORDER BY ruleOrder ASC")

@@ -1,9 +1,8 @@
 package com.projectu.shared.data.backup.manager
 
-import com.projectu.shared.data.backup.datasource.CredentialsBackupData
-import com.projectu.shared.data.backup.datasource.CredentialsBackupDataSource
-import com.projectu.shared.data.backup.datasource.SettingsBackupData
-import com.projectu.shared.data.backup.datasource.SettingsBackupDataSource
+import com.projectu.shared.data.backup.DownloadTasksBackupDataSource
+import com.projectu.shared.data.backup.SearchHistoryBackupDataSource
+import com.projectu.shared.data.backup.datasource.*
 import com.projectu.shared.data.backup.serializer.ChecksumCalculator
 import com.projectu.shared.data.backup.serializer.CompressionHelper
 import com.projectu.shared.data.backup.storage.BackupStorage
@@ -18,11 +17,16 @@ import java.util.*
 
 /**
  * 备份管理器
- * 协调P0模块的备份流程
+ * 协调P0、P1和P2模块的备份流程
  */
 class BackupManager(
     private val settingsDataSource: SettingsBackupDataSource,
     private val credentialsDataSource: CredentialsBackupDataSource,
+    private val blockRulesDataSource: BlockRulesBackupDataSource,
+    private val browseHistoryDataSource: BrowseHistoryBackupDataSource,
+    private val downloadRulesDataSource: DownloadRulesBackupDataSource,
+    private val downloadTasksDataSource: DownloadTasksBackupDataSource,
+    private val searchHistoryDataSource: SearchHistoryBackupDataSource,
     private val backupStorage: BackupStorage
 ) {
     
@@ -49,12 +53,21 @@ class BackupManager(
             val checksums = mutableMapOf<String, String>()
             val moduleSizes = mutableMapOf<String, Long>()
             var totalRecords = 0
+            var blockRulesCount = 0
+            var browseHistoryCount = 0
+            var downloadRulesCount = 0
+            var downloadTasksCount = 0
+            var searchHistoryCount = 0
+            
+            val totalModules = config.modules.size
+            var currentModuleIndex = 0
             
             // 2. 备份各模块
             if (BackupModule.SETTINGS in config.modules) {
+                currentModuleIndex++
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.SETTINGS,
-                    progress = 0.25f,
+                    progress = currentModuleIndex.toFloat() / totalModules,
                     message = "正在备份应用设置..."
                 ))
                 
@@ -69,9 +82,10 @@ class BackupManager(
             }
             
             if (BackupModule.CREDENTIALS in config.modules) {
+                currentModuleIndex++
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.CREDENTIALS,
-                    progress = 0.5f,
+                    progress = currentModuleIndex.toFloat() / totalModules,
                     message = "正在备份登录信息..."
                 ))
                 
@@ -85,10 +99,112 @@ class BackupManager(
                 totalRecords += 1
             }
             
+            // P1模块：屏蔽列表
+            if (BackupModule.BLOCK_RULES in config.modules) {
+                currentModuleIndex++
+                emit(BackupResult.Progress(
+                    currentModule = BackupModule.BLOCK_RULES,
+                    progress = currentModuleIndex.toFloat() / totalModules,
+                    message = "正在备份屏蔽列表..."
+                ))
+                
+                val blockRulesData = blockRulesDataSource.exportData()
+                val blockRulesJson = json.encodeToString(blockRulesData)
+                val blockRulesFile = File(tempDir, "block_rules.json")
+                blockRulesFile.writeText(blockRulesJson)
+                
+                checksums["block_rules.json"] = ChecksumCalculator.calculateChecksum(blockRulesJson)
+                moduleSizes["BLOCK_RULES"] = blockRulesJson.toByteArray().size.toLong()
+                blockRulesCount = blockRulesData.rules.size
+                totalRecords += blockRulesCount
+            }
+            
+            // P1模块：浏览历史
+            if (BackupModule.BROWSE_HISTORY in config.modules) {
+                currentModuleIndex++
+                emit(BackupResult.Progress(
+                    currentModule = BackupModule.BROWSE_HISTORY,
+                    progress = currentModuleIndex.toFloat() / totalModules,
+                    message = "正在备份浏览历史..."
+                ))
+                
+                val browseHistoryData = browseHistoryDataSource.exportData()
+                val browseHistoryJson = json.encodeToString(browseHistoryData)
+                val browseHistoryFile = File(tempDir, "browse_history.json")
+                browseHistoryFile.writeText(browseHistoryJson)
+                
+                checksums["browse_history.json"] = ChecksumCalculator.calculateChecksum(browseHistoryJson)
+                moduleSizes["BROWSE_HISTORY"] = browseHistoryJson.toByteArray().size.toLong()
+                browseHistoryCount = browseHistoryData.history.size
+                totalRecords += browseHistoryCount
+            }
+            
+            // P1模块：下载路径规则
+            if (BackupModule.DOWNLOAD_RULES in config.modules) {
+                currentModuleIndex++
+                emit(BackupResult.Progress(
+                    currentModule = BackupModule.DOWNLOAD_RULES,
+                    progress = currentModuleIndex.toFloat() / totalModules,
+                    message = "正在备份下载路径规则..."
+                ))
+                
+                val downloadRulesData = downloadRulesDataSource.exportData()
+                val downloadRulesJson = json.encodeToString(downloadRulesData)
+                val downloadRulesFile = File(tempDir, "download_rules.json")
+                downloadRulesFile.writeText(downloadRulesJson)
+                
+                checksums["download_rules.json"] = ChecksumCalculator.calculateChecksum(downloadRulesJson)
+                moduleSizes["DOWNLOAD_RULES"] = downloadRulesJson.toByteArray().size.toLong()
+                downloadRulesCount = downloadRulesData.rules.size
+                totalRecords += downloadRulesCount
+            }
+            
+            // P2模块：下载任务
+            if (BackupModule.DOWNLOAD_TASKS in config.modules) {
+                currentModuleIndex++
+                emit(BackupResult.Progress(
+                    currentModule = BackupModule.DOWNLOAD_TASKS,
+                    progress = currentModuleIndex.toFloat() / totalModules,
+                    message = "正在备份下载任务..."
+                ))
+                
+                val downloadTasksJson = downloadTasksDataSource.exportData()
+                val downloadTasksFile = File(tempDir, "download_tasks.json")
+                downloadTasksFile.writeText(downloadTasksJson)
+                
+                checksums["download_tasks.json"] = ChecksumCalculator.calculateChecksum(downloadTasksJson)
+                moduleSizes["DOWNLOAD_TASKS"] = downloadTasksJson.toByteArray().size.toLong()
+                downloadTasksCount = com.projectu.shared.data.backup.DownloadTasksBackupData.serializer().let {
+                    json.decodeFromString(it, downloadTasksJson).tasks.size
+                }
+                totalRecords += downloadTasksCount
+            }
+            
+            // P2模块：搜索历史
+            if (BackupModule.SEARCH_HISTORY in config.modules) {
+                currentModuleIndex++
+                emit(BackupResult.Progress(
+                    currentModule = BackupModule.SEARCH_HISTORY,
+                    progress = currentModuleIndex.toFloat() / totalModules,
+                    message = "正在备份搜索历史..."
+                ))
+                
+                val searchHistoryJson = searchHistoryDataSource.exportData()
+                val searchHistoryFile = File(tempDir, "search_history.json")
+                searchHistoryFile.writeText(searchHistoryJson)
+                
+                checksums["search_history.json"] = ChecksumCalculator.calculateChecksum(searchHistoryJson)
+                moduleSizes["SEARCH_HISTORY"] = searchHistoryJson.toByteArray().size.toLong()
+                searchHistoryCount = com.projectu.shared.data.backup.SearchHistoryBackupData.serializer().let {
+                    json.decodeFromString(it, searchHistoryJson).items.size
+                }
+                totalRecords += searchHistoryCount
+            }
+            
             // 3. 生成元数据
             emit(BackupResult.Progress(
                 currentModule = BackupModule.SETTINGS,
-                progress = 0.75f,
+                progress = 0.9f,
                 message = "生成元数据..."
             ))
             
@@ -102,7 +218,14 @@ class BackupManager(
                 modules = config.modules.map { it.name },
                 moduleSizes = moduleSizes,
                 encryption = EncryptionInfo(enabled = false),
-                statistics = BackupStatistics(totalRecords = totalRecords),
+                statistics = BackupStatistics(
+                    totalRecords = totalRecords,
+                    blockRulesCount = blockRulesCount,
+                    browseHistoryCount = browseHistoryCount,
+                    downloadRulesCount = downloadRulesCount,
+                    downloadTasksCount = downloadTasksCount,
+                    searchHistoryCount = searchHistoryCount
+                ),
                 checksum = ChecksumCalculator.calculateOverallChecksum(checksums),
                 comment = config.comment
             )
@@ -121,7 +244,7 @@ class BackupManager(
             ))
             
             val backupId = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "backup_$backupId.pbu"
+            val fileName = "backup_$backupId.pbu.zip"
             val zipFile = File(tempDir.parentFile, fileName)
             
             CompressionHelper.compressToZip(tempDir, zipFile)

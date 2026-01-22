@@ -1,9 +1,8 @@
 package com.projectu.shared.data.backup.manager
 
-import com.projectu.shared.data.backup.datasource.CredentialsBackupData
-import com.projectu.shared.data.backup.datasource.CredentialsBackupDataSource
-import com.projectu.shared.data.backup.datasource.SettingsBackupData
-import com.projectu.shared.data.backup.datasource.SettingsBackupDataSource
+import com.projectu.shared.data.backup.DownloadTasksBackupDataSource
+import com.projectu.shared.data.backup.SearchHistoryBackupDataSource
+import com.projectu.shared.data.backup.datasource.*
 import com.projectu.shared.data.backup.serializer.ChecksumCalculator
 import com.projectu.shared.data.backup.serializer.CompressionHelper
 import com.projectu.shared.data.backup.storage.BackupStorage
@@ -15,11 +14,16 @@ import java.io.File
 
 /**
  * 恢复管理器
- * 协调P0模块的恢复流程
+ * 协调P0、P1和P2模块的恢复流程
  */
 class RestoreManager(
     private val settingsDataSource: SettingsBackupDataSource,
     private val credentialsDataSource: CredentialsBackupDataSource,
+    private val blockRulesDataSource: BlockRulesBackupDataSource,
+    private val browseHistoryDataSource: BrowseHistoryBackupDataSource,
+    private val downloadRulesDataSource: DownloadRulesBackupDataSource,
+    private val downloadTasksDataSource: DownloadTasksBackupDataSource,
+    private val searchHistoryDataSource: SearchHistoryBackupDataSource,
     private val backupStorage: BackupStorage
 ) {
     
@@ -45,7 +49,7 @@ class RestoreManager(
             // 处理content:// URI或普通文件路径
             val backupFile = if (filePath.startsWith("content://")) {
                 // 从content URI复制到临时文件
-                val tempFile = File(backupStorage.createTempDirectory("restore_uri_${System.currentTimeMillis()}"), "backup.pbu")
+                val tempFile = File(backupStorage.createTempDirectory("restore_uri_${System.currentTimeMillis()}"), "backup.pbu.zip")
                 if (!backupStorage.copyFile(filePath, tempFile)) {
                     emit(RestoreResult.Failure(RestoreError.InvalidBackupFile()))
                     return@flow
@@ -104,11 +108,15 @@ class RestoreManager(
             var failedRecords = 0
             val restoredModules = mutableListOf<BackupModule>()
             
+            val totalModules = modulesToRestore.size
+            var currentModuleIndex = 0
+            
             // 6. 恢复各模块
             if (BackupModule.SETTINGS in modulesToRestore) {
+                currentModuleIndex++
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.SETTINGS,
-                    progress = 0.3f,
+                    progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
                     message = "正在恢复应用设置..."
                 ))
                 
@@ -126,9 +134,10 @@ class RestoreManager(
             }
             
             if (BackupModule.CREDENTIALS in modulesToRestore) {
+                currentModuleIndex++
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.CREDENTIALS,
-                    progress = 0.6f,
+                    progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
                     message = "正在恢复登录信息..."
                 ))
                 
@@ -141,6 +150,123 @@ class RestoreManager(
                         restoredModules.add(BackupModule.CREDENTIALS)
                     }
                 } catch (e: Exception) {
+                    failedRecords++
+                }
+            }
+            
+            // P1模块：屏蔽列表
+            if (BackupModule.BLOCK_RULES in modulesToRestore) {
+                currentModuleIndex++
+                emit(RestoreResult.Progress(
+                    currentModule = BackupModule.BLOCK_RULES,
+                    progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
+                    message = "正在恢复屏蔽列表..."
+                ))
+                
+                try {
+                    val blockRulesFile = File(tempDir, "block_rules.json")
+                    if (blockRulesFile.exists()) {
+                        val blockRulesData = json.decodeFromString<BlockRulesBackupData>(blockRulesFile.readText())
+                        blockRulesDataSource.importData(blockRulesData)
+                        successRecords += blockRulesData.rules.size
+                        restoredModules.add(BackupModule.BLOCK_RULES)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    failedRecords++
+                }
+            }
+            
+            // P1模块：浏览历史
+            if (BackupModule.BROWSE_HISTORY in modulesToRestore) {
+                currentModuleIndex++
+                emit(RestoreResult.Progress(
+                    currentModule = BackupModule.BROWSE_HISTORY,
+                    progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
+                    message = "正在恢复浏览历史..."
+                ))
+                
+                try {
+                    val browseHistoryFile = File(tempDir, "browse_history.json")
+                    if (browseHistoryFile.exists()) {
+                        val browseHistoryData = json.decodeFromString<BrowseHistoryBackupData>(browseHistoryFile.readText())
+                        browseHistoryDataSource.importData(browseHistoryData)
+                        successRecords += browseHistoryData.history.size
+                        restoredModules.add(BackupModule.BROWSE_HISTORY)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    failedRecords++
+                }
+            }
+            
+            // P1模块：下载路径规则
+            if (BackupModule.DOWNLOAD_RULES in modulesToRestore) {
+                currentModuleIndex++
+                emit(RestoreResult.Progress(
+                    currentModule = BackupModule.DOWNLOAD_RULES,
+                    progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
+                    message = "正在恢复下载路径规则..."
+                ))
+                
+                try {
+                    val downloadRulesFile = File(tempDir, "download_rules.json")
+                    if (downloadRulesFile.exists()) {
+                        val downloadRulesData = json.decodeFromString<DownloadRulesBackupData>(downloadRulesFile.readText())
+                        downloadRulesDataSource.importData(downloadRulesData)
+                        successRecords += downloadRulesData.rules.size
+                        restoredModules.add(BackupModule.DOWNLOAD_RULES)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    failedRecords++
+                }
+            }
+            
+            // P2模块：下载任务
+            if (BackupModule.DOWNLOAD_TASKS in modulesToRestore) {
+                currentModuleIndex++
+                emit(RestoreResult.Progress(
+                    currentModule = BackupModule.DOWNLOAD_TASKS,
+                    progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
+                    message = "正在恢复下载任务..."
+                ))
+                
+                try {
+                    val downloadTasksFile = File(tempDir, "download_tasks.json")
+                    if (downloadTasksFile.exists()) {
+                        val downloadTasksJson = downloadTasksFile.readText()
+                        downloadTasksDataSource.importData(downloadTasksJson)
+                        val downloadTasksData = json.decodeFromString<com.projectu.shared.data.backup.DownloadTasksBackupData>(downloadTasksJson)
+                        successRecords += downloadTasksData.tasks.size
+                        restoredModules.add(BackupModule.DOWNLOAD_TASKS)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    failedRecords++
+                }
+            }
+            
+            // P2模块：搜索历史
+            if (BackupModule.SEARCH_HISTORY in modulesToRestore) {
+                currentModuleIndex++
+                emit(RestoreResult.Progress(
+                    currentModule = BackupModule.SEARCH_HISTORY,
+                    progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
+                    message = "正在恢复搜索历史..."
+                ))
+                
+                try {
+                    val searchHistoryFile = File(tempDir, "search_history.json")
+                    if (searchHistoryFile.exists()) {
+                        val searchHistoryJson = searchHistoryFile.readText()
+                        searchHistoryDataSource.importData(searchHistoryJson)
+                        val searchHistoryData = json.decodeFromString<com.projectu.shared.data.backup.SearchHistoryBackupData>(searchHistoryJson)
+                        successRecords += searchHistoryData.items.size
+                        restoredModules.add(BackupModule.SEARCH_HISTORY)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                     failedRecords++
                 }
             }
@@ -200,7 +326,7 @@ class RestoreManager(
             val backupFile = if (filePath.startsWith("content://")) {
                 println("RestoreManager: Detected content URI, copying to temp file")
                 // 从content URI复制到临时文件
-                val tempFile = File(backupStorage.createTempDirectory("validate_uri_${System.currentTimeMillis()}"), "backup.pbu")
+                val tempFile = File(backupStorage.createTempDirectory("validate_uri_${System.currentTimeMillis()}"), "backup.pbu.zip")
                 if (!backupStorage.copyFile(filePath, tempFile)) {
                     println("RestoreManager: Failed to copy file from content URI")
                     return Result.failure(Exception("无法读取选择的文件"))

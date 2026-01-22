@@ -83,5 +83,10 @@ data class EncryptionInfo(
 
 @Serializable
 data class BackupStatistics(
-    val totalRecords: Int
+    val totalRecords: Int,
+    val blockRulesCount: Int = 0,
+    val browseHistoryCount: Int = 0,
+    val downloadRulesCount: Int = 0,
+    val downloadTasksCount: Int = 0,
+    val searchHistoryCount: Int = 0
 )

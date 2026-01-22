@@ -147,7 +147,7 @@ class AndroidBackupStorage(
             Log.d(TAG, "listBackupFilesFromSAF: Found ${files.size} items")
             
             for (file in files) {
-                if (file.isFile && file.name?.endsWith(".pbu", ignoreCase = true) == true) {
+                if (file.isFile && file.name?.endsWith(".pbu.zip", ignoreCase = true) == true) {
                     Log.d(TAG, "listBackupFilesFromSAF: Found backup: ${file.name} (size=${file.length()})")
                     // 创建一个特殊的File对象，absolutePath存储content URI
                     val backupFile = SAFBackupFile(file.name ?: "unknown", file.uri.toString(), file.length())
@@ -290,7 +290,7 @@ class AndroidBackupStorage(
     }
     
     /**
-     * 调试方法：查询所有.pbu文件并打印路径信息
+     * 调试方法：查询所有.pbu.zip文件并打印路径信息
      */
     private fun debugQueryAllPbuFiles() {
         try {
@@ -302,9 +302,9 @@ class AndroidBackupStorage(
             )
             
             val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} LIKE ?"
-            val selectionArgs = arrayOf("%.pbu")
+            val selectionArgs = arrayOf("%.pbu.zip")
             
-            Log.d(TAG, "debugQueryAllPbuFiles: Searching for all .pbu files in MediaStore")
+            Log.d(TAG, "debugQueryAllPbuFiles: Searching for all .pbu.zip files in MediaStore")
             
             context.contentResolver.query(
                 MediaStore.Downloads.EXTERNAL_CONTENT_URI,

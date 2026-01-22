@@ -24,6 +24,7 @@ import com.projectu.ui.util.rememberFilePicker
 import com.projectu.ui.util.rememberPathPicker
 import com.projectu.ui.util.needsSafAuthorization
 import com.projectu.ui.util.PathDisplay
+import com.projectu.ui.util.rememberCopyToClipboard
 import com.projectu.shared.domain.model.BackupConfig
 import com.projectu.shared.domain.model.BackupInfo
 import com.projectu.shared.domain.model.BackupModule
@@ -252,7 +253,7 @@ private fun BackupRestoreMainContent(
 ) {
     var comment by remember { mutableStateOf("") }
     var selectedModules by remember { 
-        mutableStateOf(setOf(BackupModule.SETTINGS, BackupModule.CREDENTIALS))
+        mutableStateOf(BackupModule.getDefaultSelectedModules())
     }
     var showDeleteConfirmDialog by remember { mutableStateOf<BackupInfo?>(null) }
     var showRestoreConfirmDialog by remember { mutableStateOf<BackupInfo?>(null) }
@@ -418,9 +419,11 @@ private fun BackupRestoreMainContent(
                         style = MaterialTheme.typography.labelLarge
                     )
                     
-                    Row(
+                    // 所有模块（自动换行）
+                    androidx.compose.foundation.layout.FlowRow(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         FilterChip(
                             selected = selectedModules.contains(BackupModule.SETTINGS),
@@ -444,6 +447,66 @@ private fun BackupRestoreMainContent(
                                 }
                             },
                             label = { Text(stringResource(Res.string.backup_module_credentials)) }
+                        )
+                        
+                        FilterChip(
+                            selected = selectedModules.contains(BackupModule.BLOCK_RULES),
+                            onClick = {
+                                selectedModules = if (selectedModules.contains(BackupModule.BLOCK_RULES)) {
+                                    selectedModules - BackupModule.BLOCK_RULES
+                                } else {
+                                    selectedModules + BackupModule.BLOCK_RULES
+                                }
+                            },
+                            label = { Text(stringResource(Res.string.backup_module_block_rules)) }
+                        )
+                        
+                        FilterChip(
+                            selected = selectedModules.contains(BackupModule.DOWNLOAD_RULES),
+                            onClick = {
+                                selectedModules = if (selectedModules.contains(BackupModule.DOWNLOAD_RULES)) {
+                                    selectedModules - BackupModule.DOWNLOAD_RULES
+                                } else {
+                                    selectedModules + BackupModule.DOWNLOAD_RULES
+                                }
+                            },
+                            label = { Text(stringResource(Res.string.backup_module_download_rules)) }
+                        )
+                        
+                        FilterChip(
+                            selected = selectedModules.contains(BackupModule.SEARCH_HISTORY),
+                            onClick = {
+                                selectedModules = if (selectedModules.contains(BackupModule.SEARCH_HISTORY)) {
+                                    selectedModules - BackupModule.SEARCH_HISTORY
+                                } else {
+                                    selectedModules + BackupModule.SEARCH_HISTORY
+                                }
+                            },
+                            label = { Text(stringResource(Res.string.backup_module_search_history)) }
+                        )
+                        
+                        FilterChip(
+                            selected = selectedModules.contains(BackupModule.BROWSE_HISTORY),
+                            onClick = {
+                                selectedModules = if (selectedModules.contains(BackupModule.BROWSE_HISTORY)) {
+                                    selectedModules - BackupModule.BROWSE_HISTORY
+                                } else {
+                                    selectedModules + BackupModule.BROWSE_HISTORY
+                                }
+                            },
+                            label = { Text(stringResource(Res.string.backup_module_browse_history)) }
+                        )
+                        
+                        FilterChip(
+                            selected = selectedModules.contains(BackupModule.DOWNLOAD_TASKS),
+                            onClick = {
+                                selectedModules = if (selectedModules.contains(BackupModule.DOWNLOAD_TASKS)) {
+                                    selectedModules - BackupModule.DOWNLOAD_TASKS
+                                } else {
+                                    selectedModules + BackupModule.DOWNLOAD_TASKS
+                                }
+                            },
+                            label = { Text(stringResource(Res.string.backup_module_download_tasks)) }
                         )
                     }
                     
@@ -640,6 +703,11 @@ private fun BackupRestoreMainContent(
                             when (moduleName) {
                                 "SETTINGS" -> stringResource(Res.string.backup_module_settings)
                                 "CREDENTIALS" -> stringResource(Res.string.backup_module_credentials)
+                                "BLOCK_RULES" -> stringResource(Res.string.backup_module_block_rules)
+                                "BROWSE_HISTORY" -> stringResource(Res.string.backup_module_browse_history)
+                                "DOWNLOAD_RULES" -> stringResource(Res.string.backup_module_download_rules)
+                                "DOWNLOAD_TASKS" -> stringResource(Res.string.backup_module_download_tasks)
+                                "SEARCH_HISTORY" -> stringResource(Res.string.backup_module_search_history)
                                 else -> moduleName
                             }
                         }.joinToString(", ")
@@ -758,7 +826,7 @@ private fun DirectoryGuideDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+    val copyToClipboard = rememberCopyToClipboard()
     val recommendedPath = "/storage/emulated/0/Download/ProjectU/Backups"
     
     AlertDialog(
@@ -794,7 +862,7 @@ private fun DirectoryGuideDialog(
                         )
                         IconButton(
                             onClick = { 
-                                clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(recommendedPath))
+                                copyToClipboard(recommendedPath)
                             },
                             modifier = Modifier.size(32.dp)
                         ) {
@@ -840,6 +908,11 @@ private fun BackupHistoryItem(
             when (moduleName) {
                 "SETTINGS" -> stringResource(Res.string.backup_module_settings)
                 "CREDENTIALS" -> stringResource(Res.string.backup_module_credentials)
+                "BLOCK_RULES" -> stringResource(Res.string.backup_module_block_rules)
+                "BROWSE_HISTORY" -> stringResource(Res.string.backup_module_browse_history)
+                "DOWNLOAD_RULES" -> stringResource(Res.string.backup_module_download_rules)
+                "DOWNLOAD_TASKS" -> stringResource(Res.string.backup_module_download_tasks)
+                "SEARCH_HISTORY" -> stringResource(Res.string.backup_module_search_history)
                 else -> moduleName
             }
         }.joinToString(", ")
@@ -959,8 +1032,6 @@ private fun BackupSuccessDialog(
     message: String,
     onDismiss: () -> Unit
 ) {
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
-    
     // 尝试从消息中提取文件路径
     val filePath = message.substringAfter(":\n", "").takeIf { it.isNotEmpty() }
     

@@ -80,7 +80,7 @@ class BackupRestoreRepositoryImpl(
     
     override suspend fun deleteBackup(id: String): Result<Unit> {
         return try {
-            val fileName = "backup_$id.pbu"
+            val fileName = "backup_$id.pbu.zip"
             val success = backupStorage.deleteBackupFile(fileName)
             if (success) {
                 Result.success(Unit)

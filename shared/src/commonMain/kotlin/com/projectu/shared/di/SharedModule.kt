@@ -119,7 +119,7 @@ val dataStoreModule = module {
  * 备份恢复模块
  */
 val backupModule = module {
-    // 数据源
+    // P0数据源
     factory {
         com.projectu.shared.data.backup.datasource.SettingsBackupDataSource(get())
     }
@@ -128,11 +128,38 @@ val backupModule = module {
         com.projectu.shared.data.backup.datasource.CredentialsBackupDataSource(get())
     }
     
+    // P1数据源
+    factory {
+        com.projectu.shared.data.backup.datasource.BlockRulesBackupDataSource(get())
+    }
+    
+    factory {
+        com.projectu.shared.data.backup.datasource.BrowseHistoryBackupDataSource(get())
+    }
+    
+    factory {
+        com.projectu.shared.data.backup.datasource.DownloadRulesBackupDataSource(get())
+    }
+    
+    // P2数据源
+    factory {
+        com.projectu.shared.data.backup.DownloadTasksBackupDataSource(get())
+    }
+    
+    factory {
+        com.projectu.shared.data.backup.SearchHistoryBackupDataSource(get())
+    }
+    
     // 管理器
     factory {
         com.projectu.shared.data.backup.manager.BackupManager(
             settingsDataSource = get(),
             credentialsDataSource = get(),
+            blockRulesDataSource = get(),
+            browseHistoryDataSource = get(),
+            downloadRulesDataSource = get(),
+            downloadTasksDataSource = get(),
+            searchHistoryDataSource = get(),
             backupStorage = get()
         )
     }
@@ -141,6 +168,11 @@ val backupModule = module {
         com.projectu.shared.data.backup.manager.RestoreManager(
             settingsDataSource = get(),
             credentialsDataSource = get(),
+            blockRulesDataSource = get(),
+            browseHistoryDataSource = get(),
+            downloadRulesDataSource = get(),
+            downloadTasksDataSource = get(),
+            searchHistoryDataSource = get(),
             backupStorage = get()
         )
     }

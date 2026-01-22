@@ -17,6 +17,12 @@ interface BrowseHistoryDao {
     fun getAllHistory(): Flow<List<BrowseHistoryEntity>>
     
     /**
+     * 获取所有浏览历史列表（一次性查询，用于备份）
+     */
+    @Query("SELECT * FROM browse_history ORDER BY viewedAt DESC")
+    suspend fun getAllHistoryList(): List<BrowseHistoryEntity>
+    
+    /**
      * 根据内容类型获取浏览历史（按浏览时间倒序）
      */
     @Query("SELECT * FROM browse_history WHERE contentType = :contentType ORDER BY viewedAt DESC")

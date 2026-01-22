@@ -46,7 +46,7 @@ fun PathDisplay(
     showIcon: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val clipboardManager = LocalClipboardManager.current
+    val copyToClipboard = rememberCopyToClipboard()
     val displayPath = if (expanded) path else formatPathForDisplay(path, 3)
     
     Row(
@@ -97,7 +97,7 @@ fun PathDisplay(
         if (allowCopy) {
             IconButton(
                 onClick = { 
-                    clipboardManager.setText(AnnotatedString(path))
+                    copyToClipboard(path)
                 },
                 modifier = Modifier.size(20.dp)
             ) {

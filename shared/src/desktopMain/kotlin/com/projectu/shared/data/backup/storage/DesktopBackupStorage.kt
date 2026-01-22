@@ -58,4 +58,20 @@ class DesktopBackupStorage : BackupStorage {
             false
         }
     }
+    
+    // Desktop平台不需要SAF，这些方法返回默认值
+    override fun setBackupDirectoryUri(treeUri: String): Boolean {
+        // Desktop平台不使用SAF，直接返回true
+        return true
+    }
+    
+    override fun getBackupDirectoryUri(): String? {
+        // Desktop平台不使用SAF，返回null
+        return null
+    }
+    
+    override fun hasBackupDirectoryAccess(): Boolean {
+        // Desktop平台不需要权限检查，总是返回true
+        return true
+    }
 }
