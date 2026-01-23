@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 分享功能标签 -->
+    <string name="share_image_search">Image Search (SauceNAO)</string>
+    <string name="share_image_search_ascii2d">Image Search (Ascii2d)</string>
+    <!-- Widget 相关字符串 -->
+    <string name="widget_name">Pixiv Artwork</string>
+    <string name="widget_description">Display Pixiv artwork on your home screen</string>
+    <string name="widget_config_title">Configure Pixiv Widget</string>
+    <string name="widget_artwork_image">Artwork Image</string>
+    <string name="widget_refresh">Refresh</string>
+    <string name="widget_management">Widget Management</string>
+    <string name="widget_no_widgets">No widgets configured</string>
+    <string name="widget_delete">Delete</string>
+    <string name="widget_reconfigure">Reconfigure</string>
+    <string name="widget_data_source">Data Source</string>
+    <string name="widget_data_source_recommended">Recommended</string>
+    <string name="widget_data_source_following">Following Latest</string>
+    <string name="widget_data_source_ranking">Ranking</string>
+    <string name="widget_ranking_mode">Ranking Type</string>
+    <string name="widget_ranking_day">Daily</string>
+    <string name="widget_ranking_week">Weekly</string>
+    <string name="widget_ranking_month">Monthly</string>
+    <string name="widget_filter_settings">Filter Settings</string>
+    <string name="widget_filter_r18">R-18 Content</string>
+    <string name="widget_filter_ai">AI Generated Content</string>
+    <string name="widget_filter_must_be">Only</string>
+    <string name="widget_filter_must_not_be">Exclude</string>
+    <string name="widget_filter_any">Any</string>
+    <string name="widget_update_interval">Update Interval</string>
+    <string name="widget_update_interval_minutes">%d minutes</string>
+    <string name="widget_show_refresh_button">Show Refresh Button</string>
+    <string name="widget_display_settings">Display Settings</string>
+    <string name="widget_image_scale_type">Image Scale</string>
+    <string name="widget_scale_fit_center">Fit (Show All)</string>
+    <string name="widget_scale_center_crop">Crop (Fill)</string>
+    <string name="widget_corner_radius">Corner Radius</string>
+    <string name="widget_delete_confirm_title">Delete Widget Configuration</string>
+    <string name="widget_delete_confirm_message">Are you sure you want to delete configuration for Widget #%d? You need to manually remove the widget from your home screen.</string>
+    <string name="widget_add_instruction">Long press on home screen to add Widget</string>
+    <string name="widget_data_source_label">Data Source: %s</string>
+    <string name="widget_ranking_mode_label">Ranking: %s</string>
+    <string name="widget_update_interval_label">Update: %d minutes</string>
+    <string name="widget_error_no_artwork">No artwork to display</string>
+    <string name="widget_error_update_failed">Update failed</string>
+    <string name="widget_error_refresh_failed">Refresh failed</string>
+    <!-- 时间单位 -->
+    <string name="time_unit_minute">%d minutes</string>
+    <string name="time_unit_hour">%d hours</string>
+    <string name="time_unit_hour_minute">%1$d hours %2$d minutes</string>
+    <string name="time_unit_day">%d days</string>
+    <!-- 通用字符串 (Android Compose代码专用) -->
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_back">Back</string>
+</resources>
