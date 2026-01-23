@@ -1,1070 +1,1192 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+==============================================================================
+ProjectU - Pixiv Kotlin Multiplatform Client
+==============================================================================
+
+资源字符串文件 (UI Text Resources)
+
+本文件包含应用程序的所有UI文本资源，已按功能模块重新组织以提高可维护性。
+
+模块化组织说明：
+  • 所有字符串按功能模块分组
+  • 每个模块都有清晰的分隔注释
+  • 相关字符串集中在一起，便于查找和修改
+  • 保留所有原始字符串定义（包括可能看起来重复的项）
+
+维护指南：
+  1. 新增字符串时，请放到对应的功能模块下
+  2. 使用有意义的前缀命名（如: settings_, novel_, search_）
+  3. 为新的子分类添加注释说明
+  4. 不要随意删除看起来重复的字符串，它们可能有不同的使用场景
+
+重组时间: 2026-01-23
+原始文件: strings.xml (已备份)
+
+==============================================================================
+-->
 <resources>
-    <!-- App Name -->
-    <string name="app_name">ProjectU</string>
-    <!-- Bottom Navigation -->
-    <string name="nav_home">検索</string>
-    <string name="nav_discovery">発見</string>
-    <string name="nav_ranking">ランキング</string>
-    <string name="nav_profile">マイページ</string>
-    <!-- Home Screen -->
-    <string name="home_recommended">おすすめ</string>
-    <string name="home_following">フォロー中</string>
-    <string name="home_new_works">新着作品</string>
-    <string name="home_framework_complete">プロジェクトフレームワーク構築完了</string>
-    <!-- Discovery Screen -->
-    <string name="discovery_search_hint">作品、ユーザーを検索...</string>
-    <string name="discovery_trending_tags">人気のタグ</string>
-    <string name="discovery_recent_searches">最近の検索</string>
-    <!-- Search Preparation Screen -->
-    <string name="search_input_hint">作品、タグ、ユーザーを検索...</string>
-    <string name="search_button">検索</string>
-    <string name="search_clear">クリア</string>
-    <string name="search_history_title">検索履歴</string>
-    <string name="search_history_clear">履歴をクリア</string>
-    <string name="search_history_empty">検索履歴はありません</string>
-    <string name="search_recommendations_title">検索候補</string>
-    <string name="search_recommendations_refresh">更新</string>
-    <string name="search_recommendations_retry">再試行</string>
-    <string name="search_recommendations_popular_illust">🔥 人気のタグ（イラスト）</string>
-    <string name="search_recommendations_popular_novel">🔥 人気のタグ（小説）</string>
-    <string name="search_recommendations_recommended">⭐ おすすめタグ</string>
-    <string name="search_recommendations_bookmark">📚 ブックマークタグ</string>
-    <string name="search_recommendations_my_favorite">⭐ お気に入りタグ</string>
-    <string name="search_recommendations_thumbnails">🖼️ 作品プレビュー</string>
-    <string name="search_history_copy">コピー</string>
-    <string name="search_history_pin">ピン留め</string>
-    <string name="search_history_unpin">ピン留め解除</string>
-    <string name="discovery_recommended_users">おすすめユーザー</string>
-    <string name="discovery_recommended_illusts">おすすめイラスト・マンガ</string>
-    <string name="discovery_recommended_novels">おすすめ小説</string>
-    <string name="discovery_pixivision">Pixivision</string>
-    <string name="discovery_mode_all">すべて</string>
-    <string name="discovery_mode_safe">全年齢</string>
-    <string name="discovery_mode_r18">R-18</string>
-    <!-- Pixivision -->
-    <string name="pixivision_illustration">Illustration</string>
-    <string name="pixivision_manga">Manga</string>
-    <string name="pixivision_detail_title">Article Details</string>
-    <string name="pixivision_artworks_title">Featured Artworks</string>
-    <string name="pixivision_description">Description</string>
-    <string name="pixivision_published_date">Published:</string>
-    <string name="pixivision_open_in_browser">Open in browser</string>
-    <string name="pixivision_webview_load_error">Failed to load</string>
-    <!-- Ranking Screen -->
-    <string name="ranking_daily">デイリー</string>
-    <string name="ranking_weekly">ウィークリー</string>
-    <string name="ranking_monthly">マンスリー</string>
-    <string name="ranking_rookie">ルーキー</string>
-    <string name="ranking_original">オリジナル</string>
-    <string name="ranking_male">男子に人気</string>
-    <string name="ranking_female">女子に人気</string>
-    <string name="ranking_ai">AI生成</string>
-    <string name="ranking_weekly_original">ウィークリーオリジナル</string>
-    <string name="ranking_weekly_ai">ウィークリーAI</string>
-    <string name="ranking_weekly_r18_ai">ウィークリーR-18 AI</string>
-    <string name="ranking_daily_r18">デイリーR-18</string>
-    <string name="ranking_weekly_r18">ウィークリーR-18</string>
-    <string name="ranking_male_r18">男子に人気R-18</string>
-    <string name="ranking_female_r18">女子に人気R-18</string>
-    <string name="ranking_ai_r18">AI生成R-18</string>
-    <string name="ranking_r18g">R-18G</string>
-    <!-- Ranking Content Types -->
-    <string name="ranking_content_all">総合</string>
-    <string name="ranking_content_illust">イラスト</string>
-    <string name="ranking_content_manga">マンガ</string>
-    <string name="ranking_content_ugoira">うごイラ</string>
-    <string name="ranking_content_novel">小説</string>
-    <!-- Navigation Settings -->
-    <string name="settings_navigation_config">Navigation Settings</string>
-    <string name="settings_navigation_config_desc">Customize navigation items for Ranking, Discovery, and Follow Latest pages</string>
-    <string name="settings_navigation_ranking">Navigation Settings (Ranking)</string>
-    <string name="settings_navigation_ranking_desc">Customize ranking page navigation items</string>
-    <string name="settings_navigation_discovery">Navigation Settings (Discovery)</string>
-    <string name="settings_navigation_discovery_desc">Customize discovery page navigation items</string>
-    <string name="settings_navigation_follow_latest">Navigation Settings (Follow Latest)</string>
-    <string name="settings_navigation_follow_latest_desc">Customize follow latest page navigation items</string>
-    <string name="nav_settings_title_ranking">Ranking Navigation Settings</string>
-    <string name="nav_settings_title_discovery">Discovery Navigation Settings</string>
-    <string name="nav_settings_title_follow_latest">Follow Latest Navigation Settings</string>
-    <string name="nav_settings_description">Choose which content types and modes to display. At least one item must remain enabled.</string>
-    <string name="nav_settings_content_types">Content Types</string>
-    <string name="nav_settings_modes">Modes</string>
-    <string name="nav_settings_reset">Reset to Defaults</string>
-    <string name="nav_settings_reset_confirm_title">Reset to Defaults?</string>
-    <string name="nav_settings_reset_confirm_message">All navigation items will be enabled. This action cannot be undone.</string>
-    <string name="nav_settings_pixivision_categories">Pixivision Categories</string>
-    <string name="nav_settings_watch_list_types">Watch List Types</string>
-    <!-- Profile Screen -->
-    <string name="profile_bookmarks">ブックマーク</string>
-    <string name="profile_following">フォロー</string>
-    <string name="profile_history">閲覧履歴</string>
-    <string name="profile_settings">設定</string>
-    <!-- Artwork Detail -->
-    <string name="artwork_views">閲覧数</string>
-    <string name="artwork_bookmarks">ブックマーク</string>
-    <string name="artwork_comments">コメント</string>
-    <string name="artwork_share">共有</string>
-    <string name="artwork_download">ダウンロード</string>
-    <!-- User Profile -->
-    <string name="user_follow">フォロー</string>
-    <string name="user_unfollow">フォロー解除</string>
-    <string name="user_followers">フォロワー</string>
-    <string name="user_works">作品</string>
-    <string name="user_bookmarks">ブックマーク</string>
-    <!-- Login -->
-    <string name="login_title">Pixivにログイン</string>
-    <string name="login_username">ユーザー名またはメールアドレス</string>
-    <string name="login_password">パスワード</string>
-    <string name="login_button">ログイン</string>
-    <string name="login_restore_from_backup">Restore from Backup</string>
-    <string name="login_restore_hint">If you have a backup file, you can restore app settings and credentials before logging in</string>
-    <string name="login_forgot_password">パスワードを忘れた？</string>
-    <string name="login_register">アカウント作成</string>
-    <string name="login_webview_error_credentials">ログイン認証情報を取得できません。再試行してください</string>
-    <string name="login_webview_error_cookie">Cookieの抽出に失敗しました</string>
-    <!-- Settings -->
-    <string name="settings_title">設定</string>
-    <string name="settings_general">一般設定</string>
-    <string name="settings_interaction_preferences">インタラクション設定</string>
-    <string name="settings_browsing_experience">閲覧体験</string>
-    <string name="settings_translation">Translation Settings</string>
-    <string name="settings_novel">小説設定</string>
-    <string name="settings_staggered_grid_columns">グリッド列数</string>
-    <string name="settings_staggered_grid_columns_desc">イラストグリッドの列数</string>
-    <string name="settings_select_grid_columns">グリッド列数を選択</string>
-    <string name="settings_grid_columns_2">2列</string>
-    <string name="settings_grid_columns_3">3列（デフォルト）</string>
-    <string name="settings_grid_columns_4">4列</string>
-    <string name="settings_grid_columns_5">5列</string>
-    <string name="settings_pixiv">Pixiv 設定</string>
-    <string name="settings_content_management">コンテンツ管理</string>
-    <string name="settings_developer_options">開発者オプション</string>
-    <string name="settings_app_language">アプリの言語</string>
-    <string name="settings_pixiv_language">Pixiv 言語設定</string>
-    <string name="settings_pixiv_language_desc">Pixiv データ取得時の言語設定</string>
-    <string name="settings_click_bookmark_action">クリック時のアクション</string>
-    <string name="settings_click_bookmark_action_desc">ブックマークボタンをクリックした時のデフォルト動作を設定</string>
-    <string name="settings_long_press_bookmark_action">長押し時のアクション</string>
-    <string name="settings_long_press_bookmark_action_desc">ブックマークボタンを長押しした時のデフォルト動作を設定</string>
-    <string name="settings_select_bookmark_action">ブックマーク動作を選択</string>
-    <string name="bookmark_action_public">公開ブックマーク</string>
-    <string name="bookmark_action_private">非公開ブックマーク</string>
-    <string name="bookmark_action_with_tags">タグ付きブックマーク</string>
-    <string name="bookmark_with_tags_title">タグ付きブックマーク</string>
-    <string name="bookmark_tag_input_label">タグ</string>
-    <string name="bookmark_tag_input_placeholder">タグを入力</string>
-    <string name="bookmark_add_tag">タグを追加</string>
-    <string name="bookmark_remove_tag">タグを削除</string>
-    <string name="bookmark_added_tags">追加されたタグ</string>
-    <string name="bookmark_suggested_tags">おすすめのタグ</string>
-    <string name="bookmark_set_private">非公開にする</string>
-    <string name="settings_theme_mode">テーマモード</string>
-    <string name="settings_select_app_language">アプリの言語を選択</string>
-    <string name="settings_select_pixiv_language">Pixiv 言語を選択</string>
-    <string name="settings_select_theme">テーマを選択</string>
-    <string name="settings_default_startup_tab">デフォルト起動ページ</string>
-    <string name="settings_default_startup_tab_desc">アプリ起動時に開くタブを選択</string>
-    <string name="settings_select_startup_tab">起動ページを選択</string>
-    <string name="settings_novel_reading">Novel Reading Settings</string>
-    <string name="settings_novel_reading_desc">Font size, text color, background color</string>
-    <!-- Settings - Translation -->
-    <string name="settings_translation_engine">Translation Engine</string>
-    <string name="settings_translation_engine_desc">Translate artwork captions, novel descriptions, and novel reading content</string>
-    <string name="settings_translation_target_language">Target Language</string>
-    <string name="settings_translation_target_language_desc">Language to translate into</string>
-    <string name="settings_select_translation_engine">Select Translation Engine</string>
-    <string name="settings_select_translation_target_language">Select Target Language</string>
-    <string name="translation_engine_none">Disabled</string>
-    <string name="translation_engine_google_free">Google Translate (Free)</string>
-    <string name="translation_lang_zh_cn">简体中文</string>
-    <string name="translation_lang_zh_tw">繁體中文</string>
-    <string name="translation_lang_en">English</string>
-    <string name="translation_lang_ja">日本語</string>
-    <string name="translation_lang_ko">한국어</string>
-    <string name="translation_lang_fr">Français</string>
-    <string name="translation_lang_de">Deutsch</string>
-    <string name="translation_lang_es">Español</string>
-    <string name="translation_lang_it">Italiano</string>
-    <string name="translation_lang_ru">Русский</string>
-    <string name="translation_lang_pt">Português</string>
-    <string name="translation_lang_th">ภาษาไทย</string>
-    <string name="translation_lang_vi">Tiếng Việt</string>
-    <string name="translation_lang_id">Bahasa Indonesia</string>
-    <string name="translation_lang_ms">Bahasa Melayu</string>
-    <!-- Novel Reading Translation -->
-    <string name="show_translation">Show Translation</string>
-    <string name="show_original">Show Original</string>
-    <string name="translation_only">Translation Only</string>
-    <string name="translating">Translating...</string>
-    <string name="translation_not_available">Translation not available</string>
-    <string name="retranslate_current_page">Retranslate current page</string>
-    <string name="description_original">Original</string>
-    <string name="description_translated">Translated</string>
-    <string name="startup_tab_last_used">前回終了したページ</string>
-    <string name="startup_tab_home">検索</string>
-    <string name="startup_tab_discovery">発見</string>
-    <string name="startup_tab_follow_latest">フォロー最新</string>
-    <string name="startup_tab_ranking">ランキング</string>
-    <string name="startup_tab_profile">プロフィール</string>
-    <string name="settings_language">言語</string>
-    <string name="settings_theme">テーマ</string>
-    <string name="settings_cache">キャッシュ</string>
-    <string name="settings_clear_cache">キャッシュをクリア</string>
-    <string name="settings_about">このアプリについて</string>
-    <string name="settings_logout">ログアウト</string>
-    <!-- Languages -->
-    <string name="language_en">English</string>
-    <string name="language_zh_cn">简体中文</string>
-    <string name="language_zh_tw">繁體中文</string>
-    <string name="language_ja">日本語</string>
-    <string name="language_ko">한국어</string>
-    <!-- Theme -->
-    <string name="theme_light">ライト</string>
-    <string name="theme_dark">ダーク</string>
-    <string name="theme_system">システムデフォルト</string>
-    <!-- Common -->
-    <string name="common_loading">読み込み中...</string>
-    <string name="common_error">エラーが発生しました</string>
-    <string name="common_retry">再試行</string>
-    <string name="common_cancel">キャンセル</string>
-    <string name="common_confirm">確認</string>
-    <string name="common_save">保存</string>
-    <string name="common_delete">削除</string>
-    <string name="common_edit">編集</string>
-    <string name="common_done">完了</string>
-    <string name="common_no_data">データがありません</string>
-    <string name="common_back">戻る</string>
-    <string name="common_close">閉じる</string>
-    <string name="common_add_rule">Add Rule</string>
-    <string name="common_copied">Copied: %s</string>
-    <string name="common_translation_label">📝 Translation</string>
-    <string name="common_columns_format">%d Columns</string>
-    <!-- Ugoira -->
-    <string name="ugoira_play">再生</string>
-    <string name="ugoira_pause">一時停止</string>
-    <string name="ugoira_speed">速度</string>
-    <string name="ugoira_downloading">うごイラをダウンロード中...</string>
-    <!-- Login Screen (New) -->
-    <string name="login_subtitle">Pixivにログインして、パーソナライズされたコンテンツにアクセス</string>
-    <string name="login_phpsessid_title">PHPSESSIDでログイン</string>
-    <string name="login_phpsessid_description">ブラウザのCookieからPHPSESSIDを入力してください</string>
-    <string name="login_phpsessid_label">PHPSESSID</string>
-    <string name="login_logging_in">ログイン中...</string>
-    <string name="login_help">PHPSESSIDの取得方法</string>
-    <string name="login_help_step1">1. ブラウザで https://www.pixiv.net/ を開きログインします</string>
-    <string name="login_help_step2">2. 開発者ツールを開きます（F12）</string>
-    <string name="login_help_step3">3. アプリケーション/ストレージ → Cookie → https://www.pixiv.net に移動</string>
-    <string name="login_help_step4">4. \'PHPSESSID\' の値をコピー（形式：12345678_xxxx）</string>
-    <string name="login_help_warning">⚠️ 警告：PHPSESSIDは他人と共有しないでください！</string>
-    <string name="login_error_invalid_format">無効なPHPSESSID形式。期待される形式：userid_xxxxx</string>
-    <string name="login_error_empty">PHPSESSIDを入力してください</string>
-    <string name="login_session_expired">ログインセッションが期限切れです。再度ログインしてください。</string>
-    <string name="login_webview_title">Pixivログイン</string>
-    <string name="login_webview_button">ブラウザでログイン</string>
-    <string name="login_webview_hint">✨ ヒント：ブラウザでログインすると、ログイン認証情報を自動的に抽出します</string>
-    <string name="login_webview_extracting">ログイン認証情報を抽出中...</string>
-    <string name="login_or_divider">または</string>
-    <string name="common_ok">OK</string>
-    <!-- Settings - Account Management -->
-    <string name="settings_account">アカウント</string>
-    <string name="settings_user_id">ユーザーID</string>
-    <string name="settings_phpsessid">PHPSESSID</string>
-    <string name="settings_phpsessid_desc">Pixiv APIのログイン認証情報</string>
-    <string name="settings_not_logged_in">ログインしていません</string>
-    <string name="settings_unknown">不明</string>
-    <string name="settings_edit_phpsessid">PHPSESSIDを編集</string>
-    <string name="settings_phpsessid_input_hint">ブラウザのCookieからPHPSESSIDを入力してください</string>
-    <string name="settings_phpsessid_warning">⚠️ PHPSESSIDを変更すると、ログイン認証情報が更新されます</string>
-    <string name="settings_logout_confirm_title">ログアウト</string>
-    <string name="settings_logout_confirm_message">ログアウトしてもよろしいですか？再度ログインする必要があります。</string>
-    <!-- Settings - Content Filter -->
-    <string name="settings_content_filter">コンテンツフィルター</string>
-    <string name="settings_r18_sanity_threshold">R18健全度しきい値</string>
-    <string name="settings_r18_sanity_threshold_desc">健全度 ≥ この値の作品はR18としてマークされます</string>
-    <string name="settings_r18_sanity_level_safe">安全 (0–1)</string>
-    <string name="settings_r18_sanity_level_normal">通常 (2–3)</string>
-    <string name="settings_r18_sanity_level_suggestive">示唆的 (4–5)</string>
-    <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
-    <!-- Settings - Block List -->
-    <string name="settings_block_list">ブロックリスト</string>
-    <string name="settings_block_list_desc">ブロックされた作者、タグ、コンテンツフィルタを管理</string>
-    <string name="block_list_title">ブロックリスト</string>
-    <string name="block_list_empty">ブロック項目がありません</string>
-    <string name="block_list_empty_hint">作者やタグを追加して不要なコンテンツをブロック</string>
-    <string name="block_list_fixed_rules">クイックフィルター</string>
-    <string name="block_list_custom_rules">カスタムブロック</string>
-    <string name="block_rule_r18_content">R-18コンテンツ</string>
-    <string name="block_rule_ai_generated">AI生成作品</string>
-    <string name="block_rule_author_id">作者：%1$s</string>
-    <string name="block_rule_tag">タグ：%1$s</string>
-    <string name="block_rule_add">ブロックルールを追加</string>
-    <string name="block_rule_select_type">ブロックタイプを選択</string>
-    <string name="block_rule_type_author">作者をブロック</string>
-    <string name="block_rule_type_tag">タグをブロック</string>
-    <string name="block_rule_add_author">作者をブロック</string>
-    <string name="block_rule_add_tag">タグをブロック</string>
-    <string name="block_rule_author_id_label">作者ID</string>
-    <string name="block_rule_author_id_hint">Pixiv作者IDを入力</string>
-    <string name="block_rule_tag_label">タグ名</string>
-    <string name="block_rule_tag_hint">ブロックするタグを入力</string>
-    <string name="block_rule_delete_confirm_title">ブロックルールを削除</string>
-    <string name="block_rule_delete_confirm_message">このブロックルールを削除してもよろしいですか？</string>
-    <string name="block_rule_input_empty_error">値を入力してください</string>
-    <string name="block_rule_already_exists_error">このルールは既に存在します</string>
-    <string name="block_rule_scope_label">適用範囲</string>
-    <string name="block_rule_scope_illust">イラスト</string>
-    <string name="block_rule_scope_manga">マンガ</string>
-    <string name="block_rule_scope_ugoira">うごイラ</string>
-    <string name="block_rule_scope_novel">小説</string>
-    <string name="block_rule_scope_novel_series">小説シリーズ</string>
-    <string name="block_rule_scope_manga_series">マンガシリーズ</string>
-    <string name="block_rule_scope_all">すべてのタイプ</string>
-    <string name="block_rule_scope_hint">少なくとも1つのコンテンツタイプを選択してください</string>
-    <string name="block_rule_match_mode_label">マッチモード</string>
-    <string name="block_rule_match_mode_exact">完全一致</string>
-    <string name="block_rule_match_mode_regex">正規表現</string>
-    <string name="block_rule_match_mode_exact_hint">完全に一致するタグ名のみ</string>
-    <string name="block_rule_match_mode_regex_hint">パターンに一致するタグ（例：「初音.*」で「初音」で始まるすべてのタグにマッチ）。注意：正規表現モードはパフォーマンスがやや低い。</string>
-    <!-- Quick Block Actions -->
-    <string name="action_copy">コピー</string>
-    <string name="action_block_tag">このタグをブロック</string>
-    <string name="action_block_author">作者をブロック</string>
-    <string name="action_unblock_author">ブロック解除</string>
-    <string name="tag_copied">タグをコピーしました</string>
-    <string name="id_copied">コピーしました: %1$s</string>
-    <!-- Settings - Image Quality -->
-    <string name="settings_image_quality">画質</string>
-    <string name="settings_preferred_image_quality">イラストカードの画質設定</string>
-    <string name="settings_preferred_image_quality_desc">リストとグリッド表示のサムネイル画質</string>
-    <string name="settings_detail_image_quality">イラスト詳細ページの画質設定</string>
-    <string name="settings_detail_image_quality_desc">作品詳細ページの画像品質</string>
-    <string name="settings_viewer_image_quality">画像ビューアの画質設定</string>
-    <string name="settings_viewer_image_quality_desc">フルスクリーン表示時の画像品質</string>
-    <string name="image_quality_square_medium">標準 (250×250)</string>
-    <string name="image_quality_medium">中 (360×360)</string>
-    <string name="image_quality_large">大 (540×540)</string>
-    <string name="image_quality_master_1200">最大 (1200px)</string>
-    <string name="detail_image_quality_square_medium">標準 (250×250)</string>
-    <string name="detail_image_quality_medium">中 (360×360)</string>
-    <string name="detail_image_quality_large">大 (540×540)</string>
-    <string name="detail_image_quality_master_1200">最大 (1200px)</string>
-    <string name="detail_image_quality_original">オリジナル</string>
-    <string name="viewer_image_quality_master_1200">最大 (1200px)</string>
-    <string name="viewer_image_quality_original">オリジナル</string>
-    <!-- Settings - Novel Download Image Quality -->
-    <string name="settings_novel_download_image_quality">小説ダウンロードの画像品質設定</string>
-    <string name="settings_novel_download_image_quality_desc">小説をEPUBとしてダウンロードする際の埋め込み画像の品質</string>
-    <string name="novel_download_image_quality_small">Small (240px)</string>
-    <string name="novel_download_image_quality_medium">Medium (480px)</string>
-    <string name="novel_download_image_quality_large">Large (1200px)</string>
-    <string name="novel_download_image_quality_original">Original</string>
-    <!-- Settings - Cache Management -->
-    <string name="settings_cache_management">キャッシュ管理</string>
-    <string name="settings_image_cache_size">画像キャッシュサイズ</string>
-    <string name="settings_image_cache_size_desc">キャッシュ画像の最大ディスク容量</string>
-    <string name="settings_current_cache_size">現在のキャッシュサイズ</string>
-    <string name="settings_clear_image_cache">画像キャッシュをクリア</string>
-    <string name="settings_clear_cache_confirm_title">キャッシュをクリア</string>
-    <string name="settings_clear_cache_confirm_message">クリアするキャッシュの種類を選択してください。この操作は元に戻せません。</string>
-    <string name="settings_cache_cleared">キャッシュをクリアしました</string>
-    <string name="settings_image_cache_cleared">画像キャッシュをクリアしました</string>
-    <string name="settings_ugoira_cache_cleared">うごイラキャッシュをクリアしました</string>
-    <string name="settings_cache_info_image">画像キャッシュ：%1$s</string>
-    <string name="settings_cache_info_ugoira">うごイラキャッシュ：%1$s</string>
-    <string name="settings_clear_image_button">画像をクリア</string>
-    <string name="settings_clear_ugoira_button">うごイラをクリア</string>
-    <string name="settings_clear_all_button">すべてクリア</string>
-    <string name="settings_cache_size_change_note">注意：キャッシュサイズの変更はアプリを再起動すると有効になります</string>
-    <string name="cache_size_small">小 (256 MB)</string>
-    <string name="cache_size_medium">中 (512 MB)</string>
-    <string name="cache_size_large">大 (1 GB)</string>
-    <string name="cache_size_extra_large">特大 (2 GB)</string>
-    <string name="cache_size_unlimited">無制限</string>
-    <string name="cache_size_unlimited_desc">自動クリーンアップなし</string>
-    <string name="cache_type_image">画像</string>
-    <string name="cache_type_ugoira">アニメーション (Ugoira)</string>
-    <!-- Bookmark Status -->
-    <string name="bookmark_not_bookmarked">未ブックマーク</string>
-    <string name="bookmark_public">公開ブックマーク</string>
-    <string name="bookmark_private">非公開ブックマーク</string>
-    <!-- Follow Status -->
-    <string name="follow_follow">フォロー</string>
-    <string name="follow_unfollow">フォロー解除</string>
-    <string name="follow_unfollow_private">非公開フォローを解除</string>
-    <!-- Error Messages -->
-    <string name="error_icon_desc">エラー</string>
-    <string name="error_load_failed">読み込みに失敗しました</string>
-    <string name="error_image_load_failed">画像の読み込みに失敗しました</string>
-    <string name="error_unknown">不明なエラー</string>
-    <string name="error_network">ネットワークエラー</string>
-    <string name="error_data_empty">データが空です</string>
-    <string name="error_invalid_artwork_id">無効な作品ID</string>
-    <string name="error_cannot_load_frames">フレームを読み込めません</string>
-    <string name="error_empty_response">Empty response data</string>
-    <string name="error_refresh_failed">Refresh failed</string>
-    <string name="error_load_more_failed">Load more failed</string>
-    <!-- List States -->
-    <string name="list_no_more_items">No more items</string>
-    <!-- Series -->
-    <string name="series_watching">フォロー中</string>
-    <string name="series_total_episodes">全 %1$d 話</string>
-    <string name="series_update">更新：%1$s</string>
-    <string name="series_concluded">完結</string>
-    <string name="series_ongoing">連載中</string>
-    <string name="series_original">オリジナル</string>
-    <string name="series_word_count">%1$s 文字</string>
-    <string name="series_works_list">作品リスト（全 %1$d）</string>
-    <string name="series_last_update">最終更新：%1$s</string>
-    <string name="series_add_watch">ウォッチリストに追加</string>
-    <string name="series_remove_watch">ウォッチリストから削除</string>
-    <string name="series_label">シリーズ：%1$s</string>
-    <string name="series_watch_count">%1$d 人がウォッチ中</string>
-    <string name="novel_series">小説シリーズ</string>
-    <string name="manga_series">マンガシリーズ</string>
-    <!-- Content Types -->
-    <string name="content_illusts">イラスト</string>
-    <string name="content_manga">マンガ</string>
-    <string name="content_novels">小説</string>
-    <string name="content_manga_series">マンガシリーズ</string>
-    <string name="content_novel_series">小説シリーズ</string>
-    <string name="content_bookmark_illusts_public">公開ブックマーク（イラスト）</string>
-    <string name="content_bookmark_illusts_private">非公開ブックマーク（イラスト）</string>
-    <string name="content_bookmark_novels_public">公開ブックマーク（小説）</string>
-    <string name="content_bookmark_novels_private">非公開ブックマーク（小説）</string>
-    <string name="content_all">すべて</string>
-    <string name="content_ugoira">うごイラ</string>
-    <!-- Ranking (Additional) -->
-    <string name="ranking_category_general">一般</string>
-    <string name="ranking_ai_type_normal">通常</string>
-    <string name="ranking_ai_type_ai">AI生成</string>
-    <string name="ranking_select_date">日付を選択</string>
-    <string name="ranking_latest">最新ランキング</string>
-    <string name="ranking_current">現在：%1$s</string>
-    <string name="ranking_previous_day">前日：%1$s</string>
-    <string name="ranking_next_day">翌日：%1$s</string>
-    <string name="ranking_select_ranking_date">ランキング日付を選択</string>
-    <!-- Ugoira Player -->
-    <string name="ugoira_playback_speed">再生速度</string>
-    <string name="ugoira_getting_info">うごイラ情報を取得中...</string>
-    <string name="ugoira_downloading_file">アニメーションファイルをダウンロード中...</string>
-    <string name="ugoira_extracting_frames">フレームを抽出中...</string>
-    <string name="ugoira_loading_frames">フレームを読み込み中 %1$d/%2$d</string>
-    <string name="ugoira_loading_frames_percent">フレームを読み込み中... %1$d%%</string>
-    <string name="ugoira_load_failed">読み込み失敗：%1$s</string>
-    <!-- Navigation -->
-    <string name="nav_back">戻る</string>
-    <string name="nav_refresh">更新</string>
-    <!-- Image Search -->
-    <string name="image_search_title">SauceNAO 画像検索</string>
-    <string name="image_search_loading">検索中...</string>
-    <string name="image_search_failed">検索失敗</string>
-    <string name="image_search_retry">再試行</string>
-    <string name="image_search_cannot_read">画像を読み込めません</string>
-    <string name="image_search_unknown_error">不明なエラー</string>
-    <!-- Ascii2d Search -->
-    <string name="ascii2d_search_title">Ascii2d 画像検索</string>
-    <string name="ascii2d_search_uploading">画像をアップロード中...</string>
-    <string name="ascii2d_search_verifying">確認中...</string>
-    <string name="ascii2d_search_failed">検索失敗</string>
-    <string name="ascii2d_search_retry">再試行</string>
-    <!-- Novel -->
-    <string name="novel_page_number">ページ %1$d</string>
-    <string name="novel_no_content">内容がありません</string>
-    <string name="novel_pixiv_illust">Pixivイラスト %1$s</string>
-    <string name="novel_illust">イラスト %1$s</string>
-    <string name="novel_illust_image">小説の挿絵</string>
-    <string name="novel_text_count">%1$s 文字</string>
-    <string name="novel_page_count">全 %1$d ページ</string>
-    <string name="novel_stat_views">閲覧数</string>
-    <string name="novel_stat_likes">いいね</string>
-    <string name="novel_stat_bookmarks">ブックマーク</string>
-    <string name="novel_stat_comments">コメント</string>
-    <string name="novel_description">説明</string>
-    <string name="novel_tags">タグ</string>
-    <string name="novel_publish_time">投稿日時：%1$s</string>
-    <string name="novel_remove_marker">しおりを削除</string>
-    <string name="novel_add_marker">しおりを追加</string>
-    <string name="novel_update_marker">しおりを更新</string>
-    <string name="novel_collapse">折りたたむ</string>
-    <string name="novel_expand">展開</string>
-    <string name="novel_friends_only">マイピク限定</string>
-    <string name="novel_friends_only_desc">この作品はマイピクのみ閲覧可能です</string>
-    <!-- Artwork -->
-    <string name="artwork_collapse">折りたたむ</string>
-    <string name="artwork_expand">展開</string>
-    <string name="artwork_stat_views">閲覧数</string>
-    <string name="artwork_stat_likes">いいね</string>
-    <string name="artwork_stat_bookmarks">ブックマーク</string>
-    <string name="artwork_stat_comments">コメント</string>
-    <string name="artwork_info">作品情報</string>
-    <string name="artwork_resolution">解像度</string>
-    <string name="artwork_page_count">ページ数</string>
-    <string name="artwork_id">作品ID</string>
-    <string name="artwork_user_id">ユーザーID</string>
-    <string name="artwork_description">説明</string>
-    <string name="artwork_tags">タグ</string>
-    <string name="artwork_publish_time">投稿日時：%1$s</string>
-    <string name="artwork_similar">似ている作品</string>
-    <string name="artwork_recommend_title">おすすめ作品</string>
-    <string name="artwork_recommend_empty">この作品のおすすめがまだありません</string>
-    <string name="novel_recommend_title">おすすめ小説</string>
-    <string name="novel_recommend_empty">この小説のおすすめがまだありません</string>
-    <string name="novel_id">小説ID</string>
-    <string name="novel_user_id">ユーザーID</string>
-    <string name="novel_info">作品情報</string>
-    <!-- Time Format -->
-    <string name="time_hours_minutes">%1$d 時間 %2$d 分</string>
-    <string name="time_hours">%1$d 時間</string>
-    <string name="time_minutes">%1$d 分</string>
-    <string name="time_less_than_minute">1分未満</string>
-    <!-- Login -->
-    <string name="login_in_app">アプリ内ログイン</string>
-    <string name="login_in_development">この機能は開発中です。お楽しみに！</string>
-    <string name="login_password_hide">非表示</string>
-    <string name="login_password_show">表示</string>
-    <string name="login_phpsessid_login">PHPSESSIDでログイン</string>
-    <string name="login_failed">ログイン失敗</string>
-    <string name="login_failed_check_format">ログインに失敗しました。PHPSESSID形式を確認してください</string>
-    <string name="login_failed_with_message">ログイン失敗：%1$s</string>
-    <!-- User -->
-    <string name="user_no_works">このユーザーは作品を投稿していません</string>
-    <string name="user_following_count">フォロー中 %1$d</string>
-    <string name="user_load_info_failed">ユーザー情報の読み込みに失敗しました</string>
-    <string name="user_info_empty">ユーザー情報が空です</string>
-    <string name="user_load_works_failed">作品リストの読み込みに失敗しました</string>
-    <string name="user_works_empty">作品概要が空です</string>
-    <string name="user_load_more_failed">追加読み込みに失敗しました</string>
-    <!-- User Profile Tabs -->
-    <string name="user_tab_info">情報</string>
-    <string name="user_tab_illusts">イラスト</string>
-    <string name="user_tab_manga">マンガ</string>
-    <string name="user_tab_novels">小説</string>
-    <string name="user_tab_manga_series">マンガシリーズ</string>
-    <string name="user_tab_novel_series">小説シリーズ</string>
-    <string name="user_tab_bookmark_illusts_public">公開ブックマーク（イラスト）</string>
-    <string name="user_tab_bookmark_illusts_private">非公開ブックマーク（イラスト）</string>
-    <string name="user_tab_bookmark_novels_public">公開ブックマーク（小説）</string>
-    <string name="user_tab_bookmark_novels_private">非公開ブックマーク（小説）</string>
-    <string name="user_tab_recommend_users">おすすめユーザー</string>
-    <string name="user_recommend_users_empty">おすすめユーザーがいません</string>
-    <string name="user_recommend_users_empty_hint">似たスタイルのユーザーはすべてフォロー済みかもしれません</string>
-    <string name="user_network_error">ネットワークエラー</string>
-    <string name="user_load_failed">読み込みに失敗しました</string>
-    <!-- Bookmark Tag Filter -->
-    <string name="bookmark_tag_filter_button">タグで絞り込む</string>
-    <string name="bookmark_tag_filter_expand">タグで絞り込む</string>
-    <string name="bookmark_tag_filter_collapse">折りたたむ</string>
-    <string name="bookmark_tag_filter_clear">絞り込みをクリア</string>
-    <string name="bookmark_tag_filter_dialog_title">タグを選択</string>
-    <string name="bookmark_tag_filter_search_hint">タグを検索</string>
-    <string name="bookmark_tag_filter_all">すべてのタグ</string>
-    <string name="bookmark_tag_filter_no_results">一致するタグが見つかりません</string>
-    <string name="bookmark_tag_loading">タグを読み込み中…</string>
-    <string name="bookmark_tag_empty">タグがありません</string>
-    <!-- User Info Detail -->
-    <string name="user_info_basic">基本情報</string>
-    <string name="user_info_user_id">ユーザーID</string>
-    <string name="user_info_bio">自己紹介</string>
-    <string name="user_info_social">ソーシャル</string>
-    <string name="user_info_following">フォロー中</string>
-    <string name="user_info_mypixiv">マイピク</string>
-    <string name="user_info_followed_back">フォローバック</string>
-    <string name="user_followed">フォロー済み</string>
-    <string name="user_info_is_mypixiv">マイピクです</string>
-    <string name="user_info_links">リンク</string>
-    <string name="user_info_webpage">ウェブサイト</string>
-    <string name="user_info_personal">個人情報</string>
-    <string name="user_info_region">地域</string>
-    <string name="user_info_gender">性別</string>
-    <string name="user_info_age">年齢</string>
-    <string name="user_info_birthday">誕生日</string>
-    <string name="user_info_job">職業</string>
-    <string name="user_info_workspace">作業環境</string>
-    <string name="user_info_workspace_pc">PC</string>
-    <string name="user_info_workspace_monitor">モニター</string>
-    <string name="user_info_workspace_tool">ソフトウェア</string>
-    <string name="user_info_workspace_tablet">タブレット</string>
-    <string name="user_info_workspace_mouse">マウス</string>
-    <string name="user_info_workspace_scanner">スキャナー</string>
-    <string name="user_info_workspace_printer">プリンター</string>
-    <string name="user_info_workspace_desktop">デスクトップ</string>
-    <string name="user_info_workspace_desk">机</string>
-    <string name="user_info_workspace_chair">椅子</string>
-    <string name="user_info_workspace_music">BGM</string>
-    <string name="user_info_workspace_comment">その他</string>
-    <string name="user_info_commission">コミッション</string>
-    <string name="user_info_commission_request">リクエスト状況</string>
-    <string name="user_info_commission_fan_request">ファンリクエスト状況</string>
-    <string name="user_info_groups">グループ</string>
-    <string name="user_info_status">アカウント状況</string>
-    <string name="user_info_premium">プレミアム会員</string>
-    <string name="user_info_official">公式アカウント</string>
-    <string name="user_info_can_message">メッセージ送信可</string>
-    <!-- Artwork -->
-    <string name="artwork_detail_empty">作品詳細が空です</string>
-    <string name="artwork_not_bookmarked">作品はブックマークされていません</string>
-    <string name="artwork_ugoira_meta_empty">うごイラのメタデータが空です</string>
-    <string name="artwork_pages_empty">複数ページ作品の詳細が空です</string>
-    <!-- Settings Debug -->
-    <string name="settings_api_test_tool">APIテストツール 🔧</string>
-    <string name="settings_api_test_subtitle">Pixiv APIをデバッグ</string>
-    <string name="settings_api_test_desc">統合されたすべてのPixiv APIを体系的にテスト</string>
-    <string name="settings_phpsessid_empty">PHPSESSIDは空にできません</string>
-    <string name="settings_phpsessid_invalid_format">無効な形式です。期待される形式：userid_xxxxx</string>
-    <!-- Follow Latest (动态) -->
-    <string name="nav_follow_latest">フォロー新着</string>
-    <string name="follow_latest_title">フォロー新着</string>
-    <string name="follow_latest_illusts">イラスト・マンガ</string>
-    <string name="follow_latest_novels">小説</string>
-    <string name="follow_latest_mode_all">すべて</string>
-    <string name="follow_latest_mode_r18">R-18</string>
-    <string name="follow_latest_more">その他</string>
-    <string name="follow_latest_more_title">その他のフォロー新着</string>
-    <string name="follow_latest_watch_list">ウォッチリスト</string>
-    <string name="follow_latest_watch_list_manga">Manga</string>
-    <string name="follow_latest_watch_list_novels">Novels</string>
-    <string name="follow_latest_good_p_friends">良いPフレンド</string>
-    <string name="follow_latest_manga">マンガ</string>
-    <string name="follow_latest_coming_soon">近日公開</string>
-    <string name="follow_latest_coming_soon_desc">この機能は開発中です</string>
-    <!-- API Errors -->
-    <string name="api_post_comment_failed">コメントの投稿に失敗しました</string>
-    <string name="api_delete_comment_failed">コメントの削除に失敗しました</string>
-    <string name="api_unknown_title">不明なタイトル</string>
-    <string name="api_unknown_author">不明な作者</string>
-    <string name="api_cannot_get_csrf">CSRFトークンを取得できません</string>
-    <string name="api_novel_ranking_empty">小説ランキングデータが空です</string>
-    <string name="api_get_novel_detail_failed">小説詳細の取得に失敗しました</string>
-    <string name="api_search_novel_failed">小説の検索に失敗しました</string>
-    <string name="api_get_recommended_novels_failed">おすすめ小説の取得に失敗しました</string>
-    <string name="api_add_bookmark_failed">ブックマークの追加に失敗しました</string>
-    <string name="api_get_series_detail_failed">シリーズ詳細の取得に失敗しました</string>
-    <string name="api_get_series_contents_failed">シリーズコンテンツの取得に失敗しました</string>
-    <string name="api_watch_failed">ウォッチリストへの追加に失敗しました</string>
-    <string name="api_unwatch_failed">ウォッチリストからの削除に失敗しました</string>
-    <string name="api_operation_failed">操作に失敗しました</string>
-    <string name="api_web_login_not_supported">Web APIは直接ログインをサポートしていません。PHPSESSIDを使用してください</string>
-    <string name="api_user_info_empty">ユーザー情報が空です</string>
-    <string name="api_discovery_users_empty">発見ユーザーデータが空です</string>
-    <string name="api_load_series_detail_failed">シリーズ詳細の読み込みに失敗しました</string>
-    <string name="api_load_series_contents_failed">シリーズコンテンツの読み込みに失敗しました</string>
-    <!-- User Relations -->
-    <string name="user_relations_title">%1$s の関係</string>
-    <string name="user_relations_following">フォロー中</string>
-    <string name="user_relations_mypixiv">マイピク</string>
-    <string name="user_relations_followers">フォロワー</string>
-    <string name="user_relations_public">公開</string>
-    <string name="user_relations_private">非公開</string>
-    <string name="user_relations_empty">ユーザーがいません</string>
-    <string name="user_relations_load_failed">ユーザーリストの読み込みに失敗しました</string>
-    <!-- Comments -->
-    <string name="comments_title">コメント</string>
-    <string name="comments_empty">コメントはまだありません</string>
-    <string name="comments_input_hint">コメントを入力...</string>
-    <string name="comments_reply_hint">返信を入力...</string>
-    <string name="comments_send">送信</string>
-    <string name="comments_reply">返信</string>
-    <string name="comments_delete">削除</string>
-    <string name="comments_show_replies">返信を表示</string>
-    <string name="comments_hide_replies">返信を隠す</string>
-    <string name="comments_load_more_replies">さらに返信を読み込む</string>
-    <string name="comments_replying_to">%1$sに返信中</string>
-    <string name="comments_cancel_reply">返信をキャンセル</string>
-    <string name="comments_reply_to">\@%1$s</string>
-    <string name="comments_deleted_user">削除されたユーザー</string>
-    <string name="comments_stamp">スタンプ</string>
-    <string name="comments_empty_error">コメントを入力してください</string>
-    <string name="comments_delete_confirm_title">コメントを削除</string>
-    <string name="comments_delete_confirm_message">このコメントを削除してもよろしいですか？この操作は取り消せません。</string>
-    <string name="comments_delete_confirm">削除</string>
-    <string name="comments_delete_cancel">キャンセル</string>
-    <!-- Emoji Picker -->
-    <string name="emoji_button">絵文字</string>
-    <string name="emoji_tab_emoji">絵文字</string>
-    <string name="emoji_tab_stamp">スタンプ</string>
-    <!-- Download Management -->
-    <string name="download_management">ダウンロード管理</string>
-    <string name="download_all">すべて</string>
-    <string name="download_downloading">ダウンロード中</string>
-    <string name="download_paused">一時停止中</string>
-    <string name="download_completed">完了</string>
-    <string name="download_failed">失敗</string>
-    <string name="download_no_tasks">ダウンロードタスクがありません</string>
-    <string name="download_no_tasks_filter">この状態のタスクはありません</string>
-    <string name="download_start">開始</string>
-    <string name="download_pause">一時停止</string>
-    <string name="download_retry">再試行</string>
-    <string name="download_delete">削除</string>
-    <string name="download_filter">フィルター</string>
-    <string name="download_task_added">ダウンロードリストに追加されました</string>
-    <string name="download_action_view">表示</string>
-    <string name="download_novel">小説をダウンロード</string>
-    <string name="download_series_as_epub">シリーズをEPUBとしてダウンロード</string>
-    <!-- Download Rules -->
-    <string name="download_rules_title">ダウンロードパスルール</string>
-    <string name="download_rules_add">ルールを追加</string>
-    <string name="download_rules_no_custom">カスタムルールがありません</string>
-    <string name="download_rules_use_default">デフォルトルールを使用します（リソースタイプ別）</string>
-    <string name="download_rules_rule_number">ルール #%1$d</string>
-    <string name="download_rules_resource_type">リソースタイプ</string>
-    <string name="download_rules_ai_generation">AI生成</string>
-    <string name="download_rules_author_grouping">作者グループ化</string>
-    <string name="download_rules_save_path">保存パス</string>
-    <string name="download_rules_delete_confirm_title">ルールを削除</string>
-    <string name="download_rules_delete_confirm_message">このルールを削除してもよろしいですか？</string>
-    <string name="download_rules_add_failed">ルールの追加に失敗しました</string>
-    <string name="download_rules_update_failed">ルールの更新に失敗しました</string>
-    <string name="download_rules_delete_failed">ルールの削除に失敗しました</string>
-    <string name="download_rules_reorder_failed">順序の更新に失敗しました</string>
-    <string name="download_rules_toggle_failed">ルールの切り替えに失敗しました</string>
-    <!-- Add/Edit Rule Dialog -->
-    <string name="add_rule_title">ルールを追加</string>
-    <string name="edit_rule_title">ルールを編集</string>
-    <string name="rule_resource_types_hint">リソースタイプ（複数選択可、空白はすべてのタイプに一致）</string>
-    <string name="rule_r18_filter">R-18フィルター</string>
-    <string name="rule_ai_filter">AI生成フィルター</string>
-    <string name="rule_author_grouping">作者グループ化</string>
-    <string name="rule_save_path">保存パス</string>
-    <string name="rule_select_path">パスを選択</string>
-    <string name="rule_filter_must_be">必須</string>
-    <string name="rule_filter_must_not_be">除外</string>
-    <string name="rule_filter_any">任意</string>
-    <string name="rule_grouping_by_id">作者IDでグループ化</string>
-    <string name="rule_grouping_by_name">作者名でグループ化</string>
-    <string name="rule_grouping_none">グループ化しない</string>
-    <!-- Resource Types -->
-    <string name="resource_type_illustration">イラスト</string>
-    <string name="resource_type_manga">マンガ</string>
-    <string name="resource_type_ugoira">うごイラ</string>
-    <string name="resource_type_novel">小説</string>
-    <string name="resource_type_novel_series">小説シリーズ</string>
-    <string name="resource_type_any">任意</string>
-    <!-- Settings - Download -->
-    <string name="settings_download">ダウンロード設定</string>
-    <string name="settings_download_path">ダウンロードパス</string>
-    <string name="settings_download_path_default">デフォルトパスを使用</string>
-    <string name="settings_download_path_desc">作品ダウンロードの保存パスを設定</string>
-    <string name="settings_download_management_title">ダウンロード管理</string>
-    <string name="settings_download_management_subtitle">ダウンロードタスクを管理</string>
-    <string name="settings_download_management_desc">すべてのダウンロードタスクを表示・管理</string>
-    <string name="settings_download_rules_title">ダウンロードパスルール</string>
-    <string name="settings_download_rules_subtitle">ダウンロードパスルールをカスタマイズ</string>
-    <string name="settings_download_rules_desc">ダウンロードパスルールをカスタマイズ</string>
-    <string name="settings_file_name_rules">ファイル名ルール</string>
-    <string name="settings_file_name_mode_standard">標準モード</string>
-    <string name="settings_file_name_mode_custom">カスタム: %1$s</string>
-    <!-- File Name Template -->
-    <string name="filename_template_standard_mode">標準モード（推奨）</string>
-    <string name="filename_template_example_landscape">風景</string>
-    <string name="filename_template_recommended">推奨</string>
-    <string name="filename_template_custom">カスタムテンプレート</string>
-    <string name="filename_template_label">テンプレート</string>
-    <string name="filename_template_variables_info">変数の説明</string>
-    <string name="filename_template_quick_insert">クイック挿入：</string>
-    <string name="filename_template_preview">プレビュー</string>
-    <string name="filename_template_example_type_colon">%1$s：</string>
-    <string name="filename_template_available_variables">使用可能な変数（下のボタンをクリックして挿入）：</string>
-    <string name="filename_template_var_id">作品ID</string>
-    <string name="filename_template_var_p">ページ番号（0から開始）</string>
-    <string name="filename_template_var_title">作品タイトル</string>
-    <string name="filename_template_var_author_id">作者ID</string>
-    <string name="filename_template_var_author_name">作者名</string>
-    <string name="filename_template_var_artist_name">作者名</string>
-    <string name="filename_template_var_publish_date">公開日</string>
-    <string name="filename_template_var_download_date">ダウンロード日</string>
-    <string name="filename_template_var_ai">AI識別子</string>
-    <string name="filename_template_var_ai_example">AIまたは空</string>
-    <string name="filename_template_var_r18">R-18識別子</string>
-    <string name="filename_template_var_r18_example">R-18または空</string>
-    <string name="filename_template_var_tags">作品タグ</string>
-    <string name="filename_template_var_tags_example">風景_自然</string>
-    <string name="filename_template_notes">⚠️ Notes</string>
-    <string name="filename_template_close">閉じる</string>
-    <string name="filename_template_example_prefix">例: %1$s</string>
-    <string name="filename_rules_title">ファイル命名規則</string>
-    <string name="filename_rules_description">ダウンロードファイルの命名規則を設定します。標準モードはデフォルト形式を使用し、カスタムモードでは変数を自由に組み合わせることができます。</string>
-    <string name="filename_rules_single_page_hint">💡 単ページリソース（うごイラ、小説）はページ番号変数を自動的に無視します</string>
-    <string name="filename_rules_multi_page_hint">💡 複数ページリソース（イラスト、マンガ）はページ番号を保持して異なるページを区別します</string>
-    <string name="filename_template_error_empty">テンプレートを空にすることはできません</string>
-    <string name="filename_template_error_no_required">テンプレートには {id} または {title} 変数を含める必要があります</string>
-    <string name="filename_template_error_invalid_chars">テンプレートには特殊文字を含めることができません: \ / : * ? \" &lt; &gt; |</string>
-    <string name="filename_template_type_illustration">イラスト</string>
-    <string name="filename_template_type_manga_p1">マンガP1</string>
-    <string name="filename_template_type_manga_p2">マンガP2</string>
-    <string name="filename_template_type_ugoira">うごイラ</string>
-    <string name="filename_template_type_novel">小説</string>
-    <string name="filename_template_example_novel_title">小説タイトル</string>
-    <string name="filename_template_example_ugoira_title">うごイラタイトル</string>
-    <string name="filename_template_example_manga_title">マンガタイトル</string>
-    <!-- Search -->
-    <string name="search_placeholder">イラスト、小説、ユーザーを検索...</string>
-    <string name="search_no_results">検索結果がありません</string>
-    <string name="search_close">閉じる</string>
-    <string name="search_mode">検索モード</string>
-    <string name="search_only_users_with_works">作品があるユーザーのみ表示</string>
-    <string name="search_filter_no_works">作品を投稿していないユーザーをフィルター</string>
-    <string name="search_sort_order">並び順</string>
-    <string name="search_content_rating">コンテンツレーティング</string>
-    <string name="search_hide_ai_works">AI生成作品を非表示</string>
-    <string name="search_filter_ai_desc">AI生成されたイラストと小説をフィルター</string>
-    <string name="search_tab_illust">イラスト+マンガ+うごイラ</string>
-    <string name="search_tab_novel">小説</string>
-    <string name="search_tab_user">ユーザー</string>
-    <string name="search_sort_date_desc">新しい順</string>
-    <string name="search_sort_date_asc">古い順</string>
-    <string name="search_sort_popular_desc">人気順</string>
-    <string name="search_sort_popular_male_desc">男性に人気</string>
-    <string name="search_sort_popular_female_desc">女性に人気</string>
-    <string name="search_sort_premium_required">プレミアム会員が必要</string>
-    <string name="search_rating_all">すべて</string>
-    <string name="search_rating_safe">全年齢</string>
-    <string name="search_failed">検索に失敗しました</string>
-    <!-- Search Filters: Bookmark Count -->
-    <string name="search_bookmark_count">ブックマーク数</string>
-    <string name="bookmark_count_none">制限なし</string>
-    <string name="bookmark_count_500">500+ ブックマーク</string>
-    <string name="bookmark_count_1000">1000+ ブックマーク</string>
-    <string name="bookmark_count_2000">2000+ ブックマーク</string>
-    <string name="bookmark_count_5000">5000+ ブックマーク</string>
-    <string name="bookmark_count_7500">7500+ ブックマーク</string>
-    <string name="bookmark_count_10000">10000+ ブックマーク</string>
-    <string name="bookmark_count_20000">20000+ ブックマーク</string>
-    <string name="bookmark_count_50000">50000+ ブックマーク</string>
-    <string name="bookmark_count_100000">100000+ ブックマーク</string>
-    <!-- Search Filters: Date Range -->
-    <string name="search_date_range">日付範囲</string>
-    <string name="date_start">開始日</string>
-    <string name="date_end">終了日</string>
-    <string name="date_unlimited">制限なし</string>
-    <string name="date_clear">クリア</string>
-    <string name="date_select">日付を選択</string>
-    <string name="date_select_title">日付を選択</string>
-    <string name="date_format_hint">yyyy-MM-dd</string>
-    <string name="date_format_example">例: 2024-01-01</string>
-    <string name="date_empty_means_unlimited">空白の場合制限なし</string>
-    <string name="date_confirm">確認</string>
-    <string name="date_cancel">キャンセル</string>
-    <!-- Search Mode -->
-    <string name="search_mode_tag_partial">タグ（部分一致）</string>
-    <string name="search_mode_tag_partial_desc">タグで部分一致検索</string>
-    <string name="search_mode_tag_full">タグ（完全一致）</string>
-    <string name="search_mode_tag_full_desc">タグで完全一致検索</string>
-    <string name="search_mode_title_caption">タイトル・キャプション</string>
-    <string name="search_mode_title_caption_desc">タイトルとキャプションで検索</string>
-    <string name="search_mode_text">本文</string>
-    <string name="search_mode_text_desc">小説本文で検索</string>
-    <string name="search_mode_keyword">タグ・タイトル・キャプション</string>
-    <string name="search_mode_keyword_desc">タグ・タイトル・キャプションで検索</string>
-    <string name="search_mode_user_partial">部分一致</string>
-    <string name="search_mode_user_partial_desc">ユーザー名の部分一致</string>
-    <string name="search_mode_user_exact">完全一致</string>
-    <string name="search_mode_user_exact_desc">ユーザー名の完全一致</string>
-    <!-- Bookmark Dialog -->
-    <string name="bookmark_max_tags">タグは最大10個まで追加できます</string>
-    <!-- Novel to EPUB -->
-    <string name="novel_epub_page_title">%1$s - %2$dページ</string>
-    <string name="novel_epub_illustration_id">イラスト ID: %1$s</string>
-    <string name="novel_epub_image_download_failed">画像のダウンロードに失敗: %1$s</string>
-    <string name="novel_epub_image_id">画像 ID: %1$s</string>
-    <!-- Desktop Path Picker -->
-    <string name="desktop_select_download_dir">ダウンロードディレクトリを選択</string>
-    <!-- Additional File Naming Strings -->
-    <string name="filename_template_title">📝 ファイル命名規則</string>
-    <string name="filename_template_desc">ダウンロードファイルの命名方法を設定</string>
-    <string name="filename_mode_standard">標準モード</string>
-    <string name="filename_mode_custom">カスタムテンプレート</string>
-    <string name="filename_variable_help">変数ガイド</string>
-    <string name="filename_quick_insert">クイック挿入：</string>
-    <string name="filename_preview_title">プレビュー効果</string>
-    <string name="filename_variables_title">📋 ファイル命名変数</string>
-    <string name="filename_variables_desc">使用可能な変数（下のボタンをクリックして挿入）：</string>
-    <string name="filename_var_id">作品ID</string>
-    <string name="filename_var_page">ページ番号（0から）</string>
-    <string name="filename_var_title">作品タイトル</string>
-    <string name="filename_var_title_example">風景画</string>
-    <string name="filename_var_author_id">作者ID</string>
-    <string name="filename_var_author_name">作者名</string>
-    <string name="filename_var_author_name_example">作者名</string>
-    <string name="filename_var_publish_date">公開日</string>
-    <string name="filename_var_download_date">ダウンロード日</string>
-    <string name="filename_var_ai">AI識別子</string>
-    <string name="filename_var_ai_example">AIまたは空</string>
-    <string name="filename_var_r18">R-18識別子</string>
-    <string name="filename_var_r18_example">R-18または空</string>
-    <string name="filename_var_tags">作品タグ</string>
-    <string name="filename_var_tags_example">風景_自然</string>
-    <string name="filename_notes_title">⚠️ 注意事項</string>
-    <string name="filename_notes_content">• イラスト/マンガは {p} を保持する必要があります。そうしないと、複数ページの作品でファイル名の競合が発生します\n• うごイラ/小説は {p} を自動的に無視します\n• 特殊文字は自動的にアンダースコアに置き換えられます</string>
-    <string name="filename_example_prefix">例：%1$s</string>
-    <string name="close">閉じる</string>
-    <string name="recommended">おすすめ</string>
-    <string name="settings_file_name_rules_title">ファイル命名規則</string>
-    <string name="settings_file_name_rules_desc">ダウンロードファイルの命名形式を設定</string>
-    <string name="select_download_directory">ダウンロードディレクトリを選択</string>
-    <string name="novel_page">%1$dページ</string>
-    <!-- Browse History -->
-    <string name="history_title">閲覧履歴</string>
-    <string name="history_browse_history">閲覧履歴</string>
-    <string name="history_view_history">閲覧履歴を表示</string>
-    <string name="history_desc">訪問した作品、小説、シリーズを表示</string>
-    <string name="history_filter_all">すべて</string>
-    <string name="history_filter_illustrations">イラスト</string>
-    <string name="history_filter_manga">マンガ</string>
-    <string name="history_filter_ugoira">うごイラ</string>
-    <string name="history_filter_novels">小説</string>
-    <string name="history_filter_novel_series">小説シリーズ</string>
-    <string name="history_filter_manga_series">マンガシリーズ</string>
-    <string name="history_type_illust">イラスト</string>
-    <string name="history_type_manga">マンガ</string>
-    <string name="history_type_ugoira">うごイラ</string>
-    <string name="history_type_novel">小説</string>
-    <string name="history_type_series">シリーズ</string>
-    <string name="history_no_history">閲覧履歴がありません</string>
-    <string name="history_clear">履歴を削除</string>
-    <string name="history_clear_all_confirm">すべての閲覧履歴を削除してもよろしいですか？</string>
-    <string name="history_clear_type_confirm">%1$s の履歴を削除してもよろしいですか？</string>
-    <string name="history_delete_item_title">履歴を削除</string>
-    <string name="history_delete_item_confirm">この閲覧履歴を削除してもよろしいですか？</string>
-    <string name="history_by_author">%1$s 作</string>
-    <string name="history_time_just_now">たった今</string>
-    <string name="history_time_minutes_ago">%1$s 分前</string>
-    <string name="history_time_hours_ago">%1$s 時間前</string>
-    <string name="history_time_days_ago">%1$s 日前</string>
-    <string name="history_delete">削除</string>
-    <string name="history_cancel">キャンセル</string>
-    <!-- Novel Reading Settings -->
-    <string name="novel_reading_settings_title">読書設定</string>
-    <string name="novel_setting_font_size">フォントサイズ</string>
-    <string name="novel_setting_background_scheme">背景スキーム</string>
-    <string name="novel_setting_custom_colors">カスタムカラー</string>
-    <string name="novel_setting_text_color">文字色</string>
-    <string name="novel_setting_background_color">背景色</string>
-    <string name="novel_preview_label">プレビュー</string>
-    <string name="novel_preview_content">速い茶色のキツネが怠け者の犬を飛び越えました。これはプレビュー用のサンプルテキストです。The quick brown fox jumps over the lazy dog.</string>
-    <!-- Font Sizes -->
-    <string name="novel_font_size_small">小 (14sp)</string>
-    <string name="novel_font_size_medium">中 (16sp)</string>
-    <string name="novel_font_size_large">大 (18sp)</string>
-    <string name="novel_font_size_extra_large">特大 (20sp)</string>
-    <string name="novel_font_size_huge">超特大 (22sp)</string>
-    <!-- Background Schemes -->
-    <string name="novel_bg_theme_default">テーマのデフォルト</string>
-    <string name="novel_bg_paper_white">白紙</string>
-    <string name="novel_bg_eye_care_green">目に優しい緑</string>
-    <string name="novel_bg_warm_yellow">暖かい黄色</string>
-    <string name="novel_bg_classic_beige">クラシックベージュ</string>
-    <string name="novel_bg_night_black">ナイトモード</string>
-    <string name="novel_bg_custom">カスタム</string>
-    <!-- Color Picker -->
-    <string name="color_picker_title">色を選択</string>
-    <string name="color_picker_use_theme_default">テーマのデフォルトを使用</string>
-    <string name="color_picker_hex_input">16進数カラーコード</string>
-    <string name="color_picker_presets">プリセットカラー</string>
-    <string name="color_theme_default">テーマのデフォルト</string>
-    <string name="action_cancel">キャンセル</string>
-    <string name="action_confirm">確定</string>
-    <!-- Widget Management -->
-    <string name="settings_widget">Widget</string>
-    <string name="settings_widget_management">Widget Management</string>
-    <string name="settings_widget_management_desc">Manage Pixiv home screen widgets</string>
-    <!-- Backup & Restore -->
-    <string name="settings_data_management">Data Management</string>
-    <string name="settings_backup_restore">Backup &amp; Restore</string>
-    <string name="settings_backup_restore_desc">Backup settings and credentials, restore from backup</string>
-    <string name="backup_restore_title">Backup &amp; Restore</string>
-    <string name="backup_tab">Backup</string>
-    <string name="restore_tab">Restore</string>
-    <!-- Backup Screen -->
-    <string name="backup_create_title">Create Backup</string>
-    <string name="backup_comment_label">Comment (Optional)</string>
-    <string name="backup_comment_hint">e.g., Before switching devices</string>
-    <string name="backup_modules_label">Backup Content</string>
-    <string name="backup_module_settings">App Settings</string>
-    <string name="backup_module_settings_desc">Language, theme, image quality settings</string>
-    <string name="backup_module_credentials">Login Credentials</string>
-    <string name="backup_module_credentials_desc">PHPSESSID and CSRF Token</string>
-    <string name="backup_module_block_rules">Block List</string>
-    <string name="backup_module_block_rules_desc">Blocked authors and tags</string>
-    <string name="backup_module_browse_history">Browse History</string>
-    <string name="backup_module_browse_history_desc">Artwork viewing records</string>
-    <string name="backup_module_download_rules">Download Path Rules</string>
-    <string name="backup_module_download_rules_desc">Custom download path rules</string>
-    <string name="backup_module_download_tasks">Download Tasks</string>
-    <string name="backup_module_download_tasks_desc">Download task records and status</string>
-    <string name="backup_module_search_history">Search History</string>
-    <string name="backup_module_search_history_desc">Search history and pinned keywords</string>
-    <string name="backup_size_10kb">&lt; 10 KB</string>
-    <string name="backup_size_5kb">&lt; 5 KB</string>
-    <string name="backup_size_50kb">&lt; 50 KB</string>
-    <string name="backup_size_10mb">100 KB - 10 MB</string>
-    <string name="backup_size_20kb">&lt; 20 KB</string>
-    <string name="backup_size_50mb">1 MB - 50 MB</string>
-    <string name="backup_button">Create Backup</string>
-    <string name="backup_directory_hint">Set backup directory to view historical backup files</string>
-    <string name="restore_from_file">Restore from File</string>
-    <string name="backup_history_title">Backup History</string>
-    <string name="backup_directory_title">Backup Directory</string>
-    <string name="backup_guide_dialog_title">Select Backup Directory</string>
-    <string name="backup_guide_recommend">Recommended path:</string>
-    <string name="backup_guide_navigation">📱 Navigation tips:\n1. Find and tap Download folder\n2. Enter ProjectU folder\n3. Select Backups folder</string>
-    <string name="backup_guide_start">Start Selection</string>
-    <string name="backup_success_created">Backup file created successfully</string>
-    <string name="backup_success_location">Save location:</string>
-    <string name="backup_loading">Scanning backup files...</string>
-    <string name="backup_scanned_count">Scanned %1$d backup files</string>
-    <string name="backup_time_label">Backup Time</string>
-    <string name="backup_comment_label_short">Comment</string>
-    <string name="backup_file_location">File Location</string>
-    <string name="backup_content_label">Content</string>
-    <string name="backup_created_title">Backup Created</string>
-    <string name="backup_created_message">Backup file saved to:\n%1$s</string>
-    <string name="backup_failed_title">Backup Failed</string>
-    <string name="restore_complete_title">Restore Complete</string>
-    <string name="restore_complete_message">Successfully restored %1$d modules (%2$d records).\n\nThe app will restart automatically to apply all settings...</string>
-    <string name="restore_failed_title">Restore Failed</string>
-    <string name="setup_failed_title">Setup Failed</string>
-    <string name="setup_failed_no_permission">Unable to set backup directory permission</string>
-    <string name="backup_directory_set">Backup directory set</string>
-    <string name="invalid_file_title">Invalid File</string>
-    <string name="invalid_file_message">The selected file is not a valid backup</string>
-    <string name="file_error_title">File Error</string>
-    <string name="file_error_message">Failed to read file</string>
-    <string name="no_file_selected_title">No File Selected</string>
-    <string name="no_file_selected_message">Please select a backup file first</string>
-    <string name="delete_failed_title">Delete Failed</string>
-    <string name="delete_failed_message">Failed to delete backup</string>
-    <string name="backup_deleted">Backup deleted</string>
-    <string name="load_failed_title">Load Failed</string>
-    <string name="load_failed_message">Failed to load backup history</string>
-    <string name="backup_history_empty">No backups yet</string>
-    <string name="backup_item_size">Size: %1$s</string>
-    <string name="backup_item_modules">Modules: %1$s</string>
-    <string name="backup_item_comment">Comment: %1$s</string>
-    <string name="backup_delete_confirm_title">Delete Backup</string>
-    <string name="backup_delete_confirm_message">Are you sure you want to delete this backup?</string>
-    <!-- Restore Screen -->
-    <string name="restore_select_file">Select Backup File</string>
-    <string name="restore_file_info">File Info</string>
-    <string name="restore_file_version">Version: %s</string>
-    <string name="restore_file_platform">Platform: %s</string>
-    <string name="restore_file_created">Created: %s</string>
-    <string name="restore_file_modules">Modules: %s</string>
-    <string name="restore_file_size">Size: %s</string>
-    <string name="restore_button">Restore</string>
-    <string name="restore_warning_title">⚠️ Important Notes</string>
-    <string name="restore_warning_message">• Restoration will overwrite current settings and login info\n• It is recommended to backup current data first\n• App will restart after restoration</string>
-    <!-- Progress Dialog -->
-    <string name="backup_progress_title">Creating Backup...</string>
-    <string name="restore_progress_title">Restoring...</string>
-    <string name="backup_progress_exporting">Exporting %s...</string>
-    <string name="backup_progress_compressing">Compressing...</string>
-    <string name="backup_progress_saving">Saving...</string>
-    <string name="restore_progress_validating">Validating backup file...</string>
-    <string name="restore_progress_extracting">Extracting...</string>
-    <string name="restore_progress_importing">Importing %s...</string>
-    <!-- Desktop Specific -->
-    <string name="desktop_webview_restart_required">Application restart required to use WebView functionality</string>
-    <string name="desktop_webview_initializing">Initializing WebView component...</string>
-    <string name="desktop_download_progress">Download progress: %d%%</string>
+  <!-- ========================================================================== -->
+  <!-- API Errors -->
+  <!-- ========================================================================== -->
+  <!-- API_* -->
+  <string name="api_add_bookmark_failed">ブックマークの追加に失敗しました</string>
+  <string name="api_cannot_get_csrf">CSRFトークンを取得できません</string>
+  <string name="api_delete_comment_failed">コメントの削除に失敗しました</string>
+  <string name="api_discovery_users_empty">発見ユーザーデータが空です</string>
+  <string name="api_get_novel_detail_failed">小説詳細の取得に失敗しました</string>
+  <string name="api_get_recommended_novels_failed">おすすめ小説の取得に失敗しました</string>
+  <string name="api_get_series_contents_failed">シリーズコンテンツの取得に失敗しました</string>
+  <string name="api_get_series_detail_failed">シリーズ詳細の取得に失敗しました</string>
+  <string name="api_load_series_contents_failed">シリーズコンテンツの読み込みに失敗しました</string>
+  <string name="api_load_series_detail_failed">シリーズ詳細の読み込みに失敗しました</string>
+  <string name="api_novel_ranking_empty">小説ランキングデータが空です</string>
+  <string name="api_operation_failed">操作に失敗しました</string>
+  <string name="api_post_comment_failed">コメントの投稿に失敗しました</string>
+  <string name="api_search_novel_failed">小説の検索に失敗しました</string>
+  <string name="api_unknown_author">不明な作者</string>
+  <string name="api_unknown_title">不明なタイトル</string>
+  <string name="api_unwatch_failed">ウォッチリストからの削除に失敗しました</string>
+  <string name="api_user_info_empty">ユーザー情報が空です</string>
+  <string name="api_watch_failed">ウォッチリストへの追加に失敗しました</string>
+  <string name="api_web_login_not_supported">Web APIは直接ログインをサポートしていません。PHPSESSIDを使用してください</string>
+  <!-- ========================================================================== -->
+  <!-- App Foundation -->
+  <!-- ========================================================================== -->
+  <!-- APP_* -->
+  <string name="app_name">ProjectU</string>
+  <!-- ========================================================================== -->
+  <!-- Artwork -->
+  <!-- ========================================================================== -->
+  <!-- ARTWORK_* -->
+  <string name="artwork_bookmarks">ブックマーク</string>
+  <string name="artwork_collapse">折りたたむ</string>
+  <string name="artwork_comments">コメント</string>
+  <string name="artwork_description">説明</string>
+  <string name="artwork_detail_empty">作品詳細が空です</string>
+  <string name="artwork_download">ダウンロード</string>
+  <string name="artwork_expand">展開</string>
+  <string name="artwork_id">作品ID</string>
+  <string name="artwork_info">作品情報</string>
+  <string name="artwork_not_bookmarked">作品はブックマークされていません</string>
+  <string name="artwork_page_count">ページ数</string>
+  <string name="artwork_pages_empty">複数ページ作品の詳細が空です</string>
+  <string name="artwork_publish_time">投稿日時：%1$s</string>
+  <string name="artwork_recommend_empty">この作品のおすすめがまだありません</string>
+  <string name="artwork_recommend_title">おすすめ作品</string>
+  <string name="artwork_resolution">解像度</string>
+  <string name="artwork_share">共有</string>
+  <string name="artwork_similar">似ている作品</string>
+  <string name="artwork_stat_bookmarks">ブックマーク</string>
+  <string name="artwork_stat_comments">コメント</string>
+  <string name="artwork_stat_likes">いいね</string>
+  <string name="artwork_stat_views">閲覧数</string>
+  <string name="artwork_tags">タグ</string>
+  <string name="artwork_ugoira_meta_empty">うごイラのメタデータが空です</string>
+  <string name="artwork_user_id">ユーザーID</string>
+  <string name="artwork_views">閲覧数</string>
+  <!-- ========================================================================== -->
+  <!-- Backup & Restore -->
+  <!-- ========================================================================== -->
+  <!-- BACKUP_* -->
+  <string name="backup_button">Create Backup</string>
+  <string name="backup_comment_hint">e.g., Before switching devices</string>
+  <string name="backup_comment_label">Comment (Optional)</string>
+  <string name="backup_comment_label_short">Comment</string>
+  <string name="backup_content_label">Content</string>
+  <string name="backup_create_title">Create Backup</string>
+  <string name="backup_created_message">Backup file saved to:\n%1$s</string>
+  <string name="backup_created_title">Backup Created</string>
+  <string name="backup_delete_confirm_message">Are you sure you want to delete this backup?</string>
+  <string name="backup_delete_confirm_title">Delete Backup</string>
+  <string name="backup_deleted">Backup deleted</string>
+  <string name="backup_directory_hint">Set backup directory to view historical backup files</string>
+  <string name="backup_directory_set">Backup directory set</string>
+  <string name="backup_directory_title">Backup Directory</string>
+  <string name="backup_failed_title">Backup Failed</string>
+  <string name="backup_file_location">File Location</string>
+  <string name="backup_guide_dialog_title">Select Backup Directory</string>
+  <string name="backup_guide_navigation">📱 Navigation tips:\n1. Find and tap Download folder\n2. Enter ProjectU folder\n3. Select Backups folder</string>
+  <string name="backup_guide_recommend">Recommended path:</string>
+  <string name="backup_guide_start">Start Selection</string>
+  <string name="backup_history_empty">No backups yet</string>
+  <string name="backup_history_title">Backup History</string>
+  <string name="backup_item_comment">Comment: %1$s</string>
+  <string name="backup_item_modules">Modules: %1$s</string>
+  <string name="backup_item_size">Size: %1$s</string>
+  <string name="backup_loading">Scanning backup files...</string>
+  <string name="backup_module_block_rules">Block List</string>
+  <string name="backup_module_block_rules_desc">Blocked authors and tags</string>
+  <string name="backup_module_browse_history">Browse History</string>
+  <string name="backup_module_browse_history_desc">Artwork viewing records</string>
+  <string name="backup_module_credentials">Login Credentials</string>
+  <string name="backup_module_credentials_desc">PHPSESSID and CSRF Token</string>
+  <string name="backup_module_download_rules">Download Path Rules</string>
+  <string name="backup_module_download_rules_desc">Custom download path rules</string>
+  <string name="backup_module_download_tasks">Download Tasks</string>
+  <string name="backup_module_download_tasks_desc">Download task records and status</string>
+  <string name="backup_module_search_history">Search History</string>
+  <string name="backup_module_search_history_desc">Search history and pinned keywords</string>
+  <string name="backup_module_settings">App Settings</string>
+  <string name="backup_module_settings_desc">Language, theme, image quality settings</string>
+  <string name="backup_modules_label">Backup Content</string>
+  <string name="backup_progress_compressing">Compressing...</string>
+  <string name="backup_progress_exporting">Exporting %s...</string>
+  <string name="backup_progress_saving">Saving...</string>
+  <string name="backup_progress_title">Creating Backup...</string>
+  <string name="backup_restore_title">Backup &amp; Restore</string>
+  <string name="backup_scanned_count">Scanned %1$d backup files</string>
+  <string name="backup_size_10kb">&lt; 10 KB</string>
+  <string name="backup_size_10mb">100 KB - 10 MB</string>
+  <string name="backup_size_20kb">&lt; 20 KB</string>
+  <string name="backup_size_50kb">&lt; 50 KB</string>
+  <string name="backup_size_50mb">1 MB - 50 MB</string>
+  <string name="backup_size_5kb">&lt; 5 KB</string>
+  <string name="backup_success_created">Backup file created successfully</string>
+  <string name="backup_success_location">Save location:</string>
+  <string name="backup_tab">Backup</string>
+  <string name="backup_time_label">Backup Time</string>
+  <!-- RESTORE_* -->
+  <string name="restore_button">Restore</string>
+  <string name="restore_complete_message">Successfully restored %1$d modules (%2$d records).\n\nThe app will restart automatically to apply all settings...</string>
+  <string name="restore_complete_title">Restore Complete</string>
+  <string name="restore_failed_title">Restore Failed</string>
+  <string name="restore_file_created">Created: %s</string>
+  <string name="restore_file_info">File Info</string>
+  <string name="restore_file_modules">Modules: %s</string>
+  <string name="restore_file_platform">Platform: %s</string>
+  <string name="restore_file_size">Size: %s</string>
+  <string name="restore_file_version">Version: %s</string>
+  <string name="restore_from_file">Restore from File</string>
+  <string name="restore_progress_extracting">Extracting...</string>
+  <string name="restore_progress_importing">Importing %s...</string>
+  <string name="restore_progress_title">Restoring...</string>
+  <string name="restore_progress_validating">Validating backup file...</string>
+  <string name="restore_select_file">Select Backup File</string>
+  <string name="restore_tab">Restore</string>
+  <string name="restore_warning_message">• Restoration will overwrite current settings and login info\n• It is recommended to backup current data first\n• App will restart after restoration</string>
+  <string name="restore_warning_title">⚠️ Important Notes</string>
+  <!-- ========================================================================== -->
+  <!-- Block List -->
+  <!-- ========================================================================== -->
+  <!-- BLOCK_* -->
+  <string name="block_list_custom_rules">カスタムブロック</string>
+  <string name="block_list_empty">ブロック項目がありません</string>
+  <string name="block_list_empty_hint">作者やタグを追加して不要なコンテンツをブロック</string>
+  <string name="block_list_fixed_rules">クイックフィルター</string>
+  <string name="block_list_title">ブロックリスト</string>
+  <string name="block_rule_add">ブロックルールを追加</string>
+  <string name="block_rule_add_author">作者をブロック</string>
+  <string name="block_rule_add_tag">タグをブロック</string>
+  <string name="block_rule_ai_generated">AI生成作品</string>
+  <string name="block_rule_already_exists_error">このルールは既に存在します</string>
+  <string name="block_rule_author_id">作者：%1$s</string>
+  <string name="block_rule_author_id_hint">Pixiv作者IDを入力</string>
+  <string name="block_rule_author_id_label">作者ID</string>
+  <string name="block_rule_delete_confirm_message">このブロックルールを削除してもよろしいですか？</string>
+  <string name="block_rule_delete_confirm_title">ブロックルールを削除</string>
+  <string name="block_rule_input_empty_error">値を入力してください</string>
+  <string name="block_rule_match_mode_exact">完全一致</string>
+  <string name="block_rule_match_mode_exact_hint">完全に一致するタグ名のみ</string>
+  <string name="block_rule_match_mode_label">マッチモード</string>
+  <string name="block_rule_match_mode_regex">正規表現</string>
+  <string name="block_rule_match_mode_regex_hint">パターンに一致するタグ（例：「初音.*」で「初音」で始まるすべてのタグにマッチ）。注意：正規表現モードはパフォーマンスがやや低い。</string>
+  <string name="block_rule_r18_content">R-18コンテンツ</string>
+  <string name="block_rule_scope_all">すべてのタイプ</string>
+  <string name="block_rule_scope_hint">少なくとも1つのコンテンツタイプを選択してください</string>
+  <string name="block_rule_scope_illust">イラスト</string>
+  <string name="block_rule_scope_label">適用範囲</string>
+  <string name="block_rule_scope_manga">マンガ</string>
+  <string name="block_rule_scope_manga_series">マンガシリーズ</string>
+  <string name="block_rule_scope_novel">小説</string>
+  <string name="block_rule_scope_novel_series">小説シリーズ</string>
+  <string name="block_rule_scope_ugoira">うごイラ</string>
+  <string name="block_rule_select_type">ブロックタイプを選択</string>
+  <string name="block_rule_tag">タグ：%1$s</string>
+  <string name="block_rule_tag_hint">ブロックするタグを入力</string>
+  <string name="block_rule_tag_label">タグ名</string>
+  <string name="block_rule_type_author">作者をブロック</string>
+  <string name="block_rule_type_tag">タグをブロック</string>
+  <!-- ========================================================================== -->
+  <!-- Bookmark -->
+  <!-- ========================================================================== -->
+  <!-- BOOKMARK_* -->
+  <string name="bookmark_action_private">非公開ブックマーク</string>
+  <string name="bookmark_action_public">公開ブックマーク</string>
+  <string name="bookmark_action_with_tags">タグ付きブックマーク</string>
+  <string name="bookmark_add_tag">タグを追加</string>
+  <string name="bookmark_added_tags">追加されたタグ</string>
+  <string name="bookmark_count_1000">1000+ ブックマーク</string>
+  <string name="bookmark_count_10000">10000+ ブックマーク</string>
+  <string name="bookmark_count_100000">100000+ ブックマーク</string>
+  <string name="bookmark_count_2000">2000+ ブックマーク</string>
+  <string name="bookmark_count_20000">20000+ ブックマーク</string>
+  <string name="bookmark_count_500">500+ ブックマーク</string>
+  <string name="bookmark_count_5000">5000+ ブックマーク</string>
+  <string name="bookmark_count_50000">50000+ ブックマーク</string>
+  <string name="bookmark_count_7500">7500+ ブックマーク</string>
+  <string name="bookmark_count_none">制限なし</string>
+  <string name="bookmark_max_tags">タグは最大10個まで追加できます</string>
+  <string name="bookmark_not_bookmarked">未ブックマーク</string>
+  <string name="bookmark_private">非公開ブックマーク</string>
+  <string name="bookmark_public">公開ブックマーク</string>
+  <string name="bookmark_remove_tag">タグを削除</string>
+  <string name="bookmark_set_private">非公開にする</string>
+  <string name="bookmark_suggested_tags">おすすめのタグ</string>
+  <string name="bookmark_tag_empty">タグがありません</string>
+  <string name="bookmark_tag_filter_all">すべてのタグ</string>
+  <string name="bookmark_tag_filter_button">タグで絞り込む</string>
+  <string name="bookmark_tag_filter_clear">絞り込みをクリア</string>
+  <string name="bookmark_tag_filter_collapse">折りたたむ</string>
+  <string name="bookmark_tag_filter_dialog_title">タグを選択</string>
+  <string name="bookmark_tag_filter_expand">タグで絞り込む</string>
+  <string name="bookmark_tag_filter_no_results">一致するタグが見つかりません</string>
+  <string name="bookmark_tag_filter_search_hint">タグを検索</string>
+  <string name="bookmark_tag_input_label">タグ</string>
+  <string name="bookmark_tag_input_placeholder">タグを入力</string>
+  <string name="bookmark_tag_loading">タグを読み込み中…</string>
+  <string name="bookmark_with_tags_title">タグ付きブックマーク</string>
+  <!-- ========================================================================== -->
+  <!-- Cache -->
+  <!-- ========================================================================== -->
+  <!-- CACHE_* -->
+  <string name="cache_size_extra_large">特大 (2 GB)</string>
+  <string name="cache_size_large">大 (1 GB)</string>
+  <string name="cache_size_medium">中 (512 MB)</string>
+  <string name="cache_size_small">小 (256 MB)</string>
+  <string name="cache_size_unlimited">無制限</string>
+  <string name="cache_size_unlimited_desc">自動クリーンアップなし</string>
+  <string name="cache_type_image">画像</string>
+  <string name="cache_type_ugoira">アニメーション (Ugoira)</string>
+  <!-- ========================================================================== -->
+  <!-- Color Picker -->
+  <!-- ========================================================================== -->
+  <!-- COLOR_* -->
+  <string name="color_picker_hex_input">16進数カラーコード</string>
+  <string name="color_picker_presets">プリセットカラー</string>
+  <string name="color_picker_title">色を選択</string>
+  <string name="color_picker_use_theme_default">テーマのデフォルトを使用</string>
+  <string name="color_theme_default">テーマのデフォルト</string>
+  <!-- ========================================================================== -->
+  <!-- Comments -->
+  <!-- ========================================================================== -->
+  <!-- COMMENTS_* -->
+  <string name="comments_cancel_reply">返信をキャンセル</string>
+  <string name="comments_delete">削除</string>
+  <string name="comments_delete_cancel">キャンセル</string>
+  <string name="comments_delete_confirm">削除</string>
+  <string name="comments_delete_confirm_message">このコメントを削除してもよろしいですか？この操作は取り消せません。</string>
+  <string name="comments_delete_confirm_title">コメントを削除</string>
+  <string name="comments_deleted_user">削除されたユーザー</string>
+  <string name="comments_empty">コメントはまだありません</string>
+  <string name="comments_empty_error">コメントを入力してください</string>
+  <string name="comments_hide_replies">返信を隠す</string>
+  <string name="comments_input_hint">コメントを入力...</string>
+  <string name="comments_load_more_replies">さらに返信を読み込む</string>
+  <string name="comments_reply">返信</string>
+  <string name="comments_reply_hint">返信を入力...</string>
+  <string name="comments_reply_to">\@%1$s</string>
+  <string name="comments_replying_to">%1$sに返信中</string>
+  <string name="comments_send">送信</string>
+  <string name="comments_show_replies">返信を表示</string>
+  <string name="comments_stamp">スタンプ</string>
+  <string name="comments_title">コメント</string>
+  <!-- ========================================================================== -->
+  <!-- Common UI -->
+  <!-- ========================================================================== -->
+  <!-- COMMON_* -->
+  <string name="common_add_rule">Add Rule</string>
+  <string name="common_back">戻る</string>
+  <string name="common_cancel">キャンセル</string>
+  <string name="common_close">閉じる</string>
+  <string name="common_columns_format">%d Columns</string>
+  <string name="common_confirm">確認</string>
+  <string name="common_copied">Copied: %s</string>
+  <string name="common_delete">削除</string>
+  <string name="common_done">完了</string>
+  <string name="common_edit">編集</string>
+  <string name="common_error">エラーが発生しました</string>
+  <string name="common_loading">読み込み中...</string>
+  <string name="common_no_data">データがありません</string>
+  <string name="common_ok">OK</string>
+  <string name="common_retry">再試行</string>
+  <string name="common_save">保存</string>
+  <string name="common_translation_label">📝 Translation</string>
+  <string name="close">閉じる</string>
+  <string name="recommended">おすすめ</string>
+  <!-- ========================================================================== -->
+  <!-- Content Types -->
+  <!-- ========================================================================== -->
+  <!-- CONTENT_* -->
+  <string name="content_all">すべて</string>
+  <string name="content_bookmark_illusts_private">非公開ブックマーク（イラスト）</string>
+  <string name="content_bookmark_illusts_public">公開ブックマーク（イラスト）</string>
+  <string name="content_bookmark_novels_private">非公開ブックマーク（小説）</string>
+  <string name="content_bookmark_novels_public">公開ブックマーク（小説）</string>
+  <string name="content_illusts">イラスト</string>
+  <string name="content_manga">マンガ</string>
+  <string name="content_manga_series">マンガシリーズ</string>
+  <string name="content_novel_series">小説シリーズ</string>
+  <string name="content_novels">小説</string>
+  <string name="content_ugoira">うごイラ</string>
+  <!-- ========================================================================== -->
+  <!-- Date Selection -->
+  <!-- ========================================================================== -->
+  <!-- DATE_* -->
+  <string name="date_cancel">キャンセル</string>
+  <string name="date_clear">クリア</string>
+  <string name="date_confirm">確認</string>
+  <string name="date_empty_means_unlimited">空白の場合制限なし</string>
+  <string name="date_end">終了日</string>
+  <string name="date_format_example">例: 2024-01-01</string>
+  <string name="date_format_hint">yyyy-MM-dd</string>
+  <string name="date_select">日付を選択</string>
+  <string name="date_select_title">日付を選択</string>
+  <string name="date_start">開始日</string>
+  <string name="date_unlimited">制限なし</string>
+  <!-- ========================================================================== -->
+  <!-- Desktop Specific -->
+  <!-- ========================================================================== -->
+  <!-- DESKTOP_* -->
+  <string name="desktop_download_progress">Download progress: %d%%</string>
+  <string name="desktop_select_download_dir">ダウンロードディレクトリを選択</string>
+  <string name="desktop_webview_initializing">Initializing WebView component...</string>
+  <string name="desktop_webview_restart_required">Application restart required to use WebView functionality</string>
+  <!-- ========================================================================== -->
+  <!-- Discovery -->
+  <!-- ========================================================================== -->
+  <!-- DISCOVERY_* -->
+  <string name="discovery_mode_all">すべて</string>
+  <string name="discovery_mode_r18">R-18</string>
+  <string name="discovery_mode_safe">全年齢</string>
+  <string name="discovery_pixivision">Pixivision</string>
+  <string name="discovery_recent_searches">最近の検索</string>
+  <string name="discovery_recommended_illusts">おすすめイラスト・マンガ</string>
+  <string name="discovery_recommended_novels">おすすめ小説</string>
+  <string name="discovery_recommended_users">おすすめユーザー</string>
+  <string name="discovery_search_hint">作品、ユーザーを検索...</string>
+  <string name="discovery_trending_tags">人気のタグ</string>
+  <!-- ========================================================================== -->
+  <!-- Download -->
+  <!-- ========================================================================== -->
+  <!-- DOWNLOAD_* -->
+  <string name="download_action_view">表示</string>
+  <string name="download_all">すべて</string>
+  <string name="download_completed">完了</string>
+  <string name="download_delete">削除</string>
+  <string name="download_downloading">ダウンロード中</string>
+  <string name="download_failed">失敗</string>
+  <string name="download_filter">フィルター</string>
+  <string name="download_management">ダウンロード管理</string>
+  <string name="download_no_tasks">ダウンロードタスクがありません</string>
+  <string name="download_no_tasks_filter">この状態のタスクはありません</string>
+  <string name="download_novel">小説をダウンロード</string>
+  <string name="download_pause">一時停止</string>
+  <string name="download_paused">一時停止中</string>
+  <string name="download_retry">再試行</string>
+  <string name="download_rules_add">ルールを追加</string>
+  <string name="download_rules_add_failed">ルールの追加に失敗しました</string>
+  <string name="download_rules_ai_generation">AI生成</string>
+  <string name="download_rules_author_grouping">作者グループ化</string>
+  <string name="download_rules_delete_confirm_message">このルールを削除してもよろしいですか？</string>
+  <string name="download_rules_delete_confirm_title">ルールを削除</string>
+  <string name="download_rules_delete_failed">ルールの削除に失敗しました</string>
+  <string name="download_rules_no_custom">カスタムルールがありません</string>
+  <string name="download_rules_reorder_failed">順序の更新に失敗しました</string>
+  <string name="download_rules_resource_type">リソースタイプ</string>
+  <string name="download_rules_rule_number">ルール #%1$d</string>
+  <string name="download_rules_save_path">保存パス</string>
+  <string name="download_rules_title">ダウンロードパスルール</string>
+  <string name="download_rules_toggle_failed">ルールの切り替えに失敗しました</string>
+  <string name="download_rules_update_failed">ルールの更新に失敗しました</string>
+  <string name="download_rules_use_default">デフォルトルールを使用します（リソースタイプ別）</string>
+  <string name="download_series_as_epub">シリーズをEPUBとしてダウンロード</string>
+  <string name="download_start">開始</string>
+  <string name="download_task_added">ダウンロードリストに追加されました</string>
+  <!-- SELECT_* -->
+  <string name="select_download_directory">ダウンロードディレクトリを選択</string>
+  <!-- ========================================================================== -->
+  <!-- Download Rules -->
+  <!-- ========================================================================== -->
+  <!-- ADD_* -->
+  <string name="add_rule_title">ルールを追加</string>
+  <!-- EDIT_* -->
+  <string name="edit_rule_title">ルールを編集</string>
+  <!-- RULE_* -->
+  <string name="rule_ai_filter">AI生成フィルター</string>
+  <string name="rule_author_grouping">作者グループ化</string>
+  <string name="rule_filter_any">任意</string>
+  <string name="rule_filter_must_be">必須</string>
+  <string name="rule_filter_must_not_be">除外</string>
+  <string name="rule_grouping_by_id">作者IDでグループ化</string>
+  <string name="rule_grouping_by_name">作者名でグループ化</string>
+  <string name="rule_grouping_none">グループ化しない</string>
+  <string name="rule_r18_filter">R-18フィルター</string>
+  <string name="rule_resource_types_hint">リソースタイプ（複数選択可、空白はすべてのタイプに一致）</string>
+  <string name="rule_save_path">保存パス</string>
+  <string name="rule_select_path">パスを選択</string>
+  <!-- ========================================================================== -->
+  <!-- Emoji -->
+  <!-- ========================================================================== -->
+  <string name="emoji_button">絵文字</string>
+  <string name="emoji_tab_emoji">絵文字</string>
+  <string name="emoji_tab_stamp">スタンプ</string>
+  <!-- ========================================================================== -->
+  <!-- Error Messages -->
+  <!-- ========================================================================== -->
+  <!-- ERROR_* -->
+  <string name="error_cannot_load_frames">フレームを読み込めません</string>
+  <string name="error_data_empty">データが空です</string>
+  <string name="error_empty_response">Empty response data</string>
+  <string name="error_icon_desc">エラー</string>
+  <string name="error_image_load_failed">画像の読み込みに失敗しました</string>
+  <string name="error_invalid_artwork_id">無効な作品ID</string>
+  <string name="error_load_failed">読み込みに失敗しました</string>
+  <string name="error_load_more_failed">Load more failed</string>
+  <string name="error_network">ネットワークエラー</string>
+  <string name="error_refresh_failed">Refresh failed</string>
+  <string name="error_unknown">不明なエラー</string>
+  <!-- ========================================================================== -->
+  <!-- File Naming -->
+  <!-- ========================================================================== -->
+  <!-- FILENAME_* -->
+  <string name="filename_example_prefix">例：%1$s</string>
+  <string name="filename_mode_custom">カスタムテンプレート</string>
+  <string name="filename_mode_standard">標準モード</string>
+  <string name="filename_notes_content">• イラスト/マンガは {p} を保持する必要があります。そうしないと、複数ページの作品でファイル名の競合が発生します\n• うごイラ/小説は {p} を自動的に無視します\n• 特殊文字は自動的にアンダースコアに置き換えられます</string>
+  <string name="filename_notes_title">⚠️ 注意事項</string>
+  <string name="filename_preview_title">プレビュー効果</string>
+  <string name="filename_quick_insert">クイック挿入：</string>
+  <string name="filename_rules_description">ダウンロードファイルの命名規則を設定します。標準モードはデフォルト形式を使用し、カスタムモードでは変数を自由に組み合わせることができます。</string>
+  <string name="filename_rules_multi_page_hint">💡 複数ページリソース（イラスト、マンガ）はページ番号を保持して異なるページを区別します</string>
+  <string name="filename_rules_single_page_hint">💡 単ページリソース（うごイラ、小説）はページ番号変数を自動的に無視します</string>
+  <string name="filename_rules_title">ファイル命名規則</string>
+  <string name="filename_template_available_variables">使用可能な変数（下のボタンをクリックして挿入）：</string>
+  <string name="filename_template_close">閉じる</string>
+  <string name="filename_template_custom">カスタムテンプレート</string>
+  <string name="filename_template_desc">ダウンロードファイルの命名方法を設定</string>
+  <string name="filename_template_error_empty">テンプレートを空にすることはできません</string>
+  <string name="filename_template_error_invalid_chars">テンプレートには特殊文字を含めることができません: \ / : * ? \" &lt; &gt; |</string>
+  <string name="filename_template_error_no_required">テンプレートには {id} または {title} 変数を含める必要があります</string>
+  <string name="filename_template_example_landscape">風景</string>
+  <string name="filename_template_example_manga_title">マンガタイトル</string>
+  <string name="filename_template_example_novel_title">小説タイトル</string>
+  <string name="filename_template_example_prefix">例: %1$s</string>
+  <string name="filename_template_example_type_colon">%1$s：</string>
+  <string name="filename_template_example_ugoira_title">うごイラタイトル</string>
+  <string name="filename_template_label">テンプレート</string>
+  <string name="filename_template_notes">⚠️ Notes</string>
+  <string name="filename_template_preview">プレビュー</string>
+  <string name="filename_template_quick_insert">クイック挿入：</string>
+  <string name="filename_template_recommended">推奨</string>
+  <string name="filename_template_standard_mode">標準モード（推奨）</string>
+  <string name="filename_template_title">📝 ファイル命名規則</string>
+  <string name="filename_template_type_illustration">イラスト</string>
+  <string name="filename_template_type_manga_p1">マンガP1</string>
+  <string name="filename_template_type_manga_p2">マンガP2</string>
+  <string name="filename_template_type_novel">小説</string>
+  <string name="filename_template_type_ugoira">うごイラ</string>
+  <string name="filename_template_variables_info">変数の説明</string>
+  <string name="filename_var_ai">AI識別子</string>
+  <string name="filename_var_ai_example">AIまたは空</string>
+  <string name="filename_var_author_id">作者ID</string>
+  <string name="filename_var_author_name">作者名</string>
+  <string name="filename_var_author_name_example">作者名</string>
+  <string name="filename_var_download_date">ダウンロード日</string>
+  <string name="filename_var_id">作品ID</string>
+  <string name="filename_var_page">ページ番号（0から）</string>
+  <string name="filename_var_publish_date">公開日</string>
+  <string name="filename_var_r18">R-18識別子</string>
+  <string name="filename_var_r18_example">R-18または空</string>
+  <string name="filename_var_tags">作品タグ</string>
+  <string name="filename_var_tags_example">風景_自然</string>
+  <string name="filename_var_title">作品タイトル</string>
+  <string name="filename_var_title_example">風景画</string>
+  <string name="filename_variable_help">変数ガイド</string>
+  <string name="filename_variables_desc">使用可能な変数（下のボタンをクリックして挿入）：</string>
+  <string name="filename_variables_title">📋 ファイル命名変数</string>
+  <!-- ========================================================================== -->
+  <!-- Follow -->
+  <!-- ========================================================================== -->
+  <!-- FOLLOW_* -->
+  <string name="follow_follow">フォロー</string>
+  <string name="follow_latest_coming_soon">近日公開</string>
+  <string name="follow_latest_coming_soon_desc">この機能は開発中です</string>
+  <string name="follow_latest_good_p_friends">良いPフレンド</string>
+  <string name="follow_latest_illusts">イラスト・マンガ</string>
+  <string name="follow_latest_manga">マンガ</string>
+  <string name="follow_latest_mode_all">すべて</string>
+  <string name="follow_latest_mode_r18">R-18</string>
+  <string name="follow_latest_more">その他</string>
+  <string name="follow_latest_more_title">その他のフォロー新着</string>
+  <string name="follow_latest_novels">小説</string>
+  <string name="follow_latest_title">フォロー新着</string>
+  <string name="follow_latest_watch_list">ウォッチリスト</string>
+  <string name="follow_latest_watch_list_manga">Manga</string>
+  <string name="follow_latest_watch_list_novels">Novels</string>
+  <string name="follow_unfollow">フォロー解除</string>
+  <string name="follow_unfollow_private">非公開フォローを解除</string>
+  <!-- ========================================================================== -->
+  <!-- History -->
+  <!-- ========================================================================== -->
+  <!-- HISTORY_* -->
+  <string name="history_browse_history">閲覧履歴</string>
+  <string name="history_by_author">%1$s 作</string>
+  <string name="history_cancel">キャンセル</string>
+  <string name="history_clear">履歴を削除</string>
+  <string name="history_clear_all_confirm">すべての閲覧履歴を削除してもよろしいですか？</string>
+  <string name="history_clear_type_confirm">%1$s の履歴を削除してもよろしいですか？</string>
+  <string name="history_delete">削除</string>
+  <string name="history_delete_item_confirm">この閲覧履歴を削除してもよろしいですか？</string>
+  <string name="history_delete_item_title">履歴を削除</string>
+  <string name="history_desc">訪問した作品、小説、シリーズを表示</string>
+  <string name="history_filter_all">すべて</string>
+  <string name="history_filter_illustrations">イラスト</string>
+  <string name="history_filter_manga">マンガ</string>
+  <string name="history_filter_manga_series">マンガシリーズ</string>
+  <string name="history_filter_novel_series">小説シリーズ</string>
+  <string name="history_filter_novels">小説</string>
+  <string name="history_filter_ugoira">うごイラ</string>
+  <string name="history_no_history">閲覧履歴がありません</string>
+  <string name="history_time_days_ago">%1$s 日前</string>
+  <string name="history_time_hours_ago">%1$s 時間前</string>
+  <string name="history_time_just_now">たった今</string>
+  <string name="history_time_minutes_ago">%1$s 分前</string>
+  <string name="history_title">閲覧履歴</string>
+  <string name="history_type_illust">イラスト</string>
+  <string name="history_type_manga">マンガ</string>
+  <string name="history_type_novel">小説</string>
+  <string name="history_type_series">シリーズ</string>
+  <string name="history_type_ugoira">うごイラ</string>
+  <string name="history_view_history">閲覧履歴を表示</string>
+  <!-- ========================================================================== -->
+  <!-- Home Screen -->
+  <!-- ========================================================================== -->
+  <!-- HOME_* -->
+  <string name="home_following">フォロー中</string>
+  <string name="home_framework_complete">プロジェクトフレームワーク構築完了</string>
+  <string name="home_new_works">新着作品</string>
+  <string name="home_recommended">おすすめ</string>
+  <!-- ========================================================================== -->
+  <!-- ID Operations -->
+  <!-- ========================================================================== -->
+  <!-- ID_* -->
+  <string name="id_copied">コピーしました: %1$s</string>
+  <!-- ========================================================================== -->
+  <!-- Image Search -->
+  <!-- ========================================================================== -->
+  <!-- IMAGE_* -->
+  <string name="image_search_cannot_read">画像を読み込めません</string>
+  <string name="image_search_failed">検索失敗</string>
+  <string name="image_search_loading">検索中...</string>
+  <string name="image_search_retry">再試行</string>
+  <string name="image_search_title">SauceNAO 画像検索</string>
+  <string name="image_search_unknown_error">不明なエラー</string>
+  <!-- ========================================================================== -->
+  <!-- Image Search (Ascii2d) -->
+  <!-- ========================================================================== -->
+  <!-- ASCII2D_* -->
+  <string name="ascii2d_search_failed">検索失敗</string>
+  <string name="ascii2d_search_retry">再試行</string>
+  <string name="ascii2d_search_title">Ascii2d 画像検索</string>
+  <string name="ascii2d_search_uploading">画像をアップロード中...</string>
+  <string name="ascii2d_search_verifying">確認中...</string>
+  <!-- ========================================================================== -->
+  <!-- Languages -->
+  <!-- ========================================================================== -->
+  <!-- LANGUAGE_* -->
+  <string name="language_en">English</string>
+  <string name="language_ja">日本語</string>
+  <string name="language_ko">한국어</string>
+  <string name="language_zh_cn">简体中文</string>
+  <string name="language_zh_tw">繁體中文</string>
+  <!-- ========================================================================== -->
+  <!-- List States -->
+  <!-- ========================================================================== -->
+  <!-- LIST_* -->
+  <string name="list_no_more_items">No more items</string>
+  <!-- ========================================================================== -->
+  <!-- Login -->
+  <!-- ========================================================================== -->
+  <!-- LOGIN_* -->
+  <string name="login_button">ログイン</string>
+  <string name="login_error_empty">PHPSESSIDを入力してください</string>
+  <string name="login_error_invalid_format">無効なPHPSESSID形式。期待される形式：userid_xxxxx</string>
+  <string name="login_failed">ログイン失敗</string>
+  <string name="login_failed_check_format">ログインに失敗しました。PHPSESSID形式を確認してください</string>
+  <string name="login_failed_with_message">ログイン失敗：%1$s</string>
+  <string name="login_forgot_password">パスワードを忘れた？</string>
+  <string name="login_help">PHPSESSIDの取得方法</string>
+  <string name="login_help_step1">1. ブラウザで https://www.pixiv.net/ を開きログインします</string>
+  <string name="login_help_step2">2. 開発者ツールを開きます（F12）</string>
+  <string name="login_help_step3">3. アプリケーション/ストレージ → Cookie → https://www.pixiv.net に移動</string>
+  <string name="login_help_step4">4. \'PHPSESSID\' の値をコピー（形式：12345678_xxxx）</string>
+  <string name="login_help_warning">⚠️ 警告：PHPSESSIDは他人と共有しないでください！</string>
+  <string name="login_in_app">アプリ内ログイン</string>
+  <string name="login_in_development">この機能は開発中です。お楽しみに！</string>
+  <string name="login_logging_in">ログイン中...</string>
+  <string name="login_or_divider">または</string>
+  <string name="login_password">パスワード</string>
+  <string name="login_password_hide">非表示</string>
+  <string name="login_password_show">表示</string>
+  <string name="login_phpsessid_description">ブラウザのCookieからPHPSESSIDを入力してください</string>
+  <string name="login_phpsessid_label">PHPSESSID</string>
+  <string name="login_phpsessid_login">PHPSESSIDでログイン</string>
+  <string name="login_phpsessid_title">PHPSESSIDでログイン</string>
+  <string name="login_register">アカウント作成</string>
+  <string name="login_restore_from_backup">Restore from Backup</string>
+  <string name="login_restore_hint">If you have a backup file, you can restore app settings and credentials before logging in</string>
+  <string name="login_session_expired">ログインセッションが期限切れです。再度ログインしてください。</string>
+  <string name="login_subtitle">Pixivにログインして、パーソナライズされたコンテンツにアクセス</string>
+  <string name="login_title">Pixivにログイン</string>
+  <string name="login_username">ユーザー名またはメールアドレス</string>
+  <string name="login_webview_button">ブラウザでログイン</string>
+  <string name="login_webview_error_cookie">Cookieの抽出に失敗しました</string>
+  <string name="login_webview_error_credentials">ログイン認証情報を取得できません。再試行してください</string>
+  <string name="login_webview_extracting">ログイン認証情報を抽出中...</string>
+  <string name="login_webview_hint">✨ ヒント：ブラウザでログインすると、ログイン認証情報を自動的に抽出します</string>
+  <string name="login_webview_title">Pixivログイン</string>
+  <!-- ========================================================================== -->
+  <!-- Navigation -->
+  <!-- ========================================================================== -->
+  <!-- NAV_* -->
+  <string name="nav_back">戻る</string>
+  <string name="nav_discovery">発見</string>
+  <string name="nav_follow_latest">フォロー新着</string>
+  <string name="nav_home">検索</string>
+  <string name="nav_profile">マイページ</string>
+  <string name="nav_ranking">ランキング</string>
+  <string name="nav_refresh">更新</string>
+  <string name="nav_settings_content_types">Content Types</string>
+  <string name="nav_settings_description">Choose which content types and modes to display. At least one item must remain enabled.</string>
+  <string name="nav_settings_modes">Modes</string>
+  <string name="nav_settings_pixivision_categories">Pixivision Categories</string>
+  <string name="nav_settings_reset">Reset to Defaults</string>
+  <string name="nav_settings_reset_confirm_message">All navigation items will be enabled. This action cannot be undone.</string>
+  <string name="nav_settings_reset_confirm_title">Reset to Defaults?</string>
+  <string name="nav_settings_title_discovery">Discovery Navigation Settings</string>
+  <string name="nav_settings_title_follow_latest">Follow Latest Navigation Settings</string>
+  <string name="nav_settings_title_ranking">Ranking Navigation Settings</string>
+  <string name="nav_settings_watch_list_types">Watch List Types</string>
+  <!-- ========================================================================== -->
+  <!-- Novel -->
+  <!-- ========================================================================== -->
+  <!-- NOVEL_* -->
+  <string name="novel_add_marker">しおりを追加</string>
+  <string name="novel_bg_classic_beige">クラシックベージュ</string>
+  <string name="novel_bg_custom">カスタム</string>
+  <string name="novel_bg_eye_care_green">目に優しい緑</string>
+  <string name="novel_bg_night_black">ナイトモード</string>
+  <string name="novel_bg_paper_white">白紙</string>
+  <string name="novel_bg_theme_default">テーマのデフォルト</string>
+  <string name="novel_bg_warm_yellow">暖かい黄色</string>
+  <string name="novel_collapse">折りたたむ</string>
+  <string name="novel_description">説明</string>
+  <string name="novel_download_image_quality_large">Large (1200px)</string>
+  <string name="novel_download_image_quality_medium">Medium (480px)</string>
+  <string name="novel_download_image_quality_original">Original</string>
+  <string name="novel_download_image_quality_small">Small (240px)</string>
+  <string name="novel_epub_illustration_id">イラスト ID: %1$s</string>
+  <string name="novel_epub_image_download_failed">画像のダウンロードに失敗: %1$s</string>
+  <string name="novel_epub_image_id">画像 ID: %1$s</string>
+  <string name="novel_epub_page_title">%1$s - %2$dページ</string>
+  <string name="novel_expand">展開</string>
+  <string name="novel_font_size_extra_large">特大 (20sp)</string>
+  <string name="novel_font_size_huge">超特大 (22sp)</string>
+  <string name="novel_font_size_large">大 (18sp)</string>
+  <string name="novel_font_size_medium">中 (16sp)</string>
+  <string name="novel_font_size_small">小 (14sp)</string>
+  <string name="novel_friends_only">マイピク限定</string>
+  <string name="novel_friends_only_desc">この作品はマイピクのみ閲覧可能です</string>
+  <string name="novel_id">小説ID</string>
+  <string name="novel_illust">イラスト %1$s</string>
+  <string name="novel_illust_image">小説の挿絵</string>
+  <string name="novel_info">作品情報</string>
+  <string name="novel_no_content">内容がありません</string>
+  <string name="novel_page">%1$dページ</string>
+  <string name="novel_page_count">全 %1$d ページ</string>
+  <string name="novel_page_number">ページ %1$d</string>
+  <string name="novel_pixiv_illust">Pixivイラスト %1$s</string>
+  <string name="novel_preview_content">速い茶色のキツネが怠け者の犬を飛び越えました。これはプレビュー用のサンプルテキストです。The quick brown fox jumps over the lazy dog.</string>
+  <string name="novel_preview_label">プレビュー</string>
+  <string name="novel_publish_time">投稿日時：%1$s</string>
+  <string name="novel_reading_settings_title">読書設定</string>
+  <string name="novel_recommend_empty">この小説のおすすめがまだありません</string>
+  <string name="novel_recommend_title">おすすめ小説</string>
+  <string name="novel_remove_marker">しおりを削除</string>
+  <string name="novel_series">小説シリーズ</string>
+  <string name="novel_setting_background_color">背景色</string>
+  <string name="novel_setting_background_scheme">背景スキーム</string>
+  <string name="novel_setting_custom_colors">カスタムカラー</string>
+  <string name="novel_setting_font_size">フォントサイズ</string>
+  <string name="novel_setting_text_color">文字色</string>
+  <string name="novel_stat_bookmarks">ブックマーク</string>
+  <string name="novel_stat_comments">コメント</string>
+  <string name="novel_stat_likes">いいね</string>
+  <string name="novel_stat_views">閲覧数</string>
+  <string name="novel_tags">タグ</string>
+  <string name="novel_text_count">%1$s 文字</string>
+  <string name="novel_update_marker">しおりを更新</string>
+  <string name="novel_user_id">ユーザーID</string>
+  <!-- ========================================================================== -->
+  <!-- Other -->
+  <!-- ========================================================================== -->
+  <string name="delete_failed_message">Failed to delete backup</string>
+  <string name="delete_failed_title">Delete Failed</string>
+  <string name="description_original">Original</string>
+  <string name="description_translated">Translated</string>
+  <!-- DETAIL_* -->
+  <string name="detail_image_quality_large">大 (540×540)</string>
+  <string name="detail_image_quality_master_1200">最大 (1200px)</string>
+  <string name="detail_image_quality_medium">中 (360×360)</string>
+  <string name="detail_image_quality_original">オリジナル</string>
+  <string name="detail_image_quality_square_medium">標準 (250×250)</string>
+  <string name="file_error_message">Failed to read file</string>
+  <string name="file_error_title">File Error</string>
+  <!-- IMAGE_* -->
+  <string name="image_quality_large">大 (540×540)</string>
+  <string name="image_quality_master_1200">最大 (1200px)</string>
+  <string name="image_quality_medium">中 (360×360)</string>
+  <string name="image_quality_square_medium">標準 (250×250)</string>
+  <string name="invalid_file_message">The selected file is not a valid backup</string>
+  <string name="invalid_file_title">Invalid File</string>
+  <string name="load_failed_message">Failed to load backup history</string>
+  <string name="load_failed_title">Load Failed</string>
+  <!-- MANGA_* -->
+  <string name="manga_series">マンガシリーズ</string>
+  <string name="no_file_selected_message">Please select a backup file first</string>
+  <string name="no_file_selected_title">No File Selected</string>
+  <!-- RETRANSLATE_* -->
+  <string name="retranslate_current_page">Retranslate current page</string>
+  <string name="setup_failed_no_permission">Unable to set backup directory permission</string>
+  <string name="setup_failed_title">Setup Failed</string>
+  <string name="viewer_image_quality_master_1200">最大 (1200px)</string>
+  <string name="viewer_image_quality_original">オリジナル</string>
+  <!-- ========================================================================== -->
+  <!-- Pixivision -->
+  <!-- ========================================================================== -->
+  <!-- PIXIVISION_* -->
+  <string name="pixivision_artworks_title">Featured Artworks</string>
+  <string name="pixivision_description">Description</string>
+  <string name="pixivision_detail_title">Article Details</string>
+  <string name="pixivision_illustration">Illustration</string>
+  <string name="pixivision_manga">Manga</string>
+  <string name="pixivision_open_in_browser">Open in browser</string>
+  <string name="pixivision_published_date">Published:</string>
+  <string name="pixivision_webview_load_error">Failed to load</string>
+  <!-- ========================================================================== -->
+  <!-- Profile -->
+  <!-- ========================================================================== -->
+  <!-- PROFILE_* -->
+  <string name="profile_bookmarks">ブックマーク</string>
+  <string name="profile_following">フォロー</string>
+  <string name="profile_history">閲覧履歴</string>
+  <string name="profile_settings">設定</string>
+  <!-- ========================================================================== -->
+  <!-- Quick Actions -->
+  <!-- ========================================================================== -->
+  <!-- ACTION_* -->
+  <string name="action_block_author">作者をブロック</string>
+  <string name="action_block_tag">このタグをブロック</string>
+  <string name="action_cancel">キャンセル</string>
+  <string name="action_confirm">確定</string>
+  <string name="action_copy">コピー</string>
+  <string name="action_unblock_author">ブロック解除</string>
+  <!-- ========================================================================== -->
+  <!-- Ranking -->
+  <!-- ========================================================================== -->
+  <!-- RANKING_* -->
+  <string name="ranking_ai">AI生成</string>
+  <string name="ranking_ai_r18">AI生成R-18</string>
+  <string name="ranking_ai_type_ai">AI生成</string>
+  <string name="ranking_ai_type_normal">通常</string>
+  <string name="ranking_category_general">一般</string>
+  <string name="ranking_content_all">総合</string>
+  <string name="ranking_content_illust">イラスト</string>
+  <string name="ranking_content_manga">マンガ</string>
+  <string name="ranking_content_novel">小説</string>
+  <string name="ranking_content_ugoira">うごイラ</string>
+  <string name="ranking_current">現在：%1$s</string>
+  <string name="ranking_daily">デイリー</string>
+  <string name="ranking_daily_r18">デイリーR-18</string>
+  <string name="ranking_female">女子に人気</string>
+  <string name="ranking_female_r18">女子に人気R-18</string>
+  <string name="ranking_latest">最新ランキング</string>
+  <string name="ranking_male">男子に人気</string>
+  <string name="ranking_male_r18">男子に人気R-18</string>
+  <string name="ranking_monthly">マンスリー</string>
+  <string name="ranking_next_day">翌日：%1$s</string>
+  <string name="ranking_original">オリジナル</string>
+  <string name="ranking_previous_day">前日：%1$s</string>
+  <string name="ranking_r18g">R-18G</string>
+  <string name="ranking_rookie">ルーキー</string>
+  <string name="ranking_select_date">日付を選択</string>
+  <string name="ranking_select_ranking_date">ランキング日付を選択</string>
+  <string name="ranking_weekly">ウィークリー</string>
+  <string name="ranking_weekly_ai">ウィークリーAI</string>
+  <string name="ranking_weekly_original">ウィークリーオリジナル</string>
+  <string name="ranking_weekly_r18">ウィークリーR-18</string>
+  <string name="ranking_weekly_r18_ai">ウィークリーR-18 AI</string>
+  <!-- ========================================================================== -->
+  <!-- Resource Types -->
+  <!-- ========================================================================== -->
+  <!-- RESOURCE_* -->
+  <string name="resource_type_any">任意</string>
+  <string name="resource_type_illustration">イラスト</string>
+  <string name="resource_type_manga">マンガ</string>
+  <string name="resource_type_novel">小説</string>
+  <string name="resource_type_novel_series">小説シリーズ</string>
+  <string name="resource_type_ugoira">うごイラ</string>
+  <!-- ========================================================================== -->
+  <!-- Search -->
+  <!-- ========================================================================== -->
+  <!-- SEARCH_* -->
+  <string name="search_bookmark_count">ブックマーク数</string>
+  <string name="search_button">検索</string>
+  <string name="search_clear">クリア</string>
+  <string name="search_close">閉じる</string>
+  <string name="search_content_rating">コンテンツレーティング</string>
+  <string name="search_date_range">日付範囲</string>
+  <string name="search_failed">検索に失敗しました</string>
+  <string name="search_filter_ai_desc">AI生成されたイラストと小説をフィルター</string>
+  <string name="search_filter_no_works">作品を投稿していないユーザーをフィルター</string>
+  <string name="search_hide_ai_works">AI生成作品を非表示</string>
+  <string name="search_history_clear">履歴をクリア</string>
+  <string name="search_history_copy">コピー</string>
+  <string name="search_history_empty">検索履歴はありません</string>
+  <string name="search_history_pin">ピン留め</string>
+  <string name="search_history_title">検索履歴</string>
+  <string name="search_history_unpin">ピン留め解除</string>
+  <string name="search_input_hint">作品、タグ、ユーザーを検索...</string>
+  <string name="search_mode">検索モード</string>
+  <string name="search_mode_keyword">タグ・タイトル・キャプション</string>
+  <string name="search_mode_keyword_desc">タグ・タイトル・キャプションで検索</string>
+  <string name="search_mode_tag_full">タグ（完全一致）</string>
+  <string name="search_mode_tag_full_desc">タグで完全一致検索</string>
+  <string name="search_mode_tag_partial">タグ（部分一致）</string>
+  <string name="search_mode_tag_partial_desc">タグで部分一致検索</string>
+  <string name="search_mode_text">本文</string>
+  <string name="search_mode_text_desc">小説本文で検索</string>
+  <string name="search_mode_title_caption">タイトル・キャプション</string>
+  <string name="search_mode_title_caption_desc">タイトルとキャプションで検索</string>
+  <string name="search_mode_user_exact">完全一致</string>
+  <string name="search_mode_user_exact_desc">ユーザー名の完全一致</string>
+  <string name="search_mode_user_partial">部分一致</string>
+  <string name="search_mode_user_partial_desc">ユーザー名の部分一致</string>
+  <string name="search_no_results">検索結果がありません</string>
+  <string name="search_only_users_with_works">作品があるユーザーのみ表示</string>
+  <string name="search_placeholder">イラスト、小説、ユーザーを検索...</string>
+  <string name="search_rating_all">すべて</string>
+  <string name="search_rating_safe">全年齢</string>
+  <string name="search_recommendations_bookmark">📚 ブックマークタグ</string>
+  <string name="search_recommendations_my_favorite">⭐ お気に入りタグ</string>
+  <string name="search_recommendations_popular_illust">🔥 人気のタグ（イラスト）</string>
+  <string name="search_recommendations_popular_novel">🔥 人気のタグ（小説）</string>
+  <string name="search_recommendations_recommended">⭐ おすすめタグ</string>
+  <string name="search_recommendations_refresh">更新</string>
+  <string name="search_recommendations_retry">再試行</string>
+  <string name="search_recommendations_thumbnails">🖼️ 作品プレビュー</string>
+  <string name="search_recommendations_title">検索候補</string>
+  <string name="search_sort_date_asc">古い順</string>
+  <string name="search_sort_date_desc">新しい順</string>
+  <string name="search_sort_order">並び順</string>
+  <string name="search_sort_popular_desc">人気順</string>
+  <string name="search_sort_popular_female_desc">女性に人気</string>
+  <string name="search_sort_popular_male_desc">男性に人気</string>
+  <string name="search_sort_premium_required">プレミアム会員が必要</string>
+  <string name="search_tab_illust">イラスト+マンガ+うごイラ</string>
+  <string name="search_tab_novel">小説</string>
+  <string name="search_tab_user">ユーザー</string>
+  <!-- ========================================================================== -->
+  <!-- Series -->
+  <!-- ========================================================================== -->
+  <!-- SERIES_* -->
+  <string name="series_add_watch">ウォッチリストに追加</string>
+  <string name="series_concluded">完結</string>
+  <string name="series_label">シリーズ：%1$s</string>
+  <string name="series_last_update">最終更新：%1$s</string>
+  <string name="series_ongoing">連載中</string>
+  <string name="series_original">オリジナル</string>
+  <string name="series_remove_watch">ウォッチリストから削除</string>
+  <string name="series_total_episodes">全 %1$d 話</string>
+  <string name="series_update">更新：%1$s</string>
+  <string name="series_watch_count">%1$d 人がウォッチ中</string>
+  <string name="series_watching">フォロー中</string>
+  <string name="series_word_count">%1$s 文字</string>
+  <string name="series_works_list">作品リスト（全 %1$d）</string>
+  <!-- ========================================================================== -->
+  <!-- Settings -->
+  <!-- ========================================================================== -->
+  <!-- SETTINGS_* -->
+  <string name="settings_about">このアプリについて</string>
+  <string name="settings_account">アカウント</string>
+  <string name="settings_api_test_desc">統合されたすべてのPixiv APIを体系的にテスト</string>
+  <string name="settings_api_test_subtitle">Pixiv APIをデバッグ</string>
+  <string name="settings_api_test_tool">APIテストツール 🔧</string>
+  <string name="settings_app_language">アプリの言語</string>
+  <string name="settings_backup_restore">Backup &amp; Restore</string>
+  <string name="settings_backup_restore_desc">Backup settings and credentials, restore from backup</string>
+  <string name="settings_block_list">ブロックリスト</string>
+  <string name="settings_block_list_desc">ブロックされた作者、タグ、コンテンツフィルタを管理</string>
+  <string name="settings_browsing_experience">閲覧体験</string>
+  <string name="settings_cache">キャッシュ</string>
+  <string name="settings_cache_cleared">キャッシュをクリアしました</string>
+  <string name="settings_cache_info_image">画像キャッシュ：%1$s</string>
+  <string name="settings_cache_info_ugoira">うごイラキャッシュ：%1$s</string>
+  <string name="settings_cache_management">キャッシュ管理</string>
+  <string name="settings_cache_size_change_note">注意：キャッシュサイズの変更はアプリを再起動すると有効になります</string>
+  <string name="settings_clear_all_button">すべてクリア</string>
+  <string name="settings_clear_cache">キャッシュをクリア</string>
+  <string name="settings_clear_cache_confirm_message">クリアするキャッシュの種類を選択してください。この操作は元に戻せません。</string>
+  <string name="settings_clear_cache_confirm_title">キャッシュをクリア</string>
+  <string name="settings_clear_image_button">画像をクリア</string>
+  <string name="settings_clear_image_cache">画像キャッシュをクリア</string>
+  <string name="settings_clear_ugoira_button">うごイラをクリア</string>
+  <string name="settings_click_bookmark_action">クリック時のアクション</string>
+  <string name="settings_click_bookmark_action_desc">ブックマークボタンをクリックした時のデフォルト動作を設定</string>
+  <string name="settings_content_filter">コンテンツフィルター</string>
+  <string name="settings_content_management">コンテンツ管理</string>
+  <string name="settings_current_cache_size">現在のキャッシュサイズ</string>
+  <string name="settings_data_management">Data Management</string>
+  <string name="settings_default_startup_tab">デフォルト起動ページ</string>
+  <string name="settings_default_startup_tab_desc">アプリ起動時に開くタブを選択</string>
+  <string name="settings_detail_image_quality">イラスト詳細ページの画質設定</string>
+  <string name="settings_detail_image_quality_desc">作品詳細ページの画像品質</string>
+  <string name="settings_developer_options">開発者オプション</string>
+  <string name="settings_download">ダウンロード設定</string>
+  <string name="settings_download_management_desc">すべてのダウンロードタスクを表示・管理</string>
+  <string name="settings_download_management_subtitle">ダウンロードタスクを管理</string>
+  <string name="settings_download_management_title">ダウンロード管理</string>
+  <string name="settings_download_path">ダウンロードパス</string>
+  <string name="settings_download_path_default">デフォルトパスを使用</string>
+  <string name="settings_download_path_desc">作品ダウンロードの保存パスを設定</string>
+  <string name="settings_download_rules_desc">ダウンロードパスルールをカスタマイズ</string>
+  <string name="settings_download_rules_subtitle">ダウンロードパスルールをカスタマイズ</string>
+  <string name="settings_download_rules_title">ダウンロードパスルール</string>
+  <string name="settings_edit_phpsessid">PHPSESSIDを編集</string>
+  <string name="settings_file_name_mode_custom">カスタム: %1$s</string>
+  <string name="settings_file_name_mode_standard">標準モード</string>
+  <string name="settings_file_name_rules">ファイル名ルール</string>
+  <string name="settings_file_name_rules_desc">ダウンロードファイルの命名形式を設定</string>
+  <string name="settings_file_name_rules_title">ファイル命名規則</string>
+  <string name="settings_general">一般設定</string>
+  <string name="settings_grid_columns_2">2列</string>
+  <string name="settings_grid_columns_3">3列（デフォルト）</string>
+  <string name="settings_grid_columns_4">4列</string>
+  <string name="settings_grid_columns_5">5列</string>
+  <string name="settings_image_cache_cleared">画像キャッシュをクリアしました</string>
+  <string name="settings_image_cache_size">画像キャッシュサイズ</string>
+  <string name="settings_image_cache_size_desc">キャッシュ画像の最大ディスク容量</string>
+  <string name="settings_image_quality">画質</string>
+  <string name="settings_interaction_preferences">インタラクション設定</string>
+  <string name="settings_language">言語</string>
+  <string name="settings_logout">ログアウト</string>
+  <string name="settings_logout_confirm_message">ログアウトしてもよろしいですか？再度ログインする必要があります。</string>
+  <string name="settings_logout_confirm_title">ログアウト</string>
+  <string name="settings_long_press_bookmark_action">長押し時のアクション</string>
+  <string name="settings_long_press_bookmark_action_desc">ブックマークボタンを長押しした時のデフォルト動作を設定</string>
+  <string name="settings_navigation_config">Navigation Settings</string>
+  <string name="settings_navigation_config_desc">Customize navigation items for Ranking, Discovery, and Follow Latest pages</string>
+  <string name="settings_navigation_discovery">Navigation Settings (Discovery)</string>
+  <string name="settings_navigation_discovery_desc">Customize discovery page navigation items</string>
+  <string name="settings_navigation_follow_latest">Navigation Settings (Follow Latest)</string>
+  <string name="settings_navigation_follow_latest_desc">Customize follow latest page navigation items</string>
+  <string name="settings_navigation_ranking">Navigation Settings (Ranking)</string>
+  <string name="settings_navigation_ranking_desc">Customize ranking page navigation items</string>
+  <string name="settings_not_logged_in">ログインしていません</string>
+  <string name="settings_novel">小説設定</string>
+  <string name="settings_novel_download_image_quality">小説ダウンロードの画像品質設定</string>
+  <string name="settings_novel_download_image_quality_desc">小説をEPUBとしてダウンロードする際の埋め込み画像の品質</string>
+  <string name="settings_novel_reading">Novel Reading Settings</string>
+  <string name="settings_novel_reading_desc">Font size, text color, background color</string>
+  <string name="settings_phpsessid">PHPSESSID</string>
+  <string name="settings_phpsessid_desc">Pixiv APIのログイン認証情報</string>
+  <string name="settings_phpsessid_empty">PHPSESSIDは空にできません</string>
+  <string name="settings_phpsessid_input_hint">ブラウザのCookieからPHPSESSIDを入力してください</string>
+  <string name="settings_phpsessid_invalid_format">無効な形式です。期待される形式：userid_xxxxx</string>
+  <string name="settings_phpsessid_warning">⚠️ PHPSESSIDを変更すると、ログイン認証情報が更新されます</string>
+  <string name="settings_pixiv">Pixiv 設定</string>
+  <string name="settings_pixiv_language">Pixiv 言語設定</string>
+  <string name="settings_pixiv_language_desc">Pixiv データ取得時の言語設定</string>
+  <string name="settings_preferred_image_quality">イラストカードの画質設定</string>
+  <string name="settings_preferred_image_quality_desc">リストとグリッド表示のサムネイル画質</string>
+  <string name="settings_r18_sanity_level_normal">通常 (2–3)</string>
+  <string name="settings_r18_sanity_level_r18">R18 (6–9)</string>
+  <string name="settings_r18_sanity_level_safe">安全 (0–1)</string>
+  <string name="settings_r18_sanity_level_suggestive">示唆的 (4–5)</string>
+  <string name="settings_r18_sanity_threshold">R18健全度しきい値</string>
+  <string name="settings_r18_sanity_threshold_desc">健全度 ≥ この値の作品はR18としてマークされます</string>
+  <string name="settings_select_app_language">アプリの言語を選択</string>
+  <string name="settings_select_bookmark_action">ブックマーク動作を選択</string>
+  <string name="settings_select_grid_columns">グリッド列数を選択</string>
+  <string name="settings_select_pixiv_language">Pixiv 言語を選択</string>
+  <string name="settings_select_startup_tab">起動ページを選択</string>
+  <string name="settings_select_theme">テーマを選択</string>
+  <string name="settings_select_translation_engine">Select Translation Engine</string>
+  <string name="settings_select_translation_target_language">Select Target Language</string>
+  <string name="settings_staggered_grid_columns">グリッド列数</string>
+  <string name="settings_staggered_grid_columns_desc">イラストグリッドの列数</string>
+  <string name="settings_theme">テーマ</string>
+  <string name="settings_theme_mode">テーマモード</string>
+  <string name="settings_title">設定</string>
+  <string name="settings_translation">Translation Settings</string>
+  <string name="settings_translation_engine">Translation Engine</string>
+  <string name="settings_translation_engine_desc">Translate artwork captions, novel descriptions, and novel reading content</string>
+  <string name="settings_translation_target_language">Target Language</string>
+  <string name="settings_translation_target_language_desc">Language to translate into</string>
+  <string name="settings_ugoira_cache_cleared">うごイラキャッシュをクリアしました</string>
+  <string name="settings_unknown">不明</string>
+  <string name="settings_user_id">ユーザーID</string>
+  <string name="settings_viewer_image_quality">画像ビューアの画質設定</string>
+  <string name="settings_viewer_image_quality_desc">フルスクリーン表示時の画像品質</string>
+  <string name="settings_widget">Widget</string>
+  <string name="settings_widget_management">Widget Management</string>
+  <string name="settings_widget_management_desc">Manage Pixiv home screen widgets</string>
+  <!-- ========================================================================== -->
+  <!-- Startup -->
+  <!-- ========================================================================== -->
+  <!-- STARTUP_* -->
+  <string name="startup_tab_discovery">発見</string>
+  <string name="startup_tab_follow_latest">フォロー最新</string>
+  <string name="startup_tab_home">検索</string>
+  <string name="startup_tab_last_used">前回終了したページ</string>
+  <string name="startup_tab_profile">プロフィール</string>
+  <string name="startup_tab_ranking">ランキング</string>
+  <!-- ========================================================================== -->
+  <!-- Tags -->
+  <!-- ========================================================================== -->
+  <!-- TAG_* -->
+  <string name="tag_copied">タグをコピーしました</string>
+  <!-- ========================================================================== -->
+  <!-- Theme -->
+  <!-- ========================================================================== -->
+  <string name="theme_dark">ダーク</string>
+  <string name="theme_light">ライト</string>
+  <string name="theme_system">システムデフォルト</string>
+  <!-- ========================================================================== -->
+  <!-- Time Format -->
+  <!-- ========================================================================== -->
+  <!-- TIME_* -->
+  <string name="time_hours">%1$d 時間</string>
+  <string name="time_hours_minutes">%1$d 時間 %2$d 分</string>
+  <string name="time_less_than_minute">1分未満</string>
+  <string name="time_minutes">%1$d 分</string>
+  <!-- ========================================================================== -->
+  <!-- Translation -->
+  <!-- ========================================================================== -->
+  <string name="translating">Translating...</string>
+  <string name="show_original">Show Original</string>
+  <string name="show_translation">Show Translation</string>
+  <!-- TRANSLATION_* -->
+  <string name="translation_engine_google_free">Google Translate (Free)</string>
+  <string name="translation_engine_none">Disabled</string>
+  <string name="translation_lang_de">Deutsch</string>
+  <string name="translation_lang_en">English</string>
+  <string name="translation_lang_es">Español</string>
+  <string name="translation_lang_fr">Français</string>
+  <string name="translation_lang_id">Bahasa Indonesia</string>
+  <string name="translation_lang_it">Italiano</string>
+  <string name="translation_lang_ja">日本語</string>
+  <string name="translation_lang_ko">한국어</string>
+  <string name="translation_lang_ms">Bahasa Melayu</string>
+  <string name="translation_lang_pt">Português</string>
+  <string name="translation_lang_ru">Русский</string>
+  <string name="translation_lang_th">ภาษาไทย</string>
+  <string name="translation_lang_vi">Tiếng Việt</string>
+  <string name="translation_lang_zh_cn">简体中文</string>
+  <string name="translation_lang_zh_tw">繁體中文</string>
+  <string name="translation_not_available">Translation not available</string>
+  <string name="translation_only">Translation Only</string>
+  <!-- ========================================================================== -->
+  <!-- Ugoira -->
+  <!-- ========================================================================== -->
+  <!-- UGOIRA_* -->
+  <string name="ugoira_downloading">うごイラをダウンロード中...</string>
+  <string name="ugoira_downloading_file">アニメーションファイルをダウンロード中...</string>
+  <string name="ugoira_extracting_frames">フレームを抽出中...</string>
+  <string name="ugoira_getting_info">うごイラ情報を取得中...</string>
+  <string name="ugoira_load_failed">読み込み失敗：%1$s</string>
+  <string name="ugoira_loading_frames">フレームを読み込み中 %1$d/%2$d</string>
+  <string name="ugoira_loading_frames_percent">フレームを読み込み中... %1$d%%</string>
+  <string name="ugoira_pause">一時停止</string>
+  <string name="ugoira_play">再生</string>
+  <string name="ugoira_playback_speed">再生速度</string>
+  <string name="ugoira_speed">速度</string>
+  <!-- ========================================================================== -->
+  <!-- User -->
+  <!-- ========================================================================== -->
+  <!-- USER_* -->
+  <string name="user_bookmarks">ブックマーク</string>
+  <string name="user_follow">フォロー</string>
+  <string name="user_followed">フォロー済み</string>
+  <string name="user_followers">フォロワー</string>
+  <string name="user_following_count">フォロー中 %1$d</string>
+  <string name="user_info_age">年齢</string>
+  <string name="user_info_basic">基本情報</string>
+  <string name="user_info_bio">自己紹介</string>
+  <string name="user_info_birthday">誕生日</string>
+  <string name="user_info_can_message">メッセージ送信可</string>
+  <string name="user_info_commission">コミッション</string>
+  <string name="user_info_commission_fan_request">ファンリクエスト状況</string>
+  <string name="user_info_commission_request">リクエスト状況</string>
+  <string name="user_info_empty">ユーザー情報が空です</string>
+  <string name="user_info_followed_back">フォローバック</string>
+  <string name="user_info_following">フォロー中</string>
+  <string name="user_info_gender">性別</string>
+  <string name="user_info_groups">グループ</string>
+  <string name="user_info_is_mypixiv">マイピクです</string>
+  <string name="user_info_job">職業</string>
+  <string name="user_info_links">リンク</string>
+  <string name="user_info_mypixiv">マイピク</string>
+  <string name="user_info_official">公式アカウント</string>
+  <string name="user_info_personal">個人情報</string>
+  <string name="user_info_premium">プレミアム会員</string>
+  <string name="user_info_region">地域</string>
+  <string name="user_info_social">ソーシャル</string>
+  <string name="user_info_status">アカウント状況</string>
+  <string name="user_info_user_id">ユーザーID</string>
+  <string name="user_info_webpage">ウェブサイト</string>
+  <string name="user_info_workspace">作業環境</string>
+  <string name="user_info_workspace_chair">椅子</string>
+  <string name="user_info_workspace_comment">その他</string>
+  <string name="user_info_workspace_desk">机</string>
+  <string name="user_info_workspace_desktop">デスクトップ</string>
+  <string name="user_info_workspace_monitor">モニター</string>
+  <string name="user_info_workspace_mouse">マウス</string>
+  <string name="user_info_workspace_music">BGM</string>
+  <string name="user_info_workspace_pc">PC</string>
+  <string name="user_info_workspace_printer">プリンター</string>
+  <string name="user_info_workspace_scanner">スキャナー</string>
+  <string name="user_info_workspace_tablet">タブレット</string>
+  <string name="user_info_workspace_tool">ソフトウェア</string>
+  <string name="user_load_failed">読み込みに失敗しました</string>
+  <string name="user_load_info_failed">ユーザー情報の読み込みに失敗しました</string>
+  <string name="user_load_more_failed">追加読み込みに失敗しました</string>
+  <string name="user_load_works_failed">作品リストの読み込みに失敗しました</string>
+  <string name="user_network_error">ネットワークエラー</string>
+  <string name="user_no_works">このユーザーは作品を投稿していません</string>
+  <string name="user_recommend_users_empty">おすすめユーザーがいません</string>
+  <string name="user_recommend_users_empty_hint">似たスタイルのユーザーはすべてフォロー済みかもしれません</string>
+  <string name="user_relations_empty">ユーザーがいません</string>
+  <string name="user_relations_followers">フォロワー</string>
+  <string name="user_relations_following">フォロー中</string>
+  <string name="user_relations_load_failed">ユーザーリストの読み込みに失敗しました</string>
+  <string name="user_relations_mypixiv">マイピク</string>
+  <string name="user_relations_private">非公開</string>
+  <string name="user_relations_public">公開</string>
+  <string name="user_relations_title">%1$s の関係</string>
+  <string name="user_tab_bookmark_illusts_private">非公開ブックマーク（イラスト）</string>
+  <string name="user_tab_bookmark_illusts_public">公開ブックマーク（イラスト）</string>
+  <string name="user_tab_bookmark_novels_private">非公開ブックマーク（小説）</string>
+  <string name="user_tab_bookmark_novels_public">公開ブックマーク（小説）</string>
+  <string name="user_tab_illusts">イラスト</string>
+  <string name="user_tab_info">情報</string>
+  <string name="user_tab_manga">マンガ</string>
+  <string name="user_tab_manga_series">マンガシリーズ</string>
+  <string name="user_tab_novel_series">小説シリーズ</string>
+  <string name="user_tab_novels">小説</string>
+  <string name="user_tab_recommend_users">おすすめユーザー</string>
+  <string name="user_unfollow">フォロー解除</string>
+  <string name="user_works">作品</string>
+  <string name="user_works_empty">作品概要が空です</string>
 </resources>
