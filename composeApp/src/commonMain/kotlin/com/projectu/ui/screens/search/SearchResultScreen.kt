@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -1089,8 +1090,19 @@ fun SortOrderDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
     
-    // 过滤可用的排序选项
-    val availableOrders = SortOrder.entries.filter { !it.requiresPremium || isPremiumUser }
+    // 过滤可用的排序选项：
+    // - 非会员：显示日期排序 + 伪热度排序
+    // - 会员：显示日期排序 + 真实热度排序
+    val availableOrders = SortOrder.entries.filter { order ->
+        when {
+            // 伪热度排序只给非会员
+            order.isPreviewMode -> !isPremiumUser
+            // 真实热度排序只给会员
+            order.requiresPremium -> isPremiumUser
+            // 日期排序所有人都可用
+            else -> true
+        }
+    }
     val orderNames = availableOrders.map { it.getDisplayName() }
     val selectedOrderName = selectedOrder.getDisplayName()
     
@@ -1250,7 +1262,13 @@ fun ContentModeChips(
                 FilterChip(
                     selected = selectedMode == mode,
                     onClick = { onModeSelect(mode) },
-                    label = { Text(mode.getDisplayName()) },
+                    label = { 
+                        Text(
+                            text = mode.getDisplayName(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        ) 
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -1677,6 +1695,7 @@ fun SortOrder.getDisplayName(): String {
         when (this) {
             SortOrder.DATE_DESC -> Res.string.search_sort_date_desc
             SortOrder.DATE_ASC -> Res.string.search_sort_date_asc
+            SortOrder.POPULAR_PREVIEW -> Res.string.search_sort_popular_preview
             SortOrder.POPULAR_DESC -> Res.string.search_sort_popular_desc
             SortOrder.POPULAR_MALE_DESC -> Res.string.search_sort_popular_male_desc
             SortOrder.POPULAR_FEMALE_DESC -> Res.string.search_sort_popular_female_desc

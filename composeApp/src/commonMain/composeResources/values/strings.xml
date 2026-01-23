@@ -1006,6 +1006,7 @@ ProjectU - Pixiv Kotlin Multiplatform Client
         <string name="search_sort_date_asc">Oldest first</string>
         <string name="search_sort_date_desc">Newest first</string>
         <string name="search_sort_order">Sort Order</string>
+        <string name="search_sort_popular_preview">Popular (Preview)</string>
         <string name="search_sort_popular_desc">Popular (All users)</string>
         <string name="search_sort_popular_female_desc">Popular (Female users)</string>
         <string name="search_sort_popular_male_desc">Popular (Male users)</string>

@@ -21,9 +21,16 @@ enum class SearchCategory(val displayNameKey: String) {
 /**
  * 排序方式
  */
-enum class SortOrder(val value: String, val displayNameKey: String, val requiresPremium: Boolean = false) {
+enum class SortOrder(
+    val value: String, 
+    val displayNameKey: String, 
+    val requiresPremium: Boolean = false,
+    val isPreviewMode: Boolean = false  // 是否为预览模式（伪热度排序）
+) {
     DATE_DESC("date_d", "search_sort_date_desc"),
     DATE_ASC("date", "search_sort_date_asc"),
+    // 伪热度排序（仅限非会员，使用响应体中的 popular 数据）
+    POPULAR_PREVIEW("date_d", "search_sort_popular_preview", requiresPremium = false, isPreviewMode = true),
     // 以下排序方式仅限高级会员
     POPULAR_DESC("popular_d", "search_sort_popular_desc", true),
     POPULAR_MALE_DESC("popular_male_d", "search_sort_popular_male_desc", true),
@@ -71,7 +78,7 @@ enum class BookmarkCount(val tag: String, val displayNameKey: String) {
  */
 data class IllustSearchParams(
     val searchMode: IllustSearchMode = IllustSearchMode.DEFAULT,
-    val order: SortOrder = SortOrder.DATE_DESC,  // 默认值，会根据会员状态动态调整
+    val order: SortOrder = SortOrder.POPULAR_PREVIEW,  // 默认值：非会员使用热度预览，会根据会员状态动态调整
     val contentMode: ContentMode = ContentMode.ALL,
     val bookmarkCount: BookmarkCount = BookmarkCount.NONE,
     val hideAi: Boolean = false,
@@ -80,10 +87,12 @@ data class IllustSearchParams(
     companion object {
         /**
          * 根据会员状态创建默认参数
+         * 会员用户：真实热度排序
+         * 非会员用户：热度预览（伪热度排序）
          */
         fun createDefault(isPremium: Boolean): IllustSearchParams {
             return IllustSearchParams(
-                order = if (isPremium) SortOrder.POPULAR_DESC else SortOrder.DATE_DESC
+                order = if (isPremium) SortOrder.POPULAR_DESC else SortOrder.POPULAR_PREVIEW
             )
         }
     }
@@ -103,6 +112,8 @@ data class NovelSearchParams(
     companion object {
         /**
          * 根据会员状态创建默认参数
+         * 会员用户：真实热度排序
+         * 非会员用户：时间排序（小说接口不返回 popular 数据，无法使用热度预览）
          */
         fun createDefault(isPremium: Boolean): NovelSearchParams {
             return NovelSearchParams(

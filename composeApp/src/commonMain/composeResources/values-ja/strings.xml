@@ -986,6 +986,7 @@
     <string name="search_sort_date_asc">古い順</string>
     <string name="search_sort_date_desc">新しい順</string>
     <string name="search_sort_order">並び順</string>
+    <string name="search_sort_popular_preview">人気プレビュー</string>
     <string name="search_sort_popular_desc">人気順</string>
     <string name="search_sort_popular_female_desc">女性に人気</string>
     <string name="search_sort_popular_male_desc">男性に人気</string>

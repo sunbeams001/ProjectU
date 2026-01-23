@@ -986,6 +986,7 @@
     <string name="search_sort_date_asc">從舊到新</string>
     <string name="search_sort_date_desc">從新到舊</string>
     <string name="search_sort_order">排序方式</string>
+    <string name="search_sort_popular_preview">熱度預覽</string>
     <string name="search_sort_popular_desc">受全站歡迎</string>
     <string name="search_sort_popular_female_desc">受女性歡迎</string>
     <string name="search_sort_popular_male_desc">受男性歡迎</string>

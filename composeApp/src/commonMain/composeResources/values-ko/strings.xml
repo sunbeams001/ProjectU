@@ -986,6 +986,7 @@
     <string name="search_sort_date_asc">오래된순</string>
     <string name="search_sort_date_desc">최신순</string>
     <string name="search_sort_order">정렬 순서</string>
+    <string name="search_sort_popular_preview">인기 미리보기</string>
     <string name="search_sort_popular_desc">인기순</string>
     <string name="search_sort_popular_female_desc">여성에게 인기</string>
     <string name="search_sort_popular_male_desc">남성에게 인기</string>

@@ -307,17 +307,42 @@ class SearchResultViewModel(
                 
                 if (!result.error && result.body != null) {
                     val body = result.body!!
-                    val artworks = body.illustManga.data.toArtworkList(
-                        tagTranslationUtil = tagTranslationUtil,
-                        tagTranslation = body.tagTranslation,
-                        ageLimitDeterminer = ageLimitDeterminer
-                    )
+                    
+                    // 判断是否使用伪热度排序（POPULAR_PREVIEW）
+                    val artworks = if (state.illustParams.order.isPreviewMode && state.illustPage == 1) {
+                        // 第一页使用 popular 数据（recent + permanent）
+                        val popularArtworks = mutableListOf<IllustSimple>()
+                        body.popular?.recent?.let { popularArtworks.addAll(it) }
+                        body.popular?.permanent?.let { popularArtworks.addAll(it) }
+                        
+                        if (popularArtworks.isNotEmpty()) {
+                            popularArtworks.toArtworkList(
+                                tagTranslationUtil = tagTranslationUtil,
+                                tagTranslation = body.tagTranslation,
+                                ageLimitDeterminer = ageLimitDeterminer
+                            )
+                        } else {
+                            // 如果没有 popular 数据，回退到常规数据
+                            body.illustManga.data.toArtworkList(
+                                tagTranslationUtil = tagTranslationUtil,
+                                tagTranslation = body.tagTranslation,
+                                ageLimitDeterminer = ageLimitDeterminer
+                            )
+                        }
+                    } else {
+                        // 常规排序或伪热度排序的后续页面使用正常数据
+                        body.illustManga.data.toArtworkList(
+                            tagTranslationUtil = tagTranslationUtil,
+                            tagTranslation = body.tagTranslation,
+                            ageLimitDeterminer = ageLimitDeterminer
+                        )
+                    }
                     
                     _state.update { current ->
                         current.copy(
                             illustResults = current.illustResults + artworks,
                             illustPage = current.illustPage + 1,
-                            hasMoreIllust = artworks.isNotEmpty(),
+                            hasMoreIllust = artworks.isNotEmpty() && !state.illustParams.order.isPreviewMode,  // 伪热度排序只显示第一页
                             isLoadingMore = false
                         )
                     }
