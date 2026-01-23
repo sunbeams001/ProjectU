@@ -2,8 +2,9 @@
 <resources>
     <!-- 分享功能标签 -->
     <string name="share_image_search">以圖搜圖 (SauceNAO)</string>
-    <string name="share_image_search_ascii2d">以圖搜圖 (Ascii2d)</string>    
-    <!-- Widget 相關字串 -->
+    <string name="share_image_search_ascii2d">以圖搜圖 (Ascii2d)</string>
+
+    <!-- Widget 相关字符串 -->
     <string name="widget_name">Pixiv 作品展示</string>
     <string name="widget_description">在桌面展示 Pixiv 作品</string>
     <string name="widget_config_title">配置 Pixiv 小工具</string>
@@ -44,12 +45,14 @@
     <string name="widget_error_no_artwork">沒有可顯示的作品</string>
     <string name="widget_error_update_failed">更新失敗</string>
     <string name="widget_error_refresh_failed">刷新失敗</string>
-        <!-- 時間單位 -->
+
+    <!-- 时间单位 -->
     <string name="time_unit_minute">%d分鐘</string>
     <string name="time_unit_hour">%d小時</string>
     <string name="time_unit_hour_minute">%1$d小時%2$d分鐘</string>
     <string name="time_unit_day">%d天</string>
-        <!-- 通用字符串 (Android Compose代码专用) -->
+
+    <!-- 通用字符串 (Android Compose代码专用) -->
     <string name="common_cancel">取消</string>
     <string name="common_save">儲存</string>
     <string name="common_back">返回</string>

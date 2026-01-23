@@ -3,8 +3,8 @@
     <!-- 分享功能标签 -->
     <string name="share_image_search">이미지 검색 (SauceNAO)</string>
     <string name="share_image_search_ascii2d">이미지 검색 (Ascii2d)</string>
-    
-    <!-- Widget 관련 문자열 -->
+
+    <!-- Widget 相关字符串 -->
     <string name="widget_name">Pixiv 작품 표시</string>
     <string name="widget_description">홈 화면에 Pixiv 작품 표시</string>
     <string name="widget_config_title">Pixiv Widget 설정</string>
@@ -45,14 +45,14 @@
     <string name="widget_error_no_artwork">표시할 작품이 없습니다</string>
     <string name="widget_error_update_failed">업데이트 실패</string>
     <string name="widget_error_refresh_failed">새로고침 실패</string>
-    
-    <!-- 시간 단위 -->
+
+    <!-- 时间单位 -->
     <string name="time_unit_minute">%d분</string>
     <string name="time_unit_hour">%d시간</string>
     <string name="time_unit_hour_minute">%1$d시간 %2$d분</string>
     <string name="time_unit_day">%d일</string>
-    
-    <!-- 통용 문자열 (Android Compose 코드 전용) -->
+
+    <!-- 通用字符串 (Android Compose代码专用) -->
     <string name="common_cancel">취소</string>
     <string name="common_save">저장</string>
     <string name="common_back">뒤로</string>

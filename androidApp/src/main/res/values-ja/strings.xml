@@ -3,8 +3,8 @@
     <!-- 分享功能标签 -->
     <string name="share_image_search">画像で検索 (SauceNAO)</string>
     <string name="share_image_search_ascii2d">画像で検索 (Ascii2d)</string>
-    
-    <!-- Widget 関連文字列 -->
+
+    <!-- Widget 相关字符串 -->
     <string name="widget_name">Pixivイラスト</string>
     <string name="widget_description">ホーム画面にPixivイラストを表示</string>
     <string name="widget_config_title">Pixiv Widget設定</string>
@@ -45,13 +45,13 @@
     <string name="widget_error_no_artwork">表示する作品がありません</string>
     <string name="widget_error_update_failed">更新に失敗しました</string>
     <string name="widget_error_refresh_failed">更新に失敗しました</string>
-    
-    <!-- 時間単位 -->
+
+    <!-- 时间单位 -->
     <string name="time_unit_minute">%d分</string>
     <string name="time_unit_hour">%d時間</string>
     <string name="time_unit_hour_minute">%1$d時間%2$d分</string>
     <string name="time_unit_day">%d日</string>
-    
+
     <!-- 通用字符串 (Android Compose代码专用) -->
     <string name="common_cancel">キャンセル</string>
     <string name="common_save">保存</string>
