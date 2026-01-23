@@ -89,83 +89,83 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- Backup & Restore -->
   <!-- ========================================================================== -->
   <!-- BACKUP_* -->
-  <string name="backup_button">Create Backup</string>
-  <string name="backup_comment_hint">e.g., Before switching devices</string>
-  <string name="backup_comment_label">Comment (Optional)</string>
-  <string name="backup_comment_label_short">Comment</string>
-  <string name="backup_content_label">Content</string>
-  <string name="backup_create_title">Create Backup</string>
-  <string name="backup_created_message">Backup file saved to:\n%1$s</string>
-  <string name="backup_created_title">Backup Created</string>
-  <string name="backup_delete_confirm_message">Are you sure you want to delete this backup?</string>
-  <string name="backup_delete_confirm_title">Delete Backup</string>
-  <string name="backup_deleted">Backup deleted</string>
-  <string name="backup_directory_hint">Set backup directory to view historical backup files</string>
-  <string name="backup_directory_set">Backup directory set</string>
-  <string name="backup_directory_title">Backup Directory</string>
-  <string name="backup_failed_title">Backup Failed</string>
-  <string name="backup_file_location">File Location</string>
-  <string name="backup_guide_dialog_title">Select Backup Directory</string>
-  <string name="backup_guide_navigation">📱 Navigation tips:\n1. Find and tap Download folder\n2. Enter ProjectU folder\n3. Select Backups folder</string>
-  <string name="backup_guide_recommend">Recommended path:</string>
-  <string name="backup_guide_start">Start Selection</string>
-  <string name="backup_history_empty">No backups yet</string>
-  <string name="backup_history_title">Backup History</string>
-  <string name="backup_item_comment">Comment: %1$s</string>
-  <string name="backup_item_modules">Modules: %1$s</string>
-  <string name="backup_item_size">Size: %1$s</string>
-  <string name="backup_loading">Scanning backup files...</string>
-  <string name="backup_module_block_rules">Block List</string>
-  <string name="backup_module_block_rules_desc">Blocked authors and tags</string>
-  <string name="backup_module_browse_history">Browse History</string>
-  <string name="backup_module_browse_history_desc">Artwork viewing records</string>
-  <string name="backup_module_credentials">Login Credentials</string>
-  <string name="backup_module_credentials_desc">PHPSESSID and CSRF Token</string>
-  <string name="backup_module_download_rules">Download Path Rules</string>
-  <string name="backup_module_download_rules_desc">Custom download path rules</string>
-  <string name="backup_module_download_tasks">Download Tasks</string>
-  <string name="backup_module_download_tasks_desc">Download task records and status</string>
-  <string name="backup_module_search_history">Search History</string>
-  <string name="backup_module_search_history_desc">Search history and pinned keywords</string>
-  <string name="backup_module_settings">App Settings</string>
-  <string name="backup_module_settings_desc">Language, theme, image quality settings</string>
-  <string name="backup_modules_label">Backup Content</string>
-  <string name="backup_progress_compressing">Compressing...</string>
-  <string name="backup_progress_exporting">Exporting %s...</string>
-  <string name="backup_progress_saving">Saving...</string>
-  <string name="backup_progress_title">Creating Backup...</string>
-  <string name="backup_restore_title">Backup &amp; Restore</string>
-  <string name="backup_scanned_count">Scanned %1$d backup files</string>
+  <string name="backup_button">バックアップを作成</string>
+  <string name="backup_comment_hint">例：デバイス切り替え前</string>
+  <string name="backup_comment_label">コメント（任意）</string>
+  <string name="backup_comment_label_short">コメント</string>
+  <string name="backup_content_label">内容</string>
+  <string name="backup_create_title">バックアップを作成</string>
+  <string name="backup_created_message">バックアップファイルを保存しました：\n%1$s</string>
+  <string name="backup_created_title">バックアップ作成完了</string>
+  <string name="backup_delete_confirm_message">このバックアップを削除してもよろしいですか？</string>
+  <string name="backup_delete_confirm_title">バックアップを削除</string>
+  <string name="backup_deleted">バックアップを削除しました</string>
+  <string name="backup_directory_hint">バックアップディレクトリを設定すると履歴ファイルを表示できます</string>
+  <string name="backup_directory_set">バックアップディレクトリを設定しました</string>
+  <string name="backup_directory_title">バックアップディレクトリ</string>
+  <string name="backup_failed_title">バックアップ失敗</string>
+  <string name="backup_file_location">ファイルの場所</string>
+  <string name="backup_guide_dialog_title">バックアップディレクトリを選択</string>
+  <string name="backup_guide_navigation">📱 ナビゲーションのヒント：\n1. Downloadフォルダを見つけてタップ\n2. ProjectUフォルダに入る\n3. Backupsフォルダを選択</string>
+  <string name="backup_guide_recommend">推奨パス：</string>
+  <string name="backup_guide_start">選択を開始</string>
+  <string name="backup_history_empty">バックアップがありません</string>
+  <string name="backup_history_title">バックアップ履歴</string>
+  <string name="backup_item_comment">コメント：%1$s</string>
+  <string name="backup_item_modules">モジュール：%1$s</string>
+  <string name="backup_item_size">サイズ：%1$s</string>
+  <string name="backup_loading">バックアップファイルをスキャン中...</string>
+  <string name="backup_module_block_rules">ブロックリスト</string>
+  <string name="backup_module_block_rules_desc">ブロックした作者とタグ</string>
+  <string name="backup_module_browse_history">閲覧履歴</string>
+  <string name="backup_module_browse_history_desc">作品の閲覧記録</string>
+  <string name="backup_module_credentials">ログイン認証情報</string>
+  <string name="backup_module_credentials_desc">PHPSESSIDとCSRFトークン</string>
+  <string name="backup_module_download_rules">ダウンロードパスルール</string>
+  <string name="backup_module_download_rules_desc">カスタムダウンロードパスルール</string>
+  <string name="backup_module_download_tasks">ダウンロードタスク</string>
+  <string name="backup_module_download_tasks_desc">ダウンロードタスクの記録とステータス</string>
+  <string name="backup_module_search_history">検索履歴</string>
+  <string name="backup_module_search_history_desc">検索履歴とピン留めキーワード</string>
+  <string name="backup_module_settings">アプリ設定</string>
+  <string name="backup_module_settings_desc">言語、テーマ、画質などの設定</string>
+  <string name="backup_modules_label">バックアップ内容</string>
+  <string name="backup_progress_compressing">圧縮中...</string>
+  <string name="backup_progress_exporting">%s をエクスポート中...</string>
+  <string name="backup_progress_saving">保存中...</string>
+  <string name="backup_progress_title">バックアップ作成中...</string>
+  <string name="backup_restore_title">バックアップと復元</string>
+  <string name="backup_scanned_count">%1$d 個のバックアップファイルをスキャンしました</string>
   <string name="backup_size_10kb">&lt; 10 KB</string>
   <string name="backup_size_10mb">100 KB - 10 MB</string>
   <string name="backup_size_20kb">&lt; 20 KB</string>
   <string name="backup_size_50kb">&lt; 50 KB</string>
   <string name="backup_size_50mb">1 MB - 50 MB</string>
   <string name="backup_size_5kb">&lt; 5 KB</string>
-  <string name="backup_success_created">Backup file created successfully</string>
-  <string name="backup_success_location">Save location:</string>
-  <string name="backup_tab">Backup</string>
-  <string name="backup_time_label">Backup Time</string>
+  <string name="backup_success_created">バックアップファイルが正常に作成されました</string>
+  <string name="backup_success_location">保存場所：</string>
+  <string name="backup_tab">バックアップ</string>
+  <string name="backup_time_label">バックアップ時刻</string>
   <!-- RESTORE_* -->
-  <string name="restore_button">Restore</string>
-  <string name="restore_complete_message">Successfully restored %1$d modules (%2$d records).\n\nThe app will restart automatically to apply all settings...</string>
-  <string name="restore_complete_title">Restore Complete</string>
-  <string name="restore_failed_title">Restore Failed</string>
-  <string name="restore_file_created">Created: %s</string>
-  <string name="restore_file_info">File Info</string>
-  <string name="restore_file_modules">Modules: %s</string>
-  <string name="restore_file_platform">Platform: %s</string>
-  <string name="restore_file_size">Size: %s</string>
-  <string name="restore_file_version">Version: %s</string>
-  <string name="restore_from_file">Restore from File</string>
-  <string name="restore_progress_extracting">Extracting...</string>
-  <string name="restore_progress_importing">Importing %s...</string>
-  <string name="restore_progress_title">Restoring...</string>
-  <string name="restore_progress_validating">Validating backup file...</string>
-  <string name="restore_select_file">Select Backup File</string>
-  <string name="restore_tab">Restore</string>
-  <string name="restore_warning_message">• Restoration will overwrite current settings and login info\n• It is recommended to backup current data first\n• App will restart after restoration</string>
-  <string name="restore_warning_title">⚠️ Important Notes</string>
+  <string name="restore_button">復元を開始</string>
+  <string name="restore_complete_message">%1$d 個のモジュール（%2$d 件のレコード）を正常に復元しました。\n\nすべての設定を適用するため、アプリが自動的に再起動します...</string>
+  <string name="restore_complete_title">復元完了</string>
+  <string name="restore_failed_title">復元失敗</string>
+  <string name="restore_file_created">作成日時：%s</string>
+  <string name="restore_file_info">ファイル情報</string>
+  <string name="restore_file_modules">モジュール：%s</string>
+  <string name="restore_file_platform">プラットフォーム：%s</string>
+  <string name="restore_file_size">サイズ：%s</string>
+  <string name="restore_file_version">バージョン：%s</string>
+  <string name="restore_from_file">ファイルから復元</string>
+  <string name="restore_progress_extracting">展開中...</string>
+  <string name="restore_progress_importing">%s をインポート中...</string>
+  <string name="restore_progress_title">復元中...</string>
+  <string name="restore_progress_validating">バックアップファイルを検証中...</string>
+  <string name="restore_select_file">バックアップファイルを選択</string>
+  <string name="restore_tab">復元</string>
+  <string name="restore_warning_message">• 復元操作により現在の設定とログイン情報が上書きされます\n• 現在のデータを先にバックアップすることをお勧めします\n• 復元完了後、アプリが再起動します</string>
+  <string name="restore_warning_title">⚠️ 重要な注意事項</string>
   <!-- ========================================================================== -->
   <!-- Block List -->
   <!-- ========================================================================== -->
@@ -295,13 +295,13 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- Common UI -->
   <!-- ========================================================================== -->
   <!-- COMMON_* -->
-  <string name="common_add_rule">Add Rule</string>
+  <string name="common_add_rule">ルールを追加</string>
   <string name="common_back">戻る</string>
   <string name="common_cancel">キャンセル</string>
   <string name="common_close">閉じる</string>
-  <string name="common_columns_format">%d Columns</string>
+  <string name="common_columns_format">%d 列</string>
   <string name="common_confirm">確認</string>
-  <string name="common_copied">Copied: %s</string>
+  <string name="common_copied">コピーしました: %s</string>
   <string name="common_delete">削除</string>
   <string name="common_done">完了</string>
   <string name="common_edit">編集</string>
@@ -311,7 +311,7 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="common_ok">OK</string>
   <string name="common_retry">再試行</string>
   <string name="common_save">保存</string>
-  <string name="common_translation_label">📝 Translation</string>
+  <string name="common_translation_label">📝 翻訳</string>
   <string name="close">閉じる</string>
   <string name="recommended">おすすめ</string>
   <!-- ========================================================================== -->
@@ -348,10 +348,10 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- Desktop Specific -->
   <!-- ========================================================================== -->
   <!-- DESKTOP_* -->
-  <string name="desktop_download_progress">Download progress: %d%%</string>
+  <string name="desktop_download_progress">ダウンロード進行状況: %d%%</string>
   <string name="desktop_select_download_dir">ダウンロードディレクトリを選択</string>
-  <string name="desktop_webview_initializing">Initializing WebView component...</string>
-  <string name="desktop_webview_restart_required">Application restart required to use WebView functionality</string>
+  <string name="desktop_webview_initializing">WebViewコンポーネントを初期化中...</string>
+  <string name="desktop_webview_restart_required">WebView機能を使用するにはアプリの再起動が必要です</string>
   <!-- ========================================================================== -->
   <!-- Discovery -->
   <!-- ========================================================================== -->
@@ -359,7 +359,7 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="discovery_mode_all">すべて</string>
   <string name="discovery_mode_r18">R-18</string>
   <string name="discovery_mode_safe">全年齢</string>
-  <string name="discovery_pixivision">Pixivision</string>
+  <string name="discovery_pixivision">特集</string>
   <string name="discovery_recent_searches">最近の検索</string>
   <string name="discovery_recommended_illusts">おすすめイラスト・マンガ</string>
   <string name="discovery_recommended_novels">おすすめ小説</string>
@@ -437,14 +437,14 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- ERROR_* -->
   <string name="error_cannot_load_frames">フレームを読み込めません</string>
   <string name="error_data_empty">データが空です</string>
-  <string name="error_empty_response">Empty response data</string>
+  <string name="error_empty_response">レスポンスデータが空です</string>
   <string name="error_icon_desc">エラー</string>
   <string name="error_image_load_failed">画像の読み込みに失敗しました</string>
   <string name="error_invalid_artwork_id">無効な作品ID</string>
   <string name="error_load_failed">読み込みに失敗しました</string>
-  <string name="error_load_more_failed">Load more failed</string>
+  <string name="error_load_more_failed">さらに読み込めませんでした</string>
   <string name="error_network">ネットワークエラー</string>
-  <string name="error_refresh_failed">Refresh failed</string>
+  <string name="error_refresh_failed">更新に失敗しました</string>
   <string name="error_unknown">不明なエラー</string>
   <!-- ========================================================================== -->
   <!-- File Naming -->
@@ -522,8 +522,8 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="follow_latest_novels">小説</string>
   <string name="follow_latest_title">フォロー新着</string>
   <string name="follow_latest_watch_list">ウォッチリスト</string>
-  <string name="follow_latest_watch_list_manga">Manga</string>
-  <string name="follow_latest_watch_list_novels">Novels</string>
+  <string name="follow_latest_watch_list_manga">マンガ</string>
+  <string name="follow_latest_watch_list_novels">小説</string>
   <string name="follow_unfollow">フォロー解除</string>
   <string name="follow_unfollow_private">非公開フォローを解除</string>
   <!-- ========================================================================== -->
@@ -604,7 +604,7 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- List States -->
   <!-- ========================================================================== -->
   <!-- LIST_* -->
-  <string name="list_no_more_items">No more items</string>
+  <string name="list_no_more_items">これ以上ありません</string>
   <!-- ========================================================================== -->
   <!-- Login -->
   <!-- ========================================================================== -->
@@ -634,8 +634,8 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="login_phpsessid_login">PHPSESSIDでログイン</string>
   <string name="login_phpsessid_title">PHPSESSIDでログイン</string>
   <string name="login_register">アカウント作成</string>
-  <string name="login_restore_from_backup">Restore from Backup</string>
-  <string name="login_restore_hint">If you have a backup file, you can restore app settings and credentials before logging in</string>
+  <string name="login_restore_from_backup">バックアップから復元</string>
+  <string name="login_restore_hint">バックアップファイルがある場合、ログイン前にアプリの設定と認証情報を復元できます</string>
   <string name="login_session_expired">ログインセッションが期限切れです。再度ログインしてください。</string>
   <string name="login_subtitle">Pixivにログインして、パーソナライズされたコンテンツにアクセス</string>
   <string name="login_title">Pixivにログイン</string>
@@ -657,17 +657,17 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="nav_profile">マイページ</string>
   <string name="nav_ranking">ランキング</string>
   <string name="nav_refresh">更新</string>
-  <string name="nav_settings_content_types">Content Types</string>
-  <string name="nav_settings_description">Choose which content types and modes to display. At least one item must remain enabled.</string>
-  <string name="nav_settings_modes">Modes</string>
-  <string name="nav_settings_pixivision_categories">Pixivision Categories</string>
-  <string name="nav_settings_reset">Reset to Defaults</string>
-  <string name="nav_settings_reset_confirm_message">All navigation items will be enabled. This action cannot be undone.</string>
-  <string name="nav_settings_reset_confirm_title">Reset to Defaults?</string>
-  <string name="nav_settings_title_discovery">Discovery Navigation Settings</string>
-  <string name="nav_settings_title_follow_latest">Follow Latest Navigation Settings</string>
-  <string name="nav_settings_title_ranking">Ranking Navigation Settings</string>
-  <string name="nav_settings_watch_list_types">Watch List Types</string>
+  <string name="nav_settings_content_types">コンテンツタイプ</string>
+  <string name="nav_settings_description">表示するコンテンツタイプとモードを選択してください。少なくとも1つの項目は有効にしておく必要があります。</string>
+  <string name="nav_settings_modes">モード</string>
+  <string name="nav_settings_pixivision_categories">Pixivisionカテゴリ</string>
+  <string name="nav_settings_reset">デフォルトに戻す</string>
+  <string name="nav_settings_reset_confirm_message">すべてのナビゲーション項目が有効になります。この操作は元に戻せません。</string>
+  <string name="nav_settings_reset_confirm_title">デフォルト設定に戻しますか？</string>
+  <string name="nav_settings_title_discovery">発見ページナビゲーション設定</string>
+  <string name="nav_settings_title_follow_latest">最新ページナビゲーション設定</string>
+  <string name="nav_settings_title_ranking">ランキングナビゲーション設定</string>
+  <string name="nav_settings_watch_list_types">ウォッチリストタイプ</string>
   <!-- ========================================================================== -->
   <!-- Novel -->
   <!-- ========================================================================== -->
@@ -731,49 +731,49 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- ========================================================================== -->
   <!-- Other -->
   <!-- ========================================================================== -->
-  <string name="delete_failed_message">Failed to delete backup</string>
-  <string name="delete_failed_title">Delete Failed</string>
-  <string name="description_original">Original</string>
-  <string name="description_translated">Translated</string>
+  <string name="delete_failed_message">バックアップの削除に失敗しました</string>
+  <string name="delete_failed_title">削除失敗</string>
+  <string name="description_original">原文モード</string>
+  <string name="description_translated">翻訳モード</string>
   <!-- DETAIL_* -->
   <string name="detail_image_quality_large">大 (540×540)</string>
   <string name="detail_image_quality_master_1200">最大 (1200px)</string>
   <string name="detail_image_quality_medium">中 (360×360)</string>
   <string name="detail_image_quality_original">オリジナル</string>
   <string name="detail_image_quality_square_medium">標準 (250×250)</string>
-  <string name="file_error_message">Failed to read file</string>
-  <string name="file_error_title">File Error</string>
+  <string name="file_error_message">ファイルの読み取りに失敗しました</string>
+  <string name="file_error_title">ファイルエラー</string>
   <!-- IMAGE_* -->
   <string name="image_quality_large">大 (540×540)</string>
   <string name="image_quality_master_1200">最大 (1200px)</string>
   <string name="image_quality_medium">中 (360×360)</string>
   <string name="image_quality_square_medium">標準 (250×250)</string>
-  <string name="invalid_file_message">The selected file is not a valid backup</string>
-  <string name="invalid_file_title">Invalid File</string>
-  <string name="load_failed_message">Failed to load backup history</string>
-  <string name="load_failed_title">Load Failed</string>
+  <string name="invalid_file_message">選択されたファイルは有効なバックアップではありません</string>
+  <string name="invalid_file_title">無効なファイル</string>
+  <string name="load_failed_message">バックアップ履歴の読み込みに失敗しました</string>
+  <string name="load_failed_title">読み込み失敗</string>
   <!-- MANGA_* -->
   <string name="manga_series">マンガシリーズ</string>
-  <string name="no_file_selected_message">Please select a backup file first</string>
-  <string name="no_file_selected_title">No File Selected</string>
+  <string name="no_file_selected_message">まずバックアップファイルを選択してください</string>
+  <string name="no_file_selected_title">ファイル未選択</string>
   <!-- RETRANSLATE_* -->
-  <string name="retranslate_current_page">Retranslate current page</string>
-  <string name="setup_failed_no_permission">Unable to set backup directory permission</string>
-  <string name="setup_failed_title">Setup Failed</string>
+  <string name="retranslate_current_page">現在のページを再翻訳</string>
+  <string name="setup_failed_no_permission">バックアップディレクトリの権限を設定できません</string>
+  <string name="setup_failed_title">設定失敗</string>
   <string name="viewer_image_quality_master_1200">最大 (1200px)</string>
   <string name="viewer_image_quality_original">オリジナル</string>
   <!-- ========================================================================== -->
   <!-- Pixivision -->
   <!-- ========================================================================== -->
   <!-- PIXIVISION_* -->
-  <string name="pixivision_artworks_title">Featured Artworks</string>
-  <string name="pixivision_description">Description</string>
-  <string name="pixivision_detail_title">Article Details</string>
-  <string name="pixivision_illustration">Illustration</string>
-  <string name="pixivision_manga">Manga</string>
-  <string name="pixivision_open_in_browser">Open in browser</string>
-  <string name="pixivision_published_date">Published:</string>
-  <string name="pixivision_webview_load_error">Failed to load</string>
+  <string name="pixivision_artworks_title">注目の作品</string>
+  <string name="pixivision_description">説明</string>
+  <string name="pixivision_detail_title">記事詳細</string>
+  <string name="pixivision_illustration">イラスト</string>
+  <string name="pixivision_manga">マンガ</string>
+  <string name="pixivision_open_in_browser">ブラウザで開く</string>
+  <string name="pixivision_published_date">公開日:</string>
+  <string name="pixivision_webview_load_error">読み込み失敗</string>
   <!-- ========================================================================== -->
   <!-- Profile -->
   <!-- ========================================================================== -->
@@ -924,8 +924,8 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="settings_api_test_subtitle">Pixiv APIをデバッグ</string>
   <string name="settings_api_test_tool">APIテストツール 🔧</string>
   <string name="settings_app_language">アプリの言語</string>
-  <string name="settings_backup_restore">Backup &amp; Restore</string>
-  <string name="settings_backup_restore_desc">Backup settings and credentials, restore from backup</string>
+  <string name="settings_backup_restore">バックアップと復元</string>
+  <string name="settings_backup_restore_desc">設定と認証情報をバックアップ、バックアップから復元</string>
   <string name="settings_block_list">ブロックリスト</string>
   <string name="settings_block_list_desc">ブロックされた作者、タグ、コンテンツフィルタを管理</string>
   <string name="settings_browsing_experience">閲覧体験</string>
@@ -947,7 +947,7 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="settings_content_filter">コンテンツフィルター</string>
   <string name="settings_content_management">コンテンツ管理</string>
   <string name="settings_current_cache_size">現在のキャッシュサイズ</string>
-  <string name="settings_data_management">Data Management</string>
+  <string name="settings_data_management">データ管理</string>
   <string name="settings_default_startup_tab">デフォルト起動ページ</string>
   <string name="settings_default_startup_tab_desc">アプリ起動時に開くタブを選択</string>
   <string name="settings_detail_image_quality">イラスト詳細ページの画質設定</string>
@@ -985,27 +985,27 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="settings_logout_confirm_title">ログアウト</string>
   <string name="settings_long_press_bookmark_action">長押し時のアクション</string>
   <string name="settings_long_press_bookmark_action_desc">ブックマークボタンを長押しした時のデフォルト動作を設定</string>
-  <string name="settings_navigation_config">Navigation Settings</string>
-  <string name="settings_navigation_config_desc">Customize navigation items for Ranking, Discovery, and Follow Latest pages</string>
-  <string name="settings_navigation_discovery">Navigation Settings (Discovery)</string>
-  <string name="settings_navigation_discovery_desc">Customize discovery page navigation items</string>
-  <string name="settings_navigation_follow_latest">Navigation Settings (Follow Latest)</string>
-  <string name="settings_navigation_follow_latest_desc">Customize follow latest page navigation items</string>
-  <string name="settings_navigation_ranking">Navigation Settings (Ranking)</string>
-  <string name="settings_navigation_ranking_desc">Customize ranking page navigation items</string>
+  <string name="settings_navigation_config">ナビゲーション設定</string>
+  <string name="settings_navigation_config_desc">ランキング、発見、最新ページのナビゲーション項目をカスタマイズ</string>
+  <string name="settings_navigation_discovery">ナビゲーション設定（発見）</string>
+  <string name="settings_navigation_discovery_desc">発見ページのナビゲーション項目をカスタマイズ</string>
+  <string name="settings_navigation_follow_latest">ナビゲーション設定（最新）</string>
+  <string name="settings_navigation_follow_latest_desc">最新ページのナビゲーション項目をカスタマイズ</string>
+  <string name="settings_navigation_ranking">ナビゲーション設定（ランキング）</string>
+  <string name="settings_navigation_ranking_desc">ランキングページのナビゲーション項目をカスタマイズ</string>
   <string name="settings_not_logged_in">ログインしていません</string>
   <string name="settings_novel">小説設定</string>
   <string name="settings_novel_download_image_quality">小説ダウンロードの画像品質設定</string>
   <string name="settings_novel_download_image_quality_desc">小説をEPUBとしてダウンロードする際の埋め込み画像の品質</string>
-  <string name="settings_novel_reading">Novel Reading Settings</string>
-  <string name="settings_novel_reading_desc">Font size, text color, background color</string>
+  <string name="settings_novel_reading">小説閲覧設定</string>
+  <string name="settings_novel_reading_desc">フォントサイズ、テキストカラー、背景色</string>
   <string name="settings_phpsessid">PHPSESSID</string>
   <string name="settings_phpsessid_desc">Pixiv APIのログイン認証情報</string>
   <string name="settings_phpsessid_empty">PHPSESSIDは空にできません</string>
   <string name="settings_phpsessid_input_hint">ブラウザのCookieからPHPSESSIDを入力してください</string>
   <string name="settings_phpsessid_invalid_format">無効な形式です。期待される形式：userid_xxxxx</string>
   <string name="settings_phpsessid_warning">⚠️ PHPSESSIDを変更すると、ログイン認証情報が更新されます</string>
-  <string name="settings_pixiv">Pixiv 設定</string>
+  <string name="settings_pixiv">Pixiv設定</string>
   <string name="settings_pixiv_language">Pixiv 言語設定</string>
   <string name="settings_pixiv_language_desc">Pixiv データ取得時の言語設定</string>
   <string name="settings_preferred_image_quality">イラストカードの画質設定</string>
@@ -1022,26 +1022,26 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="settings_select_pixiv_language">Pixiv 言語を選択</string>
   <string name="settings_select_startup_tab">起動ページを選択</string>
   <string name="settings_select_theme">テーマを選択</string>
-  <string name="settings_select_translation_engine">Select Translation Engine</string>
-  <string name="settings_select_translation_target_language">Select Target Language</string>
+  <string name="settings_select_translation_engine">翻訳エンジンを選択</string>
+  <string name="settings_select_translation_target_language">ターゲット言語を選択</string>
   <string name="settings_staggered_grid_columns">グリッド列数</string>
   <string name="settings_staggered_grid_columns_desc">イラストグリッドの列数</string>
   <string name="settings_theme">テーマ</string>
   <string name="settings_theme_mode">テーマモード</string>
   <string name="settings_title">設定</string>
-  <string name="settings_translation">Translation Settings</string>
-  <string name="settings_translation_engine">Translation Engine</string>
-  <string name="settings_translation_engine_desc">Translate artwork captions, novel descriptions, and novel reading content</string>
-  <string name="settings_translation_target_language">Target Language</string>
-  <string name="settings_translation_target_language_desc">Language to translate into</string>
+  <string name="settings_translation">翻訳設定</string>
+  <string name="settings_translation_engine">翻訳エンジン</string>
+  <string name="settings_translation_engine_desc">作品の説明、小説の説明、小説の閲覧内容を翻訳</string>
+  <string name="settings_translation_target_language">ターゲット言語</string>
+  <string name="settings_translation_target_language_desc">翻訳先の言語</string>
   <string name="settings_ugoira_cache_cleared">うごイラキャッシュをクリアしました</string>
   <string name="settings_unknown">不明</string>
   <string name="settings_user_id">ユーザーID</string>
   <string name="settings_viewer_image_quality">画像ビューアの画質設定</string>
   <string name="settings_viewer_image_quality_desc">フルスクリーン表示時の画像品質</string>
   <string name="settings_widget">Widget</string>
-  <string name="settings_widget_management">Widget Management</string>
-  <string name="settings_widget_management_desc">Manage Pixiv home screen widgets</string>
+  <string name="settings_widget_management">Widget管理</string>
+  <string name="settings_widget_management_desc">Pixivホーム画面ウィジェットを管理</string>
   <!-- ========================================================================== -->
   <!-- Startup -->
   <!-- ========================================================================== -->
@@ -1074,12 +1074,12 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- ========================================================================== -->
   <!-- Translation -->
   <!-- ========================================================================== -->
-  <string name="translating">Translating...</string>
-  <string name="show_original">Show Original</string>
-  <string name="show_translation">Show Translation</string>
+  <string name="translating">翻訳中...</string>
+  <string name="show_original">原文を表示</string>
+  <string name="show_translation">翻訳を表示</string>
   <!-- TRANSLATION_* -->
-  <string name="translation_engine_google_free">Google Translate (Free)</string>
-  <string name="translation_engine_none">Disabled</string>
+  <string name="translation_engine_google_free">Google翻訳（無料）</string>
+  <string name="translation_engine_none">無効</string>
   <string name="translation_lang_de">Deutsch</string>
   <string name="translation_lang_en">English</string>
   <string name="translation_lang_es">Español</string>
@@ -1095,8 +1095,8 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="translation_lang_vi">Tiếng Việt</string>
   <string name="translation_lang_zh_cn">简体中文</string>
   <string name="translation_lang_zh_tw">繁體中文</string>
-  <string name="translation_not_available">Translation not available</string>
-  <string name="translation_only">Translation Only</string>
+  <string name="translation_not_available">翻訳はまだ利用できません</string>
+  <string name="translation_only">翻訳のみ</string>
   <!-- ========================================================================== -->
   <!-- Ugoira -->
   <!-- ========================================================================== -->
