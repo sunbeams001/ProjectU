@@ -29,8 +29,8 @@ ksoup = "0.2.5"
 androidMinSdk = "24"
 androidCompileSdk = "36"
 androidTargetSdk = "36"
-appVersionCode = "9"
-appVersion = "1.0.8"
+appVersionCode = "10"
+appVersion = "1.0.9"
 
 [libraries]
 # Kotlin
