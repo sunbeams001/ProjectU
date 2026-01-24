@@ -316,7 +316,16 @@ class UserViewModel(
                     } ?: emptyList()
                 )
                 
-                // 6. 更新状态
+                // 6. 同步用户关注状态到全局缓存
+                val followStatus = if (userInfo.isFollowed) {
+                    // 默认为公开关注，精确的关注类型需要通过getUserFollowDetail获取
+                    com.projectu.shared.domain.model.FollowStatus.PUBLIC
+                } else {
+                    com.projectu.shared.domain.model.FollowStatus.NOT_FOLLOWING
+                }
+                stateCacheManager.updateUserFollowStatus(userInfo.userId, followStatus)
+                
+                // 7. 更新状态
                 _state.update { 
                     it.copy(
                         userProfile = UserProfile(

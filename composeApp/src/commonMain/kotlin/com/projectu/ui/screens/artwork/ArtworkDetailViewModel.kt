@@ -240,6 +240,7 @@ class ArtworkDetailViewModel(
             if (globalCachedArtwork != null) {
                 // 全局缓存命中，检查是否需要补充用户信息
                 var artwork = globalCachedArtwork
+                var followStatus = FollowStatus.NOT_FOLLOWING
                 
                 // 如果头像为空，尝试从用户信息中补充
                 if (artwork.userProfileImageUrl.isEmpty()) {
@@ -247,23 +248,32 @@ class ArtworkDetailViewModel(
                         val userId = artwork.userId.toLongOrNull()
                         if (userId != null) {
                             val userInfo = userRepository.getUserById(userId).getOrNull()
-                            if (userInfo != null && userInfo.profileImageUrl.isNotEmpty()) {
-                                // 补充头像
-                                artwork = artwork.copy(userProfileImageUrl = userInfo.profileImageUrl)
-                                // 更新缓存，避免下次再次加载
-                                artworkCacheManager.cacheArtworkDetail(artwork)
+                            if (userInfo != null) {
+                                // 补充头像（如果为空）
+                                if (userInfo.profileImageUrl.isNotEmpty()) {
+                                    artwork = artwork.copy(userProfileImageUrl = userInfo.profileImageUrl)
+                                    // 更新缓存，避免下次再次加载
+                                    artworkCacheManager.cacheArtworkDetail(artwork)
+                                }
+                                // 同步用户关注状态到全局缓存
+                                followStatus = userInfo.followStatus
+                                stateCacheManager.updateUserFollowStatus(artwork.userId, followStatus)
                             }
                         }
                     } catch (e: Exception) {
-                        // 补充失败不影响主流程，使用原有数据
+                        // 补充失败不影响主流程，使用缓存的关注状态
                         e.printStackTrace()
+                        val userStates = stateCacheManager.getUserStates(listOf(artwork.userId))
+                        followStatus = userStates[artwork.userId]?.followStatus ?: FollowStatus.NOT_FOLLOWING
                     }
+                } else {
+                    // 头像已存在，只获取关注状态
+                    followStatus = getAuthorFollowStatus(artwork.userId)
                 }
                 
                 sessionCache[artworkId] = artwork
                 
                 if (!silent) {
-                    val followStatus = getAuthorFollowStatus(artwork.userId)
                     _state.update {
                         it.copy(
                             artwork = artwork,
