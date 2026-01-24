@@ -28,13 +28,11 @@
     <string name="widget_filter_must_not_be">除外</string>
     <string name="widget_filter_any">すべて</string>
     <string name="widget_update_interval">更新間隔</string>
-    <string name="widget_update_interval_minutes">%d分</string>
     <string name="widget_show_refresh_button">更新ボタンを表示</string>
     <string name="widget_display_settings">表示設定</string>
     <string name="widget_image_scale_type">画像スケール</string>
     <string name="widget_scale_fit_center">全体表示</string>
     <string name="widget_scale_center_crop">トリミング</string>
-    <string name="widget_corner_radius">角丸半径</string>
     <string name="widget_delete_confirm_title">Widget設定の削除</string>
     <string name="widget_delete_confirm_message">Widget #%d の設定を削除しますか？ホーム画面のWidgetも手動で削除する必要があります。</string>
     <string name="widget_add_instruction">ホーム画面を長押しでWidgetを追加</string>
