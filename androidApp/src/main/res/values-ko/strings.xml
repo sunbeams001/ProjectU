@@ -28,13 +28,11 @@
     <string name="widget_filter_must_not_be">제외</string>
     <string name="widget_filter_any">모두</string>
     <string name="widget_update_interval">업데이트 간격</string>
-    <string name="widget_update_interval_minutes">%d분</string>
     <string name="widget_show_refresh_button">새로고침 버튼 표시</string>
     <string name="widget_display_settings">표시 설정</string>
     <string name="widget_image_scale_type">이미지 스케일</string>
     <string name="widget_scale_fit_center">전체 표시</string>
     <string name="widget_scale_center_crop">채우기 자르기</string>
-    <string name="widget_corner_radius">모서리 반경</string>
     <string name="widget_delete_confirm_title">Widget 구성 삭제</string>
     <string name="widget_delete_confirm_message">Widget #%d의 구성을 삭제하시겠습니까? 홈 화면의 위젯도 수동으로 제거해야 합니다.</string>
     <string name="widget_add_instruction">홈 화면을 길게 눌러 Widget 추가</string>
