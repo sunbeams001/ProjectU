@@ -28,13 +28,11 @@
     <string name="widget_filter_must_not_be">Exclude</string>
     <string name="widget_filter_any">Any</string>
     <string name="widget_update_interval">Update Interval</string>
-    <string name="widget_update_interval_minutes">%d minutes</string>
     <string name="widget_show_refresh_button">Show Refresh Button</string>
     <string name="widget_display_settings">Display Settings</string>
     <string name="widget_image_scale_type">Image Scale</string>
     <string name="widget_scale_fit_center">Fit (Show All)</string>
     <string name="widget_scale_center_crop">Crop (Fill)</string>
-    <string name="widget_corner_radius">Corner Radius</string>
     <string name="widget_delete_confirm_title">Delete Widget Configuration</string>
     <string name="widget_delete_confirm_message">Are you sure you want to delete configuration for Widget #%d? You need to manually remove the widget from your home screen.</string>
     <string name="widget_add_instruction">Long press on home screen to add Widget</string>
