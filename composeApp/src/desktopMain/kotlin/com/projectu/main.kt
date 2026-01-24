@@ -27,7 +27,7 @@ fun main() = application {
     loadKoinModules(com.projectu.shared.di.desktopPlatformModule())
     
     var restartRequired by remember { mutableStateOf(false) }
-    var downloading by remember { mutableStateOf(0F) }
+    var downloading by remember { mutableFloatStateOf(0F) }
     var initialized by remember { mutableStateOf(false) }
     
     // 初始化 KCEF (WebView)

@@ -51,6 +51,7 @@ class AndroidBackupStorage(
     /**
      * Android 10+: 使用 MediaStore.Downloads API
      */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.Q)
     private fun saveBackupFileMediaStore(sourceFile: File, fileName: String): String {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
@@ -181,6 +182,7 @@ class AndroidBackupStorage(
      * Android 10+: 通过 MediaStore 查询备份文件
      * 返回的File对象包含可用于访问文件的content URI
      */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.Q)
     private fun listBackupFilesMediaStore(): List<File> {
         Log.d(TAG, "listBackupFilesMediaStore: Starting MediaStore query")
         
@@ -292,6 +294,7 @@ class AndroidBackupStorage(
     /**
      * 调试方法：查询所有.pbu.zip文件并打印路径信息
      */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.Q)
     private fun debugQueryAllPbuFiles() {
         try {
             val projection = arrayOf(
@@ -509,6 +512,7 @@ class AndroidBackupStorage(
     /**
      * Android 10+: 通过 MediaStore 删除
      */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.Q)
     private fun deleteBackupFileMediaStore(fileName: String): Boolean {
         val selection = "${MediaStore.MediaColumns.RELATIVE_PATH} = ? AND ${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
         val selectionArgs = arrayOf(

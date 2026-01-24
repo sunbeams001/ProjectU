@@ -137,7 +137,7 @@ fun WidgetConfigScreen(
     var rankingMode by remember { mutableStateOf<WidgetRankingMode?>(null) }
     var r18Filter by remember { mutableStateOf(FilterType.MUST_NOT_BE) }
     var aiFilter by remember { mutableStateOf(FilterType.ANY) }
-    var updateIntervalMinutes by remember { mutableStateOf(60) }
+    var updateIntervalMinutes by remember { mutableIntStateOf(60) }
     var showRefreshButton by remember { mutableStateOf(true) }
     var imageScaleType by remember { mutableStateOf(com.projectu.shared.domain.model.WidgetImageScaleType.FIT_CENTER) }
     
