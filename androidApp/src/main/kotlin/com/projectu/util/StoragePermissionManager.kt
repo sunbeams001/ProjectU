@@ -17,8 +17,7 @@ import androidx.core.content.ContextCompat
  * 
  * minSdk=24, targetSdk=36:
  * - Android 7-9 (API 24-28): WRITE_EXTERNAL_STORAGE
- * - Android 10-12 (API 29-32): 无需权限（MediaStore）
- * - Android 13+ (API 33+): READ_MEDIA_IMAGES, READ_MEDIA_VIDEO
+ * - Android 10+ (API 29+): 无需权限（MediaStore API 允许应用写入自己的文件）
  */
 class StoragePermissionManager(
     private val activity: ComponentActivity
@@ -39,12 +38,7 @@ class StoragePermissionManager(
      */
     fun hasStoragePermission(): Boolean {
         return when {
-            // Android 13+ (API 33+): 需要读取媒体权限
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                hasPermission(Manifest.permission.READ_MEDIA_IMAGES) &&
-                hasPermission(Manifest.permission.READ_MEDIA_VIDEO)
-            }
-            // Android 10-12 (API 29-32): MediaStore 不需要权限
+            // Android 10+ (API 29+): MediaStore API 允许无权限写入
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
                 true
             }
@@ -67,16 +61,9 @@ class StoragePermissionManager(
         permissionCallback = callback
         
         val permissions = when {
-            // Android 13+: 请求媒体权限
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                arrayOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO
-                )
-            }
-            // Android 10-12: 无需请求（MediaStore）
+            // Android 10+: 无需请求（MediaStore API）
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                // 理论上不会执行到这里
+                // 不应该执行到这里，因为hasStoragePermission()已经返回true
                 callback(true)
                 return
             }
@@ -94,10 +81,7 @@ class StoragePermissionManager(
      */
     fun shouldShowRationale(): Boolean {
         return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES) ||
-                activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_VIDEO)
-            }
+            // Android 10+: 无需权限，不显示说明
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
                 false
             }

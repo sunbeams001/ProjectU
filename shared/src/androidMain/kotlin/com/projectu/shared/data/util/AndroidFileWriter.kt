@@ -18,8 +18,7 @@ import java.io.FileOutputStream
  * Android 平台的文件写入器
  * 根据项目配置 (minSdk=24, targetSdk=36) 使用不同的存储策略：
  * - Android 7-9 (API 24-28): 传统外部存储 + WRITE_EXTERNAL_STORAGE 权限
- * - Android 10-12 (API 29-32): MediaStore API (分区存储)
- * - Android 13+ (API 33+): MediaStore API + READ_MEDIA_IMAGES 权限
+ * - Android 10+ (API 29+): MediaStore API (分区存储，无需权限写入自己的文件)
  */
 class AndroidFileWriter(
     private val context: Context
