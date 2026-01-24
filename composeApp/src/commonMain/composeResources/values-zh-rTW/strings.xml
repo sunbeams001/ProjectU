@@ -134,6 +134,15 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="backup_progress_exporting">正在匯出 %s...</string>
   <string name="backup_progress_saving">正在保存...</string>
   <string name="backup_progress_title">正在創建備份...</string>
+  <string name="backup_progress_preparing">Preparing backup...</string>
+  <string name="backup_progress_settings">Backing up app settings...</string>
+  <string name="backup_progress_credentials">Backing up login info...</string>
+  <string name="backup_progress_blocklist">Backing up block list...</string>
+  <string name="backup_progress_history">Backing up browse history...</string>
+  <string name="backup_progress_rules">Backing up download path rules...</string>
+  <string name="backup_progress_tasks">Backing up download tasks...</string>
+  <string name="backup_progress_search">Backing up search history...</string>
+  <string name="backup_progress_metadata">Generating metadata...</string>
   <string name="backup_restore_title">備份與恢復</string>
   <string name="backup_scanned_count">已掃描到 %1$d 個備份檔案</string>
   <string name="backup_size_10kb">&lt; 10 KB</string>
@@ -162,10 +171,32 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="restore_progress_importing">正在匯入 %s...</string>
   <string name="restore_progress_title">正在恢復...</string>
   <string name="restore_progress_validating">正在驗證備份檔案...</string>
+  <string name="restore_progress_settings">Restoring app settings...</string>
+  <string name="restore_progress_credentials">Restoring login info...</string>
+  <string name="restore_progress_blocklist">Restoring block list...</string>
+  <string name="restore_progress_history">Restoring browse history...</string>
+  <string name="restore_progress_rules">Restoring download path rules...</string>
+  <string name="restore_progress_tasks">Restoring download tasks...</string>
+  <string name="restore_progress_search">Restoring search history...</string>
   <string name="restore_select_file">選擇備份檔案</string>
   <string name="restore_tab">恢復</string>
   <string name="restore_warning_message">• 恢復操作將覆蓋當前的設定和登入資訊\n• 建議先備份當前資料\n• 恢復完成後應用將重啟</string>
   <string name="restore_warning_title">⚠️ 重要提示</string>
+  <!-- Content Descriptions for Accessibility -->
+  <string name="cd_reset_backup_directory">Reset backup directory</string>
+  <string name="cd_select_backup_directory">Select backup directory</string>
+  <string name="cd_copy_path">Copy path</string>
+  <string name="cd_expand">Expand</string>
+  <string name="cd_collapse">Collapse</string>
+  <!-- Backup/Restore Error Messages -->
+  <string name="error_backup_delete_failed">Delete failed</string>
+  <string name="error_backup_unknown">Unknown error</string>
+  <string name="error_backup_storage_permission_denied">Storage permission denied</string>
+  <string name="error_backup_insufficient_space">Insufficient storage space</string>
+  <string name="error_restore_all_modules_failed">All modules restore failed</string>
+  <string name="error_restore_partial_modules_failed">Some modules restore failed</string>
+  <string name="error_restore_checksum_mismatch">Data verification failed</string>
+  <string name="error_restore_unknown">Unknown error</string>
   <!-- ========================================================================== -->
   <!-- Block List -->
   <!-- ========================================================================== -->
@@ -890,6 +921,7 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="search_sort_date_asc">從舊到新</string>
   <string name="search_sort_date_desc">從新到舊</string>
   <string name="search_sort_order">排序方式</string>
+  <string name="search_sort_popular_preview">Popular (Preview)</string>
   <string name="search_sort_popular_desc">受全站歡迎</string>
   <string name="search_sort_popular_female_desc">受女性歡迎</string>
   <string name="search_sort_popular_male_desc">受男性歡迎</string>
@@ -1189,4 +1221,35 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="user_unfollow">取消關注</string>
   <string name="user_works">作品</string>
   <string name="user_works_empty">作品概況為空</string>
+  <!-- ========================================================================== -->
+  <!-- Share -->
+  <!-- ========================================================================== -->
+  <!-- SHARE_* -->
+  <string name="share">Share</string>
+  <string name="share_artwork">Share Artwork</string>
+  <string name="share_user">Share User</string>
+  <string name="share_novel">Share Novel</string>
+  <string name="share_link">Share Link</string>
+  <string name="share_text_with_image">Share Text with Image</string>
+  <string name="share_first_image">Share First Image</string>
+  <string name="share_specific_page">Share Specific Page</string>
+  <string name="share_options">Share Options</string>
+  <string name="share_link_description">Share title and URL</string>
+  <string name="share_text_with_image_description">Share text and first image</string>
+  <string name="share_first_image_description">Share the first image only</string>
+  <string name="share_success">Shared successfully</string>
+  <string name="share_failed">Share failed</string>
+  <string name="share_cancelled">Share cancelled</string>
+  <string name="share_copying_to_clipboard">Copied to clipboard</string>
+  <string name="share_downloading_image">Downloading image...</string>
+  <string name="share_error_image_download">Failed to download image</string>
+  <string name="share_error_generic">Share error: %1$s</string>
+  <!-- Share text formatting -->
+  <string name="share_left_quote">「</string>
+  <string name="share_right_quote">」</string>
+  <string name="share_author_label">Author: </string>
+  <string name="share_word_count_unit"> words</string>
+  <string name="share_about_prefix">about </string>
+  <string name="share_minutes_unit"> minutes</string>
+  <string name="share_user_prefix">Pixiv User: </string>
 </resources>
