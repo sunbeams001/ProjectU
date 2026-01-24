@@ -431,6 +431,9 @@ val useCaseModule = module {
     // 备份恢复相关
     factory { com.projectu.shared.domain.usecase.CreateBackupUseCase(get()) }
     factory { com.projectu.shared.domain.usecase.RestoreBackupUseCase(get()) }
+    
+    // 分享相关
+    factory { com.projectu.shared.domain.usecase.PrepareShareContentUseCase() }
 }
 
 /**

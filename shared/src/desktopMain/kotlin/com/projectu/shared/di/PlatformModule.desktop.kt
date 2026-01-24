@@ -2,6 +2,8 @@ package com.projectu.shared.di
 
 import com.projectu.shared.data.backup.storage.BackupStorage
 import com.projectu.shared.data.backup.storage.DesktopBackupStorage
+import com.projectu.shared.data.share.DesktopShareExecutor
+import com.projectu.shared.data.share.ShareExecutor
 import com.projectu.shared.data.util.DesktopFileWriter
 import com.projectu.shared.data.util.PlatformFileWriter
 import okio.FileSystem
@@ -17,5 +19,9 @@ fun desktopPlatformModule() = module {
     
     single<BackupStorage> {
         DesktopBackupStorage()
+    }
+    
+    single<ShareExecutor> {
+        DesktopShareExecutor()
     }
 }

@@ -20,6 +20,7 @@ okio = "3.16.4"
 gifkt = "0.3.0"
 javacv = "1.5.12"
 ksp = "2.3.2"
+androidx-core = "1.17.0"
 androidx-activity-compose = "1.12.2"
 androidx-lifecycle = "2.10.0"
 androidx-documentfile = "1.1.0"
@@ -92,6 +93,7 @@ gifkt = { module = "com.shakster:gifkt", version.ref = "gifkt" }
 javacv-platform = { module = "org.bytedeco:javacv-platform", version.ref = "javacv" }
 
 # AndroidX
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }

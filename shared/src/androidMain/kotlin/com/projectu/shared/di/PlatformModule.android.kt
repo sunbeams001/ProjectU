@@ -3,6 +3,8 @@ package com.projectu.shared.di
 import android.content.Context
 import com.projectu.shared.data.backup.storage.AndroidBackupStorage
 import com.projectu.shared.data.backup.storage.BackupStorage
+import com.projectu.shared.data.share.AndroidShareExecutor
+import com.projectu.shared.data.share.ShareExecutor
 import com.projectu.shared.data.util.AndroidFileWriter
 import com.projectu.shared.data.util.PlatformFileWriter
 import org.koin.dsl.module
@@ -17,5 +19,9 @@ fun androidPlatformModule(context: Context) = module {
     
     single<BackupStorage> {
         AndroidBackupStorage(context)
+    }
+    
+    single<ShareExecutor> {
+        AndroidShareExecutor(context, get())
     }
 }

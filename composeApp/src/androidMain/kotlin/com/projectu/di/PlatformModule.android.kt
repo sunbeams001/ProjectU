@@ -184,5 +184,11 @@ actual val viewModelModule: Module = module {
     
     // 搜索结果页面 ScreenModel
     factory { (keyword: String) -> com.projectu.ui.screens.search.SearchResultViewModel(keyword, get(), get(), get(), get(), get(), get()) }
+    
+    // 搜索结果页面 ScreenModel
+    factory { (keyword: String) -> com.projectu.ui.screens.search.SearchResultViewModel(keyword, get(), get(), get(), get(), get(), get()) }
+    
+    // 分享 ViewModel
+    viewModel { com.projectu.ui.screens.share.ShareViewModel(get(), get()) }
 }
 

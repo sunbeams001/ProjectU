@@ -34,6 +34,9 @@ import com.projectu.ui.screens.comment.CommentsScreen
 import com.projectu.ui.screens.download.DownloadScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
+import com.projectu.ui.screens.share.ShareViewModel
+import com.projectu.ui.screens.share.ShareIntent
+import com.projectu.ui.util.ShareTextFormatter
 import com.projectu.ui.util.PlatformBackHandler
 import com.projectu.shared.domain.model.CommentContentType
 import org.jetbrains.compose.resources.stringResource
@@ -83,10 +86,17 @@ data class NovelDetailScreen(
         }
         val downloadRepository: DownloadRepository = koinInject()
         val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+        val shareViewModel: ShareViewModel = koinInject()
+        val shareState by shareViewModel.state.collectAsState()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
         val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
         val downloadActionViewLabel = stringResource(Res.string.download_action_view)
+        
+        // 预计算分享描述（在@Composable上下文中）
+        val formattedShareDescription = state.novel?.let { novel ->
+            ShareTextFormatter.formatNovelDescription(novel)
+        } ?: ""
         
         // 检查翻译功能是否启用
         val isTranslationEnabled by remember { derivedStateOf { settingsCache.isTranslationEnabled() } }
@@ -168,6 +178,9 @@ data class NovelDetailScreen(
         NovelDetailContent(
             state = state,
             viewModel = viewModel,
+            shareViewModel = shareViewModel,
+            shareState = shareState,
+            formattedShareDescription = formattedShareDescription,
             isTranslationEnabled = isTranslationEnabled,
             onBackClick = handleExit,  // 左上角返回按钮直接退出
             onListIndexChange = { index -> viewModel.onListIndexChanged(index) },
@@ -190,6 +203,17 @@ data class NovelDetailScreen(
                             contentId = novel.id,
                             contentType = CommentContentType.NOVEL,
                             contentTitle = novel.title
+                        )
+                    )
+                }
+            },
+            onShareClick = {
+                // 分享小说（使用预计算的formattedShareDescription）
+                state.novel?.let { novel ->
+                    shareViewModel.handleIntent(
+                        ShareIntent.ShareNovel(
+                            novel = novel,
+                            formattedDescription = formattedShareDescription
                         )
                     )
                 }
@@ -232,6 +256,9 @@ data class NovelDetailScreen(
 private fun NovelDetailContent(
     state: NovelDetailState,
     viewModel: NovelDetailViewModel,
+    shareViewModel: ShareViewModel,
+    shareState: com.projectu.ui.screens.share.ShareState,
+    formattedShareDescription: String,
     isTranslationEnabled: Boolean,
     onBackClick: () -> Unit,
     onListIndexChange: (Int) -> Unit,
@@ -244,6 +271,7 @@ private fun NovelDetailContent(
     onUserClick: ((userId: String) -> Unit)?,
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
+    onShareClick: () -> Unit,
     onRecommendClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
@@ -278,6 +306,9 @@ private fun NovelDetailContent(
                 NovelDetailLayout(
                     state = state,
                     viewModel = viewModel,
+                    shareViewModel = shareViewModel,
+                    shareState = shareState,
+                    formattedShareDescription = formattedShareDescription,
                     isTranslationEnabled = isTranslationEnabled,
                     onPreviousPage = onPreviousPage,
                     onNextPage = onNextPage,
@@ -287,6 +318,7 @@ private fun NovelDetailContent(
                     onUserClick = onUserClick,
                     onSeriesClick = onSeriesClick,
                     onCommentClick = onCommentClick,
+                    onShareClick = onShareClick,
                     onDownloadClick = onDownloadClick,
                     onRecommendClick = onRecommendClick,
                     onTagClick = onTagClick,
@@ -334,6 +366,9 @@ private fun NovelDetailContent(
 private fun NovelDetailLayout(
     state: NovelDetailState,
     viewModel: NovelDetailViewModel,
+    shareViewModel: ShareViewModel,
+    shareState: com.projectu.ui.screens.share.ShareState,
+    formattedShareDescription: String,
     isTranslationEnabled: Boolean,
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
@@ -343,6 +378,7 @@ private fun NovelDetailLayout(
     onUserClick: ((userId: String) -> Unit)?,
     onSeriesClick: ((seriesId: String) -> Unit)?,
     onCommentClick: () -> Unit,
+    onShareClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onRecommendClick: () -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
@@ -439,6 +475,7 @@ private fun NovelDetailLayout(
             onUserClick = onUserClick,
             onSeriesClick = onSeriesClick,
             onCommentClick = onCommentClick,
+            onShareClick = onShareClick,
             onRecommendClick = onRecommendClick,
             onDownloadClick = onDownloadClick,
             onTagClick = onTagClick,

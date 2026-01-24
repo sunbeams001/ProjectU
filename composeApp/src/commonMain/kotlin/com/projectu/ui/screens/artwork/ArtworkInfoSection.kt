@@ -243,6 +243,8 @@ fun ArtworkBasicInfoSection(
  * 
  * @param artwork 作品对象
  * @param onCommentClick 点击评论回调
+ * @param onShareClick 点击分享回调
+ * @param onShareLongClick 长按分享回调（弹出分享选项）
  * @param onSimilarClick 点击推荐相似作品回调
  * @param onDownloadClick 点击下载回调
  * @param onScrollAtTop 滚动到顶部时的下滑回调
@@ -254,6 +256,8 @@ fun ArtworkDetailInfoSection(
     translatedDescription: String? = null,
     isTranslating: Boolean = false,
     onCommentClick: (() -> Unit)? = null,
+    onShareClick: (() -> Unit)? = null,
+    onShareLongClick: (() -> Unit)? = null,
     onSimilarClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     onDownloadLongClick: (() -> Unit)? = null,
@@ -656,6 +660,15 @@ fun ArtworkDetailInfoSection(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
+                        // 分享按钮（点击默认分享，长按显示分享选项）
+                        ActionButton(
+                            icon = Icons.Default.Share,
+                            label = stringResource(Res.string.share),
+                            onClick = { onShareClick?.invoke() },
+                            onLongClick = { onShareLongClick?.invoke() },
+                            enabled = onShareClick != null
+                        )
+                        
                         // 推荐作品按钮
                         ActionButton(
                             icon = Icons.Default.Recommend,

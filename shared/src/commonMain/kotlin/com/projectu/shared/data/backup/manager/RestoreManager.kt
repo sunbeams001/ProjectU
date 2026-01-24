@@ -82,7 +82,7 @@ class RestoreManager(
             emit(RestoreResult.Progress(
                 currentModule = BackupModule.SETTINGS,
                 progress = 0.1f,
-                message = "验证数据完整性..."
+                message = "Validating data integrity..."
             ))
             
             val checksumsFile = File(tempDir, "checksums.json")
@@ -117,7 +117,7 @@ class RestoreManager(
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.SETTINGS,
                     progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
-                    message = "正在恢复应用设置..."
+                    message = "Restoring app settings..."
                 ))
                 
                 try {
@@ -138,7 +138,7 @@ class RestoreManager(
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.CREDENTIALS,
                     progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
-                    message = "正在恢复登录信息..."
+                    message = "Restoring login info..."
                 ))
                 
                 try {
@@ -160,7 +160,7 @@ class RestoreManager(
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.BLOCK_RULES,
                     progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
-                    message = "正在恢复屏蔽列表..."
+                    message = "Restoring block list..."
                 ))
                 
                 try {
@@ -183,7 +183,7 @@ class RestoreManager(
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.BROWSE_HISTORY,
                     progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
-                    message = "正在恢复浏览历史..."
+                    message = "Restoring browse history..."
                 ))
                 
                 try {
@@ -206,7 +206,7 @@ class RestoreManager(
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.DOWNLOAD_RULES,
                     progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
-                    message = "正在恢复下载路径规则..."
+                    message = "Restoring download path rules..."
                 ))
                 
                 try {
@@ -229,7 +229,7 @@ class RestoreManager(
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.DOWNLOAD_TASKS,
                     progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
-                    message = "正在恢复下载任务..."
+                    message = "Restoring download tasks..."
                 ))
                 
                 try {
@@ -253,7 +253,7 @@ class RestoreManager(
                 emit(RestoreResult.Progress(
                     currentModule = BackupModule.SEARCH_HISTORY,
                     progress = 0.2f + (currentModuleIndex.toFloat() / totalModules) * 0.7f,
-                    message = "正在恢复搜索历史..."
+                    message = "Restoring search history..."
                 ))
                 
                 try {
@@ -276,10 +276,10 @@ class RestoreManager(
             
             // 8. 返回结果
             if (failedRecords > 0 && successRecords == 0) {
-                emit(RestoreResult.Failure(RestoreError.UnknownError("所有模块恢复失败")))
+                emit(RestoreResult.Failure(RestoreError.UnknownError("All modules restore failed")))
             } else if (failedRecords > 0) {
                 emit(RestoreResult.Failure(RestoreError.PartialRestore(
-                    message = "部分模块恢复失败",
+                    message = "Some modules restore failed",
                     failedModules = modulesToRestore.filter { it !in restoredModules }
                 )))
             } else {
@@ -295,7 +295,7 @@ class RestoreManager(
             }
             
         } catch (e: Exception) {
-            emit(RestoreResult.Failure(RestoreError.UnknownError(e.message ?: "未知错误")))
+            emit(RestoreResult.Failure(RestoreError.UnknownError(e.message ?: "Unknown error")))
         }
     }
     

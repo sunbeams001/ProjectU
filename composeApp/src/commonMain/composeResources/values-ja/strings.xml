@@ -125,6 +125,15 @@
     <string name="backup_progress_exporting">%s をエクスポート中...</string>
     <string name="backup_progress_saving">保存中...</string>
     <string name="backup_progress_title">バックアップ作成中...</string>
+    <string name="backup_progress_preparing">バックアップを準備中...</string>
+    <string name="backup_progress_settings">アプリ設定をバックアップ中...</string>
+    <string name="backup_progress_credentials">ログイン情報をバックアップ中...</string>
+    <string name="backup_progress_blocklist">ブロックリストをバックアップ中...</string>
+    <string name="backup_progress_history">閲覧履歴をバックアップ中...</string>
+    <string name="backup_progress_rules">ダウンロードパスルールをバックアップ中...</string>
+    <string name="backup_progress_tasks">ダウンロードタスクをバックアップ中...</string>
+    <string name="backup_progress_search">検索履歴をバックアップ中...</string>
+    <string name="backup_progress_metadata">メタデータを生成中...</string>
     <string name="backup_restore_title">バックアップと復元</string>
     <string name="backup_scanned_count">%1$d 個のバックアップファイルをスキャンしました</string>
     <string name="backup_size_10kb">&lt; 10 KB</string>
@@ -153,11 +162,35 @@
     <string name="restore_progress_extracting">展開中...</string>
     <string name="restore_progress_importing">%s をインポート中...</string>
     <string name="restore_progress_title">復元中...</string>
-    <string name="restore_progress_validating">バックアップファイルを検証中...</string>
+    <string name="restore_progress_validating">データ整合性を検証中...</string>
+    <string name="restore_progress_settings">アプリ設定を復元中...</string>
+    <string name="restore_progress_credentials">ログイン情報を復元中...</string>
+    <string name="restore_progress_blocklist">ブロックリストを復元中...</string>
+    <string name="restore_progress_history">閲覧履歴を復元中...</string>
+    <string name="restore_progress_rules">ダウンロードパスルールを復元中...</string>
+    <string name="restore_progress_tasks">ダウンロードタスクを復元中...</string>
+    <string name="restore_progress_search">検索履歴を復元中...</string>
     <string name="restore_select_file">バックアップファイルを選択</string>
     <string name="restore_tab">復元</string>
     <string name="restore_warning_message">• 復元操作により現在の設定とログイン情報が上書きされます\n• 現在のデータを先にバックアップすることをお勧めします\n• 復元完了後、アプリが再起動します</string>
     <string name="restore_warning_title">⚠️ 重要な注意事項</string>
+
+    <!-- Content Descriptions for Accessibility -->
+    <string name="cd_reset_backup_directory">バックアップディレクトリをリセット</string>
+    <string name="cd_select_backup_directory">バックアップディレクトリを選択</string>
+    <string name="cd_copy_path">パスをコピー</string>
+    <string name="cd_expand">展開</string>
+    <string name="cd_collapse">折りたたむ</string>
+
+    <!-- Backup/Restore Error Messages -->
+    <string name="error_backup_delete_failed">削除に失敗しました</string>
+    <string name="error_backup_unknown">不明なエラー</string>
+    <string name="error_backup_storage_permission_denied">ストレージのアクセス許可が拒否されました</string>
+    <string name="error_backup_insufficient_space">ストレージ容量が不足しています</string>
+    <string name="error_restore_all_modules_failed">すべてのモジュールの復元に失敗しました</string>
+    <string name="error_restore_partial_modules_failed">一部のモジュールの復元に失敗しました</string>
+    <string name="error_restore_checksum_mismatch">データ検証に失敗しました</string>
+    <string name="error_restore_unknown">不明なエラー</string>
 
 
     <!-- ========================================================================== -->
@@ -1312,4 +1345,39 @@
     <string name="user_unfollow">フォロー解除</string>
     <string name="user_works">作品</string>
     <string name="user_works_empty">作品概要が空です</string>
+
+
+    <!-- ========================================================================== -->
+    <!-- Share -->
+    <!-- ========================================================================== -->
+
+    <!-- SHARE_* -->
+    <string name="share">シェア</string>
+    <string name="share_artwork">作品をシェア</string>
+    <string name="share_user">ユーザーをシェア</string>
+    <string name="share_novel">小説をシェア</string>
+    <string name="share_link">リンクをシェア</string>
+    <string name="share_text_with_image">テキスト+画像をシェア</string>
+    <string name="share_first_image">最初の画像をシェア</string>
+    <string name="share_specific_page">特定のページをシェア</string>
+    <string name="share_options">シェアオプション</string>
+    <string name="share_link_description">タイトルとURLをシェア</string>
+    <string name="share_text_with_image_description">テキストと最初の画像をシェア</string>
+    <string name="share_first_image_description">最初の画像のみをシェア</string>
+    <string name="share_success">シェアしました</string>
+    <string name="share_failed">シェアに失敗しました</string>
+    <string name="share_cancelled">シェアをキャンセルしました</string>
+    <string name="share_copying_to_clipboard">クリップボードにコピーしました</string>
+    <string name="share_downloading_image">画像をダウンロード中...</string>
+    <string name="share_error_image_download">画像のダウンロードに失敗しました</string>
+    <string name="share_error_generic">シェアエラー: %1$s</string>
+
+    <!-- Share text formatting -->
+    <string name="share_left_quote">「</string>
+    <string name="share_right_quote">」</string>
+    <string name="share_author_label">作者: </string>
+    <string name="share_word_count_unit">文字</string>
+    <string name="share_about_prefix">約</string>
+    <string name="share_minutes_unit">分</string>
+    <string name="share_user_prefix">Pixivユーザー: </string>
 </resources>

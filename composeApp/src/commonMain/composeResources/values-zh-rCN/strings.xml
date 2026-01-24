@@ -125,6 +125,15 @@
     <string name="backup_progress_exporting">正在导出 %s...</string>
     <string name="backup_progress_saving">正在保存...</string>
     <string name="backup_progress_title">正在创建备份...</string>
+    <string name="backup_progress_preparing">准备备份...</string>
+    <string name="backup_progress_settings">正在备份应用设置...</string>
+    <string name="backup_progress_credentials">正在备份登录信息...</string>
+    <string name="backup_progress_blocklist">正在备份屏蔽列表...</string>
+    <string name="backup_progress_history">正在备份浏览历史...</string>
+    <string name="backup_progress_rules">正在备份下载路径规则...</string>
+    <string name="backup_progress_tasks">正在备份下载任务...</string>
+    <string name="backup_progress_search">正在备份搜索历史...</string>
+    <string name="backup_progress_metadata">生成元数据...</string>
     <string name="backup_restore_title">备份与恢复</string>
     <string name="backup_scanned_count">已扫描到 %1$d 个备份文件</string>
     <string name="backup_size_10kb">&lt; 10 KB</string>
@@ -153,11 +162,35 @@
     <string name="restore_progress_extracting">正在解压...</string>
     <string name="restore_progress_importing">正在导入 %s...</string>
     <string name="restore_progress_title">正在恢复...</string>
-    <string name="restore_progress_validating">正在验证备份文件...</string>
+    <string name="restore_progress_validating">验证数据完整性...</string>
+    <string name="restore_progress_settings">正在恢复应用设置...</string>
+    <string name="restore_progress_credentials">正在恢复登录信息...</string>
+    <string name="restore_progress_blocklist">正在恢复屏蔽列表...</string>
+    <string name="restore_progress_history">正在恢复浏览历史...</string>
+    <string name="restore_progress_rules">正在恢复下载路径规则...</string>
+    <string name="restore_progress_tasks">正在恢复下载任务...</string>
+    <string name="restore_progress_search">正在恢复搜索历史...</string>
     <string name="restore_select_file">选择备份文件</string>
     <string name="restore_tab">恢复</string>
     <string name="restore_warning_message">• 恢复操作将覆盖当前的设置和登录信息\n• 建议先备份当前数据\n• 恢复完成后应用将重启</string>
     <string name="restore_warning_title">⚠️ 重要提示</string>
+
+    <!-- Content Descriptions for Accessibility -->
+    <string name="cd_reset_backup_directory">重新设置备份目录</string>
+    <string name="cd_select_backup_directory">选择备份目录</string>
+    <string name="cd_copy_path">复制路径</string>
+    <string name="cd_expand">展开</string>
+    <string name="cd_collapse">收起</string>
+
+    <!-- Backup/Restore Error Messages -->
+    <string name="error_backup_delete_failed">删除失败</string>
+    <string name="error_backup_unknown">未知错误</string>
+    <string name="error_backup_storage_permission_denied">存储权限被拒绝</string>
+    <string name="error_backup_insufficient_space">存储空间不足</string>
+    <string name="error_restore_all_modules_failed">所有模块恢复失败</string>
+    <string name="error_restore_partial_modules_failed">部分模块恢复失败</string>
+    <string name="error_restore_checksum_mismatch">数据校验失败</string>
+    <string name="error_restore_unknown">未知错误</string>
 
 
     <!-- ========================================================================== -->
@@ -1312,4 +1345,39 @@
     <string name="user_unfollow">取消关注</string>
     <string name="user_works">作品</string>
     <string name="user_works_empty">作品概况为空</string>
+
+
+    <!-- ========================================================================== -->
+    <!-- Share -->
+    <!-- ========================================================================== -->
+
+    <!-- SHARE_* -->
+    <string name="share">分享</string>
+    <string name="share_artwork">分享作品</string>
+    <string name="share_user">分享用户</string>
+    <string name="share_novel">分享小说</string>
+    <string name="share_link">分享链接</string>
+    <string name="share_text_with_image">分享文字+图片</string>
+    <string name="share_first_image">分享第一张图</string>
+    <string name="share_specific_page">分享指定页</string>
+    <string name="share_options">分享选项</string>
+    <string name="share_link_description">分享标题和链接</string>
+    <string name="share_text_with_image_description">分享文字和第一张图</string>
+    <string name="share_first_image_description">仅分享第一张图片</string>
+    <string name="share_success">分享成功</string>
+    <string name="share_failed">分享失败</string>
+    <string name="share_cancelled">已取消分享</string>
+    <string name="share_copying_to_clipboard">已复制到剪贴板</string>
+    <string name="share_downloading_image">正在下载图片...</string>
+    <string name="share_error_image_download">图片下载失败</string>
+    <string name="share_error_generic">分享错误: %1$s</string>
+
+    <!-- Share text formatting -->
+    <string name="share_left_quote">「</string>
+    <string name="share_right_quote">」</string>
+    <string name="share_author_label">作者: </string>
+    <string name="share_word_count_unit">字</string>
+    <string name="share_about_prefix">约</string>
+    <string name="share_minutes_unit">分钟</string>
+    <string name="share_user_prefix">Pixiv 用户: </string>
 </resources>

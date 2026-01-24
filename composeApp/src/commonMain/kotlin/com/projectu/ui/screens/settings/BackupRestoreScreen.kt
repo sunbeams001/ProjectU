@@ -342,7 +342,7 @@ private fun BackupRestoreMainContent(
                             ) {
                                 Icon(
                                     imageVector = androidx.compose.material.icons.Icons.Default.Settings,
-                                    contentDescription = "重新设置备份目录",
+                                    contentDescription = stringResource(Res.string.cd_reset_backup_directory),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -798,13 +798,16 @@ private fun BackupRestoreMainContent(
         )
     }
     
+    // 获取字符串资源
+    val selectBackupDirectoryTitle = stringResource(Res.string.cd_select_backup_directory)
+    
     // 备份目录选择引导对话框
     if (showDirectoryGuideDialog) {
         DirectoryGuideDialog(
             onConfirm = {
                 showDirectoryGuideDialog = false
                 pathPicker.pickDirectory(
-                    title = "选择备份目录",
+                    title = selectBackupDirectoryTitle,
                     initialPath = "/storage/emulated/0/Download/ProjectU/Backups",
                     onPathSelected = { uri ->
                         uri?.let {
@@ -868,7 +871,7 @@ private fun DirectoryGuideDialog(
                         ) {
                             Icon(
                                 imageVector = androidx.compose.material.icons.Icons.Default.ContentCopy,
-                                contentDescription = "复制路径",
+                                contentDescription = stringResource(Res.string.cd_copy_path),
                                 modifier = Modifier.size(18.dp)
                             )
                         }

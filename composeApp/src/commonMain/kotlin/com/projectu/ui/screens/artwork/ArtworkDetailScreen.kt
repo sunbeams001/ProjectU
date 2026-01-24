@@ -11,12 +11,17 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.projectu.shared.data.local.UgoiraFormat
 import com.projectu.shared.domain.model.ArtworkType
+import com.projectu.shared.domain.model.ArtworkShareType
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.comment.CommentsScreen
 import com.projectu.ui.screens.download.DownloadScreen
 import com.projectu.ui.screens.blocklist.BlockListScreen
+import com.projectu.ui.screens.share.ShareViewModel
+import com.projectu.ui.screens.share.ShareIntent
+import com.projectu.ui.util.ShareTextFormatter
+import com.projectu.ui.components.share.ArtworkShareBottomSheet
 import com.projectu.shared.domain.model.CommentContentType
 import com.projectu.shared.domain.repository.DownloadRepository
 import com.projectu.ui.util.PlatformBackHandler
@@ -77,10 +82,20 @@ data class ArtworkDetailScreen(
         val navigator = LocalNavigator.currentOrThrow
         val downloadRepository: DownloadRepository = koinInject()
         val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+        val shareViewModel: ShareViewModel = koinInject()
+        val shareState by shareViewModel.state.collectAsState()
         val coroutineScope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
         val downloadTaskAddedMessage = stringResource(Res.string.download_task_added)
         val downloadActionViewLabel = stringResource(Res.string.download_action_view)
+        
+        // 分享选项底部面板状态
+        var showShareBottomSheet by remember { mutableStateOf(false) }
+        
+        // 预计算分享文本（在@Composable上下文中）
+        val formattedShareText = state.artwork?.let { artwork ->
+            ShareTextFormatter.formatArtworkText(artwork)
+        } ?: ""
         
         // 检查翻译功能是否启用
         val isTranslationEnabled by remember { derivedStateOf { settingsCache.isTranslationEnabled() } }
@@ -192,6 +207,22 @@ data class ArtworkDetailScreen(
                     )
                 }
             },
+            onShareClick = {
+                // 点击分享按钮：默认分享链接
+                state.artwork?.let { artwork ->
+                    shareViewModel.handleIntent(
+                        ShareIntent.ShareArtwork(
+                            artwork = artwork,
+                            formattedText = formattedShareText,
+                            shareType = ArtworkShareType.LINK_ONLY
+                        )
+                    )
+                }
+            },
+            onShareLongClick = {
+                // 长按分享按钮：显示分享选项
+                showShareBottomSheet = true
+            },
             onSimilarClick = {
                 // 推荐作品按钮点击
                 state.artwork?.let { artwork ->
@@ -279,5 +310,27 @@ data class ArtworkDetailScreen(
             } else null,
             snackbarHostState = snackbarHostState
         )
+        
+        // 分享选项底部面板
+        if (showShareBottomSheet) {
+            state.artwork?.let { artwork ->
+                ArtworkShareBottomSheet(
+                    artwork = artwork,
+                    onDismiss = { showShareBottomSheet = false },
+                    onShareSelected = { shareType, pageIndex ->
+                        showShareBottomSheet = false
+                        shareViewModel.handleIntent(
+                            ShareIntent.ShareArtwork(
+                                artwork = artwork,
+                                formattedText = formattedShareText,
+                                shareType = shareType,
+                                pageIndex = pageIndex
+                            )
+                        )
+                    }
+                )
+            }
+        }
+
     }
 }

@@ -30,8 +30,11 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -81,11 +84,14 @@ import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.userrelations.UserRelationsScreen
 import com.projectu.ui.util.AppLogger
+import com.projectu.ui.util.ShareTextFormatter
 import com.projectu.ui.util.TagClickHandler
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.compose.koinInject
+import com.projectu.ui.screens.share.ShareIntent
+import com.projectu.ui.screens.share.ShareViewModel
 
 /**
  * 列表滚动状态的封装，用于统一管理不同类型列表的滚动
@@ -126,6 +132,7 @@ data class UserScreen(
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<UserViewModel>()
+        val shareViewModel: ShareViewModel = koinInject()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
@@ -142,6 +149,13 @@ data class UserScreen(
         val searchHistoryStore: com.projectu.shared.data.local.SearchHistoryStore = koinInject()
         val tagClickHandler = remember(navigator) {
             TagClickHandler(navigator, searchHistoryStore, scope)
+        }
+        
+        // 预计算分享描述（在@Composable上下文中）
+        val formattedShareDescription = if (state.isLoadingProfile || state.profileError != null) {
+            ""
+        } else {
+            ShareTextFormatter.formatUserDescription(state.userProfile.name)
         }
         
         // 获取BlockRuleCache以检查用户是否被屏蔽
@@ -264,7 +278,17 @@ data class UserScreen(
                     }
                 }
             },
-            isAuthorBlocked = isAuthorBlocked
+            isAuthorBlocked = isAuthorBlocked,
+            onShareUser = {
+                // 分享用户
+                shareViewModel.handleIntent(
+                    ShareIntent.ShareUser(
+                        userId = state.userProfile.userId,
+                        userName = state.userProfile.name,
+                        formattedDescription = formattedShareDescription
+                    )
+                )
+            }
         )
     }
 }
@@ -302,7 +326,9 @@ fun UserScreenContent(
     // 屏蔽作者相关
     onBlockAuthor: (() -> Unit)? = null,
     onUnblockAuthor: (() -> Unit)? = null,
-    isAuthorBlocked: Boolean = false
+    isAuthorBlocked: Boolean = false,
+    // 分享用户
+    onShareUser: (() -> Unit)? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     
@@ -459,6 +485,7 @@ fun UserScreenContent(
                                     onBlockAuthor = onBlockAuthor,
                                     onUnblockAuthor = onUnblockAuthor,
                                     isAuthorBlocked = isAuthorBlocked,
+                                    onShareUser = onShareUser,
                                     isStandalone = isStandalone
                                 )
                             }
@@ -715,6 +742,7 @@ fun UserTabContent(
     onBlockAuthor: (() -> Unit)? = null,
     onUnblockAuthor: (() -> Unit)? = null,
     isAuthorBlocked: Boolean = false,
+    onShareUser: (() -> Unit)? = null,
     isStandalone: Boolean = true
 ) {
     // 获取或创建当前Tab的Tag筛选行滚动状态
@@ -735,7 +763,8 @@ fun UserTabContent(
                         onBlockAuthor = onBlockAuthor,
                         onUnblockAuthor = onUnblockAuthor,
                         isAuthorBlocked = isAuthorBlocked,
-                        applyNavigationBarsPadding = isStandalone
+                        applyNavigationBarsPadding = isStandalone,
+                        onShareUser = onShareUser
                     )
                 } else {
                     CircularProgressIndicator()
@@ -1304,7 +1333,8 @@ fun UserInfoContent(
     onBlockAuthor: (() -> Unit)? = null,
     onUnblockAuthor: (() -> Unit)? = null,
     isAuthorBlocked: Boolean = false,
-    applyNavigationBarsPadding: Boolean = true
+    applyNavigationBarsPadding: Boolean = true,
+    onShareUser: (() -> Unit)? = null
 ) {
     val listState = rememberLazyListState()
     val uriHandler = LocalUriHandler.current
@@ -1332,6 +1362,23 @@ fun UserInfoContent(
                         label = stringResource(Res.string.user_info_user_id),
                         value = userDetailInfo.userId
                     )
+                    
+                    // 分享按钮
+                    if (onShareUser != null) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        OutlinedButton(
+                            onClick = onShareUser,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(Res.string.share))
+                        }
+                    }
                     
                     // 屏蔽/解除屏蔽按钮
                     Spacer(modifier = Modifier.height(4.dp))

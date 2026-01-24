@@ -90,6 +90,7 @@ fun NovelInfoSection(
     onUserClick: ((userId: String) -> Unit)? = null,
     onSeriesClick: ((seriesId: String) -> Unit)? = null,
     onCommentClick: (() -> Unit)? = null,
+    onShareClick: (() -> Unit)? = null,
     onRecommendClick: (() -> Unit)? = null,
     onDownloadClick: (() -> Unit)? = null,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
@@ -807,6 +808,14 @@ fun NovelInfoSection(
                                     }
                                 }
                             }
+                            
+                            // 分享按钮
+                            NovelActionButton(
+                                icon = Icons.Default.Share,
+                                label = stringResource(Res.string.share),
+                                onClick = { onShareClick?.invoke() },
+                                enabled = onShareClick != null
+                            )
                             
                             // 推荐作品按钮
                             NovelActionButton(

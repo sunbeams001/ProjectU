@@ -43,8 +43,8 @@ data class RestoreStatistics(
  * 恢复错误
  */
 sealed class RestoreError(open val message: String) {
-    data class InvalidBackupFile(override val message: String = "无效的备份文件") : RestoreError(message)
-    data class ChecksumMismatch(override val message: String = "数据校验失败") : RestoreError(message)
+    data class InvalidBackupFile(override val message: String = "Invalid backup file") : RestoreError(message)
+    data class ChecksumMismatch(override val message: String = "Data verification failed") : RestoreError(message)
     data class IncompatibleVersion(
         override val message: String,
         val backupVersion: String,

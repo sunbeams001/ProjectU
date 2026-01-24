@@ -125,6 +125,15 @@
     <string name="backup_progress_exporting">%s 내보내기 중...</string>
     <string name="backup_progress_saving">저장 중...</string>
     <string name="backup_progress_title">백업 생성 중...</string>
+    <string name="backup_progress_preparing">백업 준비 중...</string>
+    <string name="backup_progress_settings">앱 설정 백업 중...</string>
+    <string name="backup_progress_credentials">로그인 정보 백업 중...</string>
+    <string name="backup_progress_blocklist">차단 목록 백업 중...</string>
+    <string name="backup_progress_history">탐색 기록 백업 중...</string>
+    <string name="backup_progress_rules">다운로드 경로 규칙 백업 중...</string>
+    <string name="backup_progress_tasks">다운로드 작업 백업 중...</string>
+    <string name="backup_progress_search">검색 기록 백업 중...</string>
+    <string name="backup_progress_metadata">메타데이터 생성 중...</string>
     <string name="backup_restore_title">백업 및 복원</string>
     <string name="backup_scanned_count">%1$d개의 백업 파일을 스캔했습니다</string>
     <string name="backup_size_10kb">&lt; 10 KB</string>
@@ -153,11 +162,35 @@
     <string name="restore_progress_extracting">압축 해제 중...</string>
     <string name="restore_progress_importing">%s 가져오기 중...</string>
     <string name="restore_progress_title">복원 중...</string>
-    <string name="restore_progress_validating">백업 파일 검증 중...</string>
+    <string name="restore_progress_validating">데이터 무결성 검증 중...</string>
+    <string name="restore_progress_settings">앱 설정 복원 중...</string>
+    <string name="restore_progress_credentials">로그인 정보 복원 중...</string>
+    <string name="restore_progress_blocklist">차단 목록 복원 중...</string>
+    <string name="restore_progress_history">탐색 기록 복원 중...</string>
+    <string name="restore_progress_rules">다운로드 경로 규칙 복원 중...</string>
+    <string name="restore_progress_tasks">다운로드 작업 복원 중...</string>
+    <string name="restore_progress_search">검색 기록 복원 중...</string>
     <string name="restore_select_file">백업 파일 선택</string>
     <string name="restore_tab">복원</string>
     <string name="restore_warning_message">• 복원 작업은 현재 설정과 로그인 정보를 덮어씁니다\n• 현재 데이터를 먼저 백업하는 것이 좋습니다\n• 복원 완료 후 앱이 재시작됩니다</string>
     <string name="restore_warning_title">⚠️ 중요 안내</string>
+
+    <!-- Content Descriptions for Accessibility -->
+    <string name="cd_reset_backup_directory">백업 디렉토리 재설정</string>
+    <string name="cd_select_backup_directory">백업 디렉토리 선택</string>
+    <string name="cd_copy_path">경로 복사</string>
+    <string name="cd_expand">펼치기</string>
+    <string name="cd_collapse">접기</string>
+
+    <!-- Backup/Restore Error Messages -->
+    <string name="error_backup_delete_failed">삭제 실패</string>
+    <string name="error_backup_unknown">알 수 없는 오류</string>
+    <string name="error_backup_storage_permission_denied">저장소 권한이 거부되었습니다</string>
+    <string name="error_backup_insufficient_space">저장 공간이 부족합니다</string>
+    <string name="error_restore_all_modules_failed">모든 모듈 복원 실패</string>
+    <string name="error_restore_partial_modules_failed">일부 모듈 복원 실패</string>
+    <string name="error_restore_checksum_mismatch">데이터 검증 실패</string>
+    <string name="error_restore_unknown">알 수 없는 오류</string>
 
 
     <!-- ========================================================================== -->
@@ -1312,4 +1345,39 @@
     <string name="user_unfollow">팔로우 취소</string>
     <string name="user_works">작품</string>
     <string name="user_works_empty">작품 개요가 비어 있습니다</string>
+
+
+    <!-- ========================================================================== -->
+    <!-- Share -->
+    <!-- ========================================================================== -->
+
+    <!-- SHARE_* -->
+    <string name="share">공유</string>
+    <string name="share_artwork">작품 공유</string>
+    <string name="share_user">사용자 공유</string>
+    <string name="share_novel">소설 공유</string>
+    <string name="share_link">링크 공유</string>
+    <string name="share_text_with_image">텍스트+이미지 공유</string>
+    <string name="share_first_image">첫 번째 이미지 공유</string>
+    <string name="share_specific_page">특정 페이지 공유</string>
+    <string name="share_options">공유 옵션</string>
+    <string name="share_link_description">제목과 URL 공유</string>
+    <string name="share_text_with_image_description">텍스트와 첫 번째 이미지 공유</string>
+    <string name="share_first_image_description">첫 번째 이미지만 공유</string>
+    <string name="share_success">공유 완료</string>
+    <string name="share_failed">공유 실패</string>
+    <string name="share_cancelled">공유 취소됨</string>
+    <string name="share_copying_to_clipboard">클립보드에 복사됨</string>
+    <string name="share_downloading_image">이미지 다운로드 중...</string>
+    <string name="share_error_image_download">이미지 다운로드 실패</string>
+    <string name="share_error_generic">공유 오류: %1$s</string>
+
+    <!-- Share text formatting -->
+    <string name="share_left_quote">「</string>
+    <string name="share_right_quote">」</string>
+    <string name="share_author_label">작가: </string>
+    <string name="share_word_count_unit">자</string>
+    <string name="share_about_prefix">약 </string>
+    <string name="share_minutes_unit">분</string>
+    <string name="share_user_prefix">Pixiv 사용자: </string>
 </resources>

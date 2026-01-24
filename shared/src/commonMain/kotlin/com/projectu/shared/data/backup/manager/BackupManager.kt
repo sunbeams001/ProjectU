@@ -45,7 +45,7 @@ class BackupManager(
             emit(BackupResult.Progress(
                 currentModule = BackupModule.SETTINGS,
                 progress = 0f,
-                message = "准备备份..."
+                message = "Preparing backup..."
             ))
             
             val tempDir = backupStorage.createTempDirectory("backup_temp_${System.currentTimeMillis()}")
@@ -68,7 +68,7 @@ class BackupManager(
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.SETTINGS,
                     progress = currentModuleIndex.toFloat() / totalModules,
-                    message = "正在备份应用设置..."
+                    message = "Backing up app settings..."
                 ))
                 
                 val settingsData = settingsDataSource.exportData()
@@ -86,7 +86,7 @@ class BackupManager(
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.CREDENTIALS,
                     progress = currentModuleIndex.toFloat() / totalModules,
-                    message = "正在备份登录信息..."
+                    message = "Backing up login info..."
                 ))
                 
                 val credentialsData = credentialsDataSource.exportData()
@@ -105,7 +105,7 @@ class BackupManager(
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.BLOCK_RULES,
                     progress = currentModuleIndex.toFloat() / totalModules,
-                    message = "正在备份屏蔽列表..."
+                    message = "Backing up block list..."
                 ))
                 
                 val blockRulesData = blockRulesDataSource.exportData()
@@ -125,7 +125,7 @@ class BackupManager(
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.BROWSE_HISTORY,
                     progress = currentModuleIndex.toFloat() / totalModules,
-                    message = "正在备份浏览历史..."
+                    message = "Backing up browse history..."
                 ))
                 
                 val browseHistoryData = browseHistoryDataSource.exportData()
@@ -145,7 +145,7 @@ class BackupManager(
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.DOWNLOAD_RULES,
                     progress = currentModuleIndex.toFloat() / totalModules,
-                    message = "正在备份下载路径规则..."
+                    message = "Backing up download path rules..."
                 ))
                 
                 val downloadRulesData = downloadRulesDataSource.exportData()
@@ -165,7 +165,7 @@ class BackupManager(
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.DOWNLOAD_TASKS,
                     progress = currentModuleIndex.toFloat() / totalModules,
-                    message = "正在备份下载任务..."
+                    message = "Backing up download tasks..."
                 ))
                 
                 val downloadTasksJson = downloadTasksDataSource.exportData()
@@ -186,7 +186,7 @@ class BackupManager(
                 emit(BackupResult.Progress(
                     currentModule = BackupModule.SEARCH_HISTORY,
                     progress = currentModuleIndex.toFloat() / totalModules,
-                    message = "正在备份搜索历史..."
+                    message = "Backing up search history..."
                 ))
                 
                 val searchHistoryJson = searchHistoryDataSource.exportData()
@@ -205,7 +205,7 @@ class BackupManager(
             emit(BackupResult.Progress(
                 currentModule = BackupModule.SETTINGS,
                 progress = 0.9f,
-                message = "生成元数据..."
+                message = "Generating metadata..."
             ))
             
             val metadata = BackupMetadata(
@@ -269,7 +269,7 @@ class BackupManager(
             
         } catch (e: Exception) {
             emit(BackupResult.Failure(
-                BackupError.UnknownError(e.message ?: "未知错误")
+                BackupError.UnknownError(e.message ?: "Unknown error")
             ))
         }
     }

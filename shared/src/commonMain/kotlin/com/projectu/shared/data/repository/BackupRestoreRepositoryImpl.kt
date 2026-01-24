@@ -85,7 +85,7 @@ class BackupRestoreRepositoryImpl(
             if (success) {
                 Result.success(Unit)
             } else {
-                Result.failure(Exception("删除失败"))
+                Result.failure(Exception("Delete failed"))
             }
         } catch (e: Exception) {
             Result.failure(e)

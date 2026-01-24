@@ -69,6 +69,7 @@ kotlin {
             implementation(libs.ktor.client.cio)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.androidx.documentfile)
+            implementation(libs.androidx.core.ktx)
         }
         
         val desktopMain by getting {
