@@ -28,13 +28,11 @@
     <string name="widget_filter_must_not_be">排除</string>
     <string name="widget_filter_any">任意</string>
     <string name="widget_update_interval">更新间隔</string>
-    <string name="widget_update_interval_minutes">%d 分钟</string>
     <string name="widget_show_refresh_button">显示刷新按钮</string>
     <string name="widget_display_settings">显示设置</string>
     <string name="widget_image_scale_type">图片缩放</string>
     <string name="widget_scale_fit_center">完整显示</string>
     <string name="widget_scale_center_crop">填充裁剪</string>
-    <string name="widget_corner_radius">圆角大小</string>
     <string name="widget_delete_confirm_title">删除Widget配置</string>
     <string name="widget_delete_confirm_message">确定要删除 Widget #%d 的配置吗?桌面上的Widget也需要手动移除。</string>
     <string name="widget_add_instruction">长按桌面添加Widget</string>
