@@ -719,7 +719,7 @@
     <string name="login_help_step1">1. 在浏览器中打开 https://www.pixiv.net/ 并登录</string>
     <string name="login_help_step2">2. 打开开发者工具 (F12)</string>
     <string name="login_help_step3">3. 前往 应用/存储 → Cookies → https://www.pixiv.net</string>
-    <string name="login_help_step4">4. 复制 \'PHPSESSID\' 的值（格式：12345678_xxxx）</string>
+    <string name="login_help_step4">4. 复制 'PHPSESSID' 的值（格式：12345678_xxxx）</string>
     <string name="login_help_warning">⚠️ 警告：切勿将您的 PHPSESSID 分享给他人！</string>
     <string name="login_in_app">应用内登录</string>
     <string name="login_in_development">此功能正在开发中，敬请期待！</string>
@@ -1055,10 +1055,26 @@
 
     <!-- SETTINGS_* -->
     <string name="settings_about">关于</string>
+    <string name="settings_about_app">关于应用</string>
     <string name="settings_account">账号管理</string>
     <string name="settings_api_test_desc">系统化测试所有已集成的 Pixiv API</string>
     <string name="settings_api_test_subtitle">调试 Pixiv API 接口</string>
     <string name="settings_api_test_tool">API 测试工具 🔧</string>
+    <string name="settings_check_update">检查更新</string>
+    <string name="settings_checking_update">正在检查更新...</string>
+    <string name="settings_current_version">当前版本</string>
+    <string name="settings_github_project">GitHub 项目</string>
+    <string name="settings_has_update">发现新版本！</string>
+    <string name="settings_latest_version">最新版本</string>
+    <string name="settings_no_update">已是最新版本</string>
+    <string name="settings_telegram_group">Telegram 群组</string>
+    <string name="settings_update_check_error">检查更新失败：%1$s</string>
+    <string name="settings_update_content">更新内容</string>
+    <string name="settings_update_dialog_title">发现新版本</string>
+    <string name="settings_update_download">立即下载</string>
+    <string name="settings_update_file_size">文件大小</string>
+    <string name="settings_update_later">稍后提醒</string>
+    <string name="settings_update_published_at">发布时间</string>
     <string name="settings_app_language">应用语言</string>
     <string name="settings_backup_restore">备份与恢复</string>
     <string name="settings_backup_restore_desc">备份设置和凭据，从备份文件恢复</string>

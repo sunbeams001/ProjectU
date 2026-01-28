@@ -11,10 +11,13 @@ import com.projectu.shared.data.local.ThemeMode
 import com.projectu.shared.domain.model.BookmarkAction
 import com.projectu.shared.domain.model.CacheSize
 import com.projectu.shared.domain.model.ImageQuality
+import com.projectu.shared.domain.model.UpdateCheckResult
 import com.projectu.shared.domain.repository.AuthRepository
 import com.projectu.shared.domain.repository.SettingsRepository
+import com.projectu.shared.domain.usecase.CheckUpdateUseCase
 import com.projectu.ui.components.FileNamePreviewExample
 import com.projectu.ui.screens.login.LoginScreen
+import com.projectu.ui.util.AppVersion
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -24,7 +27,8 @@ import kotlinx.coroutines.launch
  */
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val checkUpdateUseCase: CheckUpdateUseCase
 ) : ViewModel() {
     
     // 设置状态流
@@ -34,6 +38,13 @@ class SettingsViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = AppSettings.DEFAULT
         )
+    
+    // 更新检查状态
+    private val _updateCheckState = MutableStateFlow<UpdateCheckResult?>(null)
+    val updateCheckState: StateFlow<UpdateCheckResult?> = _updateCheckState.asStateFlow()
+    
+    private val _isCheckingUpdate = MutableStateFlow(false)
+    val isCheckingUpdate: StateFlow<Boolean> = _isCheckingUpdate.asStateFlow()
     
     /**
      * 更新应用语言
@@ -418,5 +429,29 @@ class SettingsViewModel(
             settingsRepository.updateTranslationTargetLanguage(language)
         }
     }
+    
+    /**
+     * 检查更新
+     */
+    fun checkForUpdate() {
+        viewModelScope.launch {
+            _isCheckingUpdate.value = true
+            try {
+                val result = checkUpdateUseCase(
+                    currentVersionName = AppVersion.VERSION_NAME,
+                    currentVersionCode = AppVersion.VERSION_CODE
+                )
+                _updateCheckState.value = result
+            } finally {
+                _isCheckingUpdate.value = false
+            }
+        }
+    }
+    
+    /**
+     * 重置更新检查状态
+     */
+    fun resetUpdateCheckState() {
+        _updateCheckState.value = null
+    }
 }
-

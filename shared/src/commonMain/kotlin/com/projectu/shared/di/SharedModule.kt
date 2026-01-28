@@ -230,6 +230,11 @@ val pixivApiModule = module {
     single {
         GoogleTranslateApi(get())
     }
+    
+    // GitHub API
+    single {
+        com.projectu.shared.data.remote.api.GitHubApi(get())
+    }
 }
 
 /**
@@ -247,6 +252,11 @@ val repositoryModule = module {
     // 设置仓储
     single<SettingsRepository> {
         SettingsRepositoryImpl(get())
+    }
+    
+    // 更新检查仓储
+    single<com.projectu.shared.domain.repository.UpdateRepository> {
+        com.projectu.shared.data.repository.UpdateRepositoryImpl(get())
     }
     
     // 作品仓储
@@ -434,6 +444,9 @@ val useCaseModule = module {
     
     // 分享相关
     factory { com.projectu.shared.domain.usecase.PrepareShareContentUseCase() }
+    
+    // 更新检查相关
+    factory { com.projectu.shared.domain.usecase.CheckUpdateUseCase(get()) }
 }
 
 /**

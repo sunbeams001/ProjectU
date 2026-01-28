@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
@@ -169,9 +171,58 @@ class SettingsScreen : Screen {
         // 下载设置
         val downloadSettings = settings.downloadSettings
         
+        // 更新检查状态
+        val updateCheckState by viewModel.updateCheckState.collectAsState()
+        val isCheckingUpdate by viewModel.isCheckingUpdate.collectAsState()
+        
         // 初始化时刷新缓存大小
         LaunchedEffect(Unit) {
             cacheManager.refreshCacheSize()
+        }
+        
+        // 更新对话框
+        val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+        updateCheckState?.let { result ->
+            when (result) {
+                is com.projectu.shared.domain.model.UpdateCheckResult.HasUpdate -> {
+                    UpdateDialog(
+                        updateInfo = result.updateInfo,
+                        onDownload = { url ->
+                            viewModel.resetUpdateCheckState()
+                            try {
+                                uriHandler.openUri(url)
+                            } catch (e: Exception) {
+                                // 忽略错误
+                            }
+                        },
+                        onDismiss = { viewModel.resetUpdateCheckState() }
+                    )
+                }
+                is com.projectu.shared.domain.model.UpdateCheckResult.NoUpdate -> {
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = { viewModel.resetUpdateCheckState() },
+                        title = { Text(stringResource(Res.string.settings_check_update)) },
+                        text = { Text(stringResource(Res.string.settings_no_update)) },
+                        confirmButton = {
+                            TextButton(onClick = { viewModel.resetUpdateCheckState() }) {
+                                Text(stringResource(Res.string.common_ok))
+                            }
+                        }
+                    )
+                }
+                is com.projectu.shared.domain.model.UpdateCheckResult.Error -> {
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = { viewModel.resetUpdateCheckState() },
+                        title = { Text(stringResource(Res.string.settings_check_update)) },
+                        text = { Text(stringResource(Res.string.settings_update_check_error, result.message)) },
+                        confirmButton = {
+                            TextButton(onClick = { viewModel.resetUpdateCheckState() }) {
+                                Text(stringResource(Res.string.common_ok))
+                            }
+                        }
+                    )
+                }
+            }
         }
         
         SettingsScreenContent(
@@ -222,7 +273,13 @@ class SettingsScreen : Screen {
             onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) },
             onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) },
             onTranslationEngineChange = { viewModel.updateTranslationEngine(it) },
-            onTranslationTargetLanguageChange = { viewModel.updateTranslationTargetLanguage(it) }
+            onTranslationTargetLanguageChange = { viewModel.updateTranslationTargetLanguage(it) },
+            currentAppVersion = "${com.projectu.ui.util.AppVersion.VERSION_NAME} (${com.projectu.ui.util.AppVersion.VERSION_CODE})",
+            onCheckUpdate = { 
+                if (!isCheckingUpdate) {
+                    viewModel.checkForUpdate()
+                }
+            }
         )
     }
 }
@@ -277,7 +334,9 @@ private fun SettingsScreenContent(
     onNavigateToApiTest: () -> Unit = {},
     onBaseDownloadPathChange: (String) -> Unit,
     onTranslationEngineChange: (TranslationEngine) -> Unit,
-    onTranslationTargetLanguageChange: (TranslationLanguage) -> Unit
+    onTranslationTargetLanguageChange: (TranslationLanguage) -> Unit,
+    currentAppVersion: String,
+    onCheckUpdate: () -> Unit
 ) {
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showPixivLanguageDialog by remember { mutableStateOf(false) }
@@ -764,7 +823,79 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 👤 12. 账号 (Account)
+            // � 12. 关于 (About)
+            item {
+                SettingsGroupHeader(title = stringResource(Res.string.settings_about_app))
+            }
+            
+            // 当前版本 + 检查更新（合并一行）
+            item {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onCheckUpdate)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = stringResource(Res.string.settings_current_version),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = currentAppVersion,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Text(
+                            text = stringResource(Res.string.settings_check_update),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                HorizontalDivider()
+            }
+            
+            // Telegram 群组
+            item {
+                val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                SettingsItem(
+                    title = stringResource(Res.string.settings_telegram_group),
+                    subtitle = "t.me/ProjectUApp",
+                    onClick = {
+                        try {
+                            uriHandler.openUri("https://t.me/ProjectUApp")
+                        } catch (e: Exception) {
+                            // 忽略错误
+                        }
+                    }
+                )
+            }
+            
+            // GitHub 项目
+            item {
+                val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                SettingsItem(
+                    title = stringResource(Res.string.settings_github_project),
+                    subtitle = "github.com/sunbeams001/ProjectU",
+                    onClick = {
+                        try {
+                            uriHandler.openUri("https://github.com/sunbeams001/ProjectU")
+                        } catch (e: Exception) {
+                            // 忽略错误
+                        }
+                    }
+                )
+            }
+            
+            // 👤 13. 账号 (Account)
             item {
                 SettingsGroupHeader(title = stringResource(Res.string.settings_account))
             }
@@ -794,29 +925,47 @@ private fun SettingsScreenContent(
                 )
             }
             
-            // 退出登录
+            // 分隔线和间距
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            
+            // 退出登录（独立、醒目）
             if (isLoggedIn) {
                 item {
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showLogoutConfirmDialog = true }
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f),
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.error.copy(alpha = 0.3f)
+                        )
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                                .clickable { showLogoutConfirmDialog = true }
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = stringResource(Res.string.settings_logout),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
                             )
                         }
                     }
-                    HorizontalDivider()
                 }
+            }
+            
+            // 底部留白
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -2113,4 +2262,116 @@ private fun BookmarkActionSelectionDialog(
             }
         }
     )
+}
+/**
+ * 更新对话框
+ */
+@Composable
+private fun UpdateDialog(
+    updateInfo: com.projectu.shared.domain.model.UpdateInfo,
+    onDownload: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.settings_update_dialog_title)) },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // 版本信息
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(Res.string.settings_latest_version),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = updateInfo.versionName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    )
+                }
+                
+                // 文件大小
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(Res.string.settings_update_file_size),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = formatFileSize(updateInfo.fileSize),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                
+                // 发布时间
+                Text(
+                    text = "${stringResource(Res.string.settings_update_published_at)}: ${formatPublishedDate(updateInfo.publishedAt)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                // 更新内容
+                if (updateInfo.releaseNotes.isNotBlank()) {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    Text(
+                        text = stringResource(Res.string.settings_update_content),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    )
+                    Text(
+                        text = updateInfo.releaseNotes,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp)
+                            .verticalScroll(rememberScrollState())
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onDownload(updateInfo.downloadUrl) }) {
+                Text(stringResource(Res.string.settings_update_download))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.settings_update_later))
+            }
+        }
+    )
+}
+
+/**
+ * 格式化文件大小
+ */
+private fun formatFileSize(bytes: Long): String {
+    return when {
+        bytes < 1024 -> "$bytes B"
+        bytes < 1024 * 1024 -> "${bytes / 1024} KB"
+        bytes < 1024 * 1024 * 1024 -> String.format("%.2f MB", bytes / (1024.0 * 1024.0))
+        else -> String.format("%.2f GB", bytes / (1024.0 * 1024.0 * 1024.0))
+    }
+}
+
+/**
+ * 格式化发布日期
+ */
+private fun formatPublishedDate(isoDate: String): String {
+    return try {
+        // 简单处理，只取日期部分
+        isoDate.substringBefore('T')
+    } catch (e: Exception) {
+        isoDate
+    }
 }

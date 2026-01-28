@@ -105,7 +105,7 @@ actual val useCaseModule: Module = module {
 
 actual val viewModelModule: Module = module {
     // 设置 ViewModel
-    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get()) }
     
     // 备份与恢复 ViewModel
     viewModel { com.projectu.ui.screens.settings.BackupRestoreViewModel(get(), get(), get()) }

@@ -719,7 +719,7 @@
     <string name="login_help_step1">1. 在瀏覽器中開啟 https://www.pixiv.net/ 並登入</string>
     <string name="login_help_step2">2. 開啟開發者工具 (F12)</string>
     <string name="login_help_step3">3. 前往 應用程式/儲存 → Cookies → https://www.pixiv.net</string>
-    <string name="login_help_step4">4. 複製 \'PHPSESSID\' 的值（格式：12345678_xxxx）</string>
+    <string name="login_help_step4">4. 複製 'PHPSESSID' 的值（格式：12345678_xxxx）</string>
     <string name="login_help_warning">⚠️ 警告：切勿將您的 PHPSESSID 分享給他人！</string>
     <string name="login_in_app">應用程式內登入</string>
     <string name="login_in_development">此功能正在開發中，敬請期待！</string>
@@ -1055,10 +1055,26 @@
 
     <!-- SETTINGS_* -->
     <string name="settings_about">關於</string>
+    <string name="settings_about_app">關於應用程式</string>
     <string name="settings_account">帳號管理</string>
     <string name="settings_api_test_desc">系統化測試所有已整合的 Pixiv API</string>
     <string name="settings_api_test_subtitle">除錯 Pixiv API 介面</string>
     <string name="settings_api_test_tool">API 測試工具 🔧</string>
+    <string name="settings_check_update">檢查更新</string>
+    <string name="settings_checking_update">正在檢查更新...</string>
+    <string name="settings_current_version">目前版本</string>
+    <string name="settings_github_project">GitHub 專案</string>
+    <string name="settings_has_update">發現新版本！</string>
+    <string name="settings_latest_version">最新版本</string>
+    <string name="settings_no_update">已是最新版本</string>
+    <string name="settings_telegram_group">Telegram 群組</string>
+    <string name="settings_update_check_error">檢查更新失敗：%1$s</string>
+    <string name="settings_update_content">更新內容</string>
+    <string name="settings_update_dialog_title">發現新版本</string>
+    <string name="settings_update_download">立即下載</string>
+    <string name="settings_update_file_size">檔案大小</string>
+    <string name="settings_update_later">稍後提醒</string>
+    <string name="settings_update_published_at">發布時間</string>
     <string name="settings_app_language">應用程式語言</string>
     <string name="settings_backup_restore">備份與恢復</string>
     <string name="settings_backup_restore_desc">備份設定和憑證資訊，從備份檔案恢復</string>

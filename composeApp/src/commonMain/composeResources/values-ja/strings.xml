@@ -719,7 +719,7 @@
     <string name="login_help_step1">1. ブラウザで https://www.pixiv.net/ を開きログインします</string>
     <string name="login_help_step2">2. 開発者ツールを開きます（F12）</string>
     <string name="login_help_step3">3. アプリケーション/ストレージ → Cookie → https://www.pixiv.net に移動</string>
-    <string name="login_help_step4">4. \'PHPSESSID\' の値をコピー（形式：12345678_xxxx）</string>
+    <string name="login_help_step4">4. 'PHPSESSID' の値をコピー（形式：12345678_xxxx）</string>
     <string name="login_help_warning">⚠️ 警告：PHPSESSIDは他人と共有しないでください！</string>
     <string name="login_in_app">アプリ内ログイン</string>
     <string name="login_in_development">この機能は開発中です。お楽しみに！</string>
@@ -1055,10 +1055,26 @@
 
     <!-- SETTINGS_* -->
     <string name="settings_about">このアプリについて</string>
+    <string name="settings_about_app">アプリについて</string>
     <string name="settings_account">アカウント</string>
     <string name="settings_api_test_desc">統合されたすべてのPixiv APIを体系的にテスト</string>
     <string name="settings_api_test_subtitle">Pixiv APIをデバッグ</string>
     <string name="settings_api_test_tool">APIテストツール 🔧</string>
+    <string name="settings_check_update">更新を確認</string>
+    <string name="settings_checking_update">更新を確認中...</string>
+    <string name="settings_current_version">現在のバージョン</string>
+    <string name="settings_github_project">GitHubプロジェクト</string>
+    <string name="settings_has_update">新しいバージョンがあります！</string>
+    <string name="settings_latest_version">最新バージョン</string>
+    <string name="settings_no_update">最新バージョンです</string>
+    <string name="settings_telegram_group">Telegramグループ</string>
+    <string name="settings_update_check_error">更新の確認に失敗しました：%1$s</string>
+    <string name="settings_update_content">更新内容</string>
+    <string name="settings_update_dialog_title">新しいバージョン</string>
+    <string name="settings_update_download">今すぐダウンロード</string>
+    <string name="settings_update_file_size">ファイルサイズ</string>
+    <string name="settings_update_later">後で</string>
+    <string name="settings_update_published_at">リリース日</string>
     <string name="settings_app_language">アプリの言語</string>
     <string name="settings_backup_restore">バックアップと復元</string>
     <string name="settings_backup_restore_desc">設定と認証情報をバックアップ、バックアップから復元</string>

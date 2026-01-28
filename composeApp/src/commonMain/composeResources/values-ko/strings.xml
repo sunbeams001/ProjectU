@@ -719,7 +719,7 @@
     <string name="login_help_step1">1. 브라우저에서 https://www.pixiv.net/ 을 열고 로그인</string>
     <string name="login_help_step2">2. 개발자 도구 열기 (F12)</string>
     <string name="login_help_step3">3. 쿠키 목록에서 PHPSESSID를 찾아 값을 복사</string>
-    <string name="login_help_step4">4. \'PHPSESSID\' 값을 복사 (형식: 12345678_xxxx)</string>
+    <string name="login_help_step4">4. 'PHPSESSID' 값을 복사 (형식: 12345678_xxxx)</string>
     <string name="login_help_warning">⚠️ 경고: PHPSESSID를 다른 사람과 공유하지 마세요!</string>
     <string name="login_in_app">앱 내 로그인</string>
     <string name="login_in_development">이 기능은 개발 중입니다. 기대해 주세요!</string>
@@ -1055,10 +1055,26 @@
 
     <!-- SETTINGS_* -->
     <string name="settings_about">정보</string>
+    <string name="settings_about_app">앱 정보</string>
     <string name="settings_account">계정</string>
     <string name="settings_api_test_desc">모든 통합 Pixiv API를 체계적으로 테스트</string>
     <string name="settings_api_test_subtitle">Pixiv API 디버그</string>
     <string name="settings_api_test_tool">API 테스트 도구 🔧</string>
+    <string name="settings_check_update">업데이트 확인</string>
+    <string name="settings_checking_update">업데이트 확인 중...</string>
+    <string name="settings_current_version">현재 버전</string>
+    <string name="settings_github_project">GitHub 프로젝트</string>
+    <string name="settings_has_update">새 버전이 있습니다!</string>
+    <string name="settings_latest_version">최신 버전</string>
+    <string name="settings_no_update">최신 버전입니다</string>
+    <string name="settings_telegram_group">Telegram 그룹</string>
+    <string name="settings_update_check_error">업데이트 확인 실패: %1$s</string>
+    <string name="settings_update_content">업데이트 내용</string>
+    <string name="settings_update_dialog_title">새 버전</string>
+    <string name="settings_update_download">지금 다운로드</string>
+    <string name="settings_update_file_size">파일 크기</string>
+    <string name="settings_update_later">나중에</string>
+    <string name="settings_update_published_at">릴리스 날짜</string>
     <string name="settings_app_language">앱 언어</string>
     <string name="settings_backup_restore">백업 및 복원</string>
     <string name="settings_backup_restore_desc">설정 및 인증 정보 백업, 백업 파일에서 복원</string>
