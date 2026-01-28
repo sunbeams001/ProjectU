@@ -6,6 +6,7 @@ import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.mangaseries.MangaSeriesScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
 import com.projectu.ui.screens.novelseries.NovelSeriesScreen
+import com.projectu.ui.screens.pixivision.PixivisionDetailScreen
 import com.projectu.ui.screens.user.UserScreen
 
 /**
@@ -28,6 +29,7 @@ object DeepLinkHandler {
             is DeepLinkTarget.Novel -> NovelDetailScreen(novelId = target.novelId)
             is DeepLinkTarget.NovelSeries -> NovelSeriesScreen(seriesId = target.seriesId)
             is DeepLinkTarget.MangaSeries -> MangaSeriesScreen(seriesId = target.seriesId)
+            is DeepLinkTarget.Pixivision -> PixivisionDetailScreen(articleId = target.articleId)
             DeepLinkTarget.Unknown -> null
         }
     }

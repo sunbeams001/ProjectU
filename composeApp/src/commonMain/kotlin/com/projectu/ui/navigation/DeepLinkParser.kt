@@ -35,6 +35,12 @@ sealed class DeepLinkTarget {
     data class MangaSeries(val seriesId: String) : DeepLinkTarget()
     
     /**
+     * Pixivision 特辑页面
+     * @param articleId 文章ID
+     */
+    data class Pixivision(val articleId: String) : DeepLinkTarget()
+    
+    /**
      * 未知或不支持的链接
      */
     data object Unknown : DeepLinkTarget()
@@ -66,6 +72,12 @@ sealed class DeepLinkTarget {
  * 
  * 漫画系列：
  * - https://www.pixiv.net/user/3414789/series/313864
+ * 
+ * Pixivision 特辑：
+ * - https://www.pixivision.net/zh/a/11289
+ * - https://www.pixivision.net/zh-tw/a/11289
+ * - https://www.pixivision.net/en/a/11289
+ * - https://www.pixivision.net/ja/a/11289
  */
 object DeepLinkParser {
     
@@ -98,6 +110,10 @@ object DeepLinkParser {
     
     // 漫画系列正则：/user/{userId}/series/{seriesId}
     private val MANGA_SERIES_PATTERN = Regex("""^/user/\d+/series/(\d+)/?$""")
+    
+    // Pixivision 特辑正则：/{lang}/a/{articleId}
+    // 支持的语言：zh, zh-tw, en, ko, th, ms, ja
+    private val PIXIVISION_PATTERN = Regex("""^/(zh|zh-tw|en|ko|th|ms|ja)/a/(\d+)/?$""")
     
     /**
      * 解析深度链接 URL
@@ -141,11 +157,12 @@ object DeepLinkParser {
             val host = pathPart.substring(0, pathStartIndex)
             val path = pathPart.substring(pathStartIndex)
             
-            // 验证 host
-            if (!isValidPixivHost(host)) return DeepLinkTarget.Unknown
-            
-            // 解析 path
-            parsePathAndQuery(path, queryPart)
+            // 验证 host 并选择对应的解析方法
+            when {
+                isValidPixivHost(host) -> parsePathAndQuery(path, queryPart)
+                isValidPixivisionHost(host) -> parsePixivisionPath(path)
+                else -> DeepLinkTarget.Unknown
+            }
         } catch (e: Exception) {
             DeepLinkTarget.Unknown
         }
@@ -162,9 +179,11 @@ object DeepLinkParser {
     fun parseUri(host: String?, path: String?, query: String?): DeepLinkTarget {
         if (host == null || path == null) return DeepLinkTarget.Unknown
         
-        if (!isValidPixivHost(host)) return DeepLinkTarget.Unknown
-        
-        return parsePathAndQuery(path, query)
+        return when {
+            isValidPixivHost(host) -> parsePathAndQuery(path, query)
+            isValidPixivisionHost(host) -> parsePixivisionPath(path)
+            else -> DeepLinkTarget.Unknown
+        }
     }
     
     /**
@@ -172,6 +191,26 @@ object DeepLinkParser {
      */
     private fun isValidPixivHost(host: String): Boolean {
         return host == "www.pixiv.net" || host == "pixiv.net"
+    }
+    
+    /**
+     * 验证是否为有效的 Pixivision 主机
+     */
+    private fun isValidPixivisionHost(host: String): Boolean {
+        return host == "www.pixivision.net" || host == "pixivision.net"
+    }
+    
+    /**
+     * 解析 Pixivision 路径
+     */
+    private fun parsePixivisionPath(path: String): DeepLinkTarget {
+        // 尝试匹配 Pixivision 特辑
+        PIXIVISION_PATTERN.find(path)?.let { matchResult ->
+            val articleId = matchResult.groupValues[2]
+            return DeepLinkTarget.Pixivision(articleId)
+        }
+        
+        return DeepLinkTarget.Unknown
     }
     
     /**
