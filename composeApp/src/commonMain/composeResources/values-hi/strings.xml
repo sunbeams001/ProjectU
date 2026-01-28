@@ -951,10 +951,26 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- ========================================================================== -->
   <!-- SETTINGS_* -->
   <string name="settings_about">About</string>
+  <string name="settings_about_app">About App</string>
   <string name="settings_account">Account</string>
   <string name="settings_api_test_desc">Systematically test all integrated Pixiv APIs</string>
   <string name="settings_api_test_subtitle">Debug Pixiv API</string>
   <string name="settings_api_test_tool">API Test Tool 🔧</string>
+  <string name="settings_check_update">Check for Updates</string>
+  <string name="settings_checking_update">Checking for updates...</string>
+  <string name="settings_current_version">Current Version</string>
+  <string name="settings_github_project">GitHub Project</string>
+  <string name="settings_has_update">New version available!</string>
+  <string name="settings_latest_version">Latest Version</string>
+  <string name="settings_no_update">You\'re using the latest version</string>
+  <string name="settings_telegram_group">Telegram Group</string>
+  <string name="settings_update_check_error">Failed to check for updates: %1$s</string>
+  <string name="settings_update_content">What\'s New</string>
+  <string name="settings_update_dialog_title">Update Available</string>
+  <string name="settings_update_download">Download</string>
+  <string name="settings_update_file_size">File Size</string>
+  <string name="settings_update_later">Later</string>
+  <string name="settings_update_published_at">Released</string>
   <string name="settings_app_language">App Language</string>
   <string name="settings_backup_restore">Backup &amp; Restore</string>
   <string name="settings_backup_restore_desc">Backup settings and credentials, restore from backup</string>
