@@ -951,10 +951,26 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <!-- ========================================================================== -->
   <!-- SETTINGS_* -->
   <string name="settings_about">정보</string>
+  <string name="settings_about_app">About App</string>
   <string name="settings_account">계정</string>
   <string name="settings_api_test_desc">모든 통합 Pixiv API를 체계적으로 테스트</string>
   <string name="settings_api_test_subtitle">Pixiv API 디버그</string>
   <string name="settings_api_test_tool">API 테스트 도구 🔧</string>
+  <string name="settings_check_update">Check for Updates</string>
+  <string name="settings_checking_update">Checking for updates...</string>
+  <string name="settings_current_version">Current Version</string>
+  <string name="settings_github_project">GitHub Project</string>
+  <string name="settings_has_update">New version available!</string>
+  <string name="settings_latest_version">Latest Version</string>
+  <string name="settings_no_update">You\'re using the latest version</string>
+  <string name="settings_telegram_group">Telegram Group</string>
+  <string name="settings_update_check_error">Failed to check for updates: %1$s</string>
+  <string name="settings_update_content">What\'s New</string>
+  <string name="settings_update_dialog_title">Update Available</string>
+  <string name="settings_update_download">Download</string>
+  <string name="settings_update_file_size">File Size</string>
+  <string name="settings_update_later">Later</string>
+  <string name="settings_update_published_at">Released</string>
   <string name="settings_app_language">앱 언어</string>
   <string name="settings_backup_restore">백업 및 복원</string>
   <string name="settings_backup_restore_desc">설정 및 인증 정보 백업, 백업 파일에서 복원</string>
