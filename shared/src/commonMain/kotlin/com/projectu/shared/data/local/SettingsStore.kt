@@ -149,6 +149,13 @@ class SettingsStore(
     }
     
     /**
+     * 设置用户主页背景图显示
+     */
+    suspend fun setShowUserProfileBackground(show: Boolean) {
+        settingsDao.updateShowUserProfileBackground(show)
+    }
+    
+    /**
      * 设置下载基础路径
      */
     suspend fun setBaseDownloadPath(path: String) {

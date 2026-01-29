@@ -176,7 +176,14 @@ data class AppSettings(
      * 控制动态页面显示哪些导航项
      * 默认：全部启用
      */
-    val followLatestNavigationPreferences: com.projectu.shared.domain.model.FollowLatestNavigationPreferences = com.projectu.shared.domain.model.FollowLatestNavigationPreferences.DEFAULT
+    val followLatestNavigationPreferences: com.projectu.shared.domain.model.FollowLatestNavigationPreferences = com.projectu.shared.domain.model.FollowLatestNavigationPreferences.DEFAULT,
+    
+    /**
+     * 用户主页是否显示背景图
+     * 控制用户主页头部是否显示用户设置的背景图片
+     * 默认：true (显示)
+     */
+    val showUserProfileBackground: Boolean = true
 ) {
     companion object {
         /**

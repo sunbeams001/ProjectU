@@ -106,6 +106,12 @@ interface SettingsDao {
     suspend fun updateStaggeredGridColumns(columns: Int, timestamp: Long = System.currentTimeMillis())
     
     /**
+     * 更新用户主页背景图显示
+     */
+    @Query("UPDATE app_settings SET showUserProfileBackground = :show, updatedAt = :timestamp WHERE id = 1")
+    suspend fun updateShowUserProfileBackground(show: Boolean, timestamp: Long = System.currentTimeMillis())
+    
+    /**
      * 更新下载基础路径
      */
     @Query("UPDATE app_settings SET baseDownloadPath = :path, updatedAt = :timestamp WHERE id = 1")

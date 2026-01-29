@@ -1176,6 +1176,8 @@
     <string name="settings_select_theme">테마 선택</string>
     <string name="settings_select_translation_engine">번역 엔진 선택</string>
     <string name="settings_select_translation_target_language">대상 언어 선택</string>
+    <string name="settings_show_user_profile_background">사용자 프로필 배경 표시</string>
+    <string name="settings_show_user_profile_background_desc">사용자 프로필 페이지 헤더에 배경 이미지를 표시합니다</string>
     <string name="settings_staggered_grid_columns">그리드 열 수</string>
     <string name="settings_staggered_grid_columns_desc">작품 그리드 레이아웃의 열 수</string>
     <string name="settings_theme">테마</string>

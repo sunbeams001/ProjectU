@@ -133,6 +133,8 @@ data class UserScreen(
     override fun Content() {
         val viewModel = koinScreenModel<UserViewModel>()
         val shareViewModel: ShareViewModel = koinInject()
+        val settingsCache: com.projectu.shared.data.local.SettingsCache = koinInject()
+        val showUserProfileBackground by settingsCache.showUserProfileBackground.collectAsState()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
         
@@ -288,7 +290,8 @@ data class UserScreen(
                         formattedDescription = formattedShareDescription
                     )
                 )
-            }
+            },
+            showUserProfileBackground = showUserProfileBackground
         )
     }
 }
@@ -326,6 +329,8 @@ fun UserScreenContent(
     // 屏蔽作者相关
     onBlockAuthor: (() -> Unit)? = null,
     onUnblockAuthor: (() -> Unit)? = null,
+    // 用户主页背景图显示设置
+    showUserProfileBackground: Boolean = true,
     isAuthorBlocked: Boolean = false,
     // 分享用户
     onShareUser: (() -> Unit)? = null
@@ -441,7 +446,8 @@ fun UserScreenContent(
                             profile = state.userProfile,
                             onUserClick = onUserClick,
                             onFollowingClick = onFollowingClick,
-                            applyStatusBarPadding = isStandalone
+                            applyStatusBarPadding = isStandalone,
+                            showBackground = showUserProfileBackground
                         )
                         
                         // Tab导航栏
@@ -575,60 +581,101 @@ fun UserProfileHeader(
     profile: UserProfile,
     onUserClick: (String) -> Unit,
     onFollowingClick: ((String, String) -> Unit)? = null,
-    applyStatusBarPadding: Boolean = true
+    applyStatusBarPadding: Boolean = true,
+    showBackground: Boolean = true
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(if (applyStatusBarPadding) Modifier.statusBarsPadding() else Modifier)
-            .padding(horizontal = 16.dp)
-            .padding(top = 12.dp, bottom = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+    Box(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        // 头像
-        AsyncImage(
-            model = profile.imageBig.ifEmpty { profile.image },
-            contentDescription = profile.name,
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .clickable { onUserClick(profile.userId) },
-            contentScale = ContentScale.Crop
-        )
-        
-        // 用户名和会员标识
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = profile.name,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+        // 背景图（如果存在且设置允许显示）
+        if (showBackground && !profile.backgroundUrl.isNullOrEmpty()) {
+            AsyncImage(
+                model = profile.backgroundUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentScale = ContentScale.Crop
             )
-            if (profile.premium) {
-                Icon(
-                    imageVector = Icons.Filled.Star,
-                    contentDescription = "Premium",
-                    modifier = Modifier.size(16.dp),
-                    tint = Color(0xFFFFD700)
-                )
-            }
+            
+            // 添加渐变遮罩，使文字更清晰
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.3f),
+                                Color.Black.copy(alpha = 0.5f)
+                            )
+                        )
+                    )
+            )
         }
         
-        // 关注数 - 可点击
-        Text(
-            text = stringResource(Res.string.user_following_count, profile.following),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable(
-                enabled = onFollowingClick != null
+        // 前景内容
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(if (applyStatusBarPadding) Modifier.statusBarsPadding() else Modifier)
+                .padding(horizontal = 16.dp)
+                .padding(top = 12.dp, bottom = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            // 头像
+            AsyncImage(
+                model = profile.imageBig.ifEmpty { profile.image },
+                contentDescription = profile.name,
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .clickable { onUserClick(profile.userId) },
+                contentScale = ContentScale.Crop
+            )
+            
+            // 用户名和会员标识
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                onFollowingClick?.invoke(profile.userId, profile.name)
+                Text(
+                    text = profile.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (showBackground && !profile.backgroundUrl.isNullOrEmpty()) {
+                        Color.White
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
+                )
+                if (profile.premium) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Premium",
+                        modifier = Modifier.size(16.dp),
+                        tint = Color(0xFFFFD700)
+                    )
+                }
             }
-        )
+            
+            // 关注数 - 可点击
+            Text(
+                text = stringResource(Res.string.user_following_count, profile.following),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (showBackground && !profile.backgroundUrl.isNullOrEmpty()) {
+                    Color.White.copy(alpha = 0.9f)
+                } else {
+                    MaterialTheme.colorScheme.primary
+                },
+                modifier = Modifier.clickable(
+                    enabled = onFollowingClick != null
+                ) {
+                    onFollowingClick?.invoke(profile.userId, profile.name)
+                }
+            )
+        }
     }
     
     HorizontalDivider()

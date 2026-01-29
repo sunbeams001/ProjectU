@@ -102,6 +102,13 @@ class SettingsCache(
     val staggeredGridColumns: StateFlow<Int> = _staggeredGridColumns.asStateFlow()
     
     /**
+     * 用户主页背景图显示缓存
+     * 用于用户主页快速获取是否显示背景图的设置（高频访问 - 每个用户页面都需要）
+     */
+    private val _showUserProfileBackground = MutableStateFlow(true)
+    val showUserProfileBackground: StateFlow<Boolean> = _showUserProfileBackground.asStateFlow()
+    
+    /**
      * 翻译引擎缓存
      * 用于快速判断是否启用翻译功能
      */
@@ -130,6 +137,7 @@ class SettingsCache(
                 _fileNameMode.value = settings.downloadSettings.fileNameMode
                 _customFileNameTemplate.value = settings.downloadSettings.customFileNameTemplate
                 _staggeredGridColumns.value = settings.staggeredGridColumns
+                _showUserProfileBackground.value = settings.showUserProfileBackground
                 _translationEngine.value = settings.translationEngine
                 _translationTargetLanguage.value = settings.translationTargetLanguage
                 
@@ -195,6 +203,18 @@ class SettingsCache(
      */
     fun getNovelDownloadImageQuality(): NovelDownloadImageQuality {
         return _novelDownloadImageQuality.value
+    }
+    
+    /**
+     * 获取当前用户主页背景图显示设置（同步方法，使用内存缓存）
+     * 用于 UserScreen 等组件快速获取是否显示背景图的设置
+     * 
+     * 性能说明：
+     * - 每次加载用户页面都需要获取此设置
+     * - 使用内存缓存避免每次都查询数据库，提升页面加载性能
+     */
+    fun getShowUserProfileBackground(): Boolean {
+        return _showUserProfileBackground.value
     }
     
     /**

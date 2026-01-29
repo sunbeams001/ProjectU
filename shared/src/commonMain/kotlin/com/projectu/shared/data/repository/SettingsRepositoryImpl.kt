@@ -75,6 +75,10 @@ class SettingsRepositoryImpl(
         settingsStore.setStaggeredGridColumns(columns)
     }
     
+    override suspend fun updateShowUserProfileBackground(show: Boolean) {
+        settingsStore.setShowUserProfileBackground(show)
+    }
+    
     override suspend fun updateBaseDownloadPath(path: String) {
         settingsStore.setBaseDownloadPath(path)
     }

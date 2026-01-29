@@ -81,6 +81,12 @@ data class SettingsEntity(
     val staggeredGridColumns: Int = 3,
     
     /**
+     * 用户主页背景图显示设置
+     * 用于控制用户主页顶部是否显示用户设置的背景图片
+     */
+    val showUserProfileBackground: Boolean = true,
+    
+    /**
      * 下载基础路径
      */
     val baseDownloadPath: String = "",
@@ -226,6 +232,7 @@ fun com.projectu.shared.data.local.AppSettings.toEntity(): SettingsEntity {
         clickBookmarkAction = this.clickBookmarkAction.name,
         longPressBookmarkAction = this.longPressBookmarkAction.name,
         staggeredGridColumns = this.staggeredGridColumns,
+        showUserProfileBackground = this.showUserProfileBackground,
         baseDownloadPath = this.downloadSettings.baseDownloadPath,
         fileNameMode = this.downloadSettings.fileNameMode.name,
         customFileNameTemplate = this.downloadSettings.customFileNameTemplate,
@@ -279,6 +286,7 @@ fun SettingsEntity.toAppSettings(): com.projectu.shared.data.local.AppSettings {
         clickBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.clickBookmarkAction),
         longPressBookmarkAction = com.projectu.shared.domain.model.BookmarkAction.valueOf(this.longPressBookmarkAction),
         staggeredGridColumns = this.staggeredGridColumns,
+        showUserProfileBackground = this.showUserProfileBackground,
         downloadSettings = com.projectu.shared.data.local.DownloadSettings(
             baseDownloadPath = this.baseDownloadPath.ifEmpty { com.projectu.shared.data.local.getDefaultDownloadPath() },
             fileNameMode = try {

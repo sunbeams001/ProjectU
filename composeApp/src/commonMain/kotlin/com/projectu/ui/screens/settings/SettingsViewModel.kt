@@ -208,6 +208,15 @@ class SettingsViewModel(
     }
     
     /**
+     * 更新用户主页背景图显示设置
+     */
+    fun updateShowUserProfileBackground(show: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updateShowUserProfileBackground(show)
+        }
+    }
+    
+    /**
      * 更新默认启动Tab
      */
     fun updateDefaultStartupTab(tab: com.projectu.shared.data.local.StartupTab) {

@@ -245,6 +245,7 @@ class SettingsScreen : Screen {
             cacheDetails = cacheDetails,
             maxCacheSizeBytes = cacheManager.maxCacheSize,
             currentStaggeredGridColumns = settings.staggeredGridColumns,
+            currentShowUserProfileBackground = settings.showUserProfileBackground,
             currentBaseDownloadPath = downloadSettings.baseDownloadPath,
             currentFileNameMode = downloadSettings.fileNameMode,
             currentCustomFileNameTemplate = downloadSettings.customFileNameTemplate,
@@ -269,6 +270,7 @@ class SettingsScreen : Screen {
             onClickBookmarkActionChange = { viewModel.updateClickBookmarkAction(it) },
             onLongPressBookmarkActionChange = { viewModel.updateLongPressBookmarkAction(it) },
             onStaggeredGridColumnsChange = { viewModel.updateStaggeredGridColumns(it) },
+            onShowUserProfileBackgroundChange = { viewModel.updateShowUserProfileBackground(it) },
             onNavigateBack = { navigator.pop() },
             onNavigateToApiTest = { navigator.push(com.projectu.ui.screens.apitest.ApiTestScreen()) },
             onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) },
@@ -306,6 +308,7 @@ private fun SettingsScreenContent(
     cacheDetails: CacheDetails,
     maxCacheSizeBytes: Long,
     currentStaggeredGridColumns: Int,
+    currentShowUserProfileBackground: Boolean,
     currentBaseDownloadPath: String,
     currentFileNameMode: FileNameMode,
     currentCustomFileNameTemplate: String,
@@ -330,6 +333,7 @@ private fun SettingsScreenContent(
     onClickBookmarkActionChange: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
     onLongPressBookmarkActionChange: (com.projectu.shared.domain.model.BookmarkAction) -> Unit,
     onStaggeredGridColumnsChange: (Int) -> Unit,
+    onShowUserProfileBackgroundChange: (Boolean) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToApiTest: () -> Unit = {},
     onBaseDownloadPathChange: (String) -> Unit,
@@ -557,6 +561,16 @@ private fun SettingsScreenContent(
                     },
                     description = stringResource(Res.string.settings_staggered_grid_columns_desc),
                     onClick = { showStaggeredGridColumnsDialog = true }
+                )
+            }
+            
+            // 用户主页背景图显示设置
+            item {
+                SettingsSwitchItem(
+                    title = stringResource(Res.string.settings_show_user_profile_background),
+                    description = stringResource(Res.string.settings_show_user_profile_background_desc),
+                    checked = currentShowUserProfileBackground,
+                    onCheckedChange = onShowUserProfileBackgroundChange
                 )
             }
             
@@ -1386,6 +1400,50 @@ private fun SettingsItem(
                     )
                 }
             }
+        }
+    }
+    HorizontalDivider()
+}
+
+/**
+ * 带开关的设置项
+ */
+@Composable
+private fun SettingsSwitchItem(
+    title: String,
+    description: String? = null,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                if (description != null) {
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
+            }
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
         }
     }
     HorizontalDivider()

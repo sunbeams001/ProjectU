@@ -40,7 +40,7 @@ import com.projectu.shared.data.local.dao.WidgetConfigDao
         NovelTranslationCacheEntity::class,
         WidgetConfigEntity::class
     ],
-    version = 6, // Widget配置表，包含显示设置（图片缩放、圆角）
+    version = 7, // 添加用户主页背景图显示设置
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)

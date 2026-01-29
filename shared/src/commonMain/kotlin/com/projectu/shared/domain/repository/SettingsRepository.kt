@@ -94,6 +94,12 @@ interface SettingsRepository {
     suspend fun updateStaggeredGridColumns(columns: Int)
     
     /**
+     * 更新用户主页背景图显示设置
+     * @param show 是否显示背景图
+     */
+    suspend fun updateShowUserProfileBackground(show: Boolean)
+    
+    /**
      * 更新下载基础路径
      * @param path 下载基础路径
      */

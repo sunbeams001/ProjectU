@@ -1176,6 +1176,8 @@
     <string name="settings_select_theme">テーマを選択</string>
     <string name="settings_select_translation_engine">翻訳エンジンを選択</string>
     <string name="settings_select_translation_target_language">ターゲット言語を選択</string>
+    <string name="settings_show_user_profile_background">ユーザープロフィール背景を表示</string>
+    <string name="settings_show_user_profile_background_desc">ユーザープロフィールページのヘッダーに背景画像を表示します</string>
     <string name="settings_staggered_grid_columns">グリッド列数</string>
     <string name="settings_staggered_grid_columns_desc">イラストグリッドの列数</string>
     <string name="settings_theme">テーマ</string>
