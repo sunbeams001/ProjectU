@@ -1072,6 +1072,8 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="settings_select_theme">Select Theme</string>
   <string name="settings_select_translation_engine">Select Translation Engine</string>
   <string name="settings_select_translation_target_language">Select Target Language</string>
+  <string name="settings_show_user_profile_background">Show User Profile Background</string>
+  <string name="settings_show_user_profile_background_desc">Display user\'s background image on profile page header</string>
   <string name="settings_staggered_grid_columns">Staggered Grid Columns</string>
   <string name="settings_staggered_grid_columns_desc">Number of columns in artwork grids</string>
   <string name="settings_theme">Theme</string>
