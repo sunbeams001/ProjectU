@@ -1072,6 +1072,8 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="settings_select_theme">选择主题</string>
   <string name="settings_select_translation_engine">选择翻译引擎</string>
   <string name="settings_select_translation_target_language">选择目标语言</string>
+  <string name="settings_show_user_profile_background">Show User Profile Background</string>
+  <string name="settings_show_user_profile_background_desc">Display user\'s background image on profile page header</string>
   <string name="settings_staggered_grid_columns">瀑布流列数</string>
   <string name="settings_staggered_grid_columns_desc">作品网格布局的列数</string>
   <string name="settings_theme">主题</string>
