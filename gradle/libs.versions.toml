@@ -27,6 +27,7 @@ androidx-documentfile = "1.1.0"
 androidx-work = "2.11.1"
 compose-webview-multiplatform = "2.0.3"
 ksoup = "0.2.5"
+jogamp = "2.6.0"
 androidMinSdk = "24"
 androidCompileSdk = "36"
 androidTargetSdk = "36"
@@ -118,6 +119,10 @@ compose-desktop-linux-arm64 = { module = "org.jetbrains.compose.desktop:desktop-
 
 # Compose WebView Multiplatform
 compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "compose-webview-multiplatform" }
+
+# JOGAMP - OpenGL绑定库（用于WebView的JCEF依赖）
+jogamp-gluegen-rt = { module = "org.jogamp.gluegen:gluegen-rt", version.ref = "jogamp" }
+jogamp-jogl-all = { module = "org.jogamp.jogl:jogl-all", version.ref = "jogamp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

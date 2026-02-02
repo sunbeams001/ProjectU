@@ -139,9 +139,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
             
-            // JOGAMP 依赖 - 使用本地 JAR 文件（解决官方仓库不稳定问题）
-            implementation(files("../libs/jogamp/gluegen-rt-2.5.0.jar"))
-            implementation(files("../libs/jogamp/jogl-all-2.5.0.jar"))
+            // JOGAMP 依赖 - 从 Maven Central 获取（已在 Maven Central 上稳定可用）
+            implementation(libs.jogamp.gluegen.rt)
+            implementation(libs.jogamp.jogl.all)
 
             // Room数据库依赖 - Desktop平台需要
             implementation(libs.room.runtime)
