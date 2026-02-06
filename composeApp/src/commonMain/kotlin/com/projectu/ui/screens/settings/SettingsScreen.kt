@@ -276,7 +276,7 @@ class SettingsScreen : Screen {
             onBaseDownloadPathChange = { viewModel.updateBaseDownloadPath(it) },
             onTranslationEngineChange = { viewModel.updateTranslationEngine(it) },
             onTranslationTargetLanguageChange = { viewModel.updateTranslationTargetLanguage(it) },
-            currentAppVersion = "${com.projectu.ui.util.AppVersion.VERSION_NAME} (${com.projectu.ui.util.AppVersion.VERSION_CODE})",
+            currentAppVersion = "${com.projectu.BuildKonfig.VERSION_NAME} (${com.projectu.BuildKonfig.VERSION_CODE})",
             onCheckUpdate = { 
                 if (!isCheckingUpdate) {
                     viewModel.checkForUpdate()

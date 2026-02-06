@@ -17,7 +17,7 @@ import com.projectu.shared.domain.repository.SettingsRepository
 import com.projectu.shared.domain.usecase.CheckUpdateUseCase
 import com.projectu.ui.components.FileNamePreviewExample
 import com.projectu.ui.screens.login.LoginScreen
-import com.projectu.ui.util.AppVersion
+import com.projectu.BuildKonfig
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -447,8 +447,8 @@ class SettingsViewModel(
             _isCheckingUpdate.value = true
             try {
                 val result = checkUpdateUseCase(
-                    currentVersionName = AppVersion.VERSION_NAME,
-                    currentVersionCode = AppVersion.VERSION_CODE
+                    currentVersionName = BuildKonfig.VERSION_NAME,
+                    currentVersionCode = BuildKonfig.VERSION_CODE
                 )
                 _updateCheckState.value = result
             } finally {

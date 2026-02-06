@@ -7,6 +7,24 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.buildkonfig)
+}
+
+buildkonfig {
+    packageName = "com.projectu"
+    
+    defaultConfigs {
+        buildConfigField(
+            type = com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            name = "VERSION_NAME",
+            value = libs.versions.appVersion.get()
+        )
+        buildConfigField(
+            type = com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT,
+            name = "VERSION_CODE",
+            value = libs.versions.appVersionCode.get()
+        )
+    }
 }
 
 // 配置所有 configuration，排除从 compose-webview-multiplatform 传递来的 JOGAMP 依赖

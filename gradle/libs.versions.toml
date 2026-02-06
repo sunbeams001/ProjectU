@@ -20,6 +20,7 @@ okio = "3.16.4"
 gifkt = "0.3.1"
 javacv = "1.5.12"
 ksp = "2.3.2"
+buildkonfig = "0.17.1"
 androidx-core = "1.17.0"
 androidx-activity-compose = "1.12.3"
 androidx-lifecycle = "2.10.0"
@@ -133,3 +134,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
