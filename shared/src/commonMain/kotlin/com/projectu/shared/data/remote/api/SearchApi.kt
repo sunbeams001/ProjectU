@@ -70,6 +70,7 @@ class SearchApi(private val client: PixivApiClient) {
      * @param aiType AI作品过滤：1(隐藏AI作品), null(显示AI作品)
      * @param scd 发布时间起始（格式：yyyy-MM-dd）
      * @param ecd 发布时间结束（格式：yyyy-MM-dd）
+     * @param workLang 作品语言过滤（如：zh-cn, ja, en等，null表示不过滤）
      */
     suspend fun searchNovel(
         keyword: String,
@@ -79,7 +80,8 @@ class SearchApi(private val client: PixivApiClient) {
         page: Int = 1,
         aiType: Int? = null,
         scd: String? = null,
-        ecd: String? = null
+        ecd: String? = null,
+        workLang: String? = null
     ): PixivResponse<NovelSearchBody> {
         // URL 编码关键词（使用encodeURLPathPart以确保/等特殊字符被正确编码）
         val encodedKeyword = keyword.encodeURLPathPart()
@@ -94,6 +96,7 @@ class SearchApi(private val client: PixivApiClient) {
         aiType?.let { params["ai_type"] = it }
         scd?.let { params["scd"] = it }
         ecd?.let { params["ecd"] = it }
+        workLang?.let { params["work_lang"] = it }
 
         return client.get("/ajax/search/novels/$encodedKeyword", params)
     }

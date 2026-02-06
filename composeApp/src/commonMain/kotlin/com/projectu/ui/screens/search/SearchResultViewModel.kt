@@ -397,7 +397,8 @@ class SearchResultViewModel(
                     page = state.novelPage,
                     aiType = if (state.novelParams.hideAi) 1 else null,
                     scd = state.novelParams.dateRange?.startDate,
-                    ecd = state.novelParams.dateRange?.endDate
+                    ecd = state.novelParams.dateRange?.endDate,
+                    workLang = state.novelParams.workLang.code
                 )
                 
                 if (!result.error && result.body != null) {

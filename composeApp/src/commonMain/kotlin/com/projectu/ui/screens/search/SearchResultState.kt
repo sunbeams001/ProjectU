@@ -74,6 +74,44 @@ enum class BookmarkCount(val tag: String, val displayNameKey: String) {
 }
 
 /**
+ * 作品语言筛选
+ * 
+ * @param code API参数值（null表示所有语种）
+ * @param displayName 直接显示的文本（用于具体语言时，显示该语言自身的名称；ALL和OTHER使用资源字符串key）
+ */
+enum class WorkLanguage(
+    val code: String?,
+    val displayName: String
+) {
+    ALL(null, "all"),  // 使用key，需要在UI层翻译
+    ZH_CN("zh-cn", "简体中文"),
+    JA("ja", "日本語"),
+    EN("en", "English"),
+    KO("ko", "한국어"),
+    ZH_TW("zh-tw", "繁體中文"),
+    ID("id", "Bahasa Indonesia"),
+    DA("da", "Dansk"),
+    DE("de", "Deutsch"),
+    ES("es", "Español"),
+    ES_419("es-419", "Español (Latinoamérica)"),
+    TL("tl", "Filipino"),
+    FR("fr", "Français"),
+    HR("hr", "Hrvatski"),
+    IT("it", "Italiano"),
+    MS("ms", "Bahasa Melayu"),
+    NL("nl", "Nederlands"),
+    PL("pl", "Polski"),
+    PT_BR("pt-br", "Português (Brasil)"),
+    PT_PT("pt-pt", "Português (Portugal)"),
+    VI("vi", "Tiếng Việt"),
+    TR("tr", "Türkçe"),
+    RU("ru", "Русский"),
+    AR("ar", "العربية"),
+    TH("th", "ไทย"),
+    OTHER("other", "other");  // 使用key，需要在UI层翻译
+}
+
+/**
  * 插画搜索参数
  */
 data class IllustSearchParams(
@@ -107,7 +145,8 @@ data class NovelSearchParams(
     val contentMode: ContentMode = ContentMode.ALL,
     val bookmarkCount: BookmarkCount = BookmarkCount.NONE,
     val hideAi: Boolean = false,
-    val dateRange: DateRange? = null
+    val dateRange: DateRange? = null,
+    val workLang: WorkLanguage = WorkLanguage.ALL
 ) {
     companion object {
         /**

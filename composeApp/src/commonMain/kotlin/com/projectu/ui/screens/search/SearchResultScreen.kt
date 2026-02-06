@@ -982,6 +982,12 @@ fun NovelFilters(
             onDateRangeChange = { onParamsChange(params.copy(dateRange = it)) }
         )
         
+        // 作品语言筛选
+        WorkLanguageDropdown(
+            selectedLanguage = params.workLang,
+            onLanguageSelect = { onParamsChange(params.copy(workLang = it)) }
+        )
+        
         // AI 过滤 - 移到最下方
         AiFilterSwitch(
             checked = params.hideAi,
@@ -1763,6 +1769,71 @@ fun com.projectu.shared.data.remote.model.UserSearchMode.getDisplayName(): Strin
             com.projectu.shared.data.remote.model.UserSearchMode.EXACT -> Res.string.search_mode_user_exact
         }
     )
+}
+
+/**
+ * 作品语言下拉选择器
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WorkLanguageDropdown(
+    selectedLanguage: WorkLanguage,
+    onLanguageSelect: (WorkLanguage) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val allLanguages = WorkLanguage.entries
+    
+    // 获取显示文本的辅助函数
+    @Composable
+    fun getDisplayText(language: WorkLanguage): String {
+        return when (language) {
+            WorkLanguage.ALL -> stringResource(Res.string.work_lang_all)
+            WorkLanguage.OTHER -> stringResource(Res.string.work_lang_other)
+            else -> language.displayName
+        }
+    }
+    
+    Column {
+        Text(
+            text = stringResource(Res.string.work_lang_label),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedTextField(
+                value = getDisplayText(selectedLanguage),
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
+            
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                allLanguages.forEach { language ->
+                    DropdownMenuItem(
+                        text = { Text(getDisplayText(language)) },
+                        onClick = {
+                            onLanguageSelect(language)
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                }
+            }
+        }
+    }
 }
 
 /**

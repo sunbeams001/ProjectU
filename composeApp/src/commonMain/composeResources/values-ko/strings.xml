@@ -1027,6 +1027,9 @@
     <string name="search_tab_illust">일러스트+만화+우고이라</string>
     <string name="search_tab_novel">소설</string>
     <string name="search_tab_user">사용자</string>
+    <string name="work_lang_label">작품 언어</string>
+    <string name="work_lang_all">모든 언어</string>
+    <string name="work_lang_other">기타</string>
 
 
     <!-- ========================================================================== -->

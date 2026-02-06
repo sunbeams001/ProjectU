@@ -1027,6 +1027,9 @@
     <string name="search_tab_illust">插画+漫画+动图</string>
     <string name="search_tab_novel">小说</string>
     <string name="search_tab_user">用户</string>
+    <string name="work_lang_label">作品语言</string>
+    <string name="work_lang_all">所有语种</string>
+    <string name="work_lang_other">其他</string>
 
 
     <!-- ========================================================================== -->
