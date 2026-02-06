@@ -1,5 +1,6 @@
 package com.projectu.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -221,7 +222,13 @@ fun HtmlText(
     // 使用 Text 组件，它支持新的 LinkAnnotation
     Text(
         text = annotatedString,
-        modifier = modifier,
+        modifier = modifier.then(
+            if (onClick != null) {
+                Modifier.clickable(onClick = onClick)
+            } else {
+                Modifier
+            }
+        ),
         style = style,
         maxLines = maxLines ?: Int.MAX_VALUE,
         overflow = overflow
