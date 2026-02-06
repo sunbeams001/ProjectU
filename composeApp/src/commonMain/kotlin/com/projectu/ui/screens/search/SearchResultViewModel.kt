@@ -340,7 +340,7 @@ class SearchResultViewModel(
                     
                     _state.update { current ->
                         current.copy(
-                            illustResults = current.illustResults + artworks,
+                            illustResults = (current.illustResults + artworks).distinctBy { it.id },
                             illustPage = current.illustPage + 1,
                             hasMoreIllust = artworks.isNotEmpty() && !state.illustParams.order.isPreviewMode,  // 伪热度排序只显示第一页
                             isLoadingMore = false
@@ -409,7 +409,7 @@ class SearchResultViewModel(
                     
                     _state.update { current ->
                         current.copy(
-                            novelResults = current.novelResults + novels,
+                            novelResults = (current.novelResults + novels).distinctBy { it.id },
                             novelPage = current.novelPage + 1,
                             hasMoreNovel = novels.isNotEmpty(),
                             isLoadingMore = false
@@ -461,7 +461,7 @@ class SearchResultViewModel(
                     
                     _state.update { current ->
                         current.copy(
-                            userResults = current.userResults + users,
+                            userResults = (current.userResults + users).distinctBy { it.id },
                             userPage = current.userPage + 1,
                             hasMoreUser = users.isNotEmpty(),
                             isLoadingMore = false
