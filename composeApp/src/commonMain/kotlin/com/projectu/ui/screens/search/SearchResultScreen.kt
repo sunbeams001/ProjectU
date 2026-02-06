@@ -48,6 +48,7 @@ import com.projectu.ui.components.UserCard
 import com.projectu.ui.components.ErrorDisplay
 import com.projectu.ui.screens.artwork.ArtworkDetailScreen
 import com.projectu.ui.screens.novel.NovelDetailScreen
+import com.projectu.ui.screens.novelseries.NovelSeriesScreen
 import com.projectu.ui.screens.user.UserScreen
 import com.projectu.ui.navigation.NavigationContextManager
 import com.projectu.ui.util.rememberTagClickHandler
@@ -137,6 +138,9 @@ data class SearchResultScreen(
             onNovelClick = { novel ->
                 navigator.push(NovelDetailScreen(novelId = novel.id))
             },
+            onSeriesClick = { seriesId ->
+                navigator.push(NovelSeriesScreen(seriesId = seriesId))
+            },
             onUserClick = { user ->
                 navigator.push(UserScreen(userId = user.id))
             },
@@ -163,6 +167,7 @@ fun SearchResultContent(
     onLoadMore: () -> Unit,
     onArtworkClick: (Artwork, Int, SearchCategory) -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onSeriesClick: (String) -> Unit,
     onUserClick: (User) -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     onUpdateIllustParams: (IllustSearchParams) -> Unit,
@@ -376,6 +381,7 @@ fun SearchResultContent(
                             hasMore = state.hasMoreNovel,
                             onLoadMore = onLoadMore,
                             onNovelClick = onNovelClick,
+                            onSeriesClick = onSeriesClick,
                             onTagClick = onTagClick,
                             listState = novelListState,
                             error = state.error,
@@ -608,6 +614,7 @@ fun NovelResultList(
     hasMore: Boolean,
     onLoadMore: () -> Unit,
     onNovelClick: (Novel) -> Unit,
+    onSeriesClick: (String) -> Unit,
     onTagClick: ((com.projectu.shared.domain.model.Tag) -> Unit)? = null,
     listState: androidx.compose.foundation.lazy.LazyListState,
     error: String? = null,
@@ -660,6 +667,7 @@ fun NovelResultList(
                         NovelCard(
                             novel = novel,
                             onClick = { onNovelClick(novel) },
+                            onSeriesClick = onSeriesClick,
                             onTagClick = onTagClick
                         )
                     }
