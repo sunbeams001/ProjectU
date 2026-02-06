@@ -929,6 +929,9 @@ ProjectU - Pixiv Kotlin Multiplatform Client
   <string name="search_tab_illust">Illusts+Manga+Ugoira</string>
   <string name="search_tab_novel">Novels</string>
   <string name="search_tab_user">Users</string>
+  <string name="work_lang_label">Work Language</string>
+  <string name="work_lang_all">All Languages</string>
+  <string name="work_lang_other">Other</string>
   <!-- ========================================================================== -->
   <!-- Series -->
   <!-- ========================================================================== -->
