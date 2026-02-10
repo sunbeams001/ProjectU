@@ -1,6 +1,6 @@
 [versions]
 core-splashscreen = "1.2.0"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 compose = "1.10.0"
 compose-plugin = "1.10.0"
 compose-material3 = "1.9.0"
