@@ -32,8 +32,8 @@ jogamp = "2.6.0"
 androidMinSdk = "24"
 androidCompileSdk = "36"
 androidTargetSdk = "36"
-appVersionCode = "13"
-appVersion = "1.0.12"
+appVersionCode = "14"
+appVersion = "1.0.13"
 
 [libraries]
 # Kotlin
